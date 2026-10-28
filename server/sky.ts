@@ -43,7 +43,7 @@ function phaseName(phase: number): string {
     return names[Math.round(phase * 8) % 8];
 }
 
-interface LiveAstronomy {
+interface WttrAstronomy {
     sunset: string;
     moonrise: string;
     moon_phase: string;
@@ -51,7 +51,7 @@ interface LiveAstronomy {
 }
 
 /** wttr.in's astronomy for a day, fetched once per day and cached in out/sky/. Null when it cannot be reached. */
-async function live(day: string, outDir: string): Promise<LiveAstronomy | null> {
+async function fetchWttr(day: string, outDir: string): Promise<WttrAstronomy | null> {
     const cache = join(outDir, 'sky', `${day}.json`);
     if (existsSync(cache)) return JSON.parse(readFileSync(cache, 'utf8'));
     try {
@@ -59,6 +59,7 @@ async function live(day: string, outDir: string): Promise<LiveAstronomy | null> 
         const weather = ((await res.json()) as any).weather?.find((w: any) => w.date === day);
         const astro = weather?.astronomy?.[0];
         if (!astro) return null;
+        // "6:15 PM" to "18:15"
         const to24 = (t: string) => {
             const [, h, m, ap] = t.match(/(\d+):(\d+)\s*(AM|PM)/i) ?? [];
             return h ? `${String((Number(h) % 12) + (ap.toUpperCase() === 'PM' ? 12 : 0)).padStart(2, '0')}:${m}` : '';
@@ -78,16 +79,17 @@ export async function skyFor(clock: string, outDir: string): Promise<Sky> {
     const noon = new Date(at(day, '12:00'));
     const sun = SunCalc.getTimes(noon, LOFT.lat, LOFT.lon);
     const moon = SunCalc.getMoonTimes(new Date(at(day, '00:00')), LOFT.lat, LOFT.lon);
-    const grounded = await live(day, outDir);
-    const event = (id: SkyEvent['id'], label: string, computed: Date | undefined, liveTime?: string): SkyEvent => {
-        const local = liveTime || (computed ? hhmm(computed) : '');
-        return { id, label, local, at: local ? at(day, local) : '', source: liveTime ? 'wttr.in' : 'suncalc', computed: computed ? hhmm(computed) : '' };
+    const wttr = await fetchWttr(day, outDir);
+    // An event at wttr.in's time when it has one, else at suncalc's.
+    const event = (id: SkyEvent['id'], label: string, computed: Date | undefined, wttrTime?: string): SkyEvent => {
+        const local = wttrTime || (computed ? hhmm(computed) : '');
+        return { id, label, local, at: local ? at(day, local) : '', source: wttrTime ? 'wttr.in' : 'suncalc', computed: computed ? hhmm(computed) : '' };
     };
     const events = [
-        event('sunset', 'Sunset', sun.sunset, grounded?.sunset),
+        event('sunset', 'Sunset', sun.sunset, wttr?.sunset),
         event('civil_dusk', 'Civil dusk', sun.dusk),
         event('full_dark', 'Full dark', sun.night),
-        event('moonrise', 'Moonrise', moon.rise, grounded?.moonrise),
+        event('moonrise', 'Moonrise', moon.rise, wttr?.moonrise),
     ];
     const illumination = SunCalc.getMoonIllumination(moon.rise ?? noon);
     const reference = clock ? new Date(at(day, clock)) : new Date();
@@ -99,10 +101,10 @@ export async function skyFor(clock: string, outDir: string): Promise<Sky> {
         events,
         minutes_to: Object.fromEntries(events.filter((e) => e.at).map((e) => [e.id, Math.round((Date.parse(e.at) - reference.getTime()) / 60000)])),
         moon: {
-            phase: grounded?.moon_phase || phaseName(illumination.phase),
-            illumination: grounded?.moon_illumination ?? Math.round(illumination.fraction * 100),
-            source: grounded ? 'wttr.in' : 'suncalc',
+            phase: wttr?.moon_phase || phaseName(illumination.phase),
+            illumination: wttr?.moon_illumination ?? Math.round(illumination.fraction * 100),
+            source: wttr ? 'wttr.in' : 'suncalc',
         },
-        live_source: grounded ? { url: WTTR_URL, summary: `Sunset ${grounded.sunset}, moonrise ${grounded.moonrise}, ${grounded.moon_phase}, ${grounded.moon_illumination}% lit` } : null,
+        live_source: wttr ? { url: WTTR_URL, summary: `Sunset ${wttr.sunset}, moonrise ${wttr.moonrise}, ${wttr.moon_phase}, ${wttr.moon_illumination}% lit` } : null,
     };
 }
