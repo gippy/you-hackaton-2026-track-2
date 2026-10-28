@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#ffb000" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter">
+<polygon points="14,12 24,12 24,18 14,18"/>
+<polygon points="24,13 32,15 32,19 24,18" stroke="#ff6a00"/>
+<polygon points="13,18 23,18 26,26 10,26"/>
+<polygon points="10,26 26,26 24,56 12,56"/>
+<path d="M11 38H25" stroke="#ff6a00"/>
+<path d="M13 50H25" stroke="#ff6a00"/>
+<polygon points="36,24 33,18 38,13 42,17 47,10 51,14 56,11 58,17 53,22 45,20 40,25"/>
+<polygon points="34,40 37,31 43,33 47,27 53,31 57,29 58,36 52,40 44,38 38,42"/>
+<polygon points="34,56 38,47 44,49 48,43 54,47 58,45 58,55 50,57 42,55 36,57"/>
+<polygon points="30,24 33,27 30,30 27,27" stroke="#e5261f"/>
+</svg>

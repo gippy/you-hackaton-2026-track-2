@@ -7,31 +7,31 @@
 //
 // Icons land in art/nightfall/icons/. The brief of each one is recorded in
 // art/nightfall/manifest.json (kind "icon"), next to the Nightfall images, so an unchanged icon
-// is never drawn twice. A drawing is accepted only if it passes the checks in `problem`.
+// is never drawn twice. A drawing is accepted only if it passes the checks in `problem`: closed
+// and safe SVG, only straight lines and sharp corners, only the station's black and orange colors.
 //
-// Every Parasail call, accepted or not, is appended to proof/parasail.jsonl with its request,
-// the raw reply, token usage and timing. The API key is never written there.
-import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+// Every Parasail call, accepted or not, goes to proof/parasail.jsonl through server/proof.ts.
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join, relative, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
+
+import { record } from '../server/proof.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const OUT = join(ROOT, 'art', 'nightfall');
 const ICON_DIR = join(OUT, 'icons');
 const MANIFEST = join(OUT, 'manifest.json');
-const LEDGER = join(ROOT, 'proof', 'parasail.jsonl');
 const MODEL = 'parasail-minimax-m31-flash';
-const TRIES = 4;
+const TRIES = 6;
 const MAX_BYTES = 6000;
 
-// The station's palette (web/src/style.css). Every color in an icon has to come from this list.
+// The station's black and orange CRT palette. Every color in an icon has to come from this list.
 const PALETTE = {
-    violet: '#b388ff',
-    amber: '#ffb547',
-    red: '#ff4d6d',
-    green: '#4ade80',
-    lavender: '#ece6f5',
-    deep: '#2e2540',
+    amber: '#ffb000',
+    orange: '#ff6a00',
+    red: '#e5261f',
+    dim: '#7a4300',
+    black: '#000000',
 };
 
 interface Icon {
@@ -41,32 +41,34 @@ interface Icon {
 }
 
 const ICONS: Icon[] = [
-    { id: 'icon_garlic', alt: 'A garlic bulb', brief: 'a garlic bulb with a pointed top and three curved clove lines, with two small sparkle marks' },
-    { id: 'icon_silver_netting', alt: 'A net with a diamond mesh', brief: 'a net: a rounded square of diamond mesh drawn as crossing diagonal lines, with a small knot at each corner' },
-    { id: 'icon_uv_lamp', alt: 'A lamp casting a beam of light', brief: 'a UV and sunlight lamp: a rounded rectangular lamp head tilted down to the left on a short stand with a flat base, and five straight amber beams radiating from the front of the head' },
-    { id: 'icon_barricade_foam', alt: 'A foam canister spraying foam', brief: 'a spray can of expanding foam: a tall canister with a nozzle, and three soft round foam blobs stacked beside it' },
-    { id: 'icon_window_blinds', alt: 'A window with the blinds lowered', brief: 'a window with horizontal blinds half lowered: a square frame, five slats at the top, a pull cord with a small weight at the bottom' },
-    { id: 'icon_name_badge', alt: 'A name badge on a lanyard', brief: 'a name badge on a lanyard: a rounded rectangle badge with a circle for a photo, two plain lines, and a V-shaped lanyard strap above' },
-    { id: 'icon_poppy_seeds', alt: 'A small heap of poppy seeds', brief: 'a small heap of poppy seeds: a low mound of about twelve small dots, with a few single dots scattered around it' },
-    { id: 'icon_do_not_invite', alt: 'A door with a prohibition sign', brief: 'a "do not invite" door sign: a door with a round knob, with a circle and a diagonal slash drawn over it in red' },
-    { id: 'icon_moon_phase', alt: 'A waning gibbous moon', brief: 'a waning gibbous moon: one large circle outline, with its right three quarters filled lavender and its left quarter left dark, a curved line between the two parts, and two small amber four-point stars in the corners' },
-    { id: 'icon_howl', alt: 'A howl as sound waves', brief: 'a howl: three curved sound-wave arcs growing outward from a small crescent moon, left to right' },
+    { id: 'icon_garlic', alt: 'A garlic bulb', brief: 'a garlic bulb drawn with straight edges: a pointed top, a faceted body, three angular clove lines, and two small four-point spark marks' },
+    { id: 'icon_silver_netting', alt: 'A net with a diamond mesh', brief: 'a net: a square of diamond mesh drawn as crossing diagonal lines, with a small square knot at each corner' },
+    { id: 'icon_uv_lamp', alt: 'A lamp casting a beam of light', brief: 'a UV and sunlight desk lamp: a wide trapezoid lamp shade on top of a thin angled arm with a flat base, and five straight orange beams fanning downward from under the shade' },
+    { id: 'icon_barricade_foam', alt: 'A foam canister spraying foam', brief: 'a spray can of expanding foam: a tall canister with a nozzle, and three jagged foam clumps stacked beside it, each an irregular polygon' },
+    { id: 'icon_window_blinds', alt: 'A window with the blinds lowered', brief: 'a window with horizontal blinds half lowered: a square frame, five slats at the top with jagged bottom edges, a pull cord with a small weight at the bottom' },
+    { id: 'icon_name_badge', alt: 'A name badge on a lanyard', brief: 'a name badge on a lanyard: a rectangular badge with clipped corners hanging from a V-shaped lanyard strap with a clip, a square for the photo and two plain lines' },
+    { id: 'icon_poppy_seeds', alt: 'A small heap of poppy seeds', brief: 'a small heap of poppy seeds: a low mound of about twelve small diamond shapes, with a few single diamonds scattered around it' },
+    { id: 'icon_do_not_invite', alt: 'A door with a prohibition sign', brief: 'a "do not invite" door sign: a door with a square knob, with an octagon prohibition ring and a diagonal slash drawn over it in red' },
+    { id: 'icon_moon_phase', alt: 'A waning gibbous moon', brief: 'a waning gibbous moon: a large octagon outline filled dim amber, with a dark sliver on its left side bounded by one straight diagonal-sided cut, and two small orange four-point stars in the corners' },
+    { id: 'icon_howl', alt: 'A howl as sound waves', brief: 'a howl: three zigzag sound-wave lines growing outward from a small angular crescent moon, left to right' },
 ];
 
-const SYSTEM = `You draw flat SVG icons for the Haunted Command Station, a paranormal incident dashboard.
+const SYSTEM = `You draw flat, angular SVG icons for the Haunted Command Station, a paranormal incident dashboard styled as an old amber CRT terminal.
 Reply with one SVG and nothing else: no explanation, no markdown fence.
 
 Rules:
-- The root is <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="${PALETTE.violet}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"> and the file ends with </svg>.
-- Flat line-art: simple shapes, 4 to 14 elements, nothing smaller than 3 units. No gradients, no filters, no shadows, no <text>, no <image>, no <style>, no scripts.
-- Use only these colors: violet ${PALETTE.violet} for the main strokes, amber ${PALETTE.amber} or red ${PALETTE.red} for one accent, green ${PALETTE.green} only if the icon needs it, lavender ${PALETTE.lavender} or deep ${PALETTE.deep} for small fills.
-- Keep the drawing inside x and y from 6 to 58, centered, readable at 24 pixels.
-- Close every element. Use only <svg>, <g>, <path>, <circle>, <ellipse>, <rect>, <line>, <polyline>, <polygon>.
+- The root is <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="${PALETTE.amber}" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"> and the file ends with </svg>.
+- The background is transparent: no full-size background shape.
+- Angular and jagged: build every shape from straight line segments with sharp corners. Edges can be notched, zigzag or spiked. Never use circles, ellipses, curves, arcs or rounded corners: draw a round thing as a hexagon or octagon and a wave as a zigzag.
+- Use only <svg>, <g>, <path>, <rect>, <line>, <polyline>, <polygon>. In a path use only the commands M, L, H, V and Z, upper or lower case. A <rect> has no rx or ry. No <text>, no <image>, no <style>, no scripts, no gradients, no filters.
+- Colors: amber ${PALETTE.amber} for the main strokes, orange ${PALETTE.orange} for secondary parts, blood red ${PALETTE.red} for at most one small accent, dim amber ${PALETTE.dim} or black ${PALETTE.black} for small fills.
+- 4 to 14 elements, nothing smaller than 3 units, drawing inside x and y from 6 to 58, centered, readable at 24 pixels.
+- Close every element.
 
 Format example, a clock. Draw the requested icon, not this:
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="${PALETTE.violet}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="22"/><path d="M32 20v12l8 5" stroke="${PALETTE.amber}"/></svg>`;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="${PALETTE.amber}" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"><polygon points="32 8 52 20 52 44 32 56 12 44 12 20"/><path d="M32 20V32L42 38" stroke="${PALETTE.orange}"/></svg>`;
 
-const ALLOWED_TAGS = new Set(['svg', 'g', 'path', 'circle', 'ellipse', 'rect', 'line', 'polyline', 'polygon']);
+const ALLOWED_TAGS = new Set(['svg', 'g', 'path', 'rect', 'line', 'polyline', 'polygon']);
 const ALLOWED_COLORS = new Set([...Object.values(PALETTE), 'none']);
 
 // Returns why a drawing is rejected, or null when it is safe to commit.
@@ -77,7 +79,7 @@ function problem(svg: string): string | null {
     if (/<script|foreignObject|<!|<\?|<style|<text|<image|javascript:/i.test(svg)) return 'contains a forbidden element';
     if (/\son[a-z]+\s*=/i.test(svg)) return 'contains an event handler';
     if (/(xlink:)?href\s*=/i.test(svg)) return 'contains a link';
-    if (/url\(/i.test(svg)) return 'contains url()';
+    if (/url\(/i.test(svg) || /\sstyle\s*=/i.test(svg)) return 'contains url() or a style attribute';
 
     const stack: string[] = [];
     const tags = [...svg.matchAll(/<(\/?)([a-zA-Z][\w:-]*)([^>]*)>/g)];
@@ -88,10 +90,18 @@ function problem(svg: string): string | null {
         } else if (!attrs.endsWith('/')) {
             stack.push(name);
         }
+        if (!closing && name === 'rect' && /\sr[xy]\s*=/.test(attrs)) return 'a <rect> has rounded corners';
         if (!stack.length && i < tags.length - 1) return 'content after the root';
     }
     if (stack.length) return `<${stack.at(-1)}> is not closed`;
     if (tags.filter((t) => t[2] === 'svg' && !t[1]).length !== 1) return 'more than one <svg>';
+
+    for (const [, d] of svg.matchAll(/\sd="([^"]*)"/g)) {
+        if (/[^MmLlHhVvZz\d\s.,+-]/.test(d)) return 'a path has curves or arcs';
+    }
+    for (const [, value] of svg.matchAll(/\sstroke-linecap="([^"]*)"/g)) if (value !== 'square' && value !== 'butt') return 'rounded line caps';
+    for (const [, value] of svg.matchAll(/\sstroke-linejoin="([^"]*)"/g)) if (value !== 'miter') return 'rounded or beveled line joins';
+    if (!/<svg[^>]*\sstroke-linecap="square"/.test(svg) || !/<svg[^>]*\sstroke-linejoin="miter"/.test(svg)) return 'root lacks square caps and miter joins';
 
     for (const [, value] of svg.matchAll(/\s(?:fill|stroke)="([^"]*)"/g)) {
         if (!ALLOWED_COLORS.has(value.toLowerCase())) return `color ${value} is outside the palette`;
@@ -142,13 +152,6 @@ async function draw(brief: string, model: string): Promise<Drawing> {
     return { svg, call };
 }
 
-function record(purpose: string, model: string, attempt: number, call: Drawing['call'], rejected: string | null): void {
-    const { request, response, usage, latency_ms, error } = call;
-    const entry = { ts: new Date().toISOString(), source: 'icons', purpose, attempt, model, request, response, usage, latency_ms, error: error ?? (rejected ? `rejected: ${rejected}` : undefined) };
-    mkdirSync(dirname(LEDGER), { recursive: true });
-    appendFileSync(LEDGER, `${JSON.stringify(entry)}\n`);
-}
-
 interface Entry {
     file: string;
     kind: 'entity' | 'sector' | 'hero' | 'icon';
@@ -180,7 +183,18 @@ for (const icon of todo) {
     for (let attempt = 1; attempt <= TRIES && !svg; attempt++) {
         const { svg: candidate, call } = await draw(icon.brief, args.model);
         const why = candidate ? problem(candidate) : (call.error ?? 'no SVG came back');
-        record(`icon: ${icon.id.replace(/^icon_/, '').replaceAll('_', ' ')}`, args.model, attempt, call, call.error ? null : why);
+        const { request, response, usage, latency_ms, error } = call;
+        record('parasail', {
+            source: 'icons',
+            purpose: `icon: ${icon.id.replace(/^icon_/, '').replaceAll('_', ' ')}`,
+            attempt,
+            model: args.model,
+            request,
+            response,
+            usage,
+            latency_ms,
+            error: error ?? (why ? `rejected: ${why}` : undefined),
+        });
         console.log(`  try ${attempt}: ${why ? `rejected, ${why}` : 'accepted'} (${(call.latency_ms / 1000).toFixed(1)} s)`);
         if (!why) svg = candidate;
     }
