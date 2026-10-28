@@ -1,7 +1,7 @@
 // The page's state: everything the server has streamed for the current run, plus the operator's choices.
 // Every server message goes through `reduce`, so a late joiner that gets the history replayed ends up
 // in the same state as a page that watched the run live.
-import type { Action, ArtAsset, Component, DispatchMode, FixtureIncident, Incident, Library, PageInfo, Scenario, Sky, SkyWarning, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
+import type { Action, ArtAsset, Component, DispatchMode, FixtureIncident, Floor, Incident, Library, PageInfo, Scenario, Sky, SkyWarning, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
 export interface Step {
     state?: StepState;
@@ -27,6 +27,7 @@ export interface State {
     incidents: FixtureIncident[];
     scenarios: Scenario[];
     art: Record<string, ArtAsset>;
+    floor: Floor | null;
     source: 'live' | 'snapshot' | null;
     banner: { text: string; kind: 'info' | 'error' } | null;
     steps: Partial<Record<StepId, Step>>;
@@ -65,6 +66,7 @@ export const initial: State = {
     incidents: [],
     scenarios: [],
     art: {},
+    floor: null,
     source: null,
     banner: null,
     steps: {},
@@ -93,7 +95,7 @@ function adopt(operator: Operator, comp: Component): Operator {
 function server(state: State, msg: ServerMessage): State {
     switch (msg.type) {
         case 'hello':
-            return { ...state, mode: msg.mode, liveDispatch: msg.live_dispatch, livePage: msg.live_page, library: msg.library, incidents: msg.incidents, scenarios: msg.scenarios, art: msg.art };
+            return { ...state, mode: msg.mode, liveDispatch: msg.live_dispatch, livePage: msg.live_page, library: msg.library, incidents: msg.incidents, scenarios: msg.scenarios, art: msg.art, floor: msg.floor };
         case 'run_begin':
             return {
                 ...initial,
@@ -107,6 +109,7 @@ function server(state: State, msg: ServerMessage): State {
                 incidents: state.incidents,
                 scenarios: state.scenarios,
                 art: state.art,
+                floor: state.floor,
                 source: msg.source,
                 banner: msg.detail ? { text: msg.detail, kind: 'info' } : null,
             };

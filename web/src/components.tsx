@@ -2,13 +2,15 @@
 // it never writes markup. Model and web text is rendered as React text, and only http(s) links render.
 import { type ReactNode, useEffect, useState } from 'react';
 
-import type { ArtAsset, Component, ComponentType, Library, Sky, Source } from '../../shared/protocol.ts';
+import type { ArtAsset, Component, ComponentType, Floor, Library, Sky, Source } from '../../shared/protocol.ts';
+import { FloorPlan } from './floorplan.tsx';
 import type { Event, Operator } from './station.ts';
 import { artUrl } from './url.ts';
 
 export interface Ctx {
     library: Library;
     art: Record<string, ArtAsset>;
+    floor: Floor | null;
     sources: Source[];
     sky: Sky | null;
     operator: Operator;
@@ -191,84 +193,6 @@ function Thermal(p: Props<'ThermalReadout'>) {
                 {delta > 0 ? '+' : ''}
                 {delta.toFixed(1)} °C against the room
             </div>
-        </div>
-    );
-}
-
-function FloorPlan({ p, ctx }: { p: Props<'FloorPlan'>; ctx: Ctx }) {
-    const { layout, sectors } = ctx.library;
-    const sealed = ctx.operator.sealed;
-    const center = (id: string) => {
-        const [x, y, w, h] = layout[id];
-        return [x + w / 2, y + h / 2 + 12];
-    };
-    const start = p.safe_route.length ? center(p.safe_route[0]) : null;
-    return (
-        <div>
-            <svg viewBox="0 0 600 360" role="img" aria-label={`Floor plan, hot sector ${sectors[p.hot_sector] ?? p.hot_sector}`}>
-                <defs>
-                    <pattern id="hatch" width={8} height={8} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                        <rect width={8} height={8} fill="var(--panel-2)" />
-                        <line x1={0} y1={0} x2={0} y2={8} stroke="#ffb547" strokeWidth={3} />
-                    </pattern>
-                    <pattern id="hatch-hot" width={8} height={8} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                        <rect width={8} height={8} fill="#5a1622" />
-                        <line x1={0} y1={0} x2={0} y2={8} stroke="#ff4d6d" strokeWidth={3} />
-                    </pattern>
-                </defs>
-                {Object.entries(layout).map(([id, [x, y, w, h]]) => {
-                    const toggle = () => ctx.send({ type: 'toggle-seal', sector: id });
-                    return (
-                        <g key={id}>
-                            <rect
-                                x={x + 3}
-                                y={y + 3}
-                                width={w - 6}
-                                height={h - 6}
-                                rx={6}
-                                className={`sector ${id === p.hot_sector ? 'hot' : ''} ${sealed.includes(id) ? 'sealed' : ''}`}
-                                tabIndex={0}
-                                role="button"
-                                aria-pressed={sealed.includes(id)}
-                                aria-label={`${sectors[id]}: seal or unseal`}
-                                onClick={toggle}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        e.preventDefault();
-                                        toggle();
-                                    }
-                                }}
-                            />
-                            <text x={x + 12} y={y + 22}>
-                                {sectors[id]}
-                            </text>
-                        </g>
-                    );
-                })}
-                {p.safe_route.length > 1 && <polyline className="route" points={p.safe_route.map((id) => center(id).join(',')).join(' ')} />}
-                {start && <circle cx={start[0]} cy={start[1]} r={7} fill="#4ade80" />}
-            </svg>
-            <div className="legend">
-                <span>
-                    <i style={{ background: '#ff4d6d' }} />
-                    hot sector
-                </span>
-                <span>
-                    <i style={{ background: '#ffb547' }} />
-                    sealed (click a sector to change)
-                </span>
-                <span>
-                    <i style={{ background: '#4ade80' }} />
-                    {p.safe_route.length ? `safe route: ${p.safe_route.map((id) => sectors[id]).join(' → ')}` : 'no safe route given'}
-                </span>
-            </div>
-            <div className="muted small">{sealed.length ? `Sealed: ${sealed.map((id) => sectors[id] ?? id).join(', ')}` : 'No sectors sealed.'}</div>
-            {p.scene && ctx.art[p.scene] && (
-                <figure className="scene">
-                    <img src={artUrl(ctx.art[p.scene].file)} alt={ctx.art[p.scene].alt} loading="lazy" />
-                    <figcaption className="muted small">{ctx.art[p.scene].alt}</figcaption>
-                </figure>
-            )}
         </div>
     );
 }

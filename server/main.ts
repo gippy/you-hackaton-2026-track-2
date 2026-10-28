@@ -17,7 +17,7 @@ import { parseArgs } from 'node:util';
 
 import { WebSocketServer } from 'ws';
 
-import type { ArtAsset, FixtureIncident, Scenario } from '../shared/protocol.ts';
+import type { ArtAsset, FixtureIncident, Floor, Scenario } from '../shared/protocol.ts';
 import { SPEECH_FILE } from './speech.ts';
 import { Station } from './station.ts';
 
@@ -35,6 +35,7 @@ const TYPES: Record<string, string> = {
     '.webp': 'image/webp',
 };
 const ART = join(ROOT, 'art', 'nightfall'); // the only part of art/ the page may load
+const MAP = join(ROOT, 'data', 'map');
 
 const { values: args } = parseArgs({
     options: {
@@ -118,6 +119,7 @@ function loadArt(): Record<string, ArtAsset> {
 
 const python = process.env.PYTHON ?? join(ROOT, '.venv', 'bin', 'python');
 const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], livePage: args['live-page'], incidents, scenarios, art: loadArt(),
+    floor: existsSync(join(MAP, 'floor.json')) ? (JSON.parse(readFileSync(join(MAP, 'floor.json'), 'utf8')) as Floor) : null,
     skyWarnings: (['scenario', 'live', 'off'].includes(args['sky-warnings']) ? args['sky-warnings'] : 'scenario') as 'scenario' | 'live' | 'off',
     liveSkyWarnings: args['live-sky-warnings'],
 });
@@ -133,6 +135,11 @@ const server = createServer((req, res) => {
     if (speech && SPEECH_FILE.test(speech) && existsSync(join(ROOT, 'out', 'speech', speech))) {
         res.writeHead(200, { 'content-type': 'audio/mpeg', 'cache-control': 'max-age=31536000, immutable' });
         res.end(readFileSync(join(ROOT, 'out', 'speech', speech)));
+        return;
+    }
+    if (path === '/data/map/area.geojson' && existsSync(join(MAP, 'area.geojson'))) {
+        res.writeHead(200, { 'content-type': 'application/geo+json', 'cache-control': 'max-age=3600' });
+        res.end(readFileSync(join(MAP, 'area.geojson')));
         return;
     }
     if (path.startsWith('/art/nightfall/')) {

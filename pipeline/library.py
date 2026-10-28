@@ -11,11 +11,14 @@ import json
 from pathlib import Path
 
 # One library for the pipeline, the server and the page: shared/library.json.
-_LIB = json.loads((Path(__file__).resolve().parent.parent / "shared" / "library.json").read_text())
+_ROOT = Path(__file__).resolve().parent.parent
+_LIB = json.loads((_ROOT / "shared" / "library.json").read_text())
+# The Loft's floor (a schematic) and the blocks around it (OpenStreetMap), from data/map/.
+FLOOR: dict = json.loads((_ROOT / _LIB["floor_plan"]).read_text()) if (_ROOT / _LIB["floor_plan"]).exists() else {}
+AREA: dict = json.loads((_ROOT / _LIB["area_map"]).read_text()) if (_ROOT / _LIB["area_map"]).exists() else {}
 
 SECTORS: dict[str, str] = _LIB["sectors"]               # loft sectors the floor plan draws
 SECTOR_ALIASES: dict[str, str] = _LIB["sector_aliases"]  # other names for a sector, e.g. the official fixture's catering_coffee_bar
-LAYOUT: dict[str, list[int]] = _LIB["layout"]           # x, y, w, h on a 600 x 360 canvas
 ARSENAL: dict[str, str] = _LIB["arsenal"]               # everything the containment team can deploy
 PLAYBOOKS: dict[str, dict] = _LIB["playbooks"]          # the router picks one per incident class
 COMPONENTS: dict[str, str] = _LIB["components"]         # what each component is for, shown to the model
@@ -33,14 +36,26 @@ def sector_id(name: str) -> str:
 
 
 def adjacency() -> dict[str, list[str]]:
-    """Sectors that share a wall segment, from LAYOUT."""
-    def touches(a, b):
-        ax, ay, aw, ah = LAYOUT[a]
-        bx, by, bw, bh = LAYOUT[b]
-        side = (ax + aw == bx or bx + bw == ax) and min(ay + ah, by + bh) - max(ay, by) > 0
-        top = (ay + ah == by or by + bh == ay) and min(ax + aw, bx + bw) - max(ax, bx) > 0
-        return side or top
-    return {a: [b for b in LAYOUT if b != a and touches(a, b)] for a in LAYOUT}
+    """Sectors a person can walk between, from data/map/floor.json's connections: through a door, or
+    through one corridor area such as the hall. Slugs are the station's (catering_coffee_bar is catering)."""
+    links: dict[str, set[str]] = {}
+    for c in FLOOR.get("connections", []):
+        a, b = sector_id(c["a"]), sector_id(c["b"])
+        links.setdefault(a, set()).add(b)
+        links.setdefault(b, set()).add(a)
+    out: dict[str, list[str]] = {}
+    for sector in SECTORS:
+        near = set()
+        for n in links.get(sector, ()):
+            near |= {n} if n in SECTORS else {m for m in links.get(n, ()) if m in SECTORS}  # n is a corridor
+        out[sector] = sorted(near - {sector})
+    return out
+
+
+def anchors() -> dict[str, str]:
+    """Outdoor story spots around the tower (area.geojson anchors): id -> label."""
+    return {f["properties"]["id"]: f["properties"]["label"] for f in AREA.get("features", [])
+            if f["properties"].get("kind") == "anchor"}
 
 
 def _obj(props: dict, required: list[str] | None = None) -> dict:
@@ -62,7 +77,7 @@ def _component(name: str, props: dict) -> dict:
 SKY_EVENTS = ["sunset", "civil_dusk", "full_dark", "moonrise"]
 
 # The art library (art/nightfall/manifest.json): the model may pick entity and sector images by id.
-_ART_PATH = Path(__file__).resolve().parent.parent / _LIB["art_manifest"]
+_ART_PATH = _ROOT / _LIB["art_manifest"]
 ART: dict[str, dict] = json.loads(_ART_PATH.read_text()) if _ART_PATH.exists() else {}
 ENTITY_IMAGES = {k: v["alt"] for k, v in ART.items() if v.get("kind") == "entity"}
 SCENE_IMAGES = {k: v["alt"] for k, v in ART.items() if v.get("kind") == "sector"}
@@ -96,6 +111,8 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
             "seal": {"type": "array", "items": _enum(SECTORS), "description": "Distinct sectors to lock down"},
             "safe_route": {"type": "array", "items": _enum(SECTORS),
                            "description": "Adjacent sectors from where the people are to the entrance, in order"},
+            "view": {**_enum(["floor", "area"]), "description": "area only when the incident is outside the building; floor for anything inside the Loft"},
+            "anchor": {**_enum([*anchors(), "none"]), "description": "The outdoor spot of an incident outside the Loft, else none"},
             **({"scene": {**_enum([*SCENE_IMAGES, "none"]), "description": "A sector image to show beside the plan, or none"}}
                if SCENE_IMAGES else {})}),
         _component("CivilianTracker", {"count": {"type": "integer"}, "location": {"type": "string"},
@@ -171,6 +188,10 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int) -> tuple[di
             props["safe_route"] = route
             if props.get("scene") not in SCENE_IMAGES:
                 props["scene"] = "none"
+            if props.get("anchor") not in anchors():
+                props["anchor"] = "none"
+            if props.get("view") not in ("floor", "area"):
+                props["view"] = "area" if props["anchor"] != "none" else "floor"
         if kind == "EntityCard" and props.get("image") not in ENTITY_IMAGES:
             notes.append("dropped an EntityCard with an unknown image")
             continue

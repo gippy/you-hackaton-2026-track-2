@@ -43,7 +43,7 @@ export type Component =
     | Base<'ThreatBanner', { severity: Severity; headline: string; directive: string }>
     | Base<'EMFGauge', { value_mg: number; threshold_mg: number; trend: 'rising' | 'steady' | 'falling'; status: Level }>
     | Base<'ThermalReadout', { temperature_c: number; baseline_c: number; status: Level }>
-    | Base<'FloorPlan', { hot_sector: string; seal: string[]; safe_route: string[]; scene?: string }>
+    | Base<'FloorPlan', { hot_sector: string; seal: string[]; safe_route: string[]; scene?: string; view?: 'floor' | 'area'; anchor?: string }>
     | Base<'CivilianTracker', { count: number; location: string; condition: Condition; priority: 'immediate' | 'high' | 'routine' }>
     | Base<
           'CountermeasurePicker',
@@ -110,6 +110,17 @@ export interface RunState {
     sky?: Sky;
 }
 
+/** data/map/floor.json: a schematic of the Loft, 0 to 100 wide with y pointing down. Only the fields the page draws. */
+export interface Floor {
+    notice: string;
+    space: { width: number; height: number };
+    outline: [number, number][];
+    zones: { slug: string; label: string; polygon: [number, number][]; label_at: [number, number] }[];
+    areas: { id: string; label: string; polygon: [number, number][]; label_at: [number, number] }[];
+    features: { id: string; type: string; label: string; at: [number, number]; polygon?: [number, number][]; line?: [number, number][]; zone: string | null; exit?: boolean }[];
+    connections: { a: string; b: string; via: string | null }[];
+}
+
 /** One image from art/nightfall/manifest.json. `file` is relative to the repo root. */
 export interface ArtAsset {
     file: string;
@@ -119,7 +130,7 @@ export interface ArtAsset {
 
 export interface Library {
     sectors: Record<string, string>;
-    layout: Record<string, [number, number, number, number]>;
+    sector_aliases: Record<string, string>;
     arsenal: Record<string, string>;
     arsenal_icons: Record<string, string>;
     playbooks: Record<string, { label: string; arsenal: string[]; lore_focus: string }>;
@@ -193,7 +204,7 @@ export interface PageInfo {
 
 export type ServerMessage =
     | FlowEvent
-    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; live_page: boolean; library: Library; channel: string; incidents: FixtureIncident[]; scenarios: Scenario[]; art: Record<string, ArtAsset> }
+    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; live_page: boolean; library: Library; channel: string; incidents: FixtureIncident[]; scenarios: Scenario[]; art: Record<string, ArtAsset>; floor: Floor | null }
     | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
     | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string; paging?: string }

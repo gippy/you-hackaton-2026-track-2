@@ -12,56 +12,6 @@
   "sector_aliases": {
     "catering_coffee_bar": "catering"
   },
-  "layout": {
-    "main_stage": [
-      0,
-      0,
-      260,
-      140
-    ],
-    "lounge": [
-      260,
-      0,
-      160,
-      140
-    ],
-    "catering": [
-      420,
-      0,
-      180,
-      180
-    ],
-    "hack_floor_west": [
-      0,
-      140,
-      210,
-      130
-    ],
-    "hack_floor_east": [
-      210,
-      140,
-      210,
-      130
-    ],
-    "network_closet": [
-      420,
-      180,
-      180,
-      90
-    ],
-    "registration": [
-      0,
-      270,
-      300,
-      90
-    ],
-    "entrance": [
-      300,
-      270,
-      300,
-      90
-    ]
-  },
   "arsenal": {
     "salt_ring": "Salt ring perimeter",
     "iron_filings": "Iron filing scatter",
@@ -286,5 +236,7 @@
     "seed_scatter": "icon_poppy_seeds",
     "no_invitation": "icon_do_not_invite"
   },
-  "art_manifest": "art/nightfall/manifest.json"
+  "art_manifest": "art/nightfall/manifest.json",
+  "floor_plan": "data/map/floor.json",
+  "area_map": "data/map/area.geojson"
 }
