@@ -21,6 +21,7 @@ import { speak } from './speech.ts';
 
 const REPLAY_GAP_MS = 350; // longest pause between replayed messages
 const SAFE_ID = /^[\w.-]{1,80}$/; // incident ids that are safe as file names
+const WORKER_TIMEOUT_MS = 90_000; // a normal run takes 10 to 25 seconds
 
 export interface SavedRun {
     saved_at: string;
@@ -187,6 +188,11 @@ export class Station {
         return new Promise((resolve, reject) => {
             let state: RunState | null = null;
             let fatal = '';
+            // A stalled run is killed, so the page falls back to the saved run instead of waiting forever.
+            const timer = setTimeout(() => {
+                fatal = `the pipeline took longer than ${WORKER_TIMEOUT_MS / 1000} seconds and was stopped`;
+                child.kill();
+            }, WORKER_TIMEOUT_MS);
             createInterface({ input: child.stdout }).on('line', (line) => {
                 let msg: WorkerLine;
                 try {
@@ -200,6 +206,7 @@ export class Station {
             });
             child.on('error', (err) => reject(new Error(`could not start ${this.opts.python}: ${err.message}`)));
             child.on('close', (code) => {
+                clearTimeout(timer);
                 if (state) resolve(state);
                 else reject(new Error(fatal || `the pipeline exited with code ${code}; see out/pipeline.log`));
             });

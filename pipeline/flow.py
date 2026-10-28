@@ -269,7 +269,7 @@ class HauntFlow(Flow[HauntState]):
             goal="Find real-world lore and field practice that tells the commander which countermeasures work",
             backstory=("You support a paranormal containment unit. You search before you answer, and every claim "
                        "you make cites a numbered source. " + UNTRUSTED),
-            tools=[YouSearchTool(ledger)], llm=parasail.crew_llm(), max_iter=4, allow_delegation=False, verbose=False,
+            tools=[YouSearchTool(ledger)], llm=parasail.crew_llm(timeout=45, max_retries=1), max_iter=4, allow_delegation=False, verbose=False,
         )
         arsenal = ", ".join(f"{a} ({library.ARSENAL[a]})" for a in book["arsenal"])
         prompt = (

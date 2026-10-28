@@ -101,9 +101,12 @@ def crew_llm(temperature: float = 0.2, **kwargs):
 
 
 def client():
+    import httpx
     from openai import OpenAI
 
-    return OpenAI(base_url=base_url(), api_key=api_key())
+    # 45 seconds without a byte ends a call, and nothing is retried here, so a stalled stream reaches
+    # the caller's fallback model instead of waiting out the SDK's 10-minute default.
+    return OpenAI(base_url=base_url(), api_key=api_key(), timeout=httpx.Timeout(45, connect=8), max_retries=0)
 
 
 def complete_json(system: str, user: str, max_tokens: int = 4000, temperature: float = 0.2) -> dict:
