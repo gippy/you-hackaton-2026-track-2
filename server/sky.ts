@@ -10,8 +10,8 @@ import SunCalc from 'suncalc';
 
 import type { Sky, SkyEvent } from '../shared/protocol.ts';
 
-export const LOFT = { lat: 37.7904, lon: -122.3993, place: 'AWS Builder Loft, San Francisco' };
-export const WTTR_URL = 'https://wttr.in/San+Francisco?format=j1';
+const LOFT = { lat: 37.7904, lon: -122.3993, place: 'AWS Builder Loft, San Francisco' };
+const WTTR_URL = 'https://wttr.in/San+Francisco?format=j1';
 const TZ = 'America/Los_Angeles';
 
 /** "18:15" for a Date, in the Loft's time zone. */
@@ -20,7 +20,7 @@ function hhmm(date: Date): string {
 }
 
 /** Today's date in the Loft's time zone, as YYYY-MM-DD. */
-export function today(): string {
+function today(): string {
     return new Date().toLocaleDateString('en-CA', { timeZone: TZ });
 }
 
@@ -34,7 +34,7 @@ function offset(day: string): string {
 }
 
 /** An ISO time for "HH:MM" on a day in the Loft's time zone. */
-export function at(day: string, time: string): string {
+function at(day: string, time: string): string {
     return new Date(`${day}T${time}:00${offset(day)}`).toISOString();
 }
 
@@ -72,12 +72,13 @@ async function live(day: string, outDir: string): Promise<LiveAstronomy | null> 
     }
 }
 
-/** The sky for a day. `clock` is a scenario step's "HH:MM", or empty for live time. */
-export async function skyFor(day: string, clock: string, outDir: string, offline: boolean): Promise<Sky> {
+/** Today's sky. `clock` is a scenario step's "HH:MM", or empty for live time. */
+export async function skyFor(clock: string, outDir: string): Promise<Sky> {
+    const day = today();
     const noon = new Date(at(day, '12:00'));
     const sun = SunCalc.getTimes(noon, LOFT.lat, LOFT.lon);
     const moon = SunCalc.getMoonTimes(new Date(at(day, '00:00')), LOFT.lat, LOFT.lon);
-    const grounded = offline ? null : await live(day, outDir);
+    const grounded = await live(day, outDir);
     const event = (id: SkyEvent['id'], label: string, computed: Date | undefined, liveTime?: string): SkyEvent => {
         const local = liveTime || (computed ? hhmm(computed) : '');
         return { id, label, local, at: local ? at(day, local) : '', source: liveTime ? 'wttr.in' : 'suncalc', computed: computed ? hhmm(computed) : '' };
