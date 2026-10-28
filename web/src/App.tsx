@@ -11,22 +11,6 @@ const STEPS: { id: StepId; label: string; partner: string }[] = [
     { id: 'compose', label: 'Compose', partner: 'Parasail stream' },
 ];
 
-// Example inputs for the paste box. They are raw reports, not layouts: the model decides what to show.
-const SAMPLES: [string, string][] = [
-    [
-        'Zombie horde at the entrance',
-        'URGENT: Shambling horde of roughly 30 zombies pressing against the glass doors at the 525 Market entrance. ' +
-            'Registration volunteers (6) barricaded behind the badge desk. Doors holding but one hinge is failing. ' +
-            'Smell of formaldehyde, no EMF anomaly on handhelds. Badge printers and door access control still online.',
-    ],
-    [
-        'Cursed GPU in the network closet',
-        'Network closet: the GPU rack is running models nobody launched, fans screaming in a language. Wi-Fi ' +
-            'dropping across hack floor east. Handheld EMF reads 41 mG and steady. Room temp 39C. One sysadmin ' +
-            'inside, says the door locked itself. Badge readers offline, power still on.',
-    ],
-];
-
 /** Light or dark: starts from the system setting (applied in index.html before paint), a click remembers the other. */
 function ModeToggle() {
     const [mode, setMode] = useState(document.documentElement.dataset.mode === 'light' ? 'light' : 'dark');
@@ -92,6 +76,8 @@ export function App() {
     }
     const sourceLabel = !state.connected ? 'disconnected' : state.source === 'snapshot' ? 'saved run' : state.source === 'live' ? 'live run' : state.mode ?? 'connecting';
     const armed = live && state.liveDispatch;
+    // A harmless report: the model recommends watching, so the page does not push a dispatch.
+    const calm = state.manifest?.recommended_action === 'observe';
 
     const dispatch = (e: FormEvent) => {
         e.preventDefault();
@@ -136,8 +122,9 @@ export function App() {
                             <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} /> Live post
                         </label>
                     )}
-                    <button type="submit" disabled={!state.manifest || state.dispatching}>
-                        {state.dispatching ? 'Dispatching…' : 'Dispatch to #loft-incident'}
+                    {calm && <span className="cm">The model says observe: no dispatch needed.</span>}
+                    <button type="submit" className={calm ? 'ghost' : ''} disabled={!state.manifest || state.dispatching}>
+                        {state.dispatching ? 'Dispatching…' : calm ? 'Dispatch anyway' : 'Dispatch to #loft-incident'}
                     </button>
                     <span className={`pill ${armed ? 'armed' : 'muted'}`}>{state.mode === 'offline' ? 'offline' : armed ? 'live' : 'dry run'}</span>
                 </form>
@@ -221,6 +208,27 @@ export function App() {
                     </section>
 
                     <section className="panel">
+                        <h2>Incidents</h2>
+                        <ul className="incidents">
+                            {state.incidents.map((i) => (
+                                <li key={i.incident_id}>
+                                    <button
+                                        type="button"
+                                        className={`ghost ${incident?.incident_id === i.incident_id ? 'active' : ''}`}
+                                        title={i.raw_incident_stream}
+                                        disabled={state.mode === 'offline'}
+                                        onClick={() => post({ type: 'compile', incident_id: i.incident_id })}
+                                    >
+                                        <b>{i.incident_id}</b> {i.severity_tier}
+                                        {i.source === 'simulated' && <span className="tag">simulated</span>}
+                                        <span className="snippet">{i.raw_incident_stream.slice(0, 90)}…</span>
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+
+                    <section className="panel">
                         <h2>New incident</h2>
                         <form
                             className="compile"
@@ -230,13 +238,6 @@ export function App() {
                             }}
                         >
                             <textarea rows={5} value={raw} onChange={(e) => setRaw(e.target.value)} placeholder="Paste a raw incident report…" />
-                            <div className="samples">
-                                {SAMPLES.map(([label, text]) => (
-                                    <button key={label} type="button" className="ghost" onClick={() => setRaw(text)}>
-                                        {label}
-                                    </button>
-                                ))}
-                            </div>
                             <button type="submit" disabled={state.mode === 'offline'}>
                                 {state.mode === 'offline' ? 'Compile (needs live mode)' : 'Compile station'}
                             </button>

@@ -89,6 +89,14 @@ export interface Library {
     actions: Action[];
 }
 
+/** One incident from fixtures/*.json. Simulated ones carry `source: "simulated"`. */
+export interface FixtureIncident {
+    incident_id: string;
+    severity_tier: string;
+    raw_incident_stream: string;
+    source: 'official' | 'simulated';
+}
+
 export type StepId = 'ingest' | 'triage' | 'ground' | 'compose';
 export type StepState = 'running' | 'progress' | 'done' | 'failed';
 
@@ -106,12 +114,12 @@ export type DispatchMode = 'dry-run' | 'live' | 'offline';
 
 export type ServerMessage =
     | FlowEvent
-    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; library: Library; channel: string }
+    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; library: Library; channel: string; incidents: FixtureIncident[] }
     | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
     | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string }
     | { type: 'error'; detail: string };
 
 export type ClientMessage =
-    | { type: 'compile'; raw: string }
+    | { type: 'compile'; raw?: string; incident_id?: string }
     | { type: 'dispatch'; action: Action; countermeasure: string | null; sealed: string[]; extracted: number; live: boolean };

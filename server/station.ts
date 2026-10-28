@@ -11,7 +11,7 @@ import { createInterface } from 'node:readline';
 import type { WebSocket, WebSocketServer } from 'ws';
 
 import library from '../shared/library.json' with { type: 'json' };
-import type { ClientMessage, FlowEvent, Library, RunState, ServerMessage } from '../shared/protocol.ts';
+import type { ClientMessage, FixtureIncident, FlowEvent, Library, RunState, ServerMessage } from '../shared/protocol.ts';
 import { alertText, channelId, OneError, send } from './dispatch.ts';
 
 const REPLAY_GAP_MS = 350; // longest pause between replayed messages
@@ -27,6 +27,7 @@ export interface StationOptions {
     python: string;
     offline: boolean;
     liveDispatch: boolean;
+    incidents: FixtureIncident[];
 }
 
 type WorkerLine = FlowEvent | { type: 'result'; state: RunState } | { type: 'fatal'; detail: string };
@@ -53,6 +54,7 @@ export class Station {
             live_dispatch: this.opts.liveDispatch && !this.opts.offline,
             library: library as unknown as Library,
             channel: channelId(),
+            incidents: this.opts.incidents,
         };
     }
 
@@ -68,7 +70,8 @@ export class Station {
                 } catch {
                     return;
                 }
-                if (msg.type === 'compile') void this.compile(String(msg.raw ?? '').slice(0, 4000), '', '');
+                if (msg.type === 'compile' && msg.incident_id) void this.compileIncident(String(msg.incident_id));
+                else if (msg.type === 'compile') void this.compile(String(msg.raw ?? '').slice(0, 4000), '', '');
                 else if (msg.type === 'dispatch') void this.dispatch(ws, msg);
             });
         });
@@ -86,6 +89,14 @@ export class Station {
     }
 
     // --- runs ---------------------------------------------------------------------------
+
+    /** Build the station for a fixture incident, by id. Returns false when no fixture has that id. */
+    compileIncident(incidentId: string): boolean {
+        const incident = this.opts.incidents.find((i) => i.incident_id === incidentId);
+        if (!incident) return false;
+        void this.compile(incident.raw_incident_stream, incident.incident_id, incident.severity_tier);
+        return true;
+    }
 
     async compile(raw: string, incidentId: string, severityTier: string): Promise<void> {
         if (!raw.trim()) return;

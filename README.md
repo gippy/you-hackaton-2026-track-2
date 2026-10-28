@@ -14,7 +14,7 @@ The operator then works the station. They pick a countermeasure, seal sectors on
 4. **Compose (Parasail, streamed).** Parasail streams the manifest under a strict `json_schema` built from the component library, the playbook's arsenal and the number of sources. The server sends each component to the page the moment its JSON object closes, so the station assembles while the model is still writing.
 5. **Dispatch (One).** The dispatch button calls One's Discord action "Create a Message in a Channel". It is a dry run by default: the One CLI prints the exact request it would send, and nothing is posted.
 
-A second incident gets a different station. The paste box on the page has two example reports. A zombie horde at the entrance takes the corporeal route and gets no EMF gauge or thermal panel, because the report has no readings.
+Different incidents get different stations. Besides the official fixture, `fixtures/simulated-incidents.json` holds three simulated ones, marked `"source": "simulated"`: a zombie crowd at the entrance, a poltergeist in the network closet with no one at risk, and a harmless fog machine at a costume contest. The page lists them all, and one click builds a station for any of them. For the harmless one, the model recommends observing and the page does not push a dispatch.
 
 ## How the partners work together
 
@@ -85,6 +85,7 @@ Other ways to run it:
 ```bash
 pnpm start --offline          # no network and no keys: replays the last saved run
 pnpm start --live-dispatch    # shows a "Live post" switch that really posts to #loft-incident
+pnpm start --incident sim-2026-0102   # start from another incident in fixtures/
 pnpm start --port 8667        # another port
 pnpm start --no-browser       # do not open the page
 ```
@@ -123,7 +124,7 @@ pipeline/        Python: the CrewAI Flow, the You.com tool, Parasail calls, the 
 server/          TypeScript: HTTP and WebSocket server, runs and replays, One dispatch
 web/             Vite + React page
 shared/          library.json and protocol.ts, read by all three
-fixtures/        the published Track 2 incident
+fixtures/        the published Track 2 incident, plus three simulated ones
 snapshots/       a saved run, for offline mode on a fresh clone
 ```
 

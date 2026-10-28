@@ -85,7 +85,7 @@ def manifest_schema(arsenal: list[str], source_count: int) -> dict:
     return _obj({
         "title": {"type": "string", "description": "Station title for this incident, under 8 words"},
         "theme": _enum(THEMES),
-        "components": {"type": "array", "items": {"anyOf": variants}},
+        "components": {"type": "array", "items": {"anyOf": variants}, "minItems": 3, "maxItems": 8},
         "recommended_action": _enum(ACTIONS),
         "dispatch_rationale": {"type": "string", "description": "One line for the containment alert, under 20 words"},
     })

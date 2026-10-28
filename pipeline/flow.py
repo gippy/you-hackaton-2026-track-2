@@ -72,7 +72,7 @@ EXTRACT_SYSTEM = (
 COMPOSE_SYSTEM = (
     "You design the live command station a containment commander operates during a paranormal incident. "
     "Compose it from this fixed component library, choosing only the components this incident needs, "
-    "most urgent first, each at most once (4 to 7 components):\n"
+    "most urgent first, each at most once (4 to 7 components for a real incident):\n"
     + "\n".join(f"- {k}: {v}" for k, v in library.COMPONENTS.items())
     + "\nFloor plan adjacency (a safe_route may only step between neighbours, and must end at entrance):\n"
     + "\n".join(f"- {k}: {', '.join(v)}" for k, v in library.adjacency().items())
@@ -80,7 +80,10 @@ COMPOSE_SYSTEM = (
     "Countermeasure options must come from the playbook arsenal and be justified by the numbered sources; "
     "set `source` to the source number that supports each one and `support` to how strongly it does. "
     "Keep every rationale, directive and headline short: under 20 words. Pick the theme that fits the entity. "
-    "recommended_action is contain, evacuate or observe. " + UNTRUSTED
+    "recommended_action is contain, evacuate or observe. "
+    "When the readings are normal and the report has an ordinary explanation (a fog machine, a costume, a prank), "
+    "keep the station calm: a low-severity ThreatBanner that says why it is safe, recommended_action observe, "
+    "3 components in all, and no CountermeasurePicker. " + UNTRUSTED
 )
 
 

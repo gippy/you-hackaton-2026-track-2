@@ -1,0 +1,23 @@
+{
+  "scenario": "simulated-incidents",
+  "ticks": [
+    {
+      "incident_id": "sim-2026-0101",
+      "severity_tier": "SEVERE_HAUNT",
+      "source": "simulated",
+      "raw_incident_stream": "ALERT: Motion sensors in the AWS Builder Loft entrance lobby are maxed out. A crowd of 20+ slow-moving reanimated attendees is shambling in from Market Street. About 12 hackathon attendees are cornered behind the registration desk in the lobby. Both glass street doors are jammed and will not open. Ambient temperature normal at 21C. EMF at 3 milligauss, normal background. Badge scanners still online, door actuators failed."
+    },
+    {
+      "incident_id": "sim-2026-0102",
+      "severity_tier": "ELEVATED_HAUNT",
+      "source": "simulated",
+      "raw_incident_stream": "ALERT: Poltergeist activity in the AWS Builder Loft network closet. Wi-Fi access points dropping every few minutes across the hack floor. Cable trays rattling, and a patch panel was thrown across the room on camera. EMF spiking between 25 and 40 milligauss in short bursts. Temperature steady at 19C. The closet is empty and locked; no attendees at risk. Core switch degraded, security cameras still online."
+    },
+    {
+      "incident_id": "sim-2026-0103",
+      "severity_tier": "LOW_HAUNT",
+      "source": "simulated",
+      "raw_incident_stream": "REPORT: A guest near the main stage says they saw a ghost drifting above the crowd during the costume contest. Stage crew confirm the fog machine has been running for 20 minutes and one contestant is dressed as a bedsheet ghost. EMF at 2 milligauss and temperature at 22C, both normal. No injuries, no damage, the crowd is cheering. The guest is nervous and asked someone to check."
+    }
+  ]
+}

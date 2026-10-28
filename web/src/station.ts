@@ -1,7 +1,7 @@
 // The page's state: everything the server has streamed for the current run, plus the operator's choices.
 // Every server message goes through `reduce`, so a late joiner that gets the history replayed ends up
 // in the same state as a page that watched the run live.
-import type { Action, Component, DispatchMode, Incident, Library, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
+import type { Action, Component, DispatchMode, FixtureIncident, Incident, Library, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
 export interface Step {
     state?: StepState;
@@ -21,6 +21,7 @@ export interface State {
     mode: 'live' | 'offline' | null;
     liveDispatch: boolean;
     library: Library | null;
+    incidents: FixtureIncident[];
     source: 'live' | 'snapshot' | null;
     banner: { text: string; kind: 'info' | 'error' } | null;
     steps: Partial<Record<StepId, Step>>;
@@ -52,6 +53,7 @@ export const initial: State = {
     mode: null,
     liveDispatch: false,
     library: null,
+    incidents: [],
     source: null,
     banner: null,
     steps: {},
@@ -79,7 +81,7 @@ function adopt(operator: Operator, comp: Component): Operator {
 function server(state: State, msg: ServerMessage): State {
     switch (msg.type) {
         case 'hello':
-            return { ...state, mode: msg.mode, liveDispatch: msg.live_dispatch, library: msg.library };
+            return { ...state, mode: msg.mode, liveDispatch: msg.live_dispatch, library: msg.library, incidents: msg.incidents };
         case 'run_begin':
             return {
                 ...initial,
@@ -87,6 +89,7 @@ function server(state: State, msg: ServerMessage): State {
                 mode: state.mode,
                 liveDispatch: state.liveDispatch,
                 library: state.library,
+                incidents: state.incidents,
                 source: msg.source,
                 banner: msg.detail ? { text: msg.detail, kind: 'info' } : null,
             };
