@@ -70,7 +70,8 @@
       ],
       "panels_discouraged": [
         "SystemsBoard"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "step": 2,
@@ -133,7 +134,8 @@
         "CountermeasurePicker",
         "CivilianTracker",
         "SystemsBoard"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "step": 3,
@@ -196,7 +198,8 @@
       ],
       "panels_discouraged": [
         "SystemsBoard"
-      ]
+      ],
+      "severity_tier_in_input": "UNVERIFIED"
     },
     {
       "step": 4,
@@ -260,7 +263,8 @@
       ],
       "panels_discouraged": [
         "SourceLedger"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "step": 5,
@@ -327,7 +331,8 @@
       ],
       "panels_discouraged": [
         "SystemsBoard"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "step": 6,
@@ -391,7 +396,8 @@
       ],
       "panels_discouraged": [
         "ThermalReadout"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "step": 7,
@@ -455,7 +461,8 @@
         "CountermeasurePicker",
         "CivilianTracker",
         "SystemsBoard"
-      ]
+      ],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "step": 8,
@@ -525,7 +532,8 @@
       ],
       "panels_discouraged": [
         "SystemsBoard"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "step": 9,
@@ -591,7 +599,8 @@
         "FloorPlan",
         "CountermeasurePicker"
       ],
-      "panels_discouraged": []
+      "panels_discouraged": [],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "step": 10,
@@ -650,7 +659,8 @@
       ],
       "panels_discouraged": [
         "CountermeasurePicker"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "step": 11,
@@ -711,7 +721,8 @@
         "CountermeasurePicker",
         "CivilianTracker",
         "ThermalReadout"
-      ]
+      ],
+      "severity_tier_in_input": "UNVERIFIED"
     },
     {
       "step": 12,
@@ -778,7 +789,8 @@
         "CivilianTracker",
         "CountermeasurePicker"
       ],
-      "panels_discouraged": []
+      "panels_discouraged": [],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "step": 13,
@@ -856,7 +868,8 @@
         "CountermeasurePicker",
         "SystemsBoard"
       ],
-      "panels_discouraged": []
+      "panels_discouraged": [],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "step": 14,
@@ -934,7 +947,8 @@
         "FloorPlan",
         "SystemsBoard"
       ],
-      "panels_discouraged": []
+      "panels_discouraged": [],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "step": 15,
@@ -1006,7 +1020,8 @@
         "CountermeasurePicker",
         "FloorPlan"
       ],
-      "panels_discouraged": []
+      "panels_discouraged": [],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "step": 16,
@@ -1070,7 +1085,8 @@
       "panels_discouraged": [
         "CivilianTracker",
         "SystemsBoard"
-      ]
+      ],
+      "severity_tier_in_input": "UNVERIFIED"
     },
     {
       "step": 17,
@@ -1149,7 +1165,8 @@
       ],
       "panels_discouraged": [
         "SourceLedger"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "step": 18,
@@ -1227,7 +1244,8 @@
         "FloorPlan",
         "CountermeasurePicker"
       ],
-      "panels_discouraged": []
+      "panels_discouraged": [],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "step": 19,
@@ -1291,7 +1309,8 @@
         "EMFGauge",
         "FloorPlan"
       ],
-      "panels_discouraged": []
+      "panels_discouraged": [],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "step": 20,
@@ -1361,7 +1380,8 @@
       ],
       "panels_discouraged": [
         "SourceLedger"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "step": 21,
@@ -1423,7 +1443,8 @@
         "CountermeasurePicker",
         "CivilianTracker",
         "SystemsBoard"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "step": 22,
@@ -1488,7 +1509,8 @@
         "CountermeasurePicker",
         "CivilianTracker",
         "SystemsBoard"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "step": 23,
@@ -1565,7 +1587,8 @@
         "CountermeasurePicker",
         "SystemsBoard"
       ],
-      "panels_discouraged": []
+      "panels_discouraged": [],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "step": 24,
@@ -1630,7 +1653,8 @@
       "panels_discouraged": [
         "CivilianTracker",
         "SystemsBoard"
-      ]
+      ],
+      "severity_tier_in_input": "UNVERIFIED"
     }
   ],
   "playbook": "spectral for every step: the phantom is a ghost"

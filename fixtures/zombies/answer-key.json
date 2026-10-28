@@ -88,7 +88,8 @@
       "panels_discouraged": [
         "CountermeasurePicker",
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "incident_id": "sim-zombies-02",
@@ -154,7 +155,8 @@
       "panels_discouraged": [
         "CountermeasurePicker",
         "FloorPlan"
-      ]
+      ],
+      "severity_tier_in_input": "UNVERIFIED"
     },
     {
       "incident_id": "sim-zombies-03",
@@ -225,7 +227,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "incident_id": "sim-zombies-04",
@@ -293,7 +296,8 @@
       "panels_discouraged": [
         "CountermeasurePicker",
         "CivilianTracker"
-      ]
+      ],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "incident_id": "sim-zombies-05",
@@ -363,7 +367,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "incident_id": "sim-zombies-06",
@@ -439,7 +444,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "incident_id": "sim-zombies-07",
@@ -508,7 +514,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "incident_id": "sim-zombies-08",
@@ -573,7 +580,8 @@
         "CountermeasurePicker",
         "EMFGauge",
         "ThermalReadout"
-      ]
+      ],
+      "severity_tier_in_input": "UNVERIFIED"
     },
     {
       "incident_id": "sim-zombies-09",
@@ -646,7 +654,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "incident_id": "sim-zombies-10",
@@ -717,7 +726,8 @@
       "panels_discouraged": [
         "CountermeasurePicker",
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "incident_id": "sim-zombies-11",
@@ -785,7 +795,8 @@
         "CountermeasurePicker",
         "EMFGauge",
         "ThermalReadout"
-      ]
+      ],
+      "severity_tier_in_input": "UNVERIFIED"
     },
     {
       "incident_id": "sim-zombies-12",
@@ -858,7 +869,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "incident_id": "sim-zombies-13",
@@ -929,7 +941,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "UNVERIFIED"
     },
     {
       "incident_id": "sim-zombies-14",
@@ -998,7 +1011,8 @@
       "panels_discouraged": [
         "CountermeasurePicker",
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "incident_id": "sim-zombies-15",
@@ -1070,7 +1084,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "incident_id": "sim-zombies-16",
@@ -1141,7 +1156,8 @@
       "panels_discouraged": [
         "EMFGauge",
         "ThermalReadout"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "incident_id": "sim-zombies-17",
@@ -1215,7 +1231,8 @@
       "panels_discouraged": [
         "EMFGauge",
         "ThermalReadout"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "incident_id": "sim-zombies-18",
@@ -1294,7 +1311,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "incident_id": "sim-zombies-19",
@@ -1371,7 +1389,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "CRITICAL_HAUNT"
     },
     {
       "incident_id": "sim-zombies-20",
@@ -1442,7 +1461,8 @@
       ],
       "panels_discouraged": [
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "incident_id": "sim-zombies-21",
@@ -1509,7 +1529,8 @@
       "panels_discouraged": [
         "CountermeasurePicker",
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "incident_id": "sim-zombies-22",
@@ -1584,7 +1605,8 @@
       "panels_discouraged": [
         "EMFGauge",
         "ThermalReadout"
-      ]
+      ],
+      "severity_tier_in_input": "ELEVATED_HAUNT"
     },
     {
       "incident_id": "sim-zombies-23",
@@ -1652,7 +1674,8 @@
         "CountermeasurePicker",
         "EMFGauge",
         "ThermalReadout"
-      ]
+      ],
+      "severity_tier_in_input": "LOW_HAUNT"
     },
     {
       "incident_id": "sim-zombies-24",
@@ -1718,7 +1741,8 @@
       "panels_discouraged": [
         "CountermeasurePicker",
         "EMFGauge"
-      ]
+      ],
+      "severity_tier_in_input": "UNVERIFIED"
     }
   ],
   "playbook": "corporeal for every step: zombies are undead bodies"
