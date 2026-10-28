@@ -53,7 +53,7 @@ await one(['actions', 'load', actionId]); // read the action's docs before its f
 for (const [id, s] of todo) {
     const body = { text: s.prompt, duration_seconds: s.duration, ...(s.loop ? { loop: true } : {}) };
     const tmp = join(OUT, `${id}.tmp.mp3`);
-    const res = await one(['actions', 'execute', 'elevenlabs', actionId, key, '-d', JSON.stringify(body), '--query-params', JSON.stringify({ output_format: FORMAT }), '--output', tmp]);
+    const res = await one(['actions', 'execute', 'elevenlabs', actionId, key, '-d', JSON.stringify(body), '--query-params', JSON.stringify({ output_format: FORMAT }), '--output', tmp], 120_000, `sound effect: ${id}`);
     if (!res.response?.saved) throw new Error(`ElevenLabs did not return audio for ${id}: ${JSON.stringify(res).slice(0, 300)}`);
     renameSync(tmp, join(OUT, `${id}.mp3`));
     made[id] = { prompt: s.prompt, duration: s.duration, ...(s.loop ? { loop: true } : {}) };

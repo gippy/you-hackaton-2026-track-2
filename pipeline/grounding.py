@@ -14,6 +14,8 @@ import httpx
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field, PrivateAttr
 
+from . import proof
+
 SEARCH_URL = "https://ydc-index.io/v1/search"
 
 
@@ -30,6 +32,20 @@ def you_key() -> str:
 
 def search(query: str, count: int = 4) -> list[dict]:
     """Web results for a query: title, url, description and the best snippet."""
+    t0 = time.monotonic()
+    try:
+        hits = _search(query, count)
+    except YouError as exc:
+        proof.record("partners", {"partner": "you.com", "action": "Search", "request": {"query": query, "count": count},
+                                  "error": str(exc), "latency_ms": int((time.monotonic() - t0) * 1000)})
+        raise
+    proof.record("partners", {"partner": "you.com", "action": "Search", "request": {"query": query, "count": count},
+                              "response": {"results": [{"title": h["title"], "url": h["url"]} for h in hits]},
+                              "latency_ms": int((time.monotonic() - t0) * 1000)})
+    return hits
+
+
+def _search(query: str, count: int) -> list[dict]:
     for attempt in range(3):
         try:
             res = httpx.post(SEARCH_URL, headers={"X-API-Key": you_key()},

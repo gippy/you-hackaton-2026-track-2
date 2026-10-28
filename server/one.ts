@@ -5,6 +5,8 @@
 // when a platform has more than one connection.
 import { execFile } from 'node:child_process';
 
+import { record, summarize } from './proof.ts';
+
 const SECRET_RE = /sk_(?:live|test)_[A-Za-z0-9_-]+/g;
 
 export class OneError extends Error {}
@@ -21,8 +23,45 @@ function parseJson(out: string): any {
     }
 }
 
-/** Run `one --agent <args>` and return its JSON. The CLI prints a JSON error and exits non-zero on failure. */
-export function one(args: string[], timeout = 120_000): Promise<any> {
+/**
+ * Run `one --agent <args>` and return its JSON. The CLI prints a JSON error and exits non-zero on failure.
+ * Every `actions execute` is recorded in proof/partners.jsonl, with `purpose` saying what it was for.
+ */
+export function one(args: string[], timeout = 120_000, purpose = ''): Promise<any> {
+    if (args[0] === 'actions' && args[1] === 'execute') return executeWithProof(args, timeout, purpose);
+    return run(args, timeout);
+}
+
+const flag = (args: string[], name: string) => {
+    const i = args.indexOf(name);
+    return i >= 0 ? JSON.parse(args[i + 1]) : undefined;
+};
+
+async function executeWithProof(args: string[], timeout: number, purpose: string): Promise<any> {
+    const [, , platform, actionId] = args; // args[4] is the connection key: never recorded
+    const action = titles.get(actionId);
+    const entry = {
+        partner: 'one',
+        platform,
+        action: action?.title ?? actionId,
+        method: action?.method,
+        path: action?.path,
+        purpose,
+        dry_run: args.includes('--dry-run'),
+        request: { data: flag(args, '-d'), path_vars: flag(args, '--path-vars'), query_params: flag(args, '--query-params') },
+    };
+    const t0 = Date.now();
+    try {
+        const res = await run(args, timeout);
+        record('partners', { ...entry, response: entry.dry_run ? { would_send_to: res.request?.url } : summarize(res.response), latency_ms: Date.now() - t0 });
+        return res;
+    } catch (err) {
+        record('partners', { ...entry, error: String((err as Error).message).slice(0, 2000), latency_ms: Date.now() - t0 });
+        throw err;
+    }
+}
+
+function run(args: string[], timeout: number): Promise<any> {
     return new Promise((resolve, reject) => {
         execFile('one', ['--agent', ...args], { timeout, maxBuffer: 8 * 1024 * 1024 }, (err, stdout, stderr) => {
             if (!stdout.trim()) {
@@ -45,6 +84,7 @@ export function one(args: string[], timeout = 120_000): Promise<any> {
 
 const norm = (path: string) => path.replace(/\{\{?\w+\}?\}/g, '{}').replace(/\/$/, '');
 const actions = new Map<string, Promise<string>>();
+const titles = new Map<string, { title: string; method: string; path: string }>(); // action id -> what it is, for the proof ledger
 const connections = new Map<string, Promise<string>>();
 
 /** The action id for a platform's `method path`, found once per process. */
@@ -56,6 +96,7 @@ export function findAction(platform: string, query: string, method: string, path
             const candidates = [...(answer.selected ?? []), ...(answer.alsoSelected ?? []), ...(answer.alternatives ?? [])];
             const hit = candidates.find((a: any) => a.method?.toUpperCase() === method && norm(a.path) === norm(path));
             if (!hit) throw new OneError(`no ${platform} action matched ${method} ${path}`);
+            titles.set(hit.actionId, { title: hit.title, method: hit.method, path: hit.path });
             return hit.actionId as string;
         });
         found.catch(() => actions.delete(cacheKey)); // a failed lookup is retried next time

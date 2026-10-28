@@ -30,10 +30,10 @@ function pagerAccount(): Promise<{ service: string; from: string }> {
         ]);
         const service =
             process.env.PAGERDUTY_SERVICE_ID ||
-            only((await one(['actions', 'execute', 'pager-duty', servicesId, key])).response?.services?.filter((s: any) => s.status !== 'disabled'), 'active service', 'PAGERDUTY_SERVICE_ID').id;
+            only((await one(['actions', 'execute', 'pager-duty', servicesId, key], 120_000, 'find the service to page')).response?.services?.filter((s: any) => s.status !== 'disabled'), 'active service', 'PAGERDUTY_SERVICE_ID').id;
         const from =
             process.env.PAGERDUTY_FROM ||
-            only((await one(['actions', 'execute', 'pager-duty', usersId, key])).response?.users?.filter((u: any) => u.role === 'owner'), 'owner', 'PAGERDUTY_FROM').email;
+            only((await one(['actions', 'execute', 'pager-duty', usersId, key], 120_000, 'find the From email')).response?.users?.filter((u: any) => u.role === 'owner'), 'owner', 'PAGERDUTY_FROM').email;
         return { service, from };
     })();
     account.catch(() => (account = null));
@@ -87,14 +87,14 @@ export class Pager {
             };
             const args = ['actions', 'execute', 'pager-duty', createId, key, '-d', JSON.stringify(body), '--headers', JSON.stringify({ From: from })];
             if (!live) {
-                const res = await one([...args, '--dry-run']);
+                const res = await one([...args, '--dry-run'], 120_000, 'page the on-call');
                 this.set({ ...base, status: 'dry-run', request: redactFrom(res.request ?? res) });
                 return;
             }
             await one(['actions', 'load', createId]); // read the action's docs before its first live execute
             let incident: any;
             try {
-                incident = (await one(args, 60_000)).response?.incident;
+                incident = (await one(args, 60_000, 'page the on-call')).response?.incident;
             } catch (err) {
                 // A second open incident with the same key is refused: follow the one that is open.
                 if (!/key|dedup|already/i.test(String((err as Error).message))) throw err;
@@ -110,7 +110,7 @@ export class Pager {
 
     private async findOpen(incidentKey: string, key: string): Promise<any> {
         const listId = await findAction('pager-duty', 'list incidents', 'GET', '/incidents', TASK);
-        const res = await one(['actions', 'execute', 'pager-duty', listId, key, '--query-params', JSON.stringify({ incident_key: incidentKey })]);
+        const res = await one(['actions', 'execute', 'pager-duty', listId, key, '--query-params', JSON.stringify({ incident_key: incidentKey })], 120_000, 'find the open page');
         return (res.response?.incidents ?? []).find((i: any) => i.status !== 'resolved');
     }
 
@@ -125,7 +125,7 @@ export class Pager {
             }
             try {
                 const [key, getId] = await Promise.all([connection('pager-duty'), findAction('pager-duty', 'get an incident by id', 'GET', '/incidents/{{id}}', TASK)]);
-                const incident = (await one(['actions', 'execute', 'pager-duty', getId, key, '--path-vars', JSON.stringify({ id: page.id })])).response?.incident;
+                const incident = (await one(['actions', 'execute', 'pager-duty', getId, key, '--path-vars', JSON.stringify({ id: page.id })], 120_000, 'follow the page')).response?.incident;
                 const next = { ...page, ...fromIncident(incident) };
                 if (next.status !== page.status || next.acknowledged_by.join() !== page.acknowledged_by.join()) this.set(next);
             } catch (err) {
@@ -157,11 +157,11 @@ export class Pager {
                 '--headers', JSON.stringify({ From: from }),
             ];
             if (page.mode === 'dry-run') {
-                const res = await one([...args, '--dry-run']);
+                const res = await one([...args, '--dry-run'], 120_000, 'resolve the page');
                 this.set({ ...page, status: 'resolved', request: redactFrom(res.request ?? res) });
                 return;
             }
-            const incident = (await one(args, 60_000)).response?.incident;
+            const incident = (await one(args, 60_000, 'page the on-call')).response?.incident;
             this.set({ ...page, ...fromIncident(incident) });
         } catch (err) {
             this.set({ ...page, error: `Resolve failed: ${String((err as Error).message).slice(0, 300)}` });

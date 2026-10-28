@@ -29,20 +29,25 @@ def emit(msg: dict) -> None:
 
 
 def main() -> int:
+    from . import proof
     from .flow import HauntFlow
 
     incident = json.loads(sys.stdin.read() or "{}")
     flow = HauntFlow().bind(emit)
+    proof.CONTEXT.update(incident_id=str(incident.get("incident_id", "")), run_id=flow.state.id)
+    proof.listen_to_crewai()
     try:
         flow.kickoff(inputs={"raw": str(incident.get("raw", "")), "incident_id": str(incident.get("incident_id", "")),
                              "severity_tier": str(incident.get("severity_tier", "")),
                              "sky": incident.get("sky") or {}})
     except Exception as exc:  # noqa: BLE001 - the server falls back to the saved run on any failure
+        proof.flush_crewai()
         emit({"type": "fatal", "detail": str(exc)[:500]})
         return 1
     if not flow.state.manifest:
         emit({"type": "fatal", "detail": "the flow ended without a manifest: " + "; ".join(flow.state.notes or ["no detail"])})
         return 1
+    proof.flush_crewai()
     emit({"type": "result", "state": flow.state.model_dump()})
     return 0
 

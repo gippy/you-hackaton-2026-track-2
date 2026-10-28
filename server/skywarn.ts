@@ -47,7 +47,7 @@ export class SkyWarnings {
             if (previous?.text === text) continue;
             const base: SkyWarning = { event: event.id, text, minutes, mode: this.mode, edits: previous ? previous.edits + 1 : 0, message_id: previous?.message_id, updated_at: new Date().toISOString() };
             try {
-                const result = previous ? await edit(previous.message_id ?? '<id of the first post>', text, this.mode) : await send(text, this.mode);
+                const result = previous ? await edit(previous.message_id ?? '<id of the first post>', text, this.mode, `sky warning: ${event.id}`) : await send(text, this.mode, `sky warning: ${event.id}`);
                 const id = (result.response as { id?: string } | undefined)?.id;
                 this.warnings.set(event.id, { ...base, message_id: id ?? base.message_id, request: result.request });
             } catch (err) {

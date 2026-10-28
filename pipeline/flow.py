@@ -19,7 +19,7 @@ from crewai import Agent
 from crewai.flow import Flow, listen, or_, router, start
 from pydantic import BaseModel, PrivateAttr
 
-from . import library, parasail
+from . import library, parasail, proof
 from .grounding import Ledger, YouError, YouSearchTool, search
 
 MODEL = os.environ.get("HAUNT_MODEL") or "parasail-minimax-m31-flash"
@@ -96,25 +96,40 @@ class FlowFailed(RuntimeError):
     """A step that has no safe fallback failed. The server replays the last saved run instead."""
 
 
+# What each strict-schema call is for, as the proof ledger names it: (source, purpose).
+CALLS = {"incident": ("pipeline", "extract the structured incident"), "manifest": ("layout", "compose the station manifest")}
+
+
 def chat_json(schema: dict, name: str, system: str, user: str, on_text: Callable[[str], None] | None = None) -> tuple[dict, str]:
     """One strict-json_schema completion on Parasail, streamed. Falls back to the second model once."""
     errors = []
+    source, purpose = CALLS.get(name, ("pipeline", name))
     for model in (MODEL, FALLBACK_MODEL):
+        request = {"temperature": 0.3, "stream": True, "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+                   "response_format": {"type": "json_schema", "json_schema": {"name": name, "strict": True, "schema": schema}}}
+        t0, text, finish, usage = time.monotonic(), "", None, None
         try:
-            stream = parasail.client().chat.completions.create(
-                model=model, stream=True, temperature=0.3,
-                response_format={"type": "json_schema", "json_schema": {"name": name, "strict": True, "schema": schema}},
-                messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
-            )
-            text = ""
+            stream = parasail.client().chat.completions.create(model=model, stream_options={"include_usage": True}, **request)
             for chunk in stream:
-                piece = chunk.choices[0].delta.content if chunk.choices else None
+                if chunk.usage:
+                    usage = chunk.usage.model_dump()
+                if not chunk.choices:
+                    continue
+                finish = chunk.choices[0].finish_reason or finish
+                piece = chunk.choices[0].delta.content
                 if piece:
                     text += piece
                     if on_text:
                         on_text(text)
-            return parasail.parse_json(text), model
+            parsed = parasail.parse_json(text)
+            proof.record("parasail", {"source": source, "purpose": purpose, "model": model, "request": request,
+                                      "response": {"content": text, "finish_reason": finish}, "usage": usage,
+                                      "latency_ms": int((time.monotonic() - t0) * 1000)})
+            return parsed, model
         except Exception as exc:  # noqa: BLE001 - try the fallback model on any failure
+            proof.record("parasail", {"source": source, "purpose": purpose, "model": model, "request": request,
+                                      "response": {"content": text, "finish_reason": finish}, "usage": usage,
+                                      "latency_ms": int((time.monotonic() - t0) * 1000), "error": parasail._redact(exc)[:2000]})
             errors.append(f"{model}: {parasail._redact(exc)[:200]}")
     raise FlowFailed("Parasail failed on both models: " + " | ".join(errors))
 

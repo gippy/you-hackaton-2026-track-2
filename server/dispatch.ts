@@ -76,7 +76,7 @@ function sourceFor(run: RunState, countermeasure: string): string {
 }
 
 /** Dry run: the exact request One would send. Live: post it, once. Offline: the body, without calling One. */
-export async function send(text: string, mode: DispatchMode): Promise<DispatchResult> {
+export async function send(text: string, mode: DispatchMode, purpose = 'containment alert'): Promise<DispatchResult> {
     const body = { content: text };
     const channel = channelId();
     if (mode === 'offline') {
@@ -89,12 +89,12 @@ export async function send(text: string, mode: DispatchMode): Promise<DispatchRe
     // The URL template names the variable channelId and the validator checks channel_id: send both.
     const args = ['actions', 'execute', 'discord', id, key, '-d', JSON.stringify(body), '--path-vars', JSON.stringify({ channelId: channel, channel_id: channel })];
     if (mode === 'dry-run') {
-        const res = await one([...args, '--dry-run']);
+        const res = await one([...args, '--dry-run'], 120_000, purpose);
         return { mode, request: res.request ?? res };
     }
     await one(['actions', 'load', id]); // read the action's docs before its first live execute
     try {
-        const res = await one(args, 60_000);
+        const res = await one(args, 60_000, purpose);
         const message = res.response ?? res;
         return { mode, response: { id: message.id, channel_id: message.channel_id, timestamp: message.timestamp } };
     } catch (err) {
@@ -107,7 +107,7 @@ export async function send(text: string, mode: DispatchMode): Promise<DispatchRe
 }
 
 /** Edit a message this station posted, such as a sky warning whose countdown moved. Same modes as `send`. */
-export async function edit(messageId: string, text: string, mode: DispatchMode): Promise<DispatchResult> {
+export async function edit(messageId: string, text: string, mode: DispatchMode, purpose = 'update a posted message'): Promise<DispatchResult> {
     const body = { content: text };
     const channel = channelId();
     const [id, key] = await Promise.all([
@@ -118,11 +118,11 @@ export async function edit(messageId: string, text: string, mode: DispatchMode):
     const pathVars = { channelId: channel, channel_id: channel, messageId, message_id: messageId };
     const args = ['actions', 'execute', 'discord', id, key, '-d', JSON.stringify(body), '--path-vars', JSON.stringify(pathVars)];
     if (mode === 'dry-run') {
-        const res = await one([...args, '--dry-run']);
+        const res = await one([...args, '--dry-run'], 120_000, purpose);
         return { mode, request: res.request ?? res };
     }
     await one(['actions', 'load', id]);
-    const res = await one(args, 60_000); // an edit that is repeated changes nothing, so a failure is safe to report and retry later
+    const res = await one(args, 60_000, purpose); // an edit that is repeated changes nothing, so a failure is safe to report and retry later
     const message = res.response ?? res;
     return { mode, response: { id: message.id, edited_timestamp: message.edited_timestamp } };
 }

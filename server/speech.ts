@@ -60,7 +60,7 @@ async function generate(text: string, dir: string, name: string): Promise<string
         '--path-vars', JSON.stringify({ voiceId: VOICE, voice_id: VOICE }),
         '--query-params', JSON.stringify({ output_format: FORMAT }),
         '--output', tmp,
-    ]);
+    ], 120_000, 'spoken dispatch');
     if (!res.response?.saved) throw new OneError(`ElevenLabs returned no audio: ${JSON.stringify(res).slice(0, 300)}`);
     renameSync(tmp, join(dir, name));
     return name;

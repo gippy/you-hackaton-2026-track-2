@@ -1,0 +1,51 @@
+<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="256" height="256" fill="#14101f"/>
+
+  <!-- Mist around banshee -->
+  <g opacity="0.3">
+    <ellipse cx="128" cy="140" rx="80" ry="35" fill="#ffffff" transform="rotate(-15 128 140)"/>
+    <ellipse cx="145" cy="130" rx="70" ry="30" fill="#ffffff" transform="rotate(-10 145 130)"/>
+    <path d="M50 140 Q90 120 128 130 T200 140" stroke="white" stroke-width="2" fill="none" opacity="0.5"/>
+  </g>
+
+  <!-- Spectral glow behind -->
+  <ellipse cx="128" cy="138" rx="55" ry="65" fill="none" stroke="#6ee7b7" stroke-width="2" opacity="0.25"/>
+
+  <!-- Banshee Body (hooded shroud) -->
+  <path d="M80 80 C60 100, 45 135, 45 175 L211 175 C211 135, 196 100, 176 80 C170 75, 165 72, 128 72 C91 72, 86 75, 80 80 Z" fill="#8f86a8"/>
+
+  <!-- Hood opening -->
+  <path d="M100 95 C115 95, 128 100, 138 110 C145 116, 148 125, 148 135 C148 145, 143 152, 135 157" fill="none" stroke="#8f86a8" stroke-width="2"/>
+
+  <!-- Gaunt Face -->
+  <path d="M105 110 C100 130, 102 148, 128 148 C154 148, 156 130, 151 110 C148 100, 128 100, 105 110 Z" fill="#e8e4f0"/>
+
+  <!-- Long pale hair streaming -->
+  <path d="M105 112 
+           C95 125, 90 145, 85 165 
+           C80 185, 75 205, 70 215 
+           C65 225, 60 220, 60 220" fill="none" stroke="#e8e4f0" stroke-width="2"/>
+  <path d="M151 112 
+           C161 125, 166 145, 171 165 
+           C176 185, 181 205, 186 215 
+           C191 225, 196 220, 196 220" fill="none" stroke="#e8e4f0" stroke-width="2"/>
+  <path d="M128 115 
+           C128 135, 128 155, 128 175" fill="none" stroke="#e8e4f0" stroke-width="2"/>
+  <path d="M128 118 
+           C138 130, 148 145, 158 165" fill="none" stroke="#e8e4f0" stroke-width="2"/>
+  <path d="M128 118 
+           C118 130, 108 145, 98 165" fill="none" stroke="#e8e4f0" stroke-width="2"/>
+
+  <!-- Red weeping eyes -->
+  <circle cx="120" cy="135" r="3.2" fill="#c0392b" opacity="0.95"/>
+  <circle cx="136" cy="135" r="3.2" fill="#c0392b" opacity="0.95"/>
+  <path d="M120 138 L120 150 M136 138 L136 150" stroke="#c0392b" stroke-width="1.4" opacity="0.8"/>
+
+  <!-- Wailing open mouth -->
+  <path d="M122 150 Q128 158, 134 150 Q128 160, 122 150 Z" fill="#622" opacity="0.9"/>
+  <path d="M126 148 L126 156" stroke="#c0392b" stroke-width="1" opacity="0.7"/>
+
+  <!-- Subtle spectral glow around head -->
+  <circle cx="128" cy="125" r="45" fill="none" stroke="#6ee7b7" stroke-width="2" opacity="0.15"/>
+</svg>

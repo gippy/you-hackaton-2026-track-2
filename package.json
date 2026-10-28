@@ -15,6 +15,7 @@
         "dev:web": "vite",
         "art": "node scripts/art.ts",
         "sfx": "node scripts/sfx.ts",
+        "proof": "node scripts/proof.ts",
         "build": "vite build",
         "type-check": "tsc --noEmit && tsc --noEmit -p web",
         "check": "pnpm run type-check && pnpm run build"

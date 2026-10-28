@@ -15,6 +15,8 @@ import { appendFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 
+import { record } from '../server/proof.ts';
+
 const ROOT = resolve(import.meta.dirname, '..');
 const MFLUX = 'mflux-generate-z-image-turbo';
 const MODEL = 'mflux-community/z-image-turbo-mflux-q4';
@@ -78,22 +80,31 @@ async function writePrompts(brief: string, count: number, style: string): Promis
     const key = process.env.PARASAIL_API_KEY?.trim();
     if (!key) throw new Error('PARASAIL_API_KEY is empty. Put it in .env, or pass --prompt to skip Parasail.');
     const base = (process.env.PARASAIL_BASE_URL || 'https://api.parasail.io/v1').replace(/\/$/, '');
+    const model = process.env.HAUNT_MODEL || 'parasail-minimax-m31-flash';
+    const request = {
+        temperature: 0.9,
+        response_format: { type: 'json_schema', json_schema: { name: 'art_prompts', strict: true, schema: SCHEMA } },
+        messages: [
+            { role: 'system', content: SYSTEM(count, style) },
+            { role: 'user', content: brief },
+        ],
+    };
+    const t0 = Date.now();
+    const proof = { source: 'art', purpose: `write image prompts: ${brief.slice(0, 80)}`, model, request };
     const res = await fetch(`${base}/chat/completions`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            model: process.env.HAUNT_MODEL || 'parasail-minimax-m31-flash',
-            temperature: 0.9,
-            response_format: { type: 'json_schema', json_schema: { name: 'art_prompts', strict: true, schema: SCHEMA } },
-            messages: [
-                { role: 'system', content: SYSTEM(count, style) },
-                { role: 'user', content: brief },
-            ],
-        }),
+        body: JSON.stringify({ model, ...request }),
     });
-    if (!res.ok) throw new Error(`Parasail answered ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    if (!res.ok) {
+        const error = `Parasail answered ${res.status}: ${(await res.text()).slice(0, 300)}`;
+        record('parasail', { ...proof, error, latency_ms: Date.now() - t0 });
+        throw new Error(error);
+    }
     const body = await res.json();
-    const { images } = JSON.parse(body.choices[0].message.content) as { images: ArtPrompt[] };
+    const choice = body.choices[0];
+    record('parasail', { ...proof, response: { content: choice.message.content, finish_reason: choice.finish_reason }, usage: body.usage, latency_ms: Date.now() - t0 });
+    const { images } = JSON.parse(choice.message.content) as { images: ArtPrompt[] };
     return images.slice(0, count);
 }
 

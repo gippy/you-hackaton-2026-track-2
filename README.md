@@ -156,6 +156,10 @@ pnpm art --prompt "an exact prompt, rendered as written" --seed 7
 
 Images land in `art/`. `art/prompts.jsonl` keeps each image's prompt and seed, so a good image can be rendered again or varied with another seed.
 
+## Proof of work
+
+Every Parasail call is appended to `proof/parasail.jsonl`: the pipeline's intake and layout calls, the CrewAI Lore Researcher's calls (recorded from CrewAI's LLM call events), the art prompt writer and the icon generator. Each line has the request, the response, token usage and latency. `proof/partners.jsonl` does the same for You.com searches and every One action (Discord, ElevenLabs, PagerDuty), with `dry_run` true or false. Keys, headers and One connection keys are redacted before a line is written. `pnpm proof` summarizes both into `proof/README.md`, and `proof/exploration/` holds the morning's model tests.
+
 ## Project layout
 
 ```text
