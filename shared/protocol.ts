@@ -212,7 +212,10 @@ export interface PageInfo {
 export type ServerMessage =
     | FlowEvent
     | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; live_page: boolean; library: Library; channel: string; incidents: FixtureIncident[]; scenarios: Scenario[]; art: Record<string, ArtAsset>; floor: Floor | null }
-    | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string }
+    /** `requested` is the incident a viewer asked for; a snapshot replay may show another one. */
+    | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string; requested?: string }
+    /** Sent after the replay to a viewer that just connected: what follows is live. */
+    | { type: 'synced' }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
     | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string; paging?: string }
     | { type: 'pages'; pages: PageInfo[] }

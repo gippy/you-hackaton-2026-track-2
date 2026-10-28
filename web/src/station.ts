@@ -42,10 +42,12 @@ export interface State {
     operator: Operator;
     dispatch: { mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string; paging?: string } | null;
     dispatching: boolean;
+    /** Set when another viewer of this shared station started the run on screen. */
+    notice: string | null;
 }
 
 export type Event =
-    | { type: 'server'; msg: ServerMessage }
+    | { type: 'server'; msg: ServerMessage; foreign?: boolean }
     | { type: 'connected'; value: boolean }
     | { type: 'action'; value: Action }
     | { type: 'countermeasure'; id: string }
@@ -81,6 +83,7 @@ export const initial: State = {
     operator: OPERATOR,
     dispatch: null,
     dispatching: false,
+    notice: null,
 };
 
 const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
@@ -92,7 +95,16 @@ function adopt(operator: Operator, comp: Component): Operator {
     return operator;
 }
 
-function server(state: State, msg: ServerMessage): State {
+/** "step 21 (20:02)", an incident id, or "a pasted incident", for the notice about another viewer's run. */
+function runLabel(state: State, id: string): string {
+    for (const scenario of state.scenarios) {
+        const step = scenario.steps.find((s) => s.incident_id === id);
+        if (step) return `${scenario.title} step ${step.step} (${step.time})`;
+    }
+    return id || 'a pasted incident';
+}
+
+function server(state: State, msg: ServerMessage, foreign = false): State {
     switch (msg.type) {
         case 'hello':
             return { ...state, mode: msg.mode, liveDispatch: msg.live_dispatch, livePage: msg.live_page, library: msg.library, incidents: msg.incidents, scenarios: msg.scenarios, art: msg.art, floor: msg.floor };
@@ -112,6 +124,7 @@ function server(state: State, msg: ServerMessage): State {
                 floor: state.floor,
                 source: msg.source,
                 banner: msg.detail ? { text: msg.detail, kind: 'info' } : null,
+                notice: foreign ? `Another viewer of this station started ${runLabel(state, msg.requested ?? msg.incident_id)}.` : null,
             };
         case 'step':
             return { ...state, steps: { ...state.steps, [msg.id]: { ...state.steps[msg.id], state: msg.state, detail: msg.detail, ms: msg.ms || state.steps[msg.id]?.ms } } };
@@ -146,14 +159,15 @@ function server(state: State, msg: ServerMessage): State {
         case 'error':
             return { ...state, banner: { text: msg.detail, kind: 'error' }, dispatching: false };
         case 'speech':
-            return state; // played by the SoundBoard, not part of what the page shows
+        case 'synced':
+            return state; // handled outside the page state: by the SoundBoard, and by App's own-request tracking
     }
 }
 
 export function reduce(state: State, event: Event): State {
     switch (event.type) {
         case 'server':
-            return server(state, event.msg);
+            return server(state, event.msg, event.foreign);
         case 'connected':
             return { ...state, connected: event.value };
         case 'action':

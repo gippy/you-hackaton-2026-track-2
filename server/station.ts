@@ -88,7 +88,7 @@ export class Station {
 
     attach(wss: WebSocketServer): void {
         wss.on('connection', (ws) => {
-            const status: ServerMessage[] = [{ type: 'pages', pages: this.pager.list() }, { type: 'sky_warnings', warnings: this.warnings.list() }];
+            const status: ServerMessage[] = [{ type: 'pages', pages: this.pager.list() }, { type: 'sky_warnings', warnings: this.warnings.list() }, { type: 'synced' }];
             for (const msg of [this.hello(), ...this.history, ...status]) ws.send(JSON.stringify(msg));
             this.clients.add(ws);
             ws.on('close', () => this.clients.delete(ws));
@@ -145,7 +145,7 @@ export class Station {
                 return;
             }
             this.history = [];
-            this.emit({ type: 'run_begin', incident_id: incidentId, source: 'live' });
+            this.emit({ type: 'run_begin', incident_id: incidentId, source: 'live', requested: incidentId });
             const events: SavedRun['events'] = [];
             const t0 = Date.now();
             const record = (msg: FlowEvent) => {
@@ -260,7 +260,7 @@ export class Station {
         this.run = saved;
         const { state } = saved;
         const other = incidentId && state.incident_id !== incidentId ? ` No run of ${incidentId} is saved, so this is ${state.incident_id || 'another incident'}.` : '';
-        this.emit({ type: 'run_begin', incident_id: state.incident_id, source: 'snapshot', detail: `${reason}${other} Saved ${saved.saved_at}.` });
+        this.emit({ type: 'run_begin', incident_id: state.incident_id, source: 'snapshot', detail: `${reason}${other} Saved ${saved.saved_at}.`, requested: incidentId });
         let last = 0;
         for (const { t, msg } of saved.events) {
             await sleep(Math.min(Math.max((t - last) * 1000, 0), REPLAY_GAP_MS));

@@ -64,17 +64,32 @@ export function App() {
     const [raw, setRaw] = useState('');
     const [live, setLive] = useState(false);
     const [livePage, setLivePage] = useState(false);
+    // Several viewers share one station. This tab steps from the step it last asked for, not from
+    // whatever run another viewer started, and it can tell its own runs from theirs.
+    const [cursor, setCursor] = useState<string | null>(null);
+    const requested = useRef<string | null>(null);
+    const synced = useRef(false);
 
     useEffect(() => {
         let closed = false;
         let timer = 0;
         const connect = () => {
             const socket = new WebSocket(withToken(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`));
-            socket.onopen = () => send({ type: 'connected', value: true });
+            socket.onopen = () => {
+                synced.current = false; // the history replay comes first: none of it is news
+                send({ type: 'connected', value: true });
+            };
             socket.onmessage = (ev) => {
                 const msg = JSON.parse(ev.data) as ServerMessage;
+                if (msg.type === 'synced') synced.current = true;
+                let foreign = false;
+                if (msg.type === 'run_begin') {
+                    foreign = synced.current && requested.current !== (msg.requested ?? msg.incident_id);
+                    requested.current = null;
+                }
+                if (msg.type === 'error') requested.current = null; // for example "a run is already in progress"
                 sound.current.onMessage(msg);
-                send({ type: 'server', msg });
+                send({ type: 'server', msg, foreign });
             };
             socket.onclose = () => {
                 send({ type: 'connected', value: false });
@@ -109,7 +124,13 @@ export function App() {
     const scenario = state.scenarios.find((s) => s.steps.some((step) => step.incident_id === incident?.incident_id)) ?? state.scenarios[0];
     const current = scenario?.steps.find((step) => step.incident_id === incident?.incident_id);
     const running = Boolean(state.source) && !state.manifest;
-    const compileId = (id: string) => post({ type: 'compile', incident_id: id });
+    const compileId = (id: string) => {
+        setCursor(id);
+        requested.current = id;
+        post({ type: 'compile', incident_id: id });
+    };
+    // This tab's own place in the scenario: the step it last asked for, else the step on screen.
+    const mine = scenario?.steps.find((step) => step.incident_id === cursor) ?? current;
     // A harmless report: the model recommends watching, so the page does not push a dispatch.
     const calm = state.manifest?.recommended_action === 'observe';
     const pageArmed = livePage && state.livePage;
@@ -191,6 +212,11 @@ export function App() {
                 </form>
             </header>
 
+            {state.notice && (
+                <div className="banner notice" role="status">
+                    {state.notice}
+                </div>
+            )}
             {state.banner && (
                 <div className={`banner ${state.banner.kind === 'error' ? 'error' : ''}`} role="status">
                     {state.banner.text}
@@ -205,16 +231,19 @@ export function App() {
                                 Scenario: {scenario.title} <em className="partner">simulated</em>
                             </h2>
                             <div className="stepper">
-                                <button type="button" className="ghost" disabled={running || !current || current.step === 1} onClick={() => current && compileId(scenario.steps[current.step! - 2].incident_id)}>
+                                <button type="button" className="ghost" disabled={running || !mine || mine.step === 1} onClick={() => mine && compileId(scenario.steps[mine.step! - 2].incident_id)}>
                                     ◀ Previous
                                 </button>
-                                <span className="muted small">{current ? `Step ${current.step} of ${scenario.steps.length}, ${current.time}` : 'Not started'}</span>
+                                <span className="muted small">
+                                    {current ? `Step ${current.step} of ${scenario.steps.length}, ${current.time}` : 'Not started'}
+                                    {mine && mine !== current ? ` (yours: step ${mine.step})` : ''}
+                                </span>
                                 <button
                                     type="button"
-                                    disabled={running || current?.step === scenario.steps.length}
-                                    onClick={() => compileId(scenario.steps[current ? current.step! : 0].incident_id)}
+                                    disabled={running || mine?.step === scenario.steps.length}
+                                    onClick={() => compileId(scenario.steps[mine ? mine.step! : 0].incident_id)}
                                 >
-                                    {current ? 'Next step ▶' : 'Start ▶'}
+                                    {mine ? 'Next step ▶' : 'Start ▶'}
                                 </button>
                             </div>
                             <ol className="timeline">
@@ -340,7 +369,9 @@ export function App() {
                             className="compile"
                             onSubmit={(e) => {
                                 e.preventDefault();
-                                if (raw.trim()) post({ type: 'compile', raw: raw.trim() });
+                                if (!raw.trim()) return;
+                                requested.current = ''; // a pasted report runs with no incident id
+                                post({ type: 'compile', raw: raw.trim() });
                             }}
                         >
                             <textarea rows={5} value={raw} onChange={(e) => setRaw(e.target.value)} placeholder="Paste a raw incident report…" />

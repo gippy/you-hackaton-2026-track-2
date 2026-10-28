@@ -126,6 +126,7 @@ button.ghost:hover:not(:disabled) { background: rgba(255, 138, 31, 0.12); }
 .banner { margin: 14px 20px 0; padding: 10px 14px; border: 1px solid var(--hi); color: var(--hi); background: rgba(255, 138, 31, 0.06); clip-path: var(--cut); }
 .banner::before { content: '> '; }
 .banner.error { border-color: var(--red); color: var(--red); }
+.banner.notice { border-color: var(--spook); color: var(--spook); }
 
 /* --- layout and terminal windows ------------------------------------------------------------ */
 .layout { display: grid; grid-template-columns: minmax(280px, 340px) 1fr; gap: 16px; padding: 18px 20px 40px; }
