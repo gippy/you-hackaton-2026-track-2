@@ -1,6 +1,7 @@
 // The expert pages: which page belongs to the incident on screen, how its status reads, and the panel that
 // lists every page sent through One to PagerDuty. The "Call expert" buttons are in topbar.tsx.
 import type { ClientMessage, Expert, PageInfo } from '../../shared/protocol.ts';
+import type { SoundBoard } from './audio.ts';
 import { Link } from './components.tsx';
 import type { State } from './station.ts';
 
@@ -15,6 +16,20 @@ export const isOpen = (page: PageInfo) => OPEN.includes(page.status);
 export function pageFor(state: State, expert: Expert): PageInfo | undefined {
     const id = state.incident?.incident_id;
     return state.pages.find((p) => p.expert === expert && (id ? p.incident_id === id : p.incident_id.startsWith('pasted-')));
+}
+
+/** Whether an expert can be paged now: the station is built, the server is live, and no page of theirs for it is open. */
+export function canCall(state: State, expert: Expert): boolean {
+    const page = pageFor(state, expert);
+    return Boolean(state.manifest) && state.mode !== 'offline' && !(page && isOpen(page));
+}
+
+/** Page an expert with the operator's countermeasure, when `canCall` allows it. */
+export function callExpert(state: State, expert: Expert, sound: SoundBoard, post: (msg: ClientMessage) => void) {
+    if (!canCall(state, expert)) return;
+    // The click is the interaction browsers wait for: with sound off it allows only this call's sting and voice.
+    if (!sound.enabled) sound.voiceOnce = true;
+    post({ type: 'call_expert', expert, countermeasure: state.operator.countermeasure });
 }
 
 /** A page's status by its expert's button: "Paging…", "Triggered #12", "Acknowledged by Jaroslav", "Resolved". */

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import type { ClientMessage, FixtureIncident, OperatorMoves, Scenario } from '../../shared/protocol.ts';
 import { squares } from './components.tsx';
+import { EvidenceLegend, EvidenceText } from './evidence.tsx';
 import type { State } from './station.ts';
 
 export type CompileRequest = Omit<Extract<ClientMessage, { type: 'compile' }>, 'type'>;
@@ -101,6 +102,10 @@ export function ReportPanel({
         const moves = target && current && state.manifest && target.step! > current.step! ? movesOn(state, current) : undefined;
         compile({ incident_id: id, moves });
     };
+
+    const text = pickedFixture?.raw_incident_stream ?? (cursor === '' ? raw.trim() : incident?.raw) ?? 'The raw report appears here.';
+    // The intake's quotes mark the report only when it is the one the station on screen was built from.
+    const quotes = incident && incident.raw === text ? (incident.incident.evidence_quotes ?? []) : [];
 
     // The step or incident this tab picked and its feed tier, plus the step on screen when this tab picked another.
     const heading = composing
@@ -247,7 +252,12 @@ export function ReportPanel({
                     </div>
                 </form>
             ) : (
-                <blockquote className="report-text">{pickedFixture?.raw_incident_stream ?? (cursor === '' ? raw.trim() : incident?.raw) ?? 'The raw report appears here.'}</blockquote>
+                <>
+                    <blockquote className="report-text">
+                        <EvidenceText text={text} quotes={quotes} />
+                    </blockquote>
+                    {quotes.length > 0 && <EvidenceLegend quotes={quotes} />}
+                </>
             )}
         </section>
     );

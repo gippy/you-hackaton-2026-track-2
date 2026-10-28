@@ -13,6 +13,7 @@ component type and nothing else.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 # One library for the pipeline, the server and the page: shared/library.json.
@@ -40,6 +41,7 @@ ARSENAL: dict[str, str] = _LIB["arsenal"]               # everything the contain
 PLAYBOOKS: dict[str, dict] = _LIB["playbooks"]          # the router picks one per incident class
 COMPONENTS: dict[str, str] = _LIB["components"]         # what each component is for, shown to the model
 ACTIONS: list[str] = _LIB["actions"]
+EXPERTS: dict[str, dict] = _LIB["experts"]               # who the station can page, by id
 SEVERITIES: list[str] = _LIB["severities"]
 THEMES: list[str] = _LIB["themes"]
 SUPPORT: list[str] = _LIB["support"]                    # how well the sources back a countermeasure
@@ -92,6 +94,27 @@ def opening_cue(cue: str | None, harmless: bool) -> str:
     return cue if cue in CUES and cue != "all_clear" else "alert_chime"
 
 
+QUOTE_KINDS = ["threat", "harmless", "people"]  # how the report panel colors an evidence quote
+
+
+def clean_quotes(quotes: list[dict] | None, raw: str) -> tuple[list[dict], int]:
+    """The intake's evidence quotes that occur in the report, each as the report's own text. Returns them and how many went.
+
+    A quote matches exactly or with its whitespace normalized; a paraphrase matches nothing and is dropped.
+    Quotes that repeat or overlap an earlier one go too, so every highlight marks a distinct part of the report.
+    """
+    kept: list[dict] = []
+    spans: list[tuple[int, int]] = []
+    for q in (quotes or [])[:5]:
+        words = str(q.get("quote") or "").split()
+        m = re.search(r"\s+".join(map(re.escape, words)), raw) if words else None
+        if not m or len(m.group(0)) < 4 or q.get("kind") not in QUOTE_KINDS or any(m.start() < b and a < m.end() for a, b in spans):
+            continue
+        spans.append(m.span())
+        kept.append({"quote": m.group(0), "kind": q["kind"], "why": str(q.get("why") or "")})
+    return kept, len(quotes or []) - len(kept)
+
+
 def sector_spots(sector: str) -> list[str]:
     """Landmarks inside a sector, from data/map/floor.json, for the intake's sector choice."""
     for zone in FLOOR.get("zones", []):
@@ -137,6 +160,10 @@ def art_listing() -> str:
     """The images the model may choose from, for the compose prompt."""
     lines = [f"- {k}: {alt}" for k, alt in {**ENTITY_IMAGES, **SCENE_IMAGES}.items()]
     return "\n".join(lines) or "- none"
+
+
+QUICK_KINDS = ["seal", "unseal", "countermeasure", "extract", "call_expert"]  # the operator moves a quick action runs
+PEOPLE_SHARES = ["all", "half"]  # how many of the tracked people an extract action marks out
 
 
 def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) -> dict:
@@ -197,6 +224,11 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
         "components": {"type": "array", "items": {"anyOf": variants}, "minItems": 3, "maxItems": 8},
         "recommended_action": _enum(ACTIONS),
         "dispatch_rationale": {"type": "string", "description": "One line for the containment alert, under 20 words"},
+        "quick_actions": {"type": "array", "maxItems": 3, "description": "1 to 3 one-click moves for the commander", "items": _obj({
+            "label": {"type": "string", "description": "Button text, an order under 5 words, e.g. 'Seal the kitchen'"},
+            "kind": _enum(QUICK_KINDS),
+            "target": {**_enum([*SECTORS, *arsenal, *EXPERTS, *PEOPLE_SHARES]), "description": (
+                "seal and unseal: a sector; countermeasure: a picker option id; extract: all or half; call_expert: an expert")}})},
     })
 
 
@@ -287,6 +319,7 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
         "components": components,
         "recommended_action": "observe" if calm or quiet else raw.get("recommended_action") if raw.get("recommended_action") in ACTIONS else "contain",
         "dispatch_rationale": raw.get("dispatch_rationale") or "",
+        "quick_actions": _clean_quick_actions(raw.get("quick_actions"), components, calm, notes),
     }
     if calm and (raw.get("recommended_action") != "observe" or raw.get("sound_cue") != "all_clear"):
         notes.append("the intake judged the report harmless: observe and the all-clear sound")
@@ -314,6 +347,38 @@ def _clean_picker(props: dict, arsenal: list[str], source_count: int) -> None:
     if props.get("recommended") not in ids and ranked:
         props["recommended"] = ranked[0]["id"]
     props["options"] = sorted(ranked, key=lambda o: o["id"] != props.get("recommended"))
+
+
+def _clean_quick_actions(actions: list[dict] | None, components: list[dict], calm: bool, notes: list[str]) -> list[dict]:
+    """Keep the quick actions this station can run, each once, at most 3:
+    - seal and unseal: a sector, with a FloorPlan on the station, and never one the plan already seals
+    - countermeasure: an option of the station's picker other than the recommended one, which is already picked
+    - extract: all or half of the people on the station's CivilianTracker
+    - call_expert: a known expert
+    A harmless station keeps only unseal. A label of 5 words or more becomes the code's own.
+    """
+    props = {c["type"]: c["props"] for c in components}
+    plan, picker = props.get("FloorPlan"), props.get("CountermeasurePicker")
+    options = {o["id"] for o in picker["options"] if o["id"] != picker.get("recommended")} if picker else set()
+    runnable = {
+        "seal": lambda t: plan is not None and t in SECTORS and t not in plan["seal"],
+        "unseal": lambda t: plan is not None and t in SECTORS and t not in plan["seal"],
+        "countermeasure": lambda t: t in options,
+        "extract": lambda t: "CivilianTracker" in props and t in PEOPLE_SHARES,
+        "call_expert": lambda t: t in EXPERTS,
+    }
+    names = {"seal": lambda t: f"Seal {SECTORS[t]}", "unseal": lambda t: f"Unseal {SECTORS[t]}", "countermeasure": lambda t: ARSENAL[t],
+             "extract": lambda t: f"Get {t} out", "call_expert": lambda t: f"Call {EXPERTS[t]['label']}"}
+    kept: list[dict] = []
+    for a in actions or []:
+        kind, target = a.get("kind"), a.get("target")
+        if kind not in runnable or not runnable[kind](target) or (calm and kind != "unseal") \
+                or any(k["kind"] == kind and k["target"] == target for k in kept):
+            notes.append(f"dropped a quick action this station cannot run: {kind} {target}")
+            continue
+        label = str(a.get("label") or "").strip()
+        kept.append({"label": label if label and len(label.split()) < 5 else names[kind](target), "kind": kind, "target": target})
+    return kept[:3]
 
 
 def _clean_floor_plan(props: dict, notes: list[str]) -> None:

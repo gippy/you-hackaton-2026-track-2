@@ -38,7 +38,7 @@ INCIDENT_SCHEMA = {
     "additionalProperties": False,
     "required": ["entity", "entity_class", "threat_level", "sector", "location_detail", "emf_mg", "emf_trend",
                  "temperature_c", "civilians", "systems", "evidence_of_threat", "ordinary_explanation", "deliberate_act",
-                 "creature_countered", "verdict", "people_in_reach", "people_hurt", "severity", "summary"],
+                 "creature_countered", "verdict", "people_in_reach", "people_hurt", "severity", "summary", "evidence_quotes"],
     "properties": {
         "entity": {"type": "string", "description": "What is haunting, as reported, e.g. 'level-3 Banshee'"},
         "entity_class": {"type": "string", "enum": list(library.PLAYBOOKS)},
@@ -77,6 +77,16 @@ INCIDENT_SCHEMA = {
         "people_hurt": {"type": "integer", "minimum": 0, "description": "People the report says are hurt, bitten, collapsed or pinned"},
         "severity": {"type": "string", "enum": library.SEVERITIES},
         "summary": {"type": "string", "description": "One sentence, under 25 words"},
+        # After every judgment, so the quotes never change it. The report panel highlights them.
+        "evidence_quotes": {"type": "array", "maxItems": 5, "description": (
+            "Up to 5 short phrases copied word for word from the report that drove this reading. "
+            "Quote the people at risk as people, even when they are in danger"),
+            "items": {"type": "object", "additionalProperties": False, "required": ["quote", "kind", "why"], "properties": {
+                "quote": {"type": "string", "description": "2 to 8 words copied exactly from the report, e.g. 'skin rippling at the jaw'. Never a whole sentence"},
+                "kind": {"type": "string", "enum": list(library.QUOTE_KINDS), "description": (
+                    "threat: a sign of real, present danger; harmless: a sign of an ordinary explanation; "
+                    "people: who is at risk, such as a headcount or injured people")},
+                "why": {"type": "string", "description": "What this phrase tells the commander, under 10 words"}}}},
     },
 }
 
@@ -92,7 +102,11 @@ EXTRACT_SYSTEM = (
     "can be wrong in both directions. Fill evidence_of_threat, ordinary_explanation, deliberate_act, creature_countered and verdict before "
     "severity. verdict is harmless only when the report's own evidence (readings, measurements, witness checks, logs) "
     "supports an ordinary explanation, nobody acted deliberately and nothing is held back or repelled by a countermeasure; real_threat when a creature or hazard is acting; "
-    "unclear otherwise. " + UNTRUSTED
+    "unclear otherwise. "
+    "evidence_quotes are the few words that matter, never a whole sentence ('5 injured civilians', not the sentence around it). "
+    "Tag each by what it shows: threat for a creature or hazard acting (a reading, a bite, a transformation), people for who "
+    "is at risk (a headcount, the injured), harmless for a reading or check that explains the report away. "
+    + UNTRUSTED
 )
 
 # Report facts that rule out a harmless verdict, whatever ordinary explanation the report gives: (field, note).
@@ -135,6 +149,10 @@ COMPOSE_SYSTEM = (
     "sound_cue is the sound the station opens with; pick the sting of the entity's closest match, or all_clear "
     "for a harmless report:\n"
     + "\n".join(f"- {k}: {library.SOUNDS[k]['label']}" for k in library.CUES)
+    + "\nquick_actions are 1 to 3 buttons for the moves the commander most likely makes next, each label under 5 words: "
+    "seal or unseal a sector (never one the FloorPlan already seals), countermeasure to switch to another picker option "
+    "(never the recommended one, which is already picked), extract to mark all or half of the tracked people out, "
+    "call_expert to page an expert. A harmless station offers at most unseal."
     + "\n" + UNTRUSTED
 )
 
@@ -229,6 +247,9 @@ class HauntFlow(Flow[HauntState]):
         user = f"Severity tier from the feed: {self.state.severity_tier or 'none'}\nRaw incident report:\n{self.state.raw}"
         # Temperature 0: the intake decides whether this is a threat, and the same report should get the same answer.
         incident, model = chat_json(INCIDENT_SCHEMA, "incident", EXTRACT_SYSTEM, user, temperature=0)
+        incident["evidence_quotes"], dropped = library.clean_quotes(incident.get("evidence_quotes"), self.state.raw)
+        if dropped:
+            self.state.notes.append(f"dropped {dropped} evidence quote(s) not found in the report")
         for field, note in NOT_HARMLESS:
             if incident.get("verdict") == "harmless" and incident.get(field):
                 incident["verdict"] = "unclear"
