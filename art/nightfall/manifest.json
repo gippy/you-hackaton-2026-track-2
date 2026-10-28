@@ -98,6 +98,15 @@
         "width": 1024,
         "height": 1024
     },
+    "entity_demo_crowd": {
+        "file": "art/nightfall/entity_demo_crowd.webp",
+        "kind": "entity",
+        "alt": "A crowd of hackers in hoodies seen from behind, cheering with raised fists toward a glowing demo screen: a happy crowd, not a horde",
+        "prompt": "A crowd of cartoon hackers in plain hoodies cheering, stomping and raising fists toward a stage with a big blank glowing screen, seen from behind and slightly above. Simple empty hall, no other detail. Wide shot. Warm amber light from the screen, hard-edged shadows on the floor, small blood-red accents on a few lanyards. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4607,
+        "width": 1024,
+        "height": 1024
+    },
     "sector_entrance": {
         "file": "art/nightfall/sector_entrance.webp",
         "kind": "sector",
