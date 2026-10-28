@@ -1,0 +1,134 @@
+# Haunted Command Station
+
+Our entry for Track 2, The Haunted Dashboard, at Hack with YOU: Halloween Edition (San Francisco, October 28, 2026).
+
+A raw paranormal incident report goes in. An operable command station comes out, live, over a WebSocket. The model picks the panels from a fixed component library, orders them by urgency and fills them with facts from the report. Every countermeasure it offers is backed by a numbered You.com source.
+
+The operator then works the station. They pick a countermeasure, seal sectors on the floor plan and mark people as extracted. One button sends a containment alert, built from those choices, to the venue's Discord `#loft-incident` through One.
+
+## What happens on a run
+
+1. **Intake (Parasail).** `parasail-minimax-m31-flash` turns the raw text into a structured incident: entity, class, sector, EMF, temperature, people at risk, affected systems and severity. A strict `json_schema` response format fixes the shape.
+2. **Route (CrewAI Flow).** A `@router` reads the incident class and picks a playbook: spectral, corporeal or anomalous. Each playbook has its own arsenal of countermeasures and its own lore focus.
+3. **Ground (CrewAI agent and You.com).** A CrewAI Lore Researcher agent runs two You.com searches through a custom tool, then writes short notes that cite the numbered sources. If the agent skips its searches, the Flow runs them itself, so the station is never built on guesses.
+4. **Compose (Parasail, streamed).** Parasail streams the manifest under a strict `json_schema` built from the component library, the playbook's arsenal and the number of sources. The server sends each component to the page the moment its JSON object closes, so the station assembles while the model is still writing.
+5. **Dispatch (One).** The dispatch button calls One's Discord action "Create a Message in a Channel". It is a dry run by default: the One CLI prints the exact request it would send, and nothing is posted.
+
+A second incident gets a different station. The paste box on the page has two example reports. A zombie horde at the entrance takes the corporeal route and gets no EMF gauge or thermal panel, because the report has no readings.
+
+## How the partners work together
+
+| Partner | What it does here | Where |
+|---|---|---|
+| CrewAI | Runs the pipeline as a Flow: `@start` intake, `@router` on incident class, one listener per playbook, an `or_` join into grounding, then composition. The Lore Researcher is a CrewAI `Agent` with a `BaseTool` for You.com. | `pipeline/flow.py` |
+| You.com | Search API (`POST https://ydc-index.io/v1/search`) grounds the countermeasures. Each hit becomes a numbered source that the manifest cites and the page links. | `pipeline/grounding.py` |
+| Parasail | Reasons in every step: incident extraction, the Lore Researcher agent, and the streamed manifest. Both direct calls use a strict `json_schema`. `parasail-deepseek-v41-flash` is the fallback model. | `pipeline/flow.py`, `pipeline/parasail.py` |
+| One | Sends the containment alert to Discord `#loft-incident`. The action id is found at run time by method and path, and the connection key comes from `one list`. | `server/dispatch.ts` |
+
+## How it is built
+
+```text
+fixtures/haunted-dashboard.json ──► server/main.ts (Node, TypeScript)
+                                       │  spawns, writes the incident to stdin
+                                       ▼
+                                    python -m pipeline (CrewAI Flow)
+                                       │  one JSON event per line on stdout
+                                       ▼
+                                    server/station.ts ──► WebSocket /ws ──► web/ (Vite + React)
+                                       │                                      │ compile, dispatch
+                                       ├─ out/last_run.json (every good run)  ◄┘
+                                       └─ server/dispatch.ts ──► One CLI ──► Discord #loft-incident
+```
+
+- **Python only where CrewAI needs it.** `pipeline/` holds the Flow, the You.com tool and the Parasail calls. It runs as a worker that reads one incident on stdin and writes events on stdout.
+- **TypeScript for everything else.** Node 24 runs `server/*.ts` directly. The page is Vite, React and TypeScript.
+- **One library, three readers.** `shared/library.json` holds the sectors, floor plan geometry, arsenal, playbooks and component descriptions. The pipeline builds its `json_schema` from it, and the server and page render from it.
+- **One protocol.** `shared/protocol.ts` types every WebSocket message and the manifest, for both the server and the page.
+- **The model never writes markup.** It can only emit components from the library. The page has one React renderer per component, and all model and web text renders as text. Links render only for `http` and `https` URLs.
+
+## Run it
+
+You need Node 24.22.1 or newer, pnpm, and Python 3.10 to 3.13 (CrewAI does not support 3.14 yet).
+
+```bash
+pnpm install
+python3.13 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+```
+
+Put the keys in `.env` (it is gitignored):
+
+| Variable | What it is for |
+|---|---|
+| `PARASAIL_API_KEY` | Parasail inference |
+| `YDC_API_KEY` (or `YOU_API_KEY`) | You.com Search |
+| `ONE_SECRET` | The One CLI, for the dispatch |
+| `DISCORD_CHANNEL_ID` | Optional. Defaults to the venue's `#loft-incident` (`1564842098740695100`) |
+| `ONE_DISCORD_CONNECTION_KEY` | Optional. Only needed with more than one Discord connection in One |
+| `HAUNT_MODEL`, `HAUNT_FALLBACK_MODEL` | Optional. Default `parasail-minimax-m31-flash` and `parasail-deepseek-v41-flash` |
+
+For the dispatch, install the One CLI and connect Discord with the account that joined the venue server:
+
+```bash
+npm i -g @withone/cli
+one add discord
+```
+
+Then start the station. It builds the page, opens http://127.0.0.1:8666 and builds a station from the fixture:
+
+```bash
+pnpm start
+```
+
+Other ways to run it:
+
+```bash
+pnpm start --offline          # no network and no keys: replays the last saved run
+pnpm start --live-dispatch    # shows a "Live post" switch that really posts to #loft-incident
+pnpm start --port 8667        # another port
+pnpm start --no-browser       # do not open the page
+```
+
+For development, `pnpm dev` restarts the server on changes and `pnpm dev:web` serves the page with hot reload. `pnpm check` type-checks both and builds the page.
+
+## Offline
+
+Every good run is saved to `out/last_run.json`, with every event it streamed. `--offline` replays the last saved run through the same WebSocket messages, so the page builds itself the same way without the network. When `out/` is empty, it replays the snapshot committed in `snapshots/`, which a real run produced. A clean clone with no Python and no keys can show the station with `pnpm install && pnpm start --offline`.
+
+If a live run fails, for example on a network error or a bad key, the page shows the error and replays the last saved run.
+
+## Dispatch
+
+The message follows the venue's format, with our project name first:
+
+```text
+[Haunted Command Station] · Catering and coffee bar · CONTAIN · <the model's one-line rationale>
+spooky-2026-9912: level-5 Phantom (threat 5/5, critical). EMF 98 mG (rising); -4°C; 4 civilian(s) pinned at behind the coffee bar
+Countermeasure: Salt ring perimeter (grounded in <the source URL>)
+Sealed: Catering and coffee bar, Network closet
+```
+
+Every line comes from the current incident and the operator's choices. The page and the terminal both show the text and the request One returned.
+
+- **Dry run (default).** Runs `one actions execute ... --dry-run`, which returns the exact request without sending it.
+- **Live.** Needs `--live-dispatch` and the "Live post" switch, then a confirmation. It reads the action's docs, posts once and never retries a failed post blindly.
+- **Offline.** One is not called. The page shows the message body.
+
+The Discord action's URL template names the channel `channelId` and its validator checks `channel_id`, so the request sends both.
+
+## Project layout
+
+```text
+pipeline/        Python: the CrewAI Flow, the You.com tool, Parasail calls, the NDJSON worker
+server/          TypeScript: HTTP and WebSocket server, runs and replays, One dispatch
+web/             Vite + React page
+shared/          library.json and protocol.ts, read by all three
+fixtures/        the published Track 2 incident
+snapshots/       a saved run, for offline mode on a fresh clone
+```
+
+## Credits
+
+- `pipeline/parasail.py` comes from One's Track 2 template, [withoneai/you-hackathon](https://github.com/withoneai/you-hackathon/tree/main/templates/haunted-command-station). The dispatch in `server/dispatch.ts` ports the approach of that template's `one_cli.py` to TypeScript: find the action at run time, read its docs before a live call, and never retry a write blindly.
+- `fixtures/haunted-dashboard.json` is the published fixture from [youdotcom-oss/halloween-hack-2026](https://github.com/youdotcom-oss/halloween-hack-2026/tree/main/fixtures).
+- Built during the hackathon with Claude Code.
