@@ -62,6 +62,15 @@
         "width": 1024,
         "height": 1024
     },
+    "entity_costume_bedsheet_ghost": {
+        "file": "art/nightfall/entity_costume_bedsheet_ghost.webp",
+        "kind": "entity",
+        "alt": "A guest under a white bedsheet ghost costume, sneakers showing, holding a coffee cup in fog-machine mist on a stair landing: a costume, not a phantom",
+        "prompt": "A cheerful party guest wearing a cheap white bedsheet ghost costume with two round cut-out eye holes, sneakers showing below the hem, holding a paper coffee cup, standing on a plain stair landing while low fog from a small fog machine drifts around the feet. Three-quarter full body view, slightly low camera angle, flat even composition with lots of empty black space around the figure. Warm amber light from the front reads the sheet folds as bright orange highlights against deep shadow shapes. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4603,
+        "width": 1024,
+        "height": 1024
+    },
     "sector_entrance": {
         "file": "art/nightfall/sector_entrance.webp",
         "kind": "sector",
