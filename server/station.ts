@@ -39,7 +39,7 @@ interface StationOptions {
 }
 
 /** What a run is built from. A pasted report has an empty id and tier; a scenario step also has its clock time. */
-type Report = Pick<FixtureIncident, 'raw_incident_stream' | 'incident_id' | 'severity_tier' | 'time'>;
+type Report = Pick<FixtureIncident, 'raw_incident_stream' | 'incident_id' | 'severity_tier' | 'time' | 'scenario'>;
 
 /** One line the worker prints on stdout. */
 type WorkerLine = FlowEvent | { type: 'result'; state: RunState } | { type: 'fatal'; detail: string };
@@ -145,9 +145,9 @@ export class Station {
 
     /**
      * A live run: stream the worker's events, then save the result. When the worker fails, replay a saved run.
-     * A scenario step's clock time gives the run a sky.
+     * A step of a scenario with a sky gets the sky at its clock time.
      */
-    private async runLive({ raw_incident_stream: raw, incident_id: incidentId, severity_tier, time }: Report, moves?: OperatorMoves): Promise<void> {
+    private async runLive({ raw_incident_stream: raw, incident_id: incidentId, severity_tier, time, scenario }: Report, moves?: OperatorMoves): Promise<void> {
         this.history = [];
         this.emit({ type: 'run_begin', incident_id: incidentId, source: 'live', requested: incidentId, moves });
         const events: SavedRun['events'] = [];
@@ -156,7 +156,8 @@ export class Station {
             events.push({ t: (Date.now() - t0) / 1000, msg });
             this.emit(msg);
         };
-        const sky = time ? await skyFor(time, this.outDir) : undefined;
+        // Only a scenario where the real sky matters gets one; elsewhere the sky clock and its advice would mislead.
+        const sky = time && this.opts.scenarios.find((s) => s.id === scenario)?.sky ? await skyFor(time, this.outDir) : undefined;
         if (sky) record({ type: 'sky', sky });
         let state: RunState;
         try {

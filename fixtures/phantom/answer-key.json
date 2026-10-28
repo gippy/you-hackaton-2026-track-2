@@ -1,0 +1,1637 @@
+{
+  "scenario": "phantom",
+  "purpose": "For testing only. Never feed this file to the pipeline or show it to the model.",
+  "continues_official_incident": "spooky-2026-9912 (step 13)",
+  "time_format": "24-hour HH:MM, 2026-10-28, Pacific time",
+  "conventions": {
+    "truth": "real = a genuine anomaly in the storyline; harmless = an ordinary cause explains every reading",
+    "dispatch": "true when a real event has civilians at risk, needs ops coordination, or threatens critical systems; false for harmless steps and for real low-risk watch items",
+    "panels": "ordered, most important first, names from shared/library.json components",
+    "severity_and_action": "values from shared/library.json (low, elevated, critical, catastrophic; contain, evacuate, observe)",
+    "countermeasures_ranked": "arsenal keys from shared/library.json, best first; empty when nothing should be deployed",
+    "given_tier": "the severity_tier shipped in scenario.json. It is deliberately uncorrelated with truth."
+  },
+  "steps": [
+    {
+      "step": 1,
+      "incident_id": "sim-phantom-01",
+      "time": "09:40",
+      "given_tier": "LOW_HAUNT",
+      "truth": "real",
+      "hot_sector": "catering_coffee_bar",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "One uneasy barista, small EMF and cold anomaly that agree with each other. Log and watch.",
+      "layout": "quiet-observe",
+      "panels": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "EMFGauge",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "SourceLedger",
+        "CivilianTracker",
+        "CountermeasurePicker"
+      ],
+      "panels_avoid": [
+        "SystemsBoard"
+      ],
+      "countermeasures_ranked": [],
+      "countermeasures_avoid": [
+        "thermal_lances",
+        "power_cut"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 1,
+        "status": "uneasy, working"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "EMF 6 mG is 3x the bar baseline and the 9 C cold patch agrees with it. No appliance explains a gauge moving on a dead machine.",
+      "grounding_topics": [
+        "ghost cold spot EMF corroboration baseline"
+      ],
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "EMFGauge",
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "SystemsBoard"
+      ]
+    },
+    {
+      "step": 2,
+      "incident_id": "sim-phantom-02",
+      "time": "09:55",
+      "given_tier": "ELEVATED_HAUNT",
+      "truth": "harmless",
+      "hot_sector": "entrance",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "Every number is ordinary and the report has a visible cause: fog, costumes, a street door.",
+      "layout": "calm-crowd",
+      "panels": [
+        "ThreatBanner",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "EMFGauge",
+        "ThermalReadout",
+        "SourceLedger"
+      ],
+      "panels_avoid": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "SystemsBoard"
+      ],
+      "countermeasures_ranked": [],
+      "countermeasures_avoid": [
+        "salt_ring",
+        "sage_smoke",
+        "uv_floodlights",
+        "iron_filings"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 150,
+        "status": "calm"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "Fog on a timer, bedsheet costumes and a cold stairwell fully explain the guest sighting. EMF 3 mG is baseline.",
+      "grounding_topics": [
+        "fog machine ghost sighting false positive"
+      ],
+      "trap": "The tier says ELEVATED and a witness says 'figure'. A dashboard that keys on the word 'ghost' or the tier will escalate.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "SystemsBoard"
+      ]
+    },
+    {
+      "step": 3,
+      "incident_id": "sim-phantom-03",
+      "time": "10:35",
+      "given_tier": "UNVERIFIED",
+      "truth": "real",
+      "hot_sector": "lounge",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "Two people, no injury, no baseline yet. Worth a re-measure, not a containment alert.",
+      "layout": "quiet-observe-evp",
+      "panels": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "EMFGauge",
+        "FloorPlan",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "CivilianTracker",
+        "CountermeasurePicker"
+      ],
+      "panels_avoid": [
+        "SystemsBoard"
+      ],
+      "countermeasures_ranked": [
+        "salt_ring"
+      ],
+      "countermeasures_avoid": [
+        "thermal_lances"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 2,
+        "status": "shaken, seated"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "Cold spot, EMF above baseline and a voice on a recording all point the same way. The sensor then dropped off, so confidence stays modest.",
+      "grounding_topics": [
+        "EVP voice recording paranormal investigation baseline"
+      ],
+      "trap": "A good dashboard says the reading is unbaselined and asks for a second meter instead of guessing.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "lounge"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "EMFGauge",
+        "FloorPlan",
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "SystemsBoard"
+      ]
+    },
+    {
+      "step": 4,
+      "incident_id": "sim-phantom-04",
+      "time": "11:20",
+      "given_tier": "LOW_HAUNT",
+      "truth": "real",
+      "hot_sector": "hack_floor_west",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "Nobody hurt and work continues. Facilities has already ruled out the grid. Log it.",
+      "layout": "systems-first",
+      "panels": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "EMFGauge",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "CivilianTracker",
+        "ThermalReadout",
+        "CountermeasurePicker"
+      ],
+      "panels_avoid": [
+        "SourceLedger"
+      ],
+      "countermeasures_ranked": [
+        "emf_disruptor",
+        "faraday_mesh"
+      ],
+      "countermeasures_avoid": [
+        "thermal_lances",
+        "sage_smoke"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 24,
+        "status": "working, unaware"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "The flicker survived every mundane fix (panel check, loads removed, PDU swap), and EMF is localized to 4 bays.",
+      "grounding_topics": [
+        "poltergeist flickering lights electrical faults ruled out"
+      ],
+      "trap": "Looks like an electrical fault. The log says the electrical explanations were already tried.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "hack_floor_west"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "EMFGauge",
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "SourceLedger"
+      ]
+    },
+    {
+      "step": 5,
+      "incident_id": "sim-phantom-05",
+      "time": "12:10",
+      "given_tier": "ELEVATED_HAUNT",
+      "truth": "real",
+      "hot_sector": "catering_coffee_bar",
+      "expected_severity": "elevated",
+      "expected_action": "contain",
+      "dispatch": false,
+      "dispatch_reason": "Staff contained it themselves and everyone is 3 m back. An upcoming lunch rush argues for a watch, not an alert yet.",
+      "layout": "contain-with-intel",
+      "panels": [
+        "ThreatBanner",
+        "EMFGauge",
+        "ThermalReadout",
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_avoid": [
+        "SystemsBoard"
+      ],
+      "countermeasures_ranked": [
+        "salt_ring",
+        "iron_filings",
+        "uv_floodlights"
+      ],
+      "countermeasures_avoid": [
+        "thermal_lances"
+      ],
+      "civilians": {
+        "at_risk": 8,
+        "present": 8,
+        "status": "moved back 3 m"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "Repeated words, a named order, a moving marker and a cold bar. The salt line gave a partial, temporary drop, which is useful evidence for ranking it.",
+      "grounding_topics": [
+        "salt line ghost folklore effectiveness",
+        "iron nails ghost folklore"
+      ],
+      "trap": "The salt line worked for 90 s and then failed. A good picker marks salt as partial support, not a fix.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "EMFGauge",
+        "ThermalReadout",
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "SystemsBoard"
+      ]
+    },
+    {
+      "step": 6,
+      "incident_id": "sim-phantom-06",
+      "time": "12:40",
+      "given_tier": "LOW_HAUNT",
+      "truth": "real",
+      "hot_sector": "registration",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "Nobody hurt, EMF moderate. The open question is correlation with the bar, not an emergency.",
+      "layout": "emf-only",
+      "panels": [
+        "ThreatBanner",
+        "EMFGauge",
+        "FloorPlan",
+        "CivilianTracker"
+      ],
+      "panels_optional": [
+        "CountermeasurePicker",
+        "SourceLedger",
+        "SystemsBoard"
+      ],
+      "panels_avoid": [
+        "ThermalReadout"
+      ],
+      "countermeasures_ranked": [
+        "emf_disruptor",
+        "salt_ring"
+      ],
+      "countermeasures_avoid": [
+        "thermal_lances",
+        "uv_floodlights"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 15,
+        "status": "waiting, unhurt"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "Object movement, a pushed volunteer and a spare printer failing the same way. The EMF is 3.5x what the printer alone makes.",
+      "grounding_topics": [
+        "poltergeist activity pattern objects move EMF burst"
+      ],
+      "trap": "No temperature drop. The dashboard should not show an empty thermal panel for a reading that is simply normal.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "registration"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "EMFGauge",
+        "FloorPlan",
+        "CivilianTracker"
+      ],
+      "panels_discouraged": [
+        "ThermalReadout"
+      ]
+    },
+    {
+      "step": 7,
+      "incident_id": "sim-phantom-07",
+      "time": "13:05",
+      "given_tier": "CRITICAL_HAUNT",
+      "truth": "harmless",
+      "hot_sector": "catering_coffee_bar",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "Steady EMF with a heat signature and a full list of running appliances. Nothing here fits the entity.",
+      "layout": "calm-crowd-hot-sector",
+      "panels": [
+        "ThreatBanner",
+        "EMFGauge",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "ThermalReadout",
+        "SourceLedger"
+      ],
+      "panels_avoid": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "SystemsBoard"
+      ],
+      "countermeasures_ranked": [],
+      "countermeasures_avoid": [
+        "salt_ring",
+        "uv_floodlights",
+        "sage_smoke",
+        "iron_filings"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 90,
+        "status": "queueing, good mood"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "Flat 13 to 15 mG with a hot (29.5 C) reading while nine appliances run at once. The real entity is cold, spiky and erratic.",
+      "grounding_topics": [
+        "EMF meter false positives appliances espresso machine induction"
+      ],
+      "trap": "Tier is CRITICAL, the sector is the haunted one, EMF sits inside the 3 to 20 mG ghost band, and a voice was heard. Only the flat trace, the heat and the appliance list say it is ordinary.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "EMFGauge",
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "SystemsBoard"
+      ]
+    },
+    {
+      "step": 8,
+      "incident_id": "sim-phantom-08",
+      "time": "13:40",
+      "given_tier": "ELEVATED_HAUNT",
+      "truth": "real",
+      "hot_sector": "hack_floor_east",
+      "expected_severity": "elevated",
+      "expected_action": "contain",
+      "dispatch": true,
+      "dispatch_reason": "First injury, 18 people in the activity radius, and thrown objects. Ops needs to clear and cordon the tables.",
+      "layout": "poltergeist-contain",
+      "panels": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_avoid": [
+        "SystemsBoard"
+      ],
+      "countermeasures_ranked": [
+        "iron_filings",
+        "salt_ring",
+        "thermal_lances"
+      ],
+      "countermeasures_avoid": [
+        "sage_smoke"
+      ],
+      "civilians": {
+        "at_risk": 18,
+        "present": 18,
+        "status": "1 minor injury, backing off"
+      },
+      "seal_sectors": [],
+      "safe_route": [
+        "registration"
+      ],
+      "why": "Coded raps, objects that move in lines, a thrown mug with an injury and cold air at floor level.",
+      "grounding_topics": [
+        "poltergeist rapping pattern thrown objects folklore",
+        "cold iron ghost protection"
+      ],
+      "discord_dispatch": true,
+      "sectors": {
+        "hot": [
+          "hack_floor_east"
+        ],
+        "seal": [],
+        "route": [
+          "registration"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_discouraged": [
+        "SystemsBoard"
+      ]
+    },
+    {
+      "step": 9,
+      "incident_id": "sim-phantom-09",
+      "time": "14:15",
+      "given_tier": "ELEVATED_HAUNT",
+      "truth": "real",
+      "hot_sector": "network_closet",
+      "expected_severity": "elevated",
+      "expected_action": "contain",
+      "dispatch": true,
+      "dispatch_reason": "Core network at risk 4 hours before submissions and a person about to open an active room. Ops should hold him back.",
+      "layout": "systems-first",
+      "panels": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "EMFGauge",
+        "CivilianTracker",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "ThermalReadout",
+        "SourceLedger"
+      ],
+      "panels_avoid": [],
+      "countermeasures_ranked": [
+        "faraday_mesh",
+        "emf_disruptor"
+      ],
+      "countermeasures_avoid": [
+        "salt_ring",
+        "sage_smoke"
+      ],
+      "civilians": {
+        "at_risk": 1,
+        "present": 1,
+        "status": "about to open the door"
+      },
+      "seal_sectors": [
+        "network_closet"
+      ],
+      "safe_route": [],
+      "why": "Door opens with no badge, a whisper on the old intercom that matches the lounge voice, and bursts of 54 mG in a locked room.",
+      "grounding_topics": [
+        "EMF shielding faraday cage ghost network interference"
+      ],
+      "discord_dispatch": true,
+      "sectors": {
+        "hot": [
+          "network_closet"
+        ],
+        "seal": [
+          "network_closet"
+        ],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "EMFGauge",
+        "CivilianTracker",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_discouraged": []
+    },
+    {
+      "step": 10,
+      "incident_id": "sim-phantom-10",
+      "time": "14:50",
+      "given_tier": "LOW_HAUNT",
+      "truth": "real",
+      "hot_sector": "main_stage",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "Voice recording and EMF, no one in danger. The useful output is a link back to the bar, not an alert.",
+      "layout": "evp-observe",
+      "panels": [
+        "ThreatBanner",
+        "EMFGauge",
+        "SourceLedger",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "CivilianTracker",
+        "ThermalReadout",
+        "SystemsBoard"
+      ],
+      "panels_avoid": [
+        "CountermeasurePicker"
+      ],
+      "countermeasures_ranked": [],
+      "countermeasures_avoid": [
+        "thermal_lances"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 5,
+        "status": "rattled, working"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "An empty channel recorded a clear sentence and EMF is 12x the stage baseline. A spoken line about 'the bar' links it to the entity.",
+      "grounding_topics": [
+        "electronic voice phenomenon EVP recordings"
+      ],
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "main_stage"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "EMFGauge",
+        "SourceLedger",
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker"
+      ]
+    },
+    {
+      "step": 11,
+      "incident_id": "sim-phantom-11",
+      "time": "15:05",
+      "given_tier": "UNVERIFIED",
+      "truth": "harmless",
+      "hot_sector": "hack_floor_west",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "A building-wide sag on four floors is the grid, not an entity. Normal reading afterward, crowd of 60 unharmed.",
+      "layout": "calm-crowd-systems",
+      "panels": [
+        "ThreatBanner",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "EMFGauge",
+        "FloorPlan"
+      ],
+      "panels_avoid": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "ThermalReadout"
+      ],
+      "countermeasures_ranked": [],
+      "countermeasures_avoid": [
+        "emf_disruptor",
+        "faraday_mesh",
+        "salt_ring"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 60,
+        "status": "jumpy, some laughing"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "The lobby meter shows a 0.4 s dip on floors 1 to 4. Same sector as the real flicker at step 4, but a one-off with a one-second EMF blip.",
+      "grounding_topics": [
+        "flickering lights power sag false paranormal"
+      ],
+      "trap": "Same sector as step 4 (a real flicker) and three witnesses say 'a hand on the switch'. The log also gives the building-wide meter.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "hack_floor_west"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "ThermalReadout"
+      ]
+    },
+    {
+      "step": 12,
+      "incident_id": "sim-phantom-12",
+      "time": "15:30",
+      "given_tier": "ELEVATED_HAUNT",
+      "truth": "real",
+      "hot_sector": "catering_coffee_bar",
+      "expected_severity": "elevated",
+      "expected_action": "contain",
+      "dispatch": true,
+      "dispatch_reason": "EMF has risen for 90 minutes, two people refuse to leave and a reopening is planned. Ops should seal the bar now.",
+      "layout": "trend-contain",
+      "panels": [
+        "ThreatBanner",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CivilianTracker",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "SystemsBoard",
+        "SourceLedger"
+      ],
+      "panels_avoid": [],
+      "countermeasures_ranked": [
+        "salt_ring",
+        "iron_filings",
+        "uv_floodlights"
+      ],
+      "countermeasures_avoid": [
+        "thermal_lances"
+      ],
+      "civilians": {
+        "at_risk": 10,
+        "present": 10,
+        "status": "2 refusing to leave"
+      },
+      "seal_sectors": [
+        "catering_coffee_bar"
+      ],
+      "safe_route": [],
+      "why": "Three readings (28, 41, 52 mG) make a clear upward trend, the salt barrier was displaced, and the plan to reopen raises exposure.",
+      "grounding_topics": [
+        "ghost activity escalation cold spot EMF trend"
+      ],
+      "trap": "The EMF gauge should show a rising trend, not just the last number.",
+      "discord_dispatch": true,
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [
+          "catering_coffee_bar"
+        ],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CivilianTracker",
+        "CountermeasurePicker"
+      ],
+      "panels_discouraged": []
+    },
+    {
+      "step": 13,
+      "incident_id": "sim-phantom-13",
+      "time": "16:12",
+      "given_tier": "CRITICAL_HAUNT",
+      "truth": "real",
+      "hot_sector": "catering_coffee_bar",
+      "expected_severity": "critical",
+      "expected_action": "evacuate",
+      "dispatch": true,
+      "dispatch_reason": "The official incident. 4 pinned civilians, EMF 98 mG rising, security non-responsive. Textbook dispatch.",
+      "layout": "rescue-first",
+      "panels": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_avoid": [],
+      "countermeasures_ranked": [
+        "uv_floodlights",
+        "salt_ring",
+        "iron_filings",
+        "emf_disruptor"
+      ],
+      "countermeasures_avoid": [
+        "thermal_lances"
+      ],
+      "civilians": {
+        "at_risk": 15,
+        "present": 15,
+        "status": "4 pinned (2 numb, 1 hyperventilating), 11 frozen at the tape"
+      },
+      "seal_sectors": [
+        "network_closet"
+      ],
+      "safe_route": [
+        "lounge",
+        "hack_floor_east",
+        "entrance"
+      ],
+      "why": "Continues official incident spooky-2026-9912: level-5 phantom, 4 engineers pinned behind the coffee bar, EMF 98 mG and climbing, -4 C.",
+      "grounding_topics": [
+        "level 5 phantom countermeasures salt UV",
+        "rescue people trapped by apparition"
+      ],
+      "continues_official_incident": "spooky-2026-9912",
+      "discord_dispatch": true,
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [
+          "network_closet"
+        ],
+        "route": [
+          "lounge",
+          "hack_floor_east",
+          "entrance"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker",
+        "SystemsBoard"
+      ],
+      "panels_discouraged": []
+    },
+    {
+      "step": 14,
+      "incident_id": "sim-phantom-14",
+      "time": "16:20",
+      "given_tier": "CRITICAL_HAUNT",
+      "truth": "real",
+      "hot_sector": "catering_coffee_bar",
+      "expected_severity": "critical",
+      "expected_action": "evacuate",
+      "dispatch": true,
+      "dispatch_reason": "Escalation from 98 to 131 mG and two civilians now slowing down. Needs a second light and a path.",
+      "layout": "rescue-first",
+      "panels": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "EMFGauge",
+        "ThermalReadout",
+        "CountermeasurePicker",
+        "FloorPlan",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_avoid": [],
+      "countermeasures_ranked": [
+        "uv_floodlights",
+        "iron_filings",
+        "emf_disruptor",
+        "salt_ring"
+      ],
+      "countermeasures_avoid": [
+        "thermal_lances"
+      ],
+      "civilians": {
+        "at_risk": 15,
+        "present": 15,
+        "status": "4 pinned, 2 slow to respond"
+      },
+      "seal_sectors": [
+        "network_closet"
+      ],
+      "safe_route": [
+        "lounge",
+        "hack_floor_east",
+        "entrance"
+      ],
+      "why": "EMF up 33 percent in 8 minutes and a countermeasure (UV) with a measured effect: 131 to 74 mG inside the cone only.",
+      "grounding_topics": [
+        "ultraviolet light apparition countermeasure",
+        "salt barrier ghost"
+      ],
+      "trap": "UV works on half the bar. The picker should rank a second light first and flag the exit-sign side effect of a circuit cut.",
+      "discord_dispatch": true,
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [
+          "network_closet"
+        ],
+        "route": [
+          "lounge",
+          "hack_floor_east",
+          "entrance"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "EMFGauge",
+        "ThermalReadout",
+        "CountermeasurePicker",
+        "FloorPlan",
+        "SystemsBoard"
+      ],
+      "panels_discouraged": []
+    },
+    {
+      "step": 15,
+      "incident_id": "sim-phantom-15",
+      "time": "16:32",
+      "given_tier": "CRITICAL_HAUNT",
+      "truth": "real",
+      "hot_sector": "catering_coffee_bar",
+      "expected_severity": "critical",
+      "expected_action": "contain",
+      "dispatch": true,
+      "dispatch_reason": "The purge worked, but a smoke pre-alarm could evacuate the floor and 38 guests are unsure what is happening. Ops must coordinate the fire panel.",
+      "layout": "tradeoff-countermeasure",
+      "panels": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "CivilianTracker",
+        "EMFGauge",
+        "CountermeasurePicker",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "ThermalReadout",
+        "SourceLedger"
+      ],
+      "panels_avoid": [],
+      "countermeasures_ranked": [
+        "sage_smoke",
+        "uv_floodlights",
+        "salt_ring"
+      ],
+      "countermeasures_avoid": [
+        "thermal_lances"
+      ],
+      "civilians": {
+        "at_risk": 38,
+        "present": 42,
+        "status": "4 out and coughing, 38 in the lounge unsure"
+      },
+      "seal_sectors": [
+        "network_closet"
+      ],
+      "safe_route": [
+        "lounge"
+      ],
+      "why": "Sage smoke cut EMF by 55 percent but triggered a fire-panel timer. The right UI shows the win and the cost together.",
+      "grounding_topics": [
+        "sage smudging smoke alarm precautions",
+        "sage smoke spirit cleansing tradition"
+      ],
+      "trap": "A countermeasure that works and creates a second hazard. The picker must show the smoke-alarm side effect and the SystemsBoard must show the 60 s timer.",
+      "discord_dispatch": true,
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [
+          "network_closet"
+        ],
+        "route": [
+          "lounge"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "CivilianTracker",
+        "EMFGauge",
+        "CountermeasurePicker",
+        "FloorPlan"
+      ],
+      "panels_discouraged": []
+    },
+    {
+      "step": 16,
+      "incident_id": "sim-phantom-16",
+      "time": "16:48",
+      "given_tier": "UNVERIFIED",
+      "truth": "real",
+      "hot_sector": "entrance",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "No one at risk and readings are falling. A repeating, non-reactive echo is not a containment event.",
+      "layout": "residual-observe",
+      "panels": [
+        "ThreatBanner",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "SourceLedger",
+        "CountermeasurePicker"
+      ],
+      "panels_avoid": [
+        "CivilianTracker",
+        "SystemsBoard"
+      ],
+      "countermeasures_ranked": [
+        "iron_filings"
+      ],
+      "countermeasures_avoid": [
+        "sage_smoke",
+        "uv_floodlights"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 3,
+        "status": "guards, fine"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "Identical 8 s repeats that ignore witnesses are a residual echo. EMF 44 mG is high, but falling, and nobody is near it.",
+      "grounding_topics": [
+        "residual haunting stone tape repeat identical"
+      ],
+      "trap": "EMF 44 mG is among the highest numbers so far. A dashboard that ranks on the raw number will over-escalate an entrance with nobody in it.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CivilianTracker",
+        "SystemsBoard"
+      ]
+    },
+    {
+      "step": 17,
+      "incident_id": "sim-phantom-17",
+      "time": "17:05",
+      "given_tier": "ELEVATED_HAUNT",
+      "truth": "real",
+      "hot_sector": "hack_floor_east",
+      "expected_severity": "elevated",
+      "expected_action": "contain",
+      "dispatch": true,
+      "dispatch_reason": "A moving hazard with 7 people in its path and 3 refusing to leave. Ops needs to redirect people.",
+      "layout": "moving-hotspot",
+      "panels": [
+        "ThreatBanner",
+        "FloorPlan",
+        "ThermalReadout",
+        "CivilianTracker",
+        "EMFGauge",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "SystemsBoard"
+      ],
+      "panels_avoid": [
+        "SourceLedger"
+      ],
+      "countermeasures_ranked": [
+        "thermal_lances",
+        "salt_ring",
+        "iron_filings"
+      ],
+      "countermeasures_avoid": [
+        "sage_smoke"
+      ],
+      "civilians": {
+        "at_risk": 7,
+        "present": 31,
+        "status": "7 in the path, 3 refusing to move"
+      },
+      "seal_sectors": [
+        "network_closet"
+      ],
+      "safe_route": [
+        "hack_floor_west",
+        "registration",
+        "entrance"
+      ],
+      "why": "The purge pushed the entity into the cable runs. A moving cold band is the one signature the FloorPlan has to animate.",
+      "grounding_topics": [
+        "cold spot moving ghost tracking",
+        "heat versus cold spot countermeasure ghost"
+      ],
+      "trap": "The space heater is a human-sized version of thermal_lances. Ranking it needs the caveat that it runs on the same cable run.",
+      "discord_dispatch": true,
+      "sectors": {
+        "hot": [
+          "hack_floor_east"
+        ],
+        "seal": [
+          "network_closet"
+        ],
+        "route": [
+          "hack_floor_west",
+          "registration",
+          "entrance"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "ThermalReadout",
+        "CivilianTracker",
+        "EMFGauge",
+        "CountermeasurePicker"
+      ],
+      "panels_discouraged": [
+        "SourceLedger"
+      ]
+    },
+    {
+      "step": 18,
+      "incident_id": "sim-phantom-18",
+      "time": "17:40",
+      "given_tier": "CRITICAL_HAUNT",
+      "truth": "real",
+      "hot_sector": "network_closet",
+      "expected_severity": "catastrophic",
+      "expected_action": "evacuate",
+      "dispatch": true,
+      "dispatch_reason": "A trapped civilian in -9 C with a second voice, EMF at the highest of the day and the whole network down 45 minutes before the deadline.",
+      "layout": "trapped-civilian",
+      "panels": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "SystemsBoard",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_avoid": [],
+      "countermeasures_ranked": [
+        "faraday_mesh",
+        "emf_disruptor",
+        "thermal_lances"
+      ],
+      "countermeasures_avoid": [
+        "sage_smoke",
+        "salt_ring"
+      ],
+      "civilians": {
+        "at_risk": 1,
+        "present": 1,
+        "status": "trapped, numb hands, conscious"
+      },
+      "seal_sectors": [
+        "catering_coffee_bar",
+        "hack_floor_east"
+      ],
+      "safe_route": [
+        "hack_floor_east",
+        "entrance"
+      ],
+      "why": "Highest EMF of the day (142 mG), -9 C, a second voice and one person locked in. Extraction goes before any shielding.",
+      "grounding_topics": [
+        "faraday shielding electromagnetic interference",
+        "frostnip cold exposure first aid"
+      ],
+      "trap": "Sage smoke worked at the bar but would trip the alarm again in a sealed closet. The picker should put shielding and extraction first.",
+      "discord_dispatch": true,
+      "sectors": {
+        "hot": [
+          "network_closet"
+        ],
+        "seal": [
+          "catering_coffee_bar",
+          "hack_floor_east"
+        ],
+        "route": [
+          "hack_floor_east",
+          "entrance"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "SystemsBoard",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_discouraged": []
+    },
+    {
+      "step": 19,
+      "incident_id": "sim-phantom-19",
+      "time": "18:08",
+      "given_tier": "LOW_HAUNT",
+      "truth": "real",
+      "hot_sector": "hack_floor_west",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "Containment held, Tomas is safe, Wi-Fi is back. The shared recording is evidence, not an emergency.",
+      "layout": "recovery-evp",
+      "panels": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "SourceLedger",
+        "EMFGauge",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "CivilianTracker",
+        "CountermeasurePicker",
+        "ThermalReadout"
+      ],
+      "panels_avoid": [],
+      "countermeasures_ranked": [
+        "faraday_mesh"
+      ],
+      "countermeasures_avoid": [
+        "sage_smoke"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 22,
+        "status": "2 shaken, working"
+      },
+      "seal_sectors": [
+        "network_closet"
+      ],
+      "safe_route": [],
+      "why": "Same voice, same phrase as step 3, captured on 22 devices within 40 ms. That is the strongest corroboration of the day.",
+      "grounding_topics": [
+        "EVP multiple recorders simultaneous corroboration"
+      ],
+      "trap": "A low-urgency step with a high-value clue. The 'last call' payoff from step 3 should surface on the SourceLedger.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "hack_floor_west"
+        ],
+        "seal": [
+          "network_closet"
+        ],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "SourceLedger",
+        "EMFGauge",
+        "FloorPlan"
+      ],
+      "panels_discouraged": []
+    },
+    {
+      "step": 20,
+      "incident_id": "sim-phantom-20",
+      "time": "18:25",
+      "given_tier": "ELEVATED_HAUNT",
+      "truth": "real",
+      "hot_sector": "registration",
+      "expected_severity": "elevated",
+      "expected_action": "contain",
+      "dispatch": true,
+      "dispatch_reason": "60 people refusing to leave a sector at 47 mG and 8 C. Ops needs a coordinated, staged clearing.",
+      "layout": "crowd-contain",
+      "panels": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "SystemsBoard"
+      ],
+      "panels_avoid": [
+        "SourceLedger"
+      ],
+      "countermeasures_ranked": [
+        "emf_disruptor",
+        "salt_ring",
+        "uv_floodlights"
+      ],
+      "countermeasures_avoid": [
+        "sage_smoke"
+      ],
+      "civilians": {
+        "at_risk": 60,
+        "present": 60,
+        "status": "refusing to leave, 12 with numb fingers"
+      },
+      "seal_sectors": [],
+      "safe_route": [
+        "entrance"
+      ],
+      "why": "Civilians who will not self-evacuate is the hard part. The cold is concentrated at the table, so staged clearing starts there.",
+      "grounding_topics": [
+        "crowd safety evacuation refusing to leave"
+      ],
+      "trap": "'Submissions closed' does not change the physics. The dashboard should prioritize the 12 with numb fingers.",
+      "discord_dispatch": true,
+      "sectors": {
+        "hot": [
+          "registration"
+        ],
+        "seal": [],
+        "route": [
+          "entrance"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_discouraged": [
+        "SourceLedger"
+      ]
+    },
+    {
+      "step": 21,
+      "incident_id": "sim-phantom-21",
+      "time": "18:40",
+      "given_tier": "ELEVATED_HAUNT",
+      "truth": "harmless",
+      "hot_sector": "lounge",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "A -6 C pool at table height with 21 C a meter higher, EMF 2 mG and a volunteer holding dry ice.",
+      "layout": "calm-crowd",
+      "panels": [
+        "ThreatBanner",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "ThermalReadout",
+        "EMFGauge"
+      ],
+      "panels_avoid": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "SystemsBoard"
+      ],
+      "countermeasures_ranked": [],
+      "countermeasures_avoid": [
+        "thermal_lances",
+        "salt_ring",
+        "sage_smoke",
+        "uv_floodlights"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 45,
+        "status": "upright, a few laughing"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "The cold is a thin layer near a source with no EMF change. The entity's cold spots came with EMF 11 to 142 mG.",
+      "grounding_topics": [
+        "dry ice fog cold air pooling floor"
+      ],
+      "trap": "-6 C is close to the official -4 C, in a sector that was cold at 10:35, and guests say 'it is back'. Only the vertical gradient and EMF 2 mG say otherwise.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "lounge"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "SystemsBoard"
+      ]
+    },
+    {
+      "step": 22,
+      "incident_id": "sim-phantom-22",
+      "time": "19:10",
+      "given_tier": "LOW_HAUNT",
+      "truth": "harmless",
+      "hot_sector": "main_stage",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "Every symptom matches an 18 Hz bass sweep, EMF and temperature are normal and the AV tech is running the sweep.",
+      "layout": "grounded-debunk",
+      "panels": [
+        "ThreatBanner",
+        "SourceLedger",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "EMFGauge",
+        "ThermalReadout"
+      ],
+      "panels_avoid": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "SystemsBoard"
+      ],
+      "countermeasures_ranked": [],
+      "countermeasures_avoid": [
+        "salt_ring",
+        "uv_floodlights",
+        "emf_disruptor",
+        "sage_smoke"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 86,
+        "status": "6 uneasy, rest arriving"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "Dread, chest tightness and a grey shape at the edge of vision are the textbook infrasound effect near 18 to 19 Hz (the Vic Tandy case). The log names the 18 Hz sweep.",
+      "grounding_topics": [
+        "infrasound 19 Hz ghost Vic Tandy",
+        "MacEwan infrasound 18 Hz cortisol study"
+      ],
+      "trap": "The symptoms are exactly what the entity produces, the sector had a real EVP at 14:50, and Ops asks if the voice is back. The best answer cites infrasound sources instead of dispatching.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "main_stage"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SourceLedger",
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "SystemsBoard"
+      ]
+    },
+    {
+      "step": 23,
+      "incident_id": "sim-phantom-23",
+      "time": "19:35",
+      "given_tier": "CRITICAL_HAUNT",
+      "truth": "real",
+      "hot_sector": "main_stage",
+      "expected_severity": "critical",
+      "expected_action": "contain",
+      "dispatch": true,
+      "dispatch_reason": "140 people, a visible presence, EMF 77 mG and 20 standing. Ops must move the front rows and prepare UV before a panic.",
+      "layout": "crowd-critical",
+      "panels": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_avoid": [],
+      "countermeasures_ranked": [
+        "uv_floodlights",
+        "emf_disruptor",
+        "salt_ring"
+      ],
+      "countermeasures_avoid": [
+        "sage_smoke"
+      ],
+      "civilians": {
+        "at_risk": 140,
+        "present": 140,
+        "status": "20 standing, front 24 in the cold air"
+      },
+      "seal_sectors": [
+        "lounge"
+      ],
+      "safe_route": [
+        "hack_floor_west",
+        "registration",
+        "entrance"
+      ],
+      "why": "The phrase 'last call' returns, this time on the PA. The 14:50 recording and the sub-bass test make the stage a sector with history.",
+      "grounding_topics": [
+        "stage lighting UV countermeasure ghost",
+        "crowd management audience calm evacuation"
+      ],
+      "trap": "A model that learned 'main_stage is false alarm' from step 22 will miss this one.",
+      "discord_dispatch": true,
+      "sectors": {
+        "hot": [
+          "main_stage"
+        ],
+        "seal": [
+          "lounge"
+        ],
+        "route": [
+          "hack_floor_west",
+          "registration",
+          "entrance"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker",
+        "SystemsBoard"
+      ],
+      "panels_discouraged": []
+    },
+    {
+      "step": 24,
+      "incident_id": "sim-phantom-24",
+      "time": "20:05",
+      "given_tier": "UNVERIFIED",
+      "truth": "real",
+      "hot_sector": "catering_coffee_bar",
+      "expected_severity": "low",
+      "expected_action": "observe",
+      "dispatch": false,
+      "dispatch_reason": "Contained. No one at risk. A slow rise is a reason to watch, not to alert.",
+      "layout": "resolution-watch",
+      "panels": [
+        "ThreatBanner",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "CountermeasurePicker"
+      ],
+      "panels_avoid": [
+        "CivilianTracker",
+        "SystemsBoard"
+      ],
+      "countermeasures_ranked": [
+        "salt_ring",
+        "iron_filings"
+      ],
+      "countermeasures_avoid": [
+        "sage_smoke"
+      ],
+      "civilians": {
+        "at_risk": 0,
+        "present": 8,
+        "status": "cleaning up, getting coffee"
+      },
+      "seal_sectors": [],
+      "safe_route": [],
+      "why": "EMF 7 mG is back near the 2 to 10 mG appliance band, but the gauge still twitches and EMF is creeping up. The right call is observe, with the ring maintained.",
+      "grounding_topics": [
+        "haunting after containment monitoring"
+      ],
+      "trap": "Declaring 'all clear' is as wrong as re-escalating. The trend (5 to 7 mG in 30 min) must stay visible.",
+      "discord_dispatch": false,
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "EMFGauge",
+        "ThermalReadout",
+        "FloorPlan",
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "CivilianTracker",
+        "SystemsBoard"
+      ]
+    }
+  ],
+  "playbook": "spectral for every step: the phantom is a ghost"
+}

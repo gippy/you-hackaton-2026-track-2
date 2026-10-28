@@ -1,0 +1,1725 @@
+{
+  "scenario": "zombies",
+  "note": "Testing only. Never feed this file to the pipeline. truth is 'real' or 'harmless'; the input text never says which.",
+  "panel_vocabulary": [
+    "CivilianTracker",
+    "CountermeasurePicker",
+    "EMFGauge",
+    "FloorPlan",
+    "SourceLedger",
+    "SystemsBoard",
+    "ThermalReadout",
+    "ThreatBanner"
+  ],
+  "sector_slugs_assumed": [
+    "catering_coffee_bar",
+    "entrance",
+    "hack_floor_east",
+    "hack_floor_west",
+    "lounge",
+    "main_stage",
+    "network_closet",
+    "registration"
+  ],
+  "steps": [
+    {
+      "incident_id": "sim-zombies-01",
+      "step": 1,
+      "time": "09:34",
+      "truth": "harmless",
+      "discord_dispatch": false,
+      "dispatch_reason": "Queue of 140 with green badge scans and no pressure on the door. Nothing to send responders to.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance"
+      ],
+      "recommended_action": "observe",
+      "recommended_severity": "low",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "FloorPlan",
+          "CivilianTracker"
+        ],
+        "optional": [
+          "SourceLedger"
+        ],
+        "should_not_show": [
+          "CountermeasurePicker",
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [],
+        "avoid": [
+          "barricade_foam",
+          "flare_line"
+        ],
+        "other_moves": [
+          "keep badging people in",
+          "watch the plaza cams"
+        ]
+      },
+      "key_facts": [
+        "140 in queue",
+        "58 motion events/min",
+        "gait 0.8 m/s",
+        "96 green badge reads, 0 red",
+        "14C outdoors",
+        "EMF 3 mG"
+      ],
+      "why_tricky": "Slow gait, grey skin, groaning and torn sleeves all match the zombie profile. Badge scans are green, the door is under no pressure, and guests are asking for coffee.",
+      "expected_action": "observe",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-02",
+      "step": 2,
+      "time": "10:09",
+      "truth": "real",
+      "discord_dispatch": false,
+      "dispatch_reason": "Unverified, secondhand, off site, and no Loft sector is affected yet. A good station notes it and watches.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance"
+      ],
+      "recommended_action": "observe",
+      "recommended_severity": "low",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "SystemsBoard",
+          "SourceLedger"
+        ],
+        "optional": [
+          "CivilianTracker",
+          "ThermalReadout"
+        ],
+        "should_not_show": [
+          "CountermeasurePicker",
+          "FloorPlan"
+        ]
+      },
+      "countermeasures": {
+        "best": [],
+        "avoid": [],
+        "other_moves": [
+          "pre-brief entrance staff",
+          "set a watch on the Market St cameras"
+        ]
+      },
+      "key_facts": [
+        "2 station entrances shut at 10:03",
+        "4-car train held 4 min",
+        "tunnel 14C",
+        "212 fare-gate exits in 5 min",
+        "188 checked in",
+        "single unverified source"
+      ],
+      "expected_action": "observe",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "CivilianTracker",
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "FloorPlan"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-03",
+      "step": 3,
+      "time": "10:46",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "First physical contact near the Loft: 17 figures with cold bodies approaching 13 people (9 queueing, 4 on the terrace stair). Organizers need to hear it before the door question gets hard.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "FloorPlan",
+          "CivilianTracker",
+          "CountermeasurePicker",
+          "ThermalReadout"
+        ],
+        "optional": [
+          "SourceLedger"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "barricade_foam"
+        ],
+        "avoid": [
+          "sound_cannon"
+        ],
+        "other_moves": [
+          "close the courtyard door",
+          "pull the 9 inside",
+          "clear the terrace stair"
+        ]
+      },
+      "key_facts": [
+        "17 figures",
+        "0.7 m/s",
+        "11C vs 14C ambient",
+        "9 outside in queue",
+        "4 on terrace stair",
+        "door open"
+      ],
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "CountermeasurePicker",
+        "ThermalReadout"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-04",
+      "step": 4,
+      "time": "11:12",
+      "truth": "harmless",
+      "discord_dispatch": false,
+      "dispatch_reason": "Overloaded power strips and a breaker panel at 91%. The EMF spike lasts 6 s, everything else is online, and nobody is at risk.",
+      "primary_sector": "hack_floor_west",
+      "sectors_involved": [
+        "hack_floor_west",
+        "network_closet"
+      ],
+      "recommended_action": "observe",
+      "recommended_severity": "low",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "EMFGauge",
+          "SystemsBoard"
+        ],
+        "optional": [
+          "FloorPlan"
+        ],
+        "should_not_show": [
+          "CountermeasurePicker",
+          "CivilianTracker"
+        ]
+      },
+      "countermeasures": {
+        "best": [],
+        "avoid": [
+          "emf_disruptor",
+          "faraday_mesh"
+        ],
+        "other_moves": [
+          "facilities resets the east breaker panel"
+        ]
+      },
+      "key_facts": [
+        "EMF 38 mG for 6 s, back to 4 mG",
+        "lights dipped 4 s",
+        "3 power strips tripped",
+        "21C steady",
+        "east breaker 91%",
+        "0 injured"
+      ],
+      "why_tricky": "CRITICAL_HAUNT tier and an EMF spike read like a spectral event. It is a spike that decays in seconds, on a floor where every system is online and the cause (breaker at 91%) is in the same record.",
+      "expected_action": "observe",
+      "sectors": {
+        "hot": [
+          "hack_floor_west"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "EMFGauge",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-05",
+      "step": 5,
+      "time": "11:39",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "The tower lobby is breached and 11 attendees are riding into it by elevator. Needs a vestibule hold and a decision on the lobby elevators.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance",
+        "registration"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "FloorPlan",
+          "CivilianTracker",
+          "SystemsBoard",
+          "CountermeasurePicker"
+        ],
+        "optional": [
+          "ThermalReadout"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "barricade_foam"
+        ],
+        "avoid": [
+          "sound_cannon"
+        ],
+        "other_moves": [
+          "hold riders at the floor 2 vestibule one car at a time"
+        ]
+      },
+      "key_facts": [
+        "25 to 30 figures in lobby",
+        "14 of 20 elevators in service",
+        "11 riders in cars 3, 7, 12",
+        "ETA 15, 28, 40 s",
+        "2 guards, 1 down",
+        "lobby 12C"
+      ],
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "SystemsBoard",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-06",
+      "step": 6,
+      "time": "12:17",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "Door failing (maglock B 58%) with 18 civilians outside it and 11 figures at the glass. Peak decision point of the morning.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance",
+        "registration"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "critical",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "FloorPlan",
+          "CivilianTracker",
+          "SystemsBoard",
+          "CountermeasurePicker",
+          "SourceLedger"
+        ],
+        "optional": [
+          "ThermalReadout"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "barricade_foam",
+          "flare_line"
+        ],
+        "avoid": [
+          "sound_cannon",
+          "uv_floodlights"
+        ],
+        "other_moves": [
+          "foam both leaves",
+          "pull the 18 through the registration service door"
+        ]
+      },
+      "key_facts": [
+        "11 figures at door",
+        "142 events/min",
+        "maglock B 58%",
+        "actuator error E41",
+        "18 outside + 3 on terrace",
+        "6 foam canisters",
+        "40 flares"
+      ],
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "SystemsBoard",
+        "CountermeasurePicker",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-07",
+      "step": 7,
+      "time": "12:44",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "4 civilians unaccounted for outside and one bitten-or-scratched attendee walking around unsupervised. Responders need the missing-persons list.",
+      "primary_sector": "registration",
+      "sectors_involved": [
+        "registration",
+        "entrance"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "FloorPlan",
+          "CivilianTracker",
+          "SystemsBoard"
+        ],
+        "optional": [
+          "CountermeasurePicker"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "barricade_foam"
+        ],
+        "avoid": [],
+        "other_moves": [
+          "isolate the attendee with the forearm scratch",
+          "post the 4 missing names"
+        ]
+      },
+      "key_facts": [
+        "14 of 18 recovered",
+        "4 missing, 2 from table 22",
+        "6 cm scratch, 36.9C",
+        "maglock B 58%",
+        "flares 31 of 40",
+        "headcount 245"
+      ],
+      "borderline_dispatch": true,
+      "why_tricky": "The tier is LOW_HAUNT and the door is holding. The quiet danger is the scratched attendee who walked back to table 11.",
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "registration"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "CountermeasurePicker"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-08",
+      "step": 8,
+      "time": "13:04",
+      "truth": "harmless",
+      "discord_dispatch": false,
+      "dispatch_reason": "A long, slow, moaning queue with one person who sat down. Door is sealed and the entrance motion is low.",
+      "primary_sector": "catering_coffee_bar",
+      "sectors_involved": [
+        "catering_coffee_bar"
+      ],
+      "recommended_action": "observe",
+      "recommended_severity": "low",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "CivilianTracker",
+          "FloorPlan"
+        ],
+        "optional": [],
+        "should_not_show": [
+          "CountermeasurePicker",
+          "EMFGauge",
+          "ThermalReadout"
+        ]
+      },
+      "countermeasures": {
+        "best": [],
+        "avoid": [
+          "barricade_foam"
+        ],
+        "other_moves": [
+          "send first aid to the guest who sat down",
+          "open a second serving line"
+        ]
+      },
+      "key_facts": [
+        "188 in queue",
+        "2.4 per m2",
+        "0.3 m/s",
+        "1 guest down, pulse 96, responsive",
+        "22C",
+        "6 prep staff"
+      ],
+      "why_tricky": "Slow shuffle, groaning, a shout of 'they're in' and a person on the floor, all at a crowded food line. The guest is answering questions with a pulse of 96, and entrance motion is 17 events/min.",
+      "expected_action": "observe",
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "FloorPlan"
+      ],
+      "panels_optional": [],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "EMFGauge",
+        "ThermalReadout"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-09",
+      "step": 9,
+      "time": "13:41",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "7 civilians cut off in a stairwell with 22 figures climbing toward them. The fix (fire command unlock) has a cost, so a human has to choose.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance",
+        "registration"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "FloorPlan",
+          "CivilianTracker",
+          "SystemsBoard",
+          "CountermeasurePicker"
+        ],
+        "optional": [
+          "ThermalReadout"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "flare_line",
+          "barricade_foam"
+        ],
+        "avoid": [
+          "sound_cannon"
+        ],
+        "other_moves": [
+          "unlock floors 3 to 5 only, not floor 2",
+          "talk the 7 up to floor 5"
+        ]
+      },
+      "key_facts": [
+        "7 attendees between floors 3 and 4",
+        "22 figures",
+        "1 floor per 4 min",
+        "floor 2 door held by 2 volunteers",
+        "7 of 7 phones connected",
+        "one phone 12%",
+        "13C"
+      ],
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "SystemsBoard",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-10",
+      "step": 10,
+      "time": "14:18",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "6 people breathing 3,400 ppm CO2 and 29C in a sealed closet, rising. They cannot fix it from inside, and opening the door is a risk on the hack floor.",
+      "primary_sector": "network_closet",
+      "sectors_involved": [
+        "network_closet",
+        "lounge"
+      ],
+      "recommended_action": "evacuate",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "CivilianTracker",
+          "ThermalReadout",
+          "SystemsBoard"
+        ],
+        "optional": [
+          "FloorPlan"
+        ],
+        "should_not_show": [
+          "CountermeasurePicker",
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [],
+        "avoid": [
+          "power_cut"
+        ],
+        "other_moves": [
+          "escort the 6 to the lounge",
+          "free the HVAC damper",
+          "keep the oxygen concentrator on power"
+        ]
+      },
+      "key_facts": [
+        "closet 6 people since 12:50",
+        "CO2 3,400 ppm +150/10 min",
+        "29C",
+        "3 dizzy, 1 headache",
+        "lounge 38, 26C, +1C/15 min",
+        "2 chair users, 1 oxygen concentrator",
+        "24 bottles"
+      ],
+      "expected_action": "evacuate",
+      "sectors": {
+        "hot": [
+          "network_closet"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "ThermalReadout",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-11",
+      "step": 11,
+      "time": "15:03",
+      "truth": "real",
+      "discord_dispatch": false,
+      "dispatch_reason": "Routine reconciliation of numbers already reported. The missing 4 went out at step 7 and the 7 in stair B at step 9. One new name (table 11).",
+      "primary_sector": "main_stage",
+      "sectors_involved": [
+        "main_stage",
+        "registration"
+      ],
+      "recommended_action": "observe",
+      "recommended_severity": "low",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "CivilianTracker",
+          "FloorPlan"
+        ],
+        "optional": [
+          "SystemsBoard"
+        ],
+        "should_not_show": [
+          "CountermeasurePicker",
+          "EMFGauge",
+          "ThermalReadout"
+        ]
+      },
+      "countermeasures": {
+        "best": [],
+        "avoid": [],
+        "other_moves": [
+          "name the table 11 attendee",
+          "keep roll-call by table"
+        ]
+      },
+      "key_facts": [
+        "245 - 7 = 238 expected",
+        "237 counted",
+        "table 11 short 1",
+        "4 still missing outside",
+        "118 at main stage, 2.6 per m2",
+        "no phone service on 3 carriers"
+      ],
+      "borderline_dispatch": true,
+      "expected_action": "observe",
+      "sectors": {
+        "hot": [
+          "main_stage"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "SystemsBoard"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "EMFGauge",
+        "ThermalReadout"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-12",
+      "step": 12,
+      "time": "15:36",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "The building's own life-safety logic is about to deliver 11 civilians, one in a wheelchair, into a lobby with 60+ figures. 33 to 52 s to decide.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance",
+        "registration"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "critical",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "SystemsBoard",
+          "CivilianTracker",
+          "CountermeasurePicker",
+          "FloorPlan",
+          "SourceLedger"
+        ],
+        "optional": [
+          "ThermalReadout"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "power_cut"
+        ],
+        "avoid": [
+          "sound_cannon"
+        ],
+        "other_moves": [
+          "cut elevator bank power at the riser room",
+          "lower cars manually to floor 2"
+        ]
+      },
+      "key_facts": [
+        "Phase I recall, cars 1 to 20, doors open at lobby",
+        "cars 7, 9, 11 with 11 riders",
+        "ETA 40, 33, 52 s",
+        "car 9 wheelchair user",
+        "60+ figures in lobby",
+        "entrance motion 77 events/min"
+      ],
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "CivilianTracker",
+        "CountermeasurePicker",
+        "FloorPlan",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-13",
+      "step": 13,
+      "time": "16:05",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "A second way in (open dock, 8 unseen people, offline camera) next to 6 prep-area staff. The only warning is a garbled phone call.",
+      "primary_sector": "catering_coffee_bar",
+      "sectors_involved": [
+        "catering_coffee_bar"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "SystemsBoard",
+          "CivilianTracker",
+          "FloorPlan",
+          "CountermeasurePicker"
+        ],
+        "optional": [
+          "ThermalReadout"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "barricade_foam"
+        ],
+        "avoid": [
+          "sound_cannon"
+        ],
+        "other_moves": [
+          "close the dock corridor fire door",
+          "pull the 6 prep staff into the cold room or the lounge"
+        ]
+      },
+      "key_facts": [
+        "roll-up open",
+        "freight car F2 at dock, doors open",
+        "dock cam 1 offline since 15:58",
+        "6 prep staff",
+        "driver counts about 8",
+        "38 m corridor, 1 fire door, state unknown",
+        "cold room 4C"
+      ],
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "CivilianTracker",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-14",
+      "step": 14,
+      "time": "16:48",
+      "truth": "harmless",
+      "discord_dispatch": false,
+      "dispatch_reason": "A warm, injured staff member with a green badge read. Nothing to dispatch except a chair and first aid.",
+      "primary_sector": "registration",
+      "sectors_involved": [
+        "registration"
+      ],
+      "recommended_action": "observe",
+      "recommended_severity": "low",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "ThermalReadout",
+          "CivilianTracker",
+          "SystemsBoard"
+        ],
+        "optional": [
+          "FloorPlan"
+        ],
+        "should_not_show": [
+          "CountermeasurePicker",
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [],
+        "avoid": [
+          "barricade_foam",
+          "flare_line"
+        ],
+        "other_moves": [
+          "first aid and a chair for S-4"
+        ]
+      },
+      "key_facts": [
+        "classifier 'UNDEAD GAIT 0.6 m/s' conf 0.91",
+        "surface 36.4C",
+        "heart rate 118",
+        "badge green 16:46, staff S-4",
+        "hall 22C",
+        "EMF 3 mG"
+      ],
+      "why_tricky": "A classifier says undead with confidence 0.91 at a CRITICAL_HAUNT tier. The body is warm (36.4C against figures at 10 to 13C), the heart rate is 118, the badge read is green. Step 15 shows what a cold body looks like.",
+      "expected_action": "observe",
+      "sectors": {
+        "hot": [
+          "registration"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "CivilianTracker",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-15",
+      "step": 15,
+      "time": "17:20",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "An infected attendee is turning inside the safe perimeter, and three friends will reach him in 90 s.",
+      "primary_sector": "lounge",
+      "sectors_involved": [
+        "lounge",
+        "hack_floor_west"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "ThermalReadout",
+          "CivilianTracker",
+          "CountermeasurePicker",
+          "FloorPlan"
+        ],
+        "optional": [
+          "SourceLedger"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "barricade_foam"
+        ],
+        "avoid": [
+          "sound_cannon",
+          "power_cut"
+        ],
+        "other_moves": [
+          "stop the three teammates in the corridor",
+          "foam the restroom corridor door"
+        ]
+      },
+      "key_facts": [
+        "T11-3 thermal 31.4C, -0.8C/10 min",
+        "heart rate 41, falling",
+        "scratch reported 12:44",
+        "3 teammates ETA 90 s",
+        "lounge 38",
+        "2 foam canisters"
+      ],
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "lounge"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "CivilianTracker",
+        "CountermeasurePicker",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-16",
+      "step": 16,
+      "time": "17:51",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "People are leaving the safe room for the exposed east hack floor to beat the 18:25 deadline. 34 minutes to a known crowd peak.",
+      "primary_sector": "hack_floor_east",
+      "sectors_involved": [
+        "hack_floor_east",
+        "lounge"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "CivilianTracker",
+          "FloorPlan",
+          "SystemsBoard"
+        ],
+        "optional": [
+          "CountermeasurePicker"
+        ],
+        "should_not_show": [
+          "EMFGauge",
+          "ThermalReadout"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "barricade_foam"
+        ],
+        "avoid": [],
+        "other_moves": [
+          "post a warden at door L-2",
+          "give the lounge a working Wi-Fi path or a submissions workaround"
+        ]
+      },
+      "key_facts": [
+        "lounge 38 -> 27",
+        "11 exits in 14 min",
+        "hack floor east 63 people",
+        "18 events on plaza side of the wall",
+        "maglock B 41%",
+        "flares 24 of 40",
+        "34 min to deadline"
+      ],
+      "borderline_dispatch": true,
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "hack_floor_east"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "FloorPlan",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "CountermeasurePicker"
+      ],
+      "panels_discouraged": [
+        "EMFGauge",
+        "ThermalReadout"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-17",
+      "step": 17,
+      "time": "18:02",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "Barricade resources are nearly gone (foam 38%, door 33%, 2 canisters) and 237 people are 28 minutes from dinner. Ask for resupply and PD.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance",
+        "registration"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "SystemsBoard",
+          "CountermeasurePicker",
+          "FloorPlan"
+        ],
+        "optional": [
+          "CivilianTracker"
+        ],
+        "should_not_show": [
+          "EMFGauge",
+          "ThermalReadout"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "barricade_foam",
+          "flare_line"
+        ],
+        "avoid": [
+          "sound_cannon"
+        ],
+        "other_moves": [
+          "request foam resupply",
+          "ask the PD unit at Market and 1st to move to the plaza"
+        ]
+      },
+      "key_facts": [
+        "foam 38% of rating",
+        "maglock B 33%, -2% per 5 min",
+        "19 figures on landing + 3 on stair",
+        "flares 24 of 40, 14 min each",
+        "2 foam canisters",
+        "237 on floor",
+        "dinner in 28 min"
+      ],
+      "borderline_dispatch": true,
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "CountermeasurePicker",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "CivilianTracker"
+      ],
+      "panels_discouraged": [
+        "EMFGauge",
+        "ThermalReadout"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-18",
+      "step": 18,
+      "time": "18:25",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "The horn is pulling 61 figures onto a door at 12% and the crowd is surging toward the wrong exit at a density that can injure people.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance",
+        "main_stage",
+        "registration"
+      ],
+      "recommended_action": "evacuate",
+      "recommended_severity": "catastrophic",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "FloorPlan",
+          "CivilianTracker",
+          "SystemsBoard",
+          "CountermeasurePicker",
+          "SourceLedger"
+        ],
+        "optional": [
+          "ThermalReadout"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "power_cut"
+        ],
+        "avoid": [
+          "sound_cannon",
+          "uv_floodlights"
+        ],
+        "other_moves": [
+          "cut the horn circuit",
+          "turn the crowd up stair B to floor 5",
+          "unlock stair B doors for floors 3 to 5"
+        ]
+      },
+      "key_facts": [
+        "horn 102 dB",
+        "388 events/min",
+        "61 figures",
+        "door deflecting 6 cm, maglock B 12%",
+        "237 moving to stair A",
+        "4.8 per m2",
+        "40 per min",
+        "stair B 0 people, locked",
+        "2 chair users + 1 oxygen user at the stair A landing"
+      ],
+      "expected_action": "evacuate",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "SystemsBoard",
+        "CountermeasurePicker",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-19",
+      "step": 19,
+      "time": "18:44",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "Phased evacuation is working but 69 people, 3 of them unable to take stairs, are still on the Loft floor and the door has failed.",
+      "primary_sector": "lounge",
+      "sectors_involved": [
+        "lounge",
+        "main_stage",
+        "hack_floor_east",
+        "network_closet",
+        "registration",
+        "entrance"
+      ],
+      "recommended_action": "evacuate",
+      "recommended_severity": "critical",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "CivilianTracker",
+          "FloorPlan",
+          "SystemsBoard",
+          "CountermeasurePicker"
+        ],
+        "optional": [
+          "ThermalReadout"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "barricade_foam",
+          "power_cut"
+        ],
+        "avoid": [
+          "sound_cannon"
+        ],
+        "other_moves": [
+          "staff the evac chair for the 3 who can't take stairs",
+          "keep tables on the door",
+          "keep the horn circuit off"
+        ]
+      },
+      "key_facts": [
+        "168 on floor 5 (+7 from stair B)",
+        "69 on Loft floor: lounge 27, main stage 24, hack east 8, closet 6, restroom corridor 2, wardens 2",
+        "maglock B failed 18:41",
+        "61 figures at door",
+        "evac chair 1 for 3",
+        "floor 5 19C, 1 restroom, 1 case water"
+      ],
+      "expected_action": "evacuate",
+      "sectors": {
+        "hot": [
+          "lounge"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "FloorPlan",
+        "SystemsBoard",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-20",
+      "step": 20,
+      "time": "19:12",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "14 people outside the building envelope on a cold terrace with figures below, one with an asthma attack. Needs an external ladder rescue.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance"
+      ],
+      "recommended_action": "evacuate",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "CivilianTracker",
+          "ThermalReadout",
+          "FloorPlan",
+          "CountermeasurePicker"
+        ],
+        "optional": [
+          "SourceLedger"
+        ],
+        "should_not_show": [
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "flare_line"
+        ],
+        "avoid": [
+          "sound_cannon"
+        ],
+        "other_moves": [
+          "tell all 14 to mute phones",
+          "stage the ladder truck",
+          "do not open the glass terrace door yet"
+        ]
+      },
+      "key_facts": [
+        "14 civilians, 1 sprained wrist, 1 asthma with 2 puffs left",
+        "12C, wind 18 km/h, 4 without jackets",
+        "22 figures at fountain, 9 on the terrace stair",
+        "70 events/min",
+        "6 figures turned at a phone ring",
+        "ladder reach 11 m"
+      ],
+      "expected_action": "evacuate",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "ThermalReadout",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-21",
+      "step": 21,
+      "time": "19:33",
+      "truth": "harmless",
+      "discord_dispatch": false,
+      "dispatch_reason": "A cheering crowd at a live demo. Door deflection is 0 mm, the entrance motion is flat and the floor sensor is reading the crowd.",
+      "primary_sector": "main_stage",
+      "sectors_involved": [
+        "main_stage"
+      ],
+      "recommended_action": "observe",
+      "recommended_severity": "low",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "FloorPlan",
+          "CivilianTracker"
+        ],
+        "optional": [
+          "SystemsBoard"
+        ],
+        "should_not_show": [
+          "CountermeasurePicker",
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [],
+        "avoid": [
+          "barricade_foam",
+          "sound_cannon"
+        ],
+        "other_moves": [
+          "keep the 2 wardens at the stair B door"
+        ]
+      },
+      "key_facts": [
+        "41 people, 3.4 per m2 at front",
+        "94 dB",
+        "vibration 4.1 Hz steady",
+        "entrance motion 23 events/min",
+        "door deflection 0 mm",
+        "floor 5: 175 people, quiet"
+      ],
+      "why_tricky": "Stomping, a sustained 4 Hz vibration, 94 dB noise and a CRITICAL-looking crowd density all sit next to a door that held a siege. Door deflection is 0 mm and the entrance is quiet.",
+      "expected_action": "observe",
+      "sectors": {
+        "hot": [
+          "main_stage"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker"
+      ],
+      "panels_optional": [
+        "SystemsBoard"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "EMFGauge"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-22",
+      "step": 22,
+      "time": "19:48",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "The one clear operational window: lure the figures off the Loft and clear the terrace. The operator needs PD and the ladder team to act at once.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance"
+      ],
+      "recommended_action": "contain",
+      "recommended_severity": "elevated",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "CountermeasurePicker",
+          "FloorPlan",
+          "CivilianTracker",
+          "SourceLedger"
+        ],
+        "optional": [
+          "SystemsBoard"
+        ],
+        "should_not_show": [
+          "EMFGauge",
+          "ThermalReadout"
+        ]
+      },
+      "countermeasures": {
+        "best": [
+          "sound_cannon",
+          "flare_line"
+        ],
+        "avoid": [
+          "power_cut"
+        ],
+        "other_moves": [
+          "keep the Loft silent and dark",
+          "run the ladder to the terrace in the lure window"
+        ]
+      },
+      "key_facts": [
+        "PD sound truck at plaza far end",
+        "tone test pulled 40 figures",
+        "plaza 340 events/min, courtyard door 2",
+        "14 on terrace",
+        "18 flares, 12 min each",
+        "ladder 90 s from rail",
+        "window about 4 min",
+        "floor 5: 175"
+      ],
+      "expected_action": "contain",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CountermeasurePicker",
+        "FloorPlan",
+        "CivilianTracker",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "SystemsBoard"
+      ],
+      "panels_discouraged": [
+        "EMFGauge",
+        "ThermalReadout"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-23",
+      "step": 23,
+      "time": "20:24",
+      "truth": "real",
+      "discord_dispatch": true,
+      "dispatch_reason": "Closing summary for the organizers: counts, one isolated case, 4 still missing, systems back to normal.",
+      "primary_sector": "registration",
+      "sectors_involved": [
+        "registration",
+        "entrance"
+      ],
+      "recommended_action": "observe",
+      "recommended_severity": "low",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "CivilianTracker",
+          "SystemsBoard"
+        ],
+        "optional": [
+          "FloorPlan"
+        ],
+        "should_not_show": [
+          "CountermeasurePicker",
+          "EMFGauge",
+          "ThermalReadout"
+        ]
+      },
+      "countermeasures": {
+        "best": [],
+        "avoid": [],
+        "other_moves": [
+          "hand the 4 missing names to the PD",
+          "keep T11-3 isolated"
+        ]
+      },
+      "key_facts": [
+        "175 of 175 off floor 5",
+        "terrace 14 off, 1 asthma to medic",
+        "Loft floor 68 of 69 out",
+        "T11-3 isolated",
+        "4 missing from plaza",
+        "elevators reset 20:20",
+        "2 figures on plaza"
+      ],
+      "expected_action": "observe",
+      "sectors": {
+        "hot": [
+          "registration"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "EMFGauge",
+        "ThermalReadout"
+      ]
+    },
+    {
+      "incident_id": "sim-zombies-24",
+      "step": 24,
+      "time": "20:48",
+      "truth": "real",
+      "discord_dispatch": false,
+      "dispatch_reason": "A single unverified sighting off site. The Loft itself is clear. Watch, but do not page the channel.",
+      "primary_sector": "entrance",
+      "sectors_involved": [
+        "entrance"
+      ],
+      "recommended_action": "observe",
+      "recommended_severity": "low",
+      "panels": {
+        "must_show": [
+          "ThreatBanner",
+          "SystemsBoard",
+          "SourceLedger"
+        ],
+        "optional": [
+          "ThermalReadout",
+          "CivilianTracker"
+        ],
+        "should_not_show": [
+          "CountermeasurePicker",
+          "EMFGauge"
+        ]
+      },
+      "countermeasures": {
+        "best": [],
+        "avoid": [],
+        "other_moves": [
+          "keep PD eyes on the fountain",
+          "decide on the 21:15 awards with PD"
+        ]
+      },
+      "key_facts": [
+        "0 events in 6 rooms",
+        "maglock B replaced",
+        "2 figures at fountain, not moving",
+        "tunnel 13C",
+        "single unverified station report",
+        "61 people waiting for awards"
+      ],
+      "expected_action": "observe",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "ThermalReadout",
+        "CivilianTracker"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "EMFGauge"
+      ]
+    }
+  ],
+  "playbook": "corporeal for every step: zombies are undead bodies"
+}
