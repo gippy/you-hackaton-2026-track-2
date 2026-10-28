@@ -38,7 +38,7 @@ export class SoundBoard {
     }
 
     /** Play a sound from the library by id. Resolves when it ends, or at once when sound is off or it fails. */
-    effect(id: string): Promise<void> {
+    private effect(id: string): Promise<void> {
         return this.play(withToken(`./sfx/${id}.mp3`));
     }
 

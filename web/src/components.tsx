@@ -25,7 +25,7 @@ export interface Ctx {
 
 type Props<T extends ComponentType> = Extract<Component, { type: T }>['props'];
 
-export const TITLES: Record<ComponentType, string> = {
+const TITLES: Record<ComponentType, string> = {
     ThreatBanner: 'Incident',
     EMFGauge: 'EMF field',
     ThermalReadout: 'Thermal',
@@ -38,7 +38,7 @@ export const TITLES: Record<ComponentType, string> = {
     EntityCard: 'Entity',
 };
 
-export function domain(url: string): string {
+function domain(url: string): string {
     try {
         return new URL(url).hostname.replace(/^www\./, '');
     } catch {

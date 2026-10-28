@@ -3,7 +3,7 @@
 // in the same state as a page that watched the run live.
 import type { ArtAsset, Component, FixtureIncident, Floor, Incident, Library, Manifest, OperatorMoves, PageInfo, Scenario, ServerMessage, Sky, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
-export interface Step {
+interface Step {
     state?: StepState;
     detail?: string;
     ms?: number;
