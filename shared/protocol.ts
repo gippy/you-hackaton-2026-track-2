@@ -175,6 +175,7 @@ export interface FixtureIncident {
 export interface Scenario {
     id: string;
     title: string;
+    sky: boolean; // the real sky over the venue matters to this scenario, so its steps get sunset and moonrise times
     steps: FixtureIncident[];
 }
 

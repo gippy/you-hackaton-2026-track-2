@@ -1,0 +1,199 @@
+{
+  "scenario": "zombies",
+  "title": "Zombie Rush",
+  "sky": false,
+  "ticks": [
+    {
+      "incident_id": "sim-zombies-01",
+      "step": 1,
+      "time": "09:34",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "09:34 doors open. COURTYARD CAM 2: queue runs past the ring fountain, 140 heads and growing, slow shuffle 0.8 m/s, lots of grey skin and torn sleeves. Guard G-3 on radio: three of them are groaning at the glass, one just walked into a planter. ENTRANCE MOTION 58 events/min. Outdoor temp 14C, EMF 3 mG. Badge scanner: 96 green reads in 6 min, 0 red. A photo line has formed at the fountain, one guest is dragging a leg. Registration desk: lanyards check out, 2 people asked where the coffee is. Courtyard door open, no pressure on the glass.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-02",
+      "step": 2,
+      "time": "10:09",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "[SCANNER RELAY via loft-sec] Transit ops to controller: Montgomery mezzanine, two Market St entrances shut 10:03, 'passenger disturbance'. A 4-car train held in the tunnel 4 min, tunnel temp 14C. Unconfirmed caller says six people on the platform stopped moving and then got up. Fare gates: 212 exits in 5 min, heading along the 500 block. Muni F stop at Market and 1st shows 9 min dwell. Loft sensors quiet: entrance motion 41 events/min, 188 checked in, 0 at risk. The only source for the platform story is one text from a commuter, now not answering.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-03",
+      "step": 3,
+      "time": "10:46",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "PLAZA CAM 4 and CAM 6: 17 figures at the west edge of the plaza, loose line toward the fountain, no talking, no phones, gait about 0.7 m/s. Temp at the fountain 11C against 14C ambient. Guard G-3 shouted from 4 m, no head turn; he touched a rail one of them held, 'cold hand, wouldn't let go.' Courtyard queue: 9 attendees still outside, 2 with laptops open. 4 people sitting on the 2nd-floor terrace stair, unaware. Entrance door sensor: open, 6 events/min. Greeter asks whether to keep badging people in.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-04",
+      "step": 4,
+      "time": "11:12",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "11:12 build starts. HACK FLOOR WEST: lights dipped for 4 s at 11:12:07, 3 power strips tripped around tables 14 to 19, UPS in the network closet chirping, EMF spiked to 38 mG for 6 s then back to 4 mG. Motion 212 events/min (everyone stood up at once), temp 21C steady. Badge scanners online, cameras online, door actuators normal. 208 on the floor plus 9 late arrivals pulled inside, 0 injured, one voice shouting who turned off the lights. Facilities radio: east breaker panel at 91% load. Courtyard door latched, entrance motion 14 events/min from the plaza side.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-05",
+      "step": 5,
+      "time": "11:39",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "TOWER LOBBY CONSOLE (not Loft): 2 guards, camera shows 25 to 30 figures inside, Market St doors pushed in at 11:31. Turnstiles locked. Elevators: 14 of 20 in normal service. Cars 3, 7, 12 are rising with 11 attendees inside, arriving at floor 2 in 15 s, 28 s and 40 s, all calm, phones connected. Loft security at the floor 2 elevator vestibule, one car at a time. Radio: 'one guard is down at the console, not answering.' Lobby temp 12C. Courtyard entrance motion 31 events/min. Loft headcount 220 plus the 11 riders.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-06",
+      "step": 6,
+      "time": "12:17",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "COURTYARD DOOR: 11 figures pressed on the glass, entrance motion 142 events/min and rising. Door state: double leaf latched, maglock A holding 100%, maglock B 58% and dropping, actuator error E41. 18 attendees OUTSIDE on the stair landing (late arrivals and coffee runs), plus 3 at the terrace rail. Registration, 4 staff, can see them through the glass. Radio from STAGE-MGR: 'do we open it for the 18?' Barricade foam: 6 canisters at registration, 0 at the door. Flare line kit: 40 sticks, sealed. Temp at door 15C, hall 22C. Lights on, power normal.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-07",
+      "step": 7,
+      "time": "12:44",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "12:44 door held. Foam on both leaves since 12:31, flare line lit on the outer landing, entrance motion down to 38 events/min. Recovered 14 of the 18 through the registration service door. Not accounted for: 4, last seen going back down toward the plaza, 2 wearing team badges for table 22. One recovered attendee has a 6 cm scratch on the forearm, warm 36.9C, alert, says it's nothing, declined first aid, walked back to table 11. Maglock B still 58%. Flares 31 of 40. Door temp 15C, hall 22C. Loft headcount 245.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-08",
+      "step": 8,
+      "time": "13:04",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "LUNCH 13:04, CATERING: 188 in line, density about 2.4 per m2, shuffle 0.3 m/s, low groaning from the back of the queue, someone yelling 'they're in.' One guest down near the cold brew taps, now sitting up, answering questions, pulse 96, asking for orange juice. Cart wheel jammed in the prep-area doorway. Motion 160 events/min, temp 22C. Entrance sealed, entrance motion 17 events/min from the plaza side, door foam intact. Catering lead: 'we ran out of vegetarian trays and the line is angry.' 6 prep staff inside, calm.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-09",
+      "step": 9,
+      "time": "13:41",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "STAIRWELL B (core stair, floors 2 to 5): 7 attendees went up at 13:22 looking for a quiet call room, now stuck between floor 3 and 4. 22 figures climbing from the lobby, lead one at the floor 2 landing, gaining about 1 floor per 4 min. Stair doors lock from the stair side: floors 3 and 4 locked, floor 2 door to the Loft service corridor held shut by 2 volunteers and a rolling rack. Fire command can unlock every stair door at once, which also frees floor 2. Phones: 7 of 7 connected, one at 12%. Stair temp 13C. Flare line staged on the floor 2 landing.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-10",
+      "step": 10,
+      "time": "14:18",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "SAFE ROOM CHECK 14:18. LOUNGE: 38 people, door L-1 sealed, 2 chair users and 1 oxygen concentrator on a wall plug, temp 26C and rising 1C per 15 min, water 24 bottles. NETWORK CLOSET: 6 people inside since 12:50, CO2 3,400 ppm up 150 per 10 min, temp 29C, door latched from inside, 3 dizzy, 1 headache and sitting on the floor. Hack floor outside the closet: 12 motion events/min, 0 figures confirmed on camera. HVAC damper to the closet stuck closed. Radio from inside: 'do we open it, or do we wait?'",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-11",
+      "step": 11,
+      "time": "15:03",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "15:03 organizer check-in at the main stage, roll call by team table. Floor count at 12:44 was 245; minus 7 in stair B leaves 238 expected, counted 237. Table 11 is short 1 ('went to the restroom 40 min ago'). Outside since 12:44: 4 still not accounted for, 2 from table 22. Main stage 118 people, density about 2.6 per m2, 2 judges. Lounge safe room 38, closet 6. Courtyard door, registration service door and lounge door sealed. Entrance motion 55 events/min, temp 22C. Phones show no service on 3 carriers. Nobody has eaten since lunch.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-12",
+      "step": 12,
+      "time": "15:36",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "FIRE PANEL (tower) 15:36:22: smoke detector in the lobby elevator vestibule, Phase I recall started, cars 1 to 20 sent to lobby, doors OPEN on arrival, door-hold and emergency stop disabled once a car leaves its landing. Lobby holds 60+ figures. Cars 7, 9, 11 are descending with 11 people from the Loft who left at 15:30 after a text said the street was clear: arrival at lobby in 40 s, 33 s, 52 s. Car 9 has a wheelchair user. Riser room can cut bank power, cars stop where they are. Lobby temp 12C. Loft entrance motion 77 events/min.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-13",
+      "step": 13,
+      "time": "16:05",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "[PHONE, caterer driver, garbled] 'I'm at the dock, roll-up is open, got 40 dinner trays, there are people walking in behind my truck, not saying anything.' Freight car F2 recalled to dock level, doors open. Dock cam 1 offline since 15:58. Catering back prep area: 6 staff, door to the dock corridor propped open for the cart, cold room 4C. Driver's count: 'maybe 8'. Service corridor from dock to catering is 38 m with one fire door, state unknown. Prep area back door: 0 motion events so far. The 11 riders from cars 7, 9, 11 were walked out at floor 2 at 15:58, all walking. Dinner 18:30.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-14",
+      "step": 14,
+      "time": "16:48",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "REGISTRATION CAM 2: slow figure coming out of the service corridor toward the desk, dragging the left leg, groaning, one hand pressed to the side. Motion classifier tag 'UNDEAD GAIT 0.6 m/s' confidence 0.91. 3 desk staff backing away, one holding a stapler. Badge reader at the corridor door beeped green at 16:46, staff ID S-4. Thermal camera surface 36.4C, heart-rate estimate 118. Radio from S-4 is mostly hiss, then 'ankle... chair.' Entrance motion 24 events/min, courtyard door foam holding, EMF 3 mG, hall temp 22C.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-15",
+      "step": 15,
+      "time": "17:20",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "RESTROOM CORRIDOR off the lounge, CAM 3: attendee badge T11-3 sitting against the wall, eyes open, no reply to his name. Thermal 31.4C and falling about 0.8C per 10 min, heart-rate estimate 41 and dropping. He reported a forearm scratch at 12:44 and declined first aid. Three teammates from table 11 are walking to the corridor, ETA 90 s, one carrying water. Lounge safe room 38, door L-2 propped open. Foam canisters: 2 at the lounge. Hack floor west motion 61 events/min, temp 22C. Nobody has told the three.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-16",
+      "step": 16,
+      "time": "17:51",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "LOUNGE headcount 38 at 17:30, 27 at 17:51. Door L-2 badge log: 11 exits in 14 min, all toward hack floor east. Radio from table 18: 'submissions close at 6:25, the form won't load in the lounge, Wi-Fi is better at the east tables, we'll be quick.' Hack floor east: 63 people at tables, 5 windows facing the plaza with blinds half down, 31 motion events/min inside, 18 on the plaza side of the wall. Temp 22C. Courtyard door maglock B 41%, flares 24 of 40. 34 minutes to the deadline. Lounge now holds 2 chair users and 4 staff.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-17",
+      "step": 17,
+      "time": "18:02",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "ENTRANCE: foam on the courtyard door is 5.5 hours old, flaking, hold estimate 38% of rating. Maglock B 33% and dropping 2% per 5 min, actuator E41 repeating. Entrance motion 96 events/min, 19 figures on the landing per CAM 2, 3 more on the plaza stair. Flares 24 of 40, 14 min burn each. 4 registration staff holding the service door. Radio: 'we have 2 foam canisters, enough for one door.' Door temp 14C, hall 22C. 237 on the Loft floor, 0 injured. Dinner in 28 min. A PD unit just reported staging at Market and 1st.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-18",
+      "step": 18,
+      "time": "18:25",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "18:25 submissions closing. TOWER FIRE ALARM re-triggered 18:22, horn 102 dB in the courtyard and entrance, strobes on. Entrance motion 388 events/min, 61 figures converging on the courtyard door, door deflecting 6 cm, maglock B 12%. 237 people on the Loft floor are moving to stair A (down to the lobby): landing density 4.8 per m2, flow about 40 per minute. Lobby below holds 60+ figures, elevator doors open (Phase I). Stair B (up to floor 5) door at the service corridor: 0 people, stair doors locked from the stair side. Chair users 2 and 1 oxygen user at the stair A landing. Radio: 'cut the horn!'",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-19",
+      "step": 19,
+      "time": "18:44",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "18:44 RELEASE. Horn circuit cut 18:29, stair B doors floors 3 to 5 unlocked 18:30, wardens turned the crowd up stair B. 168 now on floor 5 (vacant suite 500), plus the 7 from stair B. Entrance motion down to 120 events/min, 61 figures still at the courtyard door held by 9 stacked tables, maglock B failed 18:41. STILL ON THE LOFT FLOOR: 69. Lounge 27 (2 chair users, 1 oxygen concentrator, 4 staff), main stage 24, hack floor east 8, closet 6, restroom corridor 2, 2 wardens at the service door. Evac chair: 1 for the 3 who can't take stairs. Floor 5 temp 19C, 1 restroom, water 1 case. Dinner line abandoned at 18:30.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-20",
+      "step": 20,
+      "time": "19:12",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "TERRACE (2nd-floor plaza terrace): 14 civilians, 12 uninjured, 1 sprained wrist, 1 asthma attack with 2 puffs left in the inhaler. Outdoor temp 12C, wind 18 km/h, 4 without jackets. 22 figures at the fountain below, 9 on the terrace stair at the 4th step, motion 70 events/min. They haven't noticed the group. Terrace door to the Loft is glass, locked from inside. Phones: 11 of 14 connected, one just rang in a pocket and 6 figures turned. Ladder truck staged on Market at 1st, reach to the rail about 11 m. No flares on the terrace.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-21",
+      "step": 21,
+      "time": "19:33",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "DEMOS 19:33, MAIN STAGE: 41 people, density about 3.4 per m2 at the front, 94 dB cheering, stomping on the riser, floor vibration sensor reading a steady 4.1 Hz at the entrance wall. Entrance motion 23 events/min, courtyard door deflection 0 mm, 9 tables still stacked. Camera 6: a line of 20 heading for the back corridor. Team 7 of 12 is running a live agent with a buzzer sound effect. Temp 23C, projector fan alarm. 2 wardens at the stair B door. Floor 5 reports 175 people, quiet.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-22",
+      "step": 22,
+      "time": "19:48",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "PLAN AT 19:48: PD sound truck parked at the far end of the plaza by the Market and 2nd corner. Tone test at 19:44 pulled 40 figures off the fountain, plaza motion 340 events/min, courtyard door motion 2 events/min. 14 on the terrace still unnoticed. Flare line laid along the plaza stair by 6 PD, 18 flares burning 12 min each. Terrace ladder is 90 s from the rail. Wardens have the Loft speakers and lights dark. Floor 5: 175 people, silent. Plaza temp 12C, wind 18 km/h. Radio: 'if the truck cuts out we have maybe 4 minutes before they turn around.'",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-23",
+      "step": 23,
+      "time": "20:24",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "20:24 STAND-DOWN. Floor 5 released down stair A at 20:05 under PD escort, 175 of 175 at the assembly point on Market. Terrace group of 14 off by ladder, 1 to the medic tent (asthma). Loft floor 69: 68 out, chair users and the oxygen user carried down by evac chair. T11-3 isolated behind foam in the restroom corridor with a PD medic. Not accounted for: the 4 from the plaza at 12:44. Lobby cleared, plaza 2 figures. Elevators reset 20:15, fire panel normal. Loft temp 22C, entrance motion 0 events/min.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-zombies-24",
+      "step": 24,
+      "time": "20:48",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "20:48. Wardens sweeping the Loft floor: 0 motion events in 6 rooms, EMF 3 mG, temp 22C. Courtyard door foam removed, maglock B replaced, actuator E41 cleared. Plaza: 2 figures standing at the fountain, not moving, PD watching. [SCANNER RELAY] transit ops: Montgomery mezzanine reopened 20:40, one station agent reports 'a person who won't leave the platform bench', tunnel temp 13C. No second source. Organizers ask whether the awards can run at 21:15 with 61 people. 40 dinner trays untouched in the prep area.",
+      "source": "simulated"
+    }
+  ]
+}

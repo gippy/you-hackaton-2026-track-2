@@ -86,7 +86,9 @@ export function IncidentHead({ incident, ctx, action, directive }: { incident: I
     const people = incident.people_in_reach ?? incident.civilians?.count;
     const harmless = incident.verdict === 'harmless';
     // The detail in parentheses is in the directive and the report; the headline stays one or two lines.
-    const entity = incident.entity.replace(/\s*\([^)]*\)/g, '');
+    // An entity the intake could not name reads as unidentified, not as the word "unknown".
+    const named = incident.entity.replace(/\s*\([^)]*\)/g, '').trim();
+    const entity = !named || /^(unknown|none|n\/a)$/i.test(named) ? 'Unidentified threat' : named;
     const parts = [
         harmless ? `False alarm: ${entity}` : entity,
         ctx.library.sectors[incident.sector] ?? incident.sector,

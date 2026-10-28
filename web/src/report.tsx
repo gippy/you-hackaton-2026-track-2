@@ -67,14 +67,17 @@ export function ReportPanel({
     const menu = useRef<HTMLDivElement>(null);
     const menuList = useRef<HTMLUListElement>(null);
 
-    // This tab's own place in the scenario: the step it last asked for, else the step on screen.
-    const mine = scenario?.steps.find((step) => step.incident_id === cursor) ?? current;
     // The panel shows the step or incident this tab picked, from the fixtures, so its text is there before the run.
     const picked = cursor ?? incident?.incident_id ?? ''; // '' after a paste, which has no incident id
     const pickedFixture = [...state.scenarios.flatMap((s) => s.steps), ...state.incidents].find((x) => x.incident_id === picked);
-    const pickedStep = scenario?.steps.find((step) => step.incident_id === picked);
+    // The scenario of the picked step, so picking a step of another scenario switches the stepper at once.
+    const shown = state.scenarios.find((s) => s.steps.some((step) => step.incident_id === picked)) ?? scenario;
+    const pickedStep = shown?.steps.find((step) => step.incident_id === picked);
+    // This tab's own place in the scenario: the step it last asked for, else the step on screen.
+    const mine = pickedStep ?? current;
     // From a single incident or a pasted report, Back returns to the scenario step this tab was last on.
-    const backTo = scenario?.steps.find((step) => step.incident_id === lastStep) ?? scenario?.steps[0];
+    const backTo = state.scenarios.flatMap((s) => s.steps).find((step) => step.incident_id === lastStep) ?? scenario?.steps[0];
+    const backScenario = state.scenarios.find((s) => s.steps.includes(backTo!));
 
     useEffect(() => {
         if (current) setLastStep(current.incident_id);
@@ -106,8 +109,8 @@ export function ReportPanel({
     const heading = composing
         ? 'New incident: paste a report'
         : [
-              pickedStep && scenario
-                  ? `${scenario.title} · step ${pickedStep.step} of ${scenario.steps.length} · ${pickedStep.time}`
+              pickedStep && shown
+                  ? `${shown.title} · step ${pickedStep.step} of ${shown.steps.length} · ${pickedStep.time}`
                   : pickedFixture
                     ? pickedFixture.incident_id
                     : incident
@@ -137,35 +140,39 @@ export function ReportPanel({
                 </p>
             )}
             <div className="report-nav">
-                {scenario && pickedStep && !composing ? (
+                {shown && pickedStep && !composing ? (
                     <>
                         <button
                             type="button"
                             className="ghost"
                             disabled={!mine || mine.step === 1}
                             aria-disabled={running}
-                            onClick={() => !running && mine && compileId(scenario.steps[mine.step! - 2].incident_id)}
+                            onClick={() => !running && mine && compileId(shown.steps[mine.step! - 2].incident_id)}
                         >
                             ◀ Previous
                         </button>
-                        <select aria-label={`${scenario.title} step`} value={picked} aria-disabled={running} onChange={(e) => !running && compileId(e.target.value)}>
-                            {scenario.steps.map((step) => (
-                                <option key={step.incident_id} value={step.incident_id}>
-                                    {`${step.step}. ${step.time} · ${stepLabel(step.raw_incident_stream)}`}
-                                </option>
+                        <select aria-label="Scenario and step" value={picked} aria-disabled={running} onChange={(e) => !running && compileId(e.target.value)}>
+                            {state.scenarios.map((s) => (
+                                <optgroup key={s.id} label={s.title}>
+                                    {s.steps.map((step) => (
+                                        <option key={step.incident_id} value={step.incident_id}>
+                                            {`${step.step}. ${step.time} · ${stepLabel(step.raw_incident_stream)}`}
+                                        </option>
+                                    ))}
+                                </optgroup>
                             ))}
                         </select>
                         <button
                             type="button"
                             className="next"
-                            aria-disabled={running || mine?.step === scenario.steps.length}
-                            onClick={() => !running && mine?.step !== scenario.steps.length && compileId(scenario.steps[mine ? mine.step! : 0].incident_id)}
+                            aria-disabled={running || mine?.step === shown.steps.length}
+                            onClick={() => !running && mine?.step !== shown.steps.length && compileId(shown.steps[mine ? mine.step! : 0].incident_id)}
                         >
                             Next step ▶
                         </button>
                     </>
                 ) : (
-                    scenario &&
+                    backScenario &&
                     backTo && (
                         <button
                             type="button"
@@ -177,7 +184,7 @@ export function ReportPanel({
                                 compileId(backTo.incident_id);
                             }}
                         >
-                            ◀ Back to {scenario.title}, step {backTo.step}
+                            ◀ Back to {backScenario.title}, step {backTo.step}
                         </button>
                     )
                 )}

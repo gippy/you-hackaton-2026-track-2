@@ -1,0 +1,199 @@
+{
+  "scenario": "phantom",
+  "title": "The Coffee Bar Phantom",
+  "sky": false,
+  "ticks": [
+    {
+      "incident_id": "sim-phantom-01",
+      "step": 1,
+      "time": "09:40",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "OPS CH2 / opening shift. Jo at the coffee bar says the pressure gauge on the big espresso machine keeps sweeping 0 to 12 bar with the machine switched off at the wall. Nine paper cups found stacked in a tight spiral on the drip tray, nobody admits to it. Cold patch behind the counter, about 1 m wide. Sensor dump CB-1: emf 6 mG (bar baseline 2), temp 11.8C vs room 21C, motion events 4, nobody standing in the patch. Civilians: 1 (Jo), uneasy but still working. Doors open in 15 min, 40 guests already on the stairs. Dana says log it, keep it quiet, no panic. Gauge went flat the moment Jo said hello.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-02",
+      "step": 2,
+      "time": "09:55",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "SEC DESK, Reyes. Doors open 25 min, line down the stairs to the street, about 150 guests waiting on photo ID. Fog machine at the photo wall on a 10 s burst timer, whole stairwell smells like grape. Three bedsheet ghosts, one plague doctor, one guy in a skeleton onesie. A guest at the top step says a tall white figure stood still in the mist and then was gone, asks if somebody can check. Sensor E-1: emf 3 mG, temp 18.4C on the stairs (street door keeps opening), motion events 212, badge scanners 6 of 6 online. Civilians: 150 in line, calm, taking photos. No injuries.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-03",
+      "step": 3,
+      "time": "10:35",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "GUEST REPORT via DM to Ops. Lounge, tiered seating by the tall windows. Two engineers setting up early say the corner went cold all at once and smelled like scorched espresso, like a pot left on a burner. Neither has had coffee since 9. One had a voice memo running and played it back: 4 s of a low voice, not either of them, saying 'last call'. Sensor L-2 (wireless): emf 11 mG, temp 13.2C vs room 21C, motion events 2. It reported twice and then dropped off the mesh. Civilians: 2, shaken but seated. Nobody has run a baseline in the lounge today, so unclear what normal is here.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-04",
+      "step": 4,
+      "time": "11:20",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "FACILITIES, Okafor. Build started 10 min ago. West hack floor, bays 7 to 10: LED panels flickering about 3 times a second, laptops on PDU-W3 dropping to battery and back. Checked panel LP-2, loads normal, no trips, no sag logged. Unplugged the espresso machine and grinder at the coffee bar because they share that panel. Flicker went on. Swapped the PDU, still flickers. Sensor W-3: emf 17 mG at bays 7-10, 2 mG elsewhere, temp 20.6C, motion events 9, nobody standing there. Civilians: 24 engineers coding, mostly unaware. Okafor: 'I have nothing electrical left to blame.'",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-05",
+      "step": 5,
+      "time": "12:10",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "BAR RADIO. Wen and Jo both heard it: a voice from the empty end of the counter ordering a flat white, extra hot, for 'Mara'. Three times, same words, 2 s apart. Then the marker rolled off the shelf and 12 cups got MARA in block capitals. Steam wand opened by itself. Bar manager poured a salt line around the machine; emf dropped 31 to 22 mG for about 90 s then climbed back to 33. Sensor CB-1: emf 33 mG, temp 4.1C, motion events 19. Civilians: 2 baristas behind the bar, 6 guests queued, all moved back 3 m. Lunch service at 13:00, about 90 people expected.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-06",
+      "step": 6,
+      "time": "12:40",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "REG DESK. Lanyard rack by the registration table swung on its own for 20 s, doors shut, no draft. Badge printer then spat out 40 blank badges and jammed. A volunteer says something pushed her shoulder from behind, firm, like a hand. Sensor R-1: emf 15 mG at the table (printer alone is 4), temp 21.0C normal, motion events 22, no cold spot anywhere. Civilians: 3 volunteers, 12 late arrivals waiting on badges, nobody hurt. Spare printer swapped in, it prints blanks too. Ops asks whether this is the same thing as the coffee bar. Nobody can say, there is no temperature drop to go on.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-07",
+      "step": 7,
+      "time": "13:05",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "AUTO-ALERT CB-1 THRESHOLD: emf 14 mG at the coffee bar, bar baseline 2. Lunch service is on, 90 guests in line, motion events 164. Catering lead on radio: both espresso machines, three induction warmers, two toasters, the steam wand and the kettle bank are all running at once. Temp 29.5C at the pass, the bar is hot, not cold. A guest says a voice from behind the counter called 'next, flat white' and she could not see who; the two baristas on shift are calling orders over each other. Trace is flat, 13 to 15 mG for 20 min, no spikes. Civilians: 90, queueing, good mood, someone asks about oat milk.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-08",
+      "step": 8,
+      "time": "13:40",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "EAST FLOOR, Dana on radio. Lunch trays left on tables 14 to 18: forks and a salt shaker sliding in a slow line toward the aisle, people filming. Rapping on the table legs, pattern 3 knocks, 3 knocks, 1. Then a ceramic mug flew about 2 m and clipped an engineer's forearm, small cut, he is on a chair with the first aid kit. Sensor E-4: emf 28 mG, temp 9.3C, motion events 37, cold air pooling at floor level. Civilians: 18 engineers around tables 14-18, 1 minor injury (forearm), the rest backing off but still clutching laptops. Dana asks whether to clear the tables or leave it. Somebody has a bag of iron nails from a hardware project.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-09",
+      "step": 9,
+      "time": "14:15",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "IT, Priya. Hack floor APs 11, 14 and 15 dropping and rejoining every 6 min since 14:00. Closet door log shows 3 openings with no badge swipe. The old intercom handset in the closet recorded 7 s of a whisper, words unclear, same low voice as the lounge memo. Camera 2 offline. Sensor N-1: emf 54 mG in 9 s bursts, temp 16.2C, motion events 11 inside a locked empty room. Core switch fans ramping up and down. Civilians: nobody inside; Tomas from the network contractor is at the door deciding whether to open it. Submissions need this network, 4 hours to go.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-10",
+      "step": 10,
+      "time": "14:50",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "STAGE, Kit on sound. During line check, channel 4 on the board is hot with no mic plugged in. Recorded 6 s off the empty channel: a calm voice says 'I'll be at the bar'. Played it twice, second time quieter, then gone. Sensor MS-2: emf 38 mG near the monitor wedges (stage baseline 3), temp 17.9C, motion events 6, nothing on camera. Stage lights steady, no flicker. Civilians: 5 crew on stage, rattled, still working. 140 chairs set for demos at 19:30. Kit is keeping the file and not touching channel 4 again. Kit's question: is the voice coming from the bar, or heading there?",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-11",
+      "step": 11,
+      "time": "15:05",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "CHECK-IN ROUND, Dana. Mentors walking the west floor, about 60 teams at the 15:00 progress check with laptops open. At 15:04 every light on the floor went dark for half a second and came back. Laptops stayed up, the UPS on bank W-3 beeped for 10 s. Three engineers say it felt like a hand on the switch. Lobby meter logged a building-wide dip, 0.4 s, floors 1 to 4. Sensor W-3: emf 19 mG for 1 s then back to 3, temp 22.0C, motion events 130 (crowd). Civilians: 60+ engineers, a bit jumpy, a few laughing. Okafor is already resetting the UPS.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-12",
+      "step": 12,
+      "time": "15:30",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "BAR RADIO. Bar closed 15:10, tape across the front. Lunch salt line is scattered in a fan across the floor, away from the machine, as if blown. Sensor CB-1 climbing: 14:00 28 mG, 15:00 41 mG, now emf 52 mG, temp 2.2C, motion events 21. Voice on the bar mic again, flat white for Mara, closer to a snarl this time. Civilians: 2 volunteers behind the counter stacking cups and laughing, not leaving; 8 guests at the tape; nobody hurt. Dana wants the bar sealed before the afternoon rush and the organizers want coffee back on at 16:00. Okafor says the bar circuit can be cut but it also feeds the exit sign.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-13",
+      "step": 13,
+      "time": "16:12",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "ALERT: Level-5 phantom apparition at the AWS Builder Loft catering sector, full form over the espresso machine, roughly 2 m tall, no legs. 4 engineers pinned behind the coffee bar, the cold front blocks the way round the counter. Local network nodes dropping, security system not responding, door controller returns nothing. Sensor CB-1: temp -4C, emf 98 mG and climbing about 6 mG a minute, motion events 17. Radio: 'it is looking at us' / 'do not run, do not run'. Civilians: 4 pinned behind the bar (2 with numb hands, 1 hyperventilating), 11 guests frozen at the tape. Bar was reopened at 16:00 on organizer request. We need a route out for the four.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-14",
+      "step": 14,
+      "time": "16:20",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "UPDATE CB. emf 131 mG, temp -7C, motion events 24. Apparition now spans the whole counter, cups bursting on the shelf. Salt line re-laid by Dana, north end blown open within seconds. UV floodlight from the AV cage set at 5 m: shape outlines clearly in the beam and emf inside the cone drops to 74 mG, but the beam only covers the left half of the bar. Civilians: 4 pinned, 2 shivering and slow to answer, 11 guests being walked back toward the lounge. Okafor can cut circuit LP-2 in 60 s, but it also feeds the exit signs on that wall. Asking for a second light and a path out for the four.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-15",
+      "step": 15,
+      "time": "16:32",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "CB, 16:32. Second UV light up. Sage smoke purge started 16:26, 6 bundles in steel bowls. emf fell 131 to 58 mG in 6 min, temp back to 4C, the shape thinned to a smear and pulled in toward the espresso machine. Smoke detector in the catering ceiling hit pre-alarm at 16:30; fire panel verification timer 60 s, full alarm means the whole floor evacuates. Okafor holding the panel by hand. Civilians: the 4 pinned engineers got out the east end through the smoke, all coughing, 2 cold, no injuries; 38 guests in the lounge asking if the alarm is real. 3 windows will not open.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-16",
+      "step": 16,
+      "time": "16:48",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "SEC, Reyes. Guard on the stair door saw a faint figure in an apron standing at the top of the stairs for about 8 s, then thinner, then nothing. It repeated at 16:46, same spot, same 8 s. 1 witness (the guard). Elevator lobby camera shows a cold smear on the lens. Sensor E-1: emf 44 mG, temp 11.0C, motion events 6, readings falling since 16:44. No crowd here, the line cleared hours ago. Civilians: 0 at risk, 3 guards at the desk, fine. Reyes says it did not move toward anybody, it just stood and faded. Could be a trail from the bar. The bar is the problem right now.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-17",
+      "step": 17,
+      "time": "17:05",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "EAST FLOOR thermal strip, 6 points left to right: 14.1, 9.0, 3.2, -1.8, 15.0, 17.0 C. A cold band is moving east along the under-floor cable run at about 1 m/s toward bays 20-24, emf 31 mG riding with it, motion events 29, chairs in its path sliding sideways. Civilians: 31 engineers on the east floor, 7 directly in the path, 4 moved when asked, 3 refuse to leave their laptops. Dana on radio: 'leave the laptops, walk to the lounge'. Someone fetched a space heater from the lounge cupboard and wants to try it. Ops asks which way to send people: lounge has 38 guests since the alarm scare.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-18",
+      "step": 18,
+      "time": "17:40",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "IT, Priya, 17:40. All 48 APs down, building-wide Wi-Fi gone, submissions in 45 min. Tomas went into the network closet at 17:35 to power-cycle the core switch and the door controller failed, maglock is holding, he is inside. Sensor N-1: emf 142 mG, temp -9C, motion events 31. Intercom: Tomas says his hands are numb, he can see his breath, there is a second voice under his, low. Core switch fans screaming, camera 2 and door log dead. Civilians: 1 trapped (Tomas), conscious, 2 bars on his phone. Okafor has the manual key but the hallway outside the closet is at 3C.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-19",
+      "step": 19,
+      "time": "18:08",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "WEST FLOOR, 18:08. Okafor got Tomas out at 17:52 with the manual key, cold hands, at first aid. Faraday mesh went over the closet rack at 17:58, emf in the closet 142 down to 12 mG, Wi-Fi back at 18:02 on 41 of 48 APs. Then at 18:06:14 twenty-two laptop mics on the west floor each recorded the same 3 s voice, 'last call', within 40 ms of each other. Sensor W-3: emf 18 mG, temp 17.5C, motion events 14. Civilians: 22 engineers, 2 shaken, all still typing. Submissions close in 17 min.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-20",
+      "step": 20,
+      "time": "18:25",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "REG DESK, 18:25, submissions closed. Sensor R-1: emf 47 mG, temp 8.4C, lights dimming slowly, motion events 120. Radio: 60 engineers still at the organizer table pressing submit on a flaky connection, 6 mid-upload, 12 with numb fingers. Staff asked them to leave, they refuse until their upload finishes. A badge printer started up with nothing queued. Dana: 'I can't drag people out by their laptops.' Okafor says the stair door is clear, elevator lobby is clear. Cold is thickest at the table; the far side of the room is 17C.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-21",
+      "step": 21,
+      "time": "18:40",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "LOUNGE, dinner 18:40. Pizza and drinks at the buffet, 45 guests. A volunteer dropped about 2 kg of dry ice into the punch bowl and fog is rolling off the table onto the floor. Wireless sensor L-2 at table height reads -6.1C, at 1.5 m it reads 21.4C. emf 2 mG, motion events 88. Two guests shout 'it is back', one drops a plate, a few laugh. Civilians: 45, all upright, no injuries, one asking whether punch is safe to drink. Volunteer is stirring with a ladle and looks sorry.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-22",
+      "step": 22,
+      "time": "19:10",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "STAGE, Kit, 19:10. Running the Halloween ambience bed through the sub for the demo intro, sweeps at about 18 Hz. Six early arrivals in the front rows report dread, tight chest, a grey shape drifting at the edge of vision, one left. Stage camera shows nobody there. Sensor MS-2: emf 2 mG, temp 21.2C, motion events 31. Civilians: 6 front-row guests, a bit shaken, 1 stepped out, 80 more arriving. Kit: 'Sub is at plus 6 dB, sorry, it does that.' Ops wants to know if the same voice from the 14:50 mic recording is back.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-23",
+      "step": 23,
+      "time": "19:35",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "STAGE, 19:35, demos started. First team at the lectern. Stage lights flickering at about 2 Hz, then the PA carries a voice across all 140 seats: 'last call'. emf 77 mG at the lectern, temp 8.1C, motion events 64, a shape leaning on the lectern behind the presenter. Civilians: 140 in the audience, 20 standing up, front 3 rows (24 people) in the cold air, presenter frozen mid-sentence. Kit has UV gels on hand for the stage fixtures. Salt would have to go along the stage lip, and nobody wants to walk past the lectern to lay it. Exits clear: stair door and lobby elevators.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-phantom-24",
+      "step": 24,
+      "time": "20:05",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "CB, 20:05. After the UV gels and the pulse at the stage the readings fell everywhere. Sensor CB-1: emf 7 mG, temp 19.8C, motion events 3. Salt ring and iron filings around the machine still intact, sage bowls cold. Espresso gauge still twitching between 0 and 2 bar. One last cup printed MARA. Civilians: 0 at risk, 2 baristas cleaning up, 6 guests getting late coffee. emf has crept up from 5 to 7 mG over the last 30 min. Dana wants someone watching the bar until close.",
+      "source": "simulated"
+    }
+  ]
+}

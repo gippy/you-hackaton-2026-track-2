@@ -78,11 +78,12 @@ function loadIncidents(): FixtureIncident[] {
 function loadScenarios(): Scenario[] {
     return readdirSync(FIXTURES, { withFileTypes: true })
         .filter((d) => d.isDirectory() && existsSync(join(FIXTURES, d.name, 'scenario.json')))
-        .map((d) => ({
-            id: d.name,
-            title: d.name[0].toUpperCase() + d.name.slice(1),
-            steps: readTicks(join(FIXTURES, d.name, 'scenario.json'), d.name),
-        }));
+        .map((d) => {
+            const path = join(FIXTURES, d.name, 'scenario.json');
+            const { title, sky } = readJson<{ title?: string; sky?: boolean }>(path);
+            return { id: d.name, title: title ?? d.name[0].toUpperCase() + d.name.slice(1), sky: sky === true, steps: readTicks(path, d.name) };
+        })
+        .sort((a, b) => Number(b.id === 'nightfall') - Number(a.id === 'nightfall') || a.title.localeCompare(b.title)); // the demo scenario first
 }
 
 /** The art library's entries the page needs: file, kind, alt text and a content hash. Empty when there is no art. */
