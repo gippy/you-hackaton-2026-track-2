@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useReducer, useRef, useState } from 'react';
 
 import type { Action, ClientMessage, ServerMessage, StepId } from '../../shared/protocol.ts';
 import { Card, domain, Link, type Ctx } from './components.tsx';
-import { artUrl } from './url.ts';
+import { artUrl, withToken } from './url.ts';
 import { SoundBoard } from './audio.ts';
 import { initial, reduce } from './station.ts';
 
@@ -57,7 +57,7 @@ export function App() {
         let closed = false;
         let timer = 0;
         const connect = () => {
-            const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
+            const socket = new WebSocket(withToken(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`));
             socket.onopen = () => send({ type: 'connected', value: true });
             socket.onmessage = (ev) => {
                 const msg = JSON.parse(ev.data) as ServerMessage;

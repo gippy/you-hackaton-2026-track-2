@@ -45,8 +45,9 @@ const { values: args } = parseArgs({
         'sky-warnings': { type: 'string', default: 'scenario' },
         'live-sky-warnings': { type: 'boolean', default: false },
         incident: { type: 'string' },
-        host: { type: 'string', default: process.env.HOST ?? '127.0.0.1' },
-        port: { type: 'string', default: process.env.PORT ?? '8666' },
+        // Apify Standby sets ACTOR_WEB_SERVER_PORT; the server then listens on every interface.
+        host: { type: 'string', default: process.env.HOST ?? (process.env.ACTOR_WEB_SERVER_PORT ? '0.0.0.0' : '127.0.0.1') },
+        port: { type: 'string', default: process.env.ACTOR_WEB_SERVER_PORT ?? process.env.PORT ?? '8666' },
         'no-browser': { type: 'boolean', default: false },
     },
 });

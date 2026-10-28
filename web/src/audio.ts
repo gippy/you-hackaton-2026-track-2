@@ -3,6 +3,7 @@
 // Browsers block audio until the user interacts with the page, so sound starts off. The "Enable
 // sound" button, or a dispatch click, turns it on. Nothing plays while it is off.
 import type { ServerMessage } from '../../shared/protocol.ts';
+import { withToken } from './url.ts';
 
 const AMBIENT_SHARE = 0.25; // the drone sits under everything else
 
@@ -16,7 +17,7 @@ export class SoundBoard {
     setEnabled(on: boolean): void {
         this.enabled = on;
         if (on) {
-            this.ambient ??= Object.assign(new Audio('./sfx/ambient_drone.mp3'), { loop: true });
+            this.ambient ??= Object.assign(new Audio(withToken('./sfx/ambient_drone.mp3')), { loop: true });
             this.ambient.volume = this.volume * AMBIENT_SHARE;
             void this.ambient.play().catch(() => {});
             // The station on screen was usually built before sound was on: open with its cue now.
@@ -35,7 +36,7 @@ export class SoundBoard {
 
     /** Play a sound from the library by id. Resolves when it ends, or at once when sound is off or it fails. */
     effect(id: string): Promise<void> {
-        return this.play(`./sfx/${id}.mp3`);
+        return this.play(withToken(`./sfx/${id}.mp3`));
     }
 
     private play(url: string, keep?: (a: HTMLAudioElement) => void): Promise<void> {
@@ -60,7 +61,7 @@ export class SoundBoard {
         else if (msg.type === 'dispatch' && msg.mode === 'offline') void this.effect('squelch');
         else if (msg.type === 'speech') {
             this.voice?.pause();
-            void this.effect('squelch').then(() => this.play(msg.url, (a) => (this.voice = a)));
+            void this.effect('squelch').then(() => this.play(withToken(`./${msg.url}`), (a) => (this.voice = a)));
         }
     }
 }
