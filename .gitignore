@@ -28,3 +28,9 @@ web/dist/
 # Raw renders: only the WebP files and icons in art/nightfall are committed
 art/raw/
 art/*.png
+
+# Eval run artifacts: full flow states, worker logs, the search cache and frozen pipeline copies
+eval/raw/
+eval/logs/
+eval/cache/
+eval/snap-*/
