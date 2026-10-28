@@ -14,6 +14,7 @@ from pathlib import Path
 _LIB = json.loads((Path(__file__).resolve().parent.parent / "shared" / "library.json").read_text())
 
 SECTORS: dict[str, str] = _LIB["sectors"]               # loft sectors the floor plan draws
+SECTOR_ALIASES: dict[str, str] = _LIB["sector_aliases"]  # other names for a sector, e.g. the official fixture's catering_coffee_bar
 LAYOUT: dict[str, list[int]] = _LIB["layout"]           # x, y, w, h on a 600 x 360 canvas
 ARSENAL: dict[str, str] = _LIB["arsenal"]               # everything the containment team can deploy
 PLAYBOOKS: dict[str, dict] = _LIB["playbooks"]          # the router picks one per incident class
@@ -24,6 +25,11 @@ THEMES: list[str] = _LIB["themes"]
 SUPPORT: list[str] = _LIB["support"]                    # how well the sources back a countermeasure
 SOUNDS: dict[str, dict] = _LIB["sounds"]                # generated once by `pnpm sfx`, played by the page
 CUES: list[str] = [k for k, v in SOUNDS.items() if v["kind"] in ("cue", "sting")]  # the sounds a manifest may open with
+
+
+def sector_id(name: str) -> str:
+    """A sector slug from any of its names: catering_coffee_bar becomes catering."""
+    return SECTOR_ALIASES.get(name, name)
 
 
 def adjacency() -> dict[str, list[str]]:
@@ -124,8 +130,8 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int) -> tuple[di
             if props.get("recommended") not in ids and options:
                 props["recommended"] = options[0]["id"]
         if kind == "FloorPlan":
-            props["seal"] = list(dict.fromkeys(s for s in props.get("seal") or [] if s in SECTORS))
-            route = list(dict.fromkeys(s for s in props.get("safe_route") or [] if s in SECTORS))
+            props["seal"] = list(dict.fromkeys(sector_id(s) for s in props.get("seal") or [] if sector_id(s) in SECTORS))
+            route = list(dict.fromkeys(sector_id(s) for s in props.get("safe_route") or [] if sector_id(s) in SECTORS))
             adj = adjacency()
             if any(b not in adj[a] for a, b in zip(route, route[1:])):
                 notes.append("dropped a safe route that walks through walls")

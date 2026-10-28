@@ -12,6 +12,9 @@ const STEPS: { id: StepId; label: string; partner: string }[] = [
     { id: 'compose', label: 'Compose', partner: 'Parasail stream' },
 ];
 
+/** A timeline label: the report without its leading "ALERT 18:15" or "GUEST REPORT 11:20," prefix. */
+const stepLabel = (raw: string) => raw.replace(/^[A-Z ]+\d{1,2}:\d{2},?\s*/, '').slice(0, 60);
+
 /** Light or dark: starts from the system setting (applied in index.html before paint), a click remembers the other. */
 function ModeToggle() {
     const [mode, setMode] = useState(document.documentElement.dataset.mode === 'light' ? 'light' : 'dark');
@@ -88,6 +91,11 @@ export function App() {
     }
     const sourceLabel = !state.connected ? 'disconnected' : state.source === 'snapshot' ? 'saved run' : state.source === 'live' ? 'live run' : state.mode ?? 'connecting';
     const armed = live && state.liveDispatch;
+    // Where the station on screen sits in a scenario, when it is one of its steps.
+    const scenario = state.scenarios.find((s) => s.steps.some((step) => step.incident_id === incident?.incident_id)) ?? state.scenarios[0];
+    const current = scenario?.steps.find((step) => step.incident_id === incident?.incident_id);
+    const running = Boolean(state.source) && !state.manifest;
+    const compileId = (id: string) => post({ type: 'compile', incident_id: id });
     // A harmless report: the model recommends watching, so the page does not push a dispatch.
     const calm = state.manifest?.recommended_action === 'observe';
 
@@ -109,7 +117,11 @@ export function App() {
                     <div>
                         <h1>{state.title}</h1>
                         <div className="sub">
-                            {incident ? `${incident.incident_id || 'pasted incident'} · ${incident.severity_tier || `threat ${incident.incident.threat_level}/5`}` : 'waiting for an incident'}
+                            {current
+                                ? `${scenario?.title} · step ${current.step} of ${scenario?.steps.length} · ${current.time} · ${current.severity_tier}`
+                                : incident
+                                  ? `${incident.incident_id || 'pasted incident'} · ${incident.severity_tier || `threat ${incident.incident.threat_level}/5`}`
+                                  : 'waiting for an incident'}
                         </div>
                     </div>
                 </div>
@@ -167,6 +179,41 @@ export function App() {
 
             <main className="layout">
                 <aside className="rail">
+                    {scenario && (
+                        <section className="panel">
+                            <h2>
+                                Scenario: {scenario.title} <em className="partner">simulated</em>
+                            </h2>
+                            <div className="stepper">
+                                <button type="button" className="ghost" disabled={running || !current || current.step === 1} onClick={() => current && compileId(scenario.steps[current.step! - 2].incident_id)}>
+                                    ◀ Previous
+                                </button>
+                                <span className="muted small">{current ? `Step ${current.step} of ${scenario.steps.length}, ${current.time}` : 'Not started'}</span>
+                                <button
+                                    type="button"
+                                    disabled={running || current?.step === scenario.steps.length}
+                                    onClick={() => compileId(scenario.steps[current ? current.step! : 0].incident_id)}
+                                >
+                                    {current ? 'Next step ▶' : 'Start ▶'}
+                                </button>
+                            </div>
+                            <ol className="timeline">
+                                {scenario.steps.map((step) => (
+                                    <li key={step.incident_id}>
+                                        <button
+                                            type="button"
+                                            className={step.incident_id === current?.incident_id ? 'active' : ''}
+                                            title={step.raw_incident_stream}
+                                            disabled={running}
+                                            onClick={() => compileId(step.incident_id)}
+                                        >
+                                            <time>{step.time}</time> {stepLabel(step.raw_incident_stream)}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ol>
+                        </section>
+                    )}
                     <section className="panel">
                         <h2>Pipeline</h2>
                         <ol className="steps">
@@ -237,7 +284,7 @@ export function App() {
                     </section>
 
                     <section className="panel">
-                        <h2>Incidents</h2>
+                        <h2>Single incidents</h2>
                         <ul className="incidents">
                             {state.incidents.map((i) => (
                                 <li key={i.incident_id}>
@@ -245,8 +292,8 @@ export function App() {
                                         type="button"
                                         className={`ghost ${incident?.incident_id === i.incident_id ? 'active' : ''}`}
                                         title={i.raw_incident_stream}
-                                        disabled={state.mode === 'offline'}
-                                        onClick={() => post({ type: 'compile', incident_id: i.incident_id })}
+                                        disabled={running}
+                                        onClick={() => compileId(i.incident_id)}
                                     >
                                         <b>{i.incident_id}</b> {i.severity_tier}
                                         {i.source === 'simulated' && <span className="tag">simulated</span>}

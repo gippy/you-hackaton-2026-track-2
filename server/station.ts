@@ -11,12 +11,13 @@ import { createInterface } from 'node:readline';
 import type { WebSocket, WebSocketServer } from 'ws';
 
 import library from '../shared/library.json' with { type: 'json' };
-import type { ClientMessage, FixtureIncident, FlowEvent, Library, RunState, ServerMessage } from '../shared/protocol.ts';
+import type { ClientMessage, FixtureIncident, FlowEvent, Library, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
 import { alertText, channelId, send } from './dispatch.ts';
 import { OneError } from './one.ts';
 import { speak } from './speech.ts';
 
 const REPLAY_GAP_MS = 350; // longest pause between replayed messages
+const SAFE_ID = /^[\w.-]{1,80}$/; // incident ids that are safe as file names
 
 export interface SavedRun {
     saved_at: string;
@@ -30,6 +31,7 @@ export interface StationOptions {
     offline: boolean;
     liveDispatch: boolean;
     incidents: FixtureIncident[];
+    scenarios: Scenario[];
 }
 
 type WorkerLine = FlowEvent | { type: 'result'; state: RunState } | { type: 'fatal'; detail: string };
@@ -57,6 +59,7 @@ export class Station {
             library: library as unknown as Library,
             channel: channelId(),
             incidents: this.opts.incidents,
+            scenarios: this.opts.scenarios,
         };
     }
 
@@ -94,7 +97,7 @@ export class Station {
 
     /** Build the station for a fixture incident, by id. Returns false when no fixture has that id. */
     compileIncident(incidentId: string): boolean {
-        const incident = this.opts.incidents.find((i) => i.incident_id === incidentId);
+        const incident = [...this.opts.scenarios.flatMap((s) => s.steps), ...this.opts.incidents].find((i) => i.incident_id === incidentId);
         if (!incident) return false;
         void this.compile(incident.raw_incident_stream, incident.incident_id, incident.severity_tier);
         return true;
@@ -109,7 +112,7 @@ export class Station {
         this.busy = true;
         try {
             if (this.opts.offline) {
-                await this.replay('Offline mode: the pipeline is off, so this is the last saved run.');
+                await this.replay('Offline mode: the pipeline is off, so this is a saved run.', incidentId);
                 return;
             }
             this.history = [];
@@ -126,7 +129,7 @@ export class Station {
                 const detail = (err as Error).message;
                 console.error(`Pipeline failed: ${detail}`);
                 this.emit({ type: 'error', detail: `Pipeline failed: ${detail.slice(0, 300)}` });
-                await this.replay('The live pipeline failed, so this is the last saved run.');
+                await this.replay('The live pipeline failed, so this is a saved run.', incidentId);
                 return;
             }
             const saved_at = `${new Date().toISOString().slice(0, 19)}Z`;
@@ -168,14 +171,24 @@ export class Station {
         });
     }
 
+    /** Save a run as the last one, and as its incident's own run, so offline mode can replay any step. */
     private save(run: SavedRun): void {
-        const path = join(this.outDir, 'last_run.json');
-        writeFileSync(`${path}.tmp`, JSON.stringify(run, null, 2));
-        renameSync(`${path}.tmp`, path);
+        const paths = [join(this.outDir, 'last_run.json')];
+        if (SAFE_ID.test(run.state.incident_id)) {
+            mkdirSync(join(this.outDir, 'runs'), { recursive: true });
+            paths.push(join(this.outDir, 'runs', `${run.state.incident_id}.json`));
+        }
+        for (const path of paths) {
+            writeFileSync(`${path}.tmp`, JSON.stringify(run, null, 2));
+            renameSync(`${path}.tmp`, path);
+        }
     }
 
-    /** The last good run: out/ first, then the newest snapshot committed with the repo. */
-    loadSaved(): SavedRun | null {
+    /**
+     * A saved run: this incident's own (out/runs, then snapshots/), else the last good run, else the
+     * newest snapshot committed with the repo.
+     */
+    loadSaved(incidentId = ''): SavedRun | null {
         const snapshots = join(this.opts.root, 'snapshots');
         const committed = existsSync(snapshots)
             ? readdirSync(snapshots)
@@ -183,7 +196,8 @@ export class Station {
                   .map((f) => join(snapshots, f))
                   .sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)
             : [];
-        for (const path of [join(this.outDir, 'last_run.json'), ...committed]) {
+        const own = SAFE_ID.test(incidentId) ? [join(this.outDir, 'runs', `${incidentId}.json`), join(snapshots, `${incidentId}.json`)] : [];
+        for (const path of [...own, join(this.outDir, 'last_run.json'), ...committed]) {
             try {
                 return JSON.parse(readFileSync(path, 'utf8')) as SavedRun;
             } catch {
@@ -194,8 +208,8 @@ export class Station {
     }
 
     /** Stream a saved run through the same messages, so the page builds the same way offline. */
-    async replay(reason: string): Promise<void> {
-        const saved = this.loadSaved();
+    async replay(reason: string, incidentId = ''): Promise<void> {
+        const saved = this.loadSaved(incidentId);
         if (!saved) {
             this.emit({ type: 'error', detail: 'No saved run to show. Run once online first.' });
             return;
@@ -203,7 +217,8 @@ export class Station {
         this.history = [];
         this.run = saved;
         const { state } = saved;
-        this.emit({ type: 'run_begin', incident_id: state.incident_id, source: 'snapshot', detail: `${reason} Saved ${saved.saved_at}.` });
+        const other = incidentId && state.incident_id !== incidentId ? ` No run of ${incidentId} is saved, so this is ${state.incident_id || 'another incident'}.` : '';
+        this.emit({ type: 'run_begin', incident_id: state.incident_id, source: 'snapshot', detail: `${reason}${other} Saved ${saved.saved_at}.` });
         let last = 0;
         for (const { t, msg } of saved.events) {
             await sleep(Math.min(Math.max((t - last) * 1000, 0), REPLAY_GAP_MS));

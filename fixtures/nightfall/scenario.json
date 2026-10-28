@@ -1,0 +1,197 @@
+{
+  "scenario": "nightfall",
+  "ticks": [
+    {
+      "incident_id": "sim-nightfall-01",
+      "step": 1,
+      "time": "11:20",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "GUEST REPORT 11:20, relayed by reception tablet: 'There's a VAMPIRE in the lobby, he asked the guard to invite him in!' Cam E-2 shows one adult in a floor-length black cape, white face paint and plastic fangs, badge B-0061 on the lapel, queueing at the security desk behind 41 other arrivals. He bowed and said 'may I enter?' when the guard waved him through. IR gate skin reading 33.8C. Ambient 21C, EMF 2 mG. Window lux 18,200, sun on the lobby floor, sunset in 415 min. Motion events 212 in 10 min. Reception wants to know whether the line should be held.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-02",
+      "step": 2,
+      "time": "12:10",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "LOG 12:10 freight lift to the 2nd floor. Courier drops three wooden crates, 2.1 m long, addressed to 'Evening Shift Events, stage plinths'. Scale: 241 kg, 38 kg, 36 kg against a manifest of 35 kg each. Black wax on the lids. Dark soil sifting from the seams of the heavy one onto the lift floor, pH strip 7.9. Heavy crate skin 9C, corridor 21C. EMF 3 mG, normal. Window wall 21,300 lux, sunset in 365 min. Porter plans to park all three in the lounge since the stage is not ready. Signature on the slip is a smudge. Porter: 'it smells like a cellar in there.'",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-03",
+      "step": 3,
+      "time": "12:50",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "RADIO 12:50 lounge. Blinds on all three lounge windows were lowered at 12:41, nobody on staff admits to it. Outdoor lux 24,000, lounge floor 38. The three crates stand along the back wall. Three soft knocks from inside the heavy crate at 12:47 and again at 12:49, 20 seconds apart. IR on the lid reads 8.7C, lounge 21C, and the cold is spreading 40 cm across the carpet. 28 attendees are on the sofas near the door, laptops open, nobody has touched the crates. Sunset in 325 min. A volunteer asks whether to open the lid to check or ring the venue manager. Motion events 9 in the last 10 min.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-04",
+      "step": 4,
+      "time": "13:05",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "LOG 13:05 catering counter, lunch started 13:00. Garlic bread on trays 4 to 6 and 12 bowls of aioli, 140 portions out. Nine guests in 10 minutes complained the smell carries to the lounge door and the hack floor. One attendee in a hoodie read from his phone that 'garlic is what you hang against vampires' and strung a braid of bulbs over the coffee bar, then asked staff to leave it there. Kitchen confirms 3 kg of garlic in the dough. Queue 22 deep. Temp 22C, window lux 22,800, sunset in 310 min. Barista asks whether the braid can stay by the espresso machine.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-05",
+      "step": 5,
+      "time": "14:20",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "ALERT 14:20 sound-proof booths, hack floor west. Attendee B-0233 found slumped in booth 3 by a teammate. Two small puncture marks on the left side of the neck, bleeding slow, pulse 48, SpO2 90%, skin 30.1C and pale. Booth glass sits in direct sun, window lux 14,100. She says: 'A tall man in a long coat asked if he could sit with me. I said yes. Then I was cold.' Door was closed, no forced entry. 61 attendees within 15 m, first-aid kit on site, no medic. Sunset in 235 min. Room 21C, EMF 3 mG. Corridor cam shows nobody leaving after 14:14.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-06",
+      "step": 6,
+      "time": "15:05",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "REPORT 15:05 registration desk, 3:00 check-in round. Two walk-ins with no pre-registration. Loft rule is advance registration only, but attendee B-0287 told the desk 'they're with my team, let them in' and two badges were printed: Erzsi B. and Max S. IR fever gate read 16.1C and 16.7C, flagged 'sensor out of range, recalibrate'; the same gate read the next 12 people at 33 to 34C. The lobby security mirror shows the desk and the queue but not the two, and the desk assumed the glass was dirty. Window lux 9,600, sunset in 190 min. 151 badges active. Desk asks if the two can go to the hack floor.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-07",
+      "step": 7,
+      "time": "15:50",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "REPORT 15:50 first-aid corner, hack floor east. Three members of one team (table 22, badges B-0377 to B-0379) came in separately with fever: 38.4C, 38.7C, 39.0C, each up 0.3C in 20 min. Itching along the forearms, one shaved twice since lunch, heart rate 104 to 112. They keep checking a moon-tracker app: moonrise in 252 min, 20:02 at azimuth 54, 93% lit. Each ate 3 portions of the rare roast beef at lunch and nothing else. Teammate says they were scratched 'on a night hike near Muir Woods on Sunday'. They refuse to leave their table. Window lux 7,300, room 22C.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-08",
+      "step": 8,
+      "time": "16:40",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "ALERT 16:40 SYSTEMS: grid sag. Lights on hack floors east and west dropped for 4 seconds, 14 access points rebooted, 2 badge doors released and re-latched at 16:40:07, UPS carried the network closet. Floor lux fell from 4,100 to 9 during the dark spell. Motion sensors logged 380 events in 4 s as about 120 people stood up at once. One guest screams that 'something grabbed my ankle'; a neighbor holds up a dropped patch cable. EMF spike 11 mG at 16:40:01 on the closet feed, back to 3 mG by 16:40:05. Utility feed shows a 3.2 s voltage sag on the street transformer. Temp 21C. Sunset in 95 min. All APs back by 16:41.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-09",
+      "step": 9,
+      "time": "17:10",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "RADIO 17:10 hack floor east window wall. Fourteen blinds lowered in 6 minutes by a tall man in a long coat, badge B-0503 Max S., who told staff the glare was killing his screen. Window-wall lux 3,900 falling to 160, floor average 310. Erzsi B. and Max S. sit at tables 14 to 16 with laptops shut, nobody has seen them eat or drink. 38 attendees seated within 6 m, 8 of them on teams still submitting before 18:25. IR skin on both 16C. They sit upwind of the lunch garlic still lingering by the east vents. Sunset in 65 min. Staff want the blinds up. Temp 22C.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-10",
+      "step": 10,
+      "time": "17:40",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "ALERT 17:40 lounge. The heavy crate lid was pushed off from inside at 17:33; the two lighter crates hold only soil bags. A tall pale subject in a long coat stands at the back wall, skin 15.8C, blinds still down, lounge lux 22. Six attendees are hiding behind the sofas, including a 16-year-old intern. A volunteer hung a garlic braid on the main door frame at 17:36: 14 approach events by the subject, 0 crossings in 4 minutes. He paces the line and will not step over it. Doorway draft 13C. The lounge's side door to the hack floor west has no garlic and is latched but not locked. Sunset in 35 min. Volunteer asks: 'do we invite him out?'",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-11",
+      "step": 11,
+      "time": "18:00",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "GUEST REPORT 18:00, hack floor west window wall. About 60 attendees crowd the glass to photograph the sunset, motion events 310 in 10 min. One guest says that in her phone photos 'the man next to me is just a black shape, no face, no reflection in the glass'. EXIF shows 1/4000 s at ISO 50 with the sun directly behind him; the next three frames show him clearly, badge B-0114, checked in 09:52, IR gate skin 33.5C. Window lux 2,400 and falling, sunset in 15 min, sky orange at azimuth 254. Floor temp 20C. Reception asks whether to move the crowd back from the glass.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-12",
+      "step": 12,
+      "time": "18:15",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "ALERT 18:15 sunset reached, west glass 410 lux and dropping. At 18:15:20 the lounge side door to hack floor west opened; the tall subject from the lounge walked through, passing within 2 m of 6 attendees. The garlic braid on the main door never moved. Floor lux 280, blinds still down on the east side. IR skin 15.9C, temp in his wake 12C. 61 attendees on hack floor west, 42 of them refusing to leave their desks because submissions close in 10 minutes. Two staff are pulling attendees by the sleeve. Subject is walking toward the SW stairwell and the catering counter. Dinner starts at 18:30.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-13",
+      "step": 13,
+      "time": "18:25",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "RADIO 18:25 SW stairwell, landing 2, submissions closed 18:25. Attendee B-0418 is on the floor, conscious, two fresh marks on the left wrist. Subject Max S. is crouched over her; a second attendee, B-0356, wearing a sterling silver ring, grabbed his sleeve and the cuff hissed, smoke rising, a welt 3 cm across on the subject's wrist. He released and backed off down to landing 1. Landing lux 11. Skin 16.3C. 7 witnesses on the stairs, 31 attendees using this stair to reach dinner. Sunset was 10 min ago. Staff ask whether silver cutlery from catering would work.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-14",
+      "step": 14,
+      "time": "18:40",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "RADIO 18:40 catering counter, dinner service started 18:30, 140 in the line. Subject Erzsi B. stopped 3 m from the garlic naan and the braid over the coffee bar, then crouched over a spilled tray of poppy seed bagels and has been counting seed by seed, 1,812 so far, no motion otherwise for 22 min. Subject Max S. is at the staff-only kitchen door asking the catering lead, 'may I come in?'. She almost said yes, a radio voice shouted 'do not invite'. Kitchen has 4 staff, 1 propane range. Temp 24C near the range, window lux 0. Sunset was 25 min ago. Guests at the far end of the line keep eating.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-15",
+      "step": 15,
+      "time": "18:55",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "REPORT 18:55 hack floor east, table 22. Fever readings on the three teammates: 39.4C, 39.6C, 39.8C. They have stopped typing and stand along the east window wall facing northeast, where moonrise is listed in 67 min at azimuth 54, 93% lit. Pupils wide, nails darker, sweat pooling, one growled at a volunteer offering water. Heart rate 124 to 131. Table 21 moved away after one reached for a teammate's throat in a 'hug'. 22 attendees within 10 m. Motion events 150 in 10 min. Window lux 0, floor lux 310. Blinds are down on this wall. First-aid asks whether to keep them here until their demo slot at 20:05.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-16",
+      "step": 16,
+      "time": "19:10",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "ALERT 19:10 SYSTEMS: breaker panel in the network closet tripped for lighting zones L3 to L6. House lights dark across hack floor west, the lounge and the stage corridor, emergency strips only, floor lux 5. Closet camera: AV tech B-0291 let in a man who 'needed a charge point', said 'come right in', and the man threw the breaker. Network still up, doors still latched, 2 of 3 elevator cars on UPS. Temp in the closet 12C. 73 attendees in the dark zone, the backup strips cover 40 percent. Civil twilight ended 28 min ago. Demo block opens in 20 minutes and the stage rig is on L5.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-17",
+      "step": 17,
+      "time": "19:20",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "RADIO 19:20 entrance, street doors. Four more arrivals in dark coats stand 3 m from the glass, asking each person who exits to 'let us in'. 11 refusals logged by the guard since 19:09, 0 crossings. Registry has no match for any of them; advance registration only. A smoker propped the left door open with a stand at 19:18, door ajar 40 cm, guard re-closing. 36 attendees queued inside for the demo block, 9 at the doors. Sun set 65 min ago, astronomical dusk in 23 min. IR cam outside shows skin 14C for all four. Courtyard lux 3, entrance lobby 140. Guard asks: 'are we locking down?'",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-18",
+      "step": 18,
+      "time": "19:33",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "LOG 19:33 main stage, demo block opened 19:30, 160 attendees in the room. Fog machine on a 20 s cycle, strobes on teams 11 and 12, and a wireless mic feeding back with a 4.1 kHz howl at 94 dB. Team 12 is wearing wolf-ear headbands and howled on cue. Guest report: 'a wolf on the stage!' One attendee ducked under a chair. Stage tech traces the howl to mic 3 in the monitor wedge, gain cut at 19:34. Room temp 27C from crowd heat, EMF 3 mG. Motion events 1,420 in 10 min as the crowd stands and cheers. Demo 13 is up next. Sunset was 78 min ago.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-19",
+      "step": 19,
+      "time": "19:46",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "ALERT 19:46 main stage. Astronomical dusk passed 3 min ago. House lights at 4 percent for projector contrast, floor lux 12, 160 attendees seated. Two subjects entered through the rear door at 19:41 behind a group of latecomers, seats now taken in rows 14 to 16. Attendee B-0522 is down in row 15 with two neck marks, 3 neighbours moving away. Rear row skin temps 15 to 16C. Stage manager says demo 14 is nearly done and that nobody can find the house light slider because the lighting breaker is dead. Rear exit door R2 is open to the hall by the SW stairwell. Moonrise in 16 min.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-20",
+      "step": 20,
+      "time": "19:55",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "RADIO 19:55 moonrise in 7 min. Team Full Moon Labs left table 22 and walked into the main stage hall, three abreast, 20:05 slot on the board. Fevers 40.2C, 40.4C, 40.6C on the hall IR gate. Skin rippling at the jaw, nails 1 cm longer than at 18:55, breathing 40 per minute. About 158 attendees still seated; 2 vampire subjects at row 16; 5 injured civilians at the foot of the stairs. Silver ring owner B-0356 stands by the SW stairwell with 4 sets of silver cutlery. Hall lux 12. Moon 93% lit, azimuth 54. Stage manager asks if the demo should be cancelled.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-21",
+      "step": 21,
+      "time": "20:02",
+      "severity_tier": "CRITICAL_HAUNT",
+      "raw_incident_stream": "ALERT 20:02 moonrise at azimuth 54, 93% lit. Three teammates collapsed at the foot of the stage between 20:02 and 20:03, now on all fours; hair along the neck, jaws elongating, heart rate 188. Temp at floor level 31C in the front rows. Howling at 112 dB. 158 attendees in the hall stand and surge to the doors; the rear door R2 and the SW stairwell are jammed. Two vampire subjects still at row 16, 3 more attendees bitten. House lights at 4 percent, floor lux 12. Staff shout the wolves' badge names. Silver netting on the stage-left cart, 2 reels. The AV cage holds 6 cans of expanding barricade foam.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-22",
+      "step": 22,
+      "time": "20:10",
+      "severity_tier": "ELEVATED_HAUNT",
+      "raw_incident_stream": "RADIO 20:10 main stage. Silver netting dropped over 2 wolves at 20:06, third wolf holding the stage steps. Staff call Dana, Priya and Theo by their badge names, three times each; two revert to human at 20:08 and 20:09, skin 38.1C, shaking, wounds on the forearms. Third wolf still at 40.5C, netting 1 reel left. House lights up to 100 percent at 20:07 after the breaker was reset; floor lux 640. Vampire subjects retreat from the light to the rear door. 158 attendees out through the SW stairwell and the lobby elevators, 9 injured, 6 bitten. Moon azimuth 55, altitude 2 degrees.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-23",
+      "step": 23,
+      "time": "20:18",
+      "severity_tier": "LOW_HAUNT",
+      "raw_incident_stream": "LOG 20:18 entrance and registration. Registry revokes the badges for Erzsi B. and Max S. at 20:14, and the guard states aloud that these two and the tall elder from the lounge are not invited. The three move to the street doors under a 400 W UV floodlight and a garlic line on the threshold, flinching and hissing, Erzsi still counting seeds from her hand. The four from the courtyard left at 20:09 when the lobby lights came up. Doors latched at 20:17 behind them, 0 crossings since. 27 attendees in the lobby, 157 of 160 accounted for. Lobby lux 900, temp 19C. Subject skin 14C. Moon altitude 4 degrees.",
+      "source": "simulated"
+    },
+    {
+      "incident_id": "sim-nightfall-24",
+      "step": 24,
+      "time": "20:26",
+      "severity_tier": "UNVERIFIED",
+      "raw_incident_stream": "REPORT 20:26 first-aid corner, hack floor east, event ends 20:30. Headcount 160 of 160. 9 injured, of whom 6 carry bite marks and 3 scratches. Dana, Priya and Theo are back in human form, fevers 37.8C, 37.9C, 38.0C, wrapped in blankets and asking for water; Theo's forearm wound has bled freely. B-0233 and B-0418 are stable. Moon altitude 5 degrees, still 93% lit, sets 11:52 tomorrow. Doors latched, guard on the street side. Lobby lux 900, floor temp 21C. Organizers ask whether the bitten should be released home or kept under watch overnight.",
+      "source": "simulated"
+    }
+  ]
+}

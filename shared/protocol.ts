@@ -97,6 +97,17 @@ export interface FixtureIncident {
     severity_tier: string;
     raw_incident_stream: string;
     source: 'official' | 'simulated';
+    /** Scenario steps only: the scenario's id, the step number and the step's 24-hour clock time. */
+    scenario?: string;
+    step?: number;
+    time?: string;
+}
+
+/** A scenario from fixtures/<id>/scenario.json, played one step at a time. */
+export interface Scenario {
+    id: string;
+    title: string;
+    steps: FixtureIncident[];
 }
 
 export type StepId = 'ingest' | 'triage' | 'ground' | 'compose';
@@ -116,7 +127,7 @@ export type DispatchMode = 'dry-run' | 'live' | 'offline';
 
 export type ServerMessage =
     | FlowEvent
-    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; library: Library; channel: string; incidents: FixtureIncident[] }
+    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; library: Library; channel: string; incidents: FixtureIncident[]; scenarios: Scenario[] }
     | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
     | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string }

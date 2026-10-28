@@ -1,0 +1,1046 @@
+{
+  "scenario": "nightfall",
+  "purpose": "Testing only. Never feed this file, or any of its wording, to the model.",
+  "playbook": "corporeal for every step (vampires and werewolves)",
+  "sky_anchors": {
+    "place": "San Francisco, 2026-10-28, Pacific Daylight Time",
+    "sunset": "18:15",
+    "civil_twilight_ends": "18:42",
+    "astronomical_dusk": "19:43",
+    "moonrise": "20:02 at azimuth 54 (NE)",
+    "moon": "waning gibbous, about 93% lit; full moon was Oct 25 21:11",
+    "moonset_next_day": "11:52",
+    "sunrise_next_day": "07:32",
+    "sources": [
+      "https://www.timeanddate.com/astronomy/usa/san-francisco",
+      "https://www.timeanddate.com/moon/usa/san-francisco",
+      "https://alpenglowapp.com/times/san-francisco"
+    ]
+  },
+  "cast": {
+    "Vlad T.": "elder vampire, arrives asleep in the heavy crate (step 2), rises step 10",
+    "Erzsi B. and Max S.": "vampire walk-ins, invited through registration at step 6; Erzsi is held by poppy seeds from step 14",
+    "Four strangers": "second wave of vampires at the street doors at dusk (step 17)",
+    "Dana B-0377, Priya B-0378, Theo B-0379": "Team Full Moon Labs, the werewolf pack",
+    "civilians": "B-0233, B-0418, B-0522 and others bitten; B-0356 owns the silver ring; B-0287 vouched for the walk-ins; B-0291 let the man into the closet"
+  },
+  "counts": {
+    "steps": 24,
+    "harmless": 5,
+    "real": 19,
+    "dispatch_true": 14
+  },
+  "steps": [
+    {
+      "incident_id": "sim-nightfall-01",
+      "step": 1,
+      "time": "11:20",
+      "severity_tier_in_input": "ELEVATED_HAUNT",
+      "truth": "harmless",
+      "what_is_going_on": "A guest in a Dracula costume asks the guard to be 'invited in' as a bit. IR gate skin 33.8C, photo ID matched, sun on the lobby floor. Looks like a vampire report, is a costume.",
+      "expected_action": "observe",
+      "discord_dispatch": false,
+      "dispatch_rationale": "Costume at the security desk. A post to #loft-incident would be a false alarm.",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "FloorPlan"
+      ],
+      "countermeasures_good": [],
+      "countermeasures_poor": [
+        "any dispatch"
+      ],
+      "grounding_note": "Invitation rule is folklore, and sunlit lobby plus warm skin rules out the real thing."
+    },
+    {
+      "incident_id": "sim-nightfall-02",
+      "step": 2,
+      "time": "12:10",
+      "severity_tier_in_input": "UNVERIFIED",
+      "truth": "real",
+      "what_is_going_on": "Vlad T., the elder vampire, arrives asleep in the heavy crate (241 kg against 35 kg manifest, soil, cold surface). No one is hurt yet.",
+      "expected_action": "observe",
+      "discord_dispatch": false,
+      "dispatch_rationale": "Strange freight, nobody at risk, sun at 21,300 lux. Watch it, no dispatch yet. A dispatch here is over-escalation.",
+      "sectors": {
+        "hot": [
+          "lounge"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "FloorPlan",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "CountermeasurePicker"
+      ],
+      "panels_discouraged": [
+        "CivilianTracker",
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "garlic or salt at the lounge door",
+        "keep the crates sealed",
+        "native soil lore"
+      ],
+      "countermeasures_poor": [
+        "evacuate"
+      ],
+      "grounding_note": "Native soil is a Stoker invention (Monstropedia), so a good ledger marks it weak."
+    },
+    {
+      "incident_id": "sim-nightfall-03",
+      "step": 3,
+      "time": "12:50",
+      "severity_tier_in_input": "LOW_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Blinds drawn at 12:41 by nobody, lounge at 38 lux, knocking from inside the heavy crate, cold spreading across the carpet.",
+      "expected_action": "observe",
+      "discord_dispatch": false,
+      "dispatch_rationale": "Creepy but contained, 28 people near the door. Move the sofa crowd and watch. A dispatch is optional at most; the strict key says no.",
+      "sectors": {
+        "hot": [
+          "lounge"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "CivilianTracker",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "CountermeasurePicker",
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "garlic braid at the door",
+        "barricade foam on the lid",
+        "clear the sofas"
+      ],
+      "countermeasures_poor": [
+        "open the lid",
+        "UV floodlights while people are close"
+      ],
+      "grounding_note": "Garlic is the best-supported ward (Monstropedia, maverickwerewolf)."
+    },
+    {
+      "incident_id": "sim-nightfall-04",
+      "step": 4,
+      "time": "13:05",
+      "severity_tier_in_input": "UNVERIFIED",
+      "truth": "harmless",
+      "what_is_going_on": "Lunch (13:00) puts 3 kg of garlic in the bread. A guest hangs a garlic braid over the coffee bar after reading about vampires. Smell complaints only.",
+      "expected_action": "observe",
+      "discord_dispatch": false,
+      "dispatch_rationale": "Garlic bread is lunch. Do not treat the smell or the braid as a sign of a vampire.",
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "FloorPlan"
+      ],
+      "countermeasures_good": [],
+      "countermeasures_poor": [
+        "any dispatch"
+      ],
+      "grounding_note": "Garlic hangs in the air because of lunch. It still counts as a vampire ward, which matters at step 14."
+    },
+    {
+      "incident_id": "sim-nightfall-05",
+      "step": 5,
+      "time": "14:20",
+      "severity_tier_in_input": "ELEVATED_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "First bite, in full daylight (14,100 lux): B-0233, two neck marks, pulse 48, skin 30.1C. She invited the tall man in. Daylight does not stop him.",
+      "expected_action": "contain",
+      "discord_dispatch": true,
+      "dispatch_rationale": "A civilian is injured and the attacker is loose among 61 people. Contain and get a medic.",
+      "sectors": {
+        "hot": [
+          "hack_floor_west"
+        ],
+        "seal": [
+          "lounge"
+        ],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "ThermalReadout",
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "escort the victim out",
+        "garlic at booths",
+        "clear the corridor",
+        "do not invite anyone in"
+      ],
+      "countermeasures_poor": [
+        "UV floodlights alone (sun is already up and he fed)"
+      ],
+      "grounding_note": "Slavic vampires hunt noon to midnight (Monstropedia); lethal sunlight is a 1922 film invention."
+    },
+    {
+      "incident_id": "sim-nightfall-06",
+      "step": 6,
+      "time": "15:05",
+      "severity_tier_in_input": "UNVERIFIED",
+      "truth": "real",
+      "what_is_going_on": "3:00 check-in: two walk-ins, Erzsi B. and Max S., get badges when teammate B-0287 vouches for them out loud. The IR gate reads 16C skin and the security mirror misses them.",
+      "expected_action": "observe",
+      "discord_dispatch": false,
+      "dispatch_rationale": "Sensor flagged out of range and a missing mirror image. Not enough to act on, and nobody is hurt. Flag the two badges and observe.",
+      "sectors": {
+        "hot": [
+          "registration"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "SystemsBoard",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "revoke the walk-in badges",
+        "flag the two for the guard",
+        "no one vouches again"
+      ],
+      "countermeasures_poor": [
+        "evacuate",
+        "dispatch"
+      ],
+      "grounding_note": "Invitation rule (Monstropedia): once invited in, a vampire can come and go. The Loft's own no-walk-in rule is the ward (builder.aws.com)."
+    },
+    {
+      "incident_id": "sim-nightfall-07",
+      "step": 7,
+      "time": "15:50",
+      "severity_tier_in_input": "LOW_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "First sign of the pack: Dana, Priya and Theo (table 22) run rising fevers (38.4 to 39.0C), itch, and watch a moonrise app. Scratched on Sunday's full moon. Moonrise 20:02 is a long way off.",
+      "expected_action": "observe",
+      "discord_dispatch": false,
+      "dispatch_rationale": "Sick teammates, no violence, 4 hours to moonrise. Monitor them. Calling the channel now would be early.",
+      "sectors": {
+        "hot": [
+          "hack_floor_east"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "CivilianTracker",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "FloorPlan",
+        "CountermeasurePicker"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "keep them under watch",
+        "pre-stage silver netting",
+        "plan their removal before moonrise"
+      ],
+      "countermeasures_poor": [
+        "evacuate the floor",
+        "UV floodlights (irrelevant to wolves)"
+      ],
+      "grounding_note": "Full-moon trigger is a 1943 film rule; the moonrise time (20:02) is the real clock."
+    },
+    {
+      "incident_id": "sim-nightfall-08",
+      "step": 8,
+      "time": "16:40",
+      "severity_tier_in_input": "CRITICAL_HAUNT",
+      "truth": "harmless",
+      "what_is_going_on": "A 3.2 s sag on the street transformer: lights out for 4 s, a stampede of standing people, one guest felt a patch cable. The EMF spike (11 mG) is tiny and brief. Everything is back by 16:41.",
+      "expected_action": "observe",
+      "discord_dispatch": false,
+      "dispatch_rationale": "Power blip with a utility cause logged. The CRITICAL tier is a trap. Nothing to contain.",
+      "sectors": {
+        "hot": [
+          "network_closet"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "EMFGauge"
+      ],
+      "panels_optional": [
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker"
+      ],
+      "countermeasures_good": [],
+      "countermeasures_poor": [
+        "any dispatch",
+        "evacuate"
+      ],
+      "grounding_note": "Brownouts and 11 mG blips do not carry a monster signature (lore.json baselines)."
+    },
+    {
+      "incident_id": "sim-nightfall-09",
+      "step": 9,
+      "time": "17:10",
+      "severity_tier_in_input": "ELEVATED_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Max S. lowers 14 blinds in 6 minutes. The window wall goes from 3,900 to 160 lux, 65 minutes before sunset. Erzsi B. and Max S. sit with 38 people around them, skin 16C.",
+      "expected_action": "contain",
+      "discord_dispatch": true,
+      "dispatch_rationale": "The daylight margin is being cut on purpose and 38 civilians sit beside two cold subjects. Send staff to raise the blinds and thin the tables.",
+      "sectors": {
+        "hot": [
+          "hack_floor_east"
+        ],
+        "seal": [
+          "hack_floor_east"
+        ],
+        "route": [
+          "hack_floor_west"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "ThermalReadout",
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "raise the blinds",
+        "move people west",
+        "garlic at the table line",
+        "UV floodlights as a sun stand-in"
+      ],
+      "countermeasures_poor": [
+        "leave the blinds down"
+      ],
+      "grounding_note": "Sunlight and UV is pop lore. Rank it as weak support, not strong."
+    },
+    {
+      "incident_id": "sim-nightfall-10",
+      "step": 10,
+      "time": "17:40",
+      "severity_tier_in_input": "CRITICAL_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Vlad T. pushes the crate lid off from inside. 6 attendees including a 16-year-old intern hide behind the sofas. A garlic braid on the main door holds (14 approaches, 0 crossings). The side door to hack floor west has no garlic.",
+      "expected_action": "contain",
+      "discord_dispatch": true,
+      "dispatch_rationale": "Trapped civilians and a loose elder vampire. The side door is the gap. Contain and extract.",
+      "sectors": {
+        "hot": [
+          "lounge"
+        ],
+        "seal": [
+          "lounge",
+          "hack_floor_west"
+        ],
+        "route": [
+          "hack_floor_west"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "CountermeasurePicker",
+        "ThermalReadout"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "garlic on the side door",
+        "do not invite him out",
+        "salt or iron at the threshold",
+        "barricade foam on the side door"
+      ],
+      "countermeasures_poor": [
+        "open the door and call him out"
+      ],
+      "grounding_note": "Threshold and invitation rules plus garlic are the strongest folk wards (Monstropedia)."
+    },
+    {
+      "incident_id": "sim-nightfall-11",
+      "step": 11,
+      "time": "18:00",
+      "severity_tier_in_input": "LOW_HAUNT",
+      "truth": "harmless",
+      "what_is_going_on": "60 guests photograph the sunset. A 'faceless, no reflection' photo is a backlit shot (1/4000 s, ISO 50). The next 3 frames show B-0114 clearly, checked in 09:52, skin 33.5C.",
+      "expected_action": "observe",
+      "discord_dispatch": false,
+      "dispatch_rationale": "Backlit photo and a sunset crowd. The missing-reflection clue is a camera artifact. Do not escalate.",
+      "sectors": {
+        "hot": [
+          "hack_floor_west"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "FloorPlan"
+      ],
+      "countermeasures_good": [],
+      "countermeasures_poor": [
+        "any dispatch"
+      ],
+      "grounding_note": "No-reflection is a fiction rule; the same guest shows normal heat and a badge scan."
+    },
+    {
+      "incident_id": "sim-nightfall-12",
+      "step": 12,
+      "time": "18:15",
+      "severity_tier_in_input": "CRITICAL_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Sunset. Vlad T. walks out the unguarded side door into hack floor west, passing within 2 m of 6 people. 61 people there, 42 refuse to leave desks because submissions close at 18:25.",
+      "expected_action": "evacuate",
+      "discord_dispatch": true,
+      "dispatch_rationale": "Elder vampire loose among 61 people with a deadline stampede brewing. Evacuate the west floor and get the channel moving.",
+      "sectors": {
+        "hot": [
+          "hack_floor_west",
+          "lounge"
+        ],
+        "seal": [
+          "lounge"
+        ],
+        "route": [
+          "entrance"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "pull people east and out via the stairs",
+        "garlic and salt line at the side door",
+        "silver for a close encounter"
+      ],
+      "countermeasures_poor": [
+        "wait for the submission deadline"
+      ],
+      "grounding_note": "Sunset removes whatever daylight margin the Loft had; Slavic hunt window already open."
+    },
+    {
+      "incident_id": "sim-nightfall-13",
+      "step": 13,
+      "time": "18:25",
+      "severity_tier_in_input": "ELEVATED_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Submissions close 18:25. On the SW stair landing Max S. feeds on B-0418. B-0356's sterling silver ring burns his cuff and he backs off. 31 people use this stair to get to dinner.",
+      "expected_action": "contain",
+      "discord_dispatch": true,
+      "dispatch_rationale": "Active feeding on the main stair with 31 people about to use it. Contain and close the stair.",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [
+          "entrance"
+        ],
+        "route": [
+          "registration"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "CountermeasurePicker",
+        "FloorPlan"
+      ],
+      "panels_optional": [
+        "ThermalReadout",
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "silver on the landing",
+        "close the SW stair and route via the elevator",
+        "garlic"
+      ],
+      "countermeasures_poor": [
+        "silver cutlery as a sure thing (folklore support is weak)"
+      ],
+      "grounding_note": "Silver against vampires is a late addition (Monstropedia); the ring welt is in-sim evidence, not lore."
+    },
+    {
+      "incident_id": "sim-nightfall-14",
+      "step": 14,
+      "time": "18:40",
+      "severity_tier_in_input": "ELEVATED_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Dinner (18:30): Erzsi B. stops at the poppy-seed bagels and counts seeds (1,812 so far). Max S. asks the catering lead 'may I come in?' at the staff kitchen door. She nearly says yes. 140 people in the line. Garlic naan keeps them 3 m back.",
+      "expected_action": "contain",
+      "discord_dispatch": true,
+      "dispatch_rationale": "A one-word invitation away from a vampire in the kitchen with 140 diners. Alert the line captain and the kitchen. Do NOT invite.",
+      "sectors": {
+        "hot": [
+          "catering_coffee_bar"
+        ],
+        "seal": [
+          "catering_coffee_bar"
+        ],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CountermeasurePicker",
+        "FloorPlan",
+        "CivilianTracker"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "do not invite him",
+        "garlic naan line",
+        "scatter seeds, poppy or mustard, at the door",
+        "lock the kitchen door"
+      ],
+      "countermeasures_poor": [
+        "evacuate the whole hall at this point"
+      ],
+      "grounding_note": "Seed-counting compulsion and invitation are real folk motifs (Monstropedia). Best-supported countermeasures of the day."
+    },
+    {
+      "incident_id": "sim-nightfall-15",
+      "step": 15,
+      "time": "18:55",
+      "severity_tier_in_input": "LOW_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "The pack is turning: fevers 39.4 to 39.8C, pupils wide, one grabbed a neighbor's throat. They face the moonrise bearing (azimuth 54). 67 minutes to moonrise. The LOW tier under-rates it.",
+      "expected_action": "contain",
+      "discord_dispatch": true,
+      "dispatch_rationale": "Pre-position silver netting and move the pack away from the hall before moonrise. Acting now is the cheap window.",
+      "sectors": {
+        "hot": [
+          "hack_floor_east"
+        ],
+        "seal": [
+          "hack_floor_east"
+        ],
+        "route": [
+          "entrance"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "ThermalReadout",
+        "CivilianTracker",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "FloorPlan",
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "silver netting staged",
+        "isolate them from the 20:05 demo slot",
+        "name-calling by badge name",
+        "barricade foam"
+      ],
+      "countermeasures_poor": [
+        "UV floodlights (vampire tool)",
+        "wait for dawn"
+      ],
+      "grounding_note": "Wolfsbane and silver are weak or film-made; calling a name three times and iron are older folk rules."
+    },
+    {
+      "incident_id": "sim-nightfall-16",
+      "step": 16,
+      "time": "19:10",
+      "severity_tier_in_input": "CRITICAL_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "AV tech B-0291 says 'come right in' to a man at the network closet door. He throws the lighting breaker: L3 to L6 dark, floor lux 5, backup strips cover 40% of 73 people. The stage rig is on L5 and demos open at 19:30.",
+      "expected_action": "contain",
+      "discord_dispatch": true,
+      "dispatch_rationale": "Real threat at a facility control point, minutes before the demo block. Restore the lights, guard the closet.",
+      "sectors": {
+        "hot": [
+          "network_closet"
+        ],
+        "seal": [
+          "network_closet"
+        ],
+        "route": [
+          "hack_floor_west"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SystemsBoard",
+        "FloorPlan",
+        "CivilianTracker"
+      ],
+      "panels_optional": [
+        "CountermeasurePicker",
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "restore lighting first",
+        "close and guard the closet",
+        "UV and work lights as a stand-in for sun"
+      ],
+      "countermeasures_poor": [
+        "let the demo block start in the dark"
+      ],
+      "grounding_note": "Invitation rule again: the AV tech's 'come in' is the exploit."
+    },
+    {
+      "incident_id": "sim-nightfall-17",
+      "step": 17,
+      "time": "19:20",
+      "severity_tier_in_input": "ELEVATED_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Second wave at dusk: four dark-coated strangers at the street glass ask each person leaving to 'let us in'. 11 refusals, 0 crossings, skin 14C. A smoker propped the left door open 40 cm.",
+      "expected_action": "contain",
+      "discord_dispatch": true,
+      "dispatch_rationale": "The only ward holding is a guard and a door. Close the propped door, post a second guard, and tell the channel.",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [
+          "entrance"
+        ],
+        "route": [
+          "registration"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "SystemsBoard",
+        "CountermeasurePicker"
+      ],
+      "panels_optional": [
+        "CivilianTracker",
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "close and latch the door",
+        "garlic and salt line at the threshold",
+        "no one steps out to talk"
+      ],
+      "countermeasures_poor": [
+        "invite them in",
+        "full evacuation of the hall"
+      ],
+      "grounding_note": "Entering a home uninvited is the one folk rule that still holds at 525 Market's security desk (Monstropedia, builder.aws.com no-walk-in rule)."
+    },
+    {
+      "incident_id": "sim-nightfall-18",
+      "step": 18,
+      "time": "19:33",
+      "severity_tier_in_input": "ELEVATED_HAUNT",
+      "truth": "harmless",
+      "what_is_going_on": "Demos opened 19:30. Fog machine, strobes, team 12 in wolf-ear headbands, and a 4.1 kHz mic feedback 'howl' at 94 dB. A guest shouts 'a wolf on stage'. Tech cuts the gain at 19:34. Room is 27C from the crowd.",
+      "expected_action": "observe",
+      "discord_dispatch": false,
+      "dispatch_rationale": "Demo theatrics and feedback. It follows the pack's fevers in time on purpose, so a model that acts on 'wolf' words raises a false alarm.",
+      "sectors": {
+        "hot": [
+          "main_stage"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "EMFGauge",
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "CivilianTracker",
+        "FloorPlan"
+      ],
+      "countermeasures_good": [],
+      "countermeasures_poor": [
+        "any dispatch",
+        "evacuate"
+      ],
+      "grounding_note": "Speaker howl effects, costumes and fog machines are the listed werewolf look-alikes (lore.json false_positives)."
+    },
+    {
+      "incident_id": "sim-nightfall-19",
+      "step": 19,
+      "time": "19:46",
+      "severity_tier_in_input": "CRITICAL_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Full dark (19:43). House lights at 4%, nobody can find the slider because the breaker is dead. Two subjects sit in rows 14 to 16 and B-0522 is down. Moonrise in 16 minutes, 160 people in the hall.",
+      "expected_action": "evacuate",
+      "discord_dispatch": true,
+      "dispatch_rationale": "Peak. Active feeding in a dark hall with 160 people and a wolf pack due in 16 minutes. Evacuate by the SW stair and the elevators and restore the lights.",
+      "sectors": {
+        "hot": [
+          "main_stage"
+        ],
+        "seal": [
+          "main_stage"
+        ],
+        "route": [
+          "entrance",
+          "registration"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "CountermeasurePicker",
+        "ThermalReadout"
+      ],
+      "panels_optional": [
+        "SystemsBoard",
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "lights up",
+        "evacuate via the SW stair and the elevators",
+        "garlic and silver at the row 14 to 16 aisle"
+      ],
+      "countermeasures_poor": [
+        "finish demo 14"
+      ],
+      "grounding_note": "The dark is the vampire's best weapon in the Loft; folk sunlight rule is weak, but light is still the practical fix."
+    },
+    {
+      "incident_id": "sim-nightfall-20",
+      "step": 20,
+      "time": "19:55",
+      "severity_tier_in_input": "CRITICAL_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "7 minutes to moonrise. Team Full Moon Labs walks into the hall three abreast: fevers 40.2 to 40.6C, jaw ripples, nails 1 cm longer. Two vampire subjects are still at row 16 and 5 civilians are hurt.",
+      "expected_action": "evacuate",
+      "discord_dispatch": true,
+      "dispatch_rationale": "A second threat arrives where the first already sits. Clear the hall NOW, get silver and foam on the stage steps.",
+      "sectors": {
+        "hot": [
+          "main_stage"
+        ],
+        "seal": [
+          "main_stage",
+          "hack_floor_east"
+        ],
+        "route": [
+          "entrance",
+          "registration"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "CountermeasurePicker",
+        "ThermalReadout"
+      ],
+      "panels_optional": [
+        "SourceLedger"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "silver netting at the stage",
+        "barricade foam on the stage steps",
+        "evacuate rows first",
+        "badge-name calling"
+      ],
+      "countermeasures_poor": [
+        "cancel the demo only",
+        "UV floodlights (pointless against the pack)"
+      ],
+      "grounding_note": "Two threats need opposite tools: garlic and threshold for vampires, silver and name-calling for wolves."
+    },
+    {
+      "incident_id": "sim-nightfall-21",
+      "step": 21,
+      "time": "20:02",
+      "severity_tier_in_input": "CRITICAL_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Moonrise (20:02, azimuth 54). Dana, Priya and Theo collapse and change: jaws, hair, 188 bpm, 112 dB howls. 158 people surge to two jammed exits. Vampires still at row 16. 3 more bitten.",
+      "expected_action": "evacuate",
+      "discord_dispatch": true,
+      "dispatch_rationale": "The peak of the day. Evacuate, deploy silver netting and foam, call the wolves by their badge names.",
+      "sectors": {
+        "hot": [
+          "main_stage"
+        ],
+        "seal": [
+          "main_stage"
+        ],
+        "route": [
+          "entrance",
+          "registration"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "CivilianTracker",
+        "CountermeasurePicker",
+        "ThermalReadout"
+      ],
+      "panels_optional": [
+        "SourceLedger",
+        "SystemsBoard"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "silver netting",
+        "barricade foam on the exits that jam",
+        "call each wolf by badge name three times",
+        "lights up"
+      ],
+      "countermeasures_poor": [
+        "wait for dawn (07:32 tomorrow)"
+      ],
+      "grounding_note": "Dawn is 11 hours away. Name-calling, blood-drawing and iron are the older cures (Crystalinks, drakorix)."
+    },
+    {
+      "incident_id": "sim-nightfall-22",
+      "step": 22,
+      "time": "20:10",
+      "severity_tier_in_input": "ELEVATED_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Silver netting drops on two wolves at 20:06. Staff call 'Dana, Priya, Theo' by name three times: two revert at 20:08 and 20:09 (38.1C). The third holds the stage steps at 40.5C. Breaker reset at 20:07 and lights at 100%.",
+      "expected_action": "contain",
+      "discord_dispatch": true,
+      "dispatch_rationale": "Containment is working but the third wolf is loose and 9 people are injured. Keep the channel up to date.",
+      "sectors": {
+        "hot": [
+          "main_stage"
+        ],
+        "seal": [
+          "main_stage"
+        ],
+        "route": [
+          "entrance"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "CountermeasurePicker",
+        "ThermalReadout",
+        "SystemsBoard"
+      ],
+      "panels_optional": [
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "last reel of silver on wolf 3",
+        "name-calling",
+        "keep the lights up",
+        "keep evacuating"
+      ],
+      "countermeasures_poor": [
+        "stand down"
+      ],
+      "grounding_note": "Light and name-calling work in-sim. Treat both as folk-weak."
+    },
+    {
+      "incident_id": "sim-nightfall-23",
+      "step": 23,
+      "time": "20:18",
+      "severity_tier_in_input": "LOW_HAUNT",
+      "truth": "real",
+      "what_is_going_on": "Registry revokes the two walk-in badges at 20:14 and the guard says aloud that all three subjects, the tall elder included, are not invited. The three leave through the street doors under a 400 W UV floodlight and a garlic line. The four at the glass left at 20:09 when the lobby lights came up. Doors latched 20:17.",
+      "expected_action": "contain",
+      "discord_dispatch": true,
+      "dispatch_rationale": "The last open threat leaves by the door. Keep the latch and the guard in place and post the outcome.",
+      "sectors": {
+        "hot": [
+          "entrance"
+        ],
+        "seal": [
+          "entrance"
+        ],
+        "route": [
+          "registration"
+        ]
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "FloorPlan",
+        "SystemsBoard",
+        "CountermeasurePicker",
+        "CivilianTracker"
+      ],
+      "panels_optional": [
+        "ThermalReadout"
+      ],
+      "panels_discouraged": [
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "revoke the invitation",
+        "garlic and UV at the threshold",
+        "latch the doors"
+      ],
+      "countermeasures_poor": [
+        "invite them back to talk"
+      ],
+      "grounding_note": "Withdrawing the invitation is the badge-registry version of the folk rule."
+    },
+    {
+      "incident_id": "sim-nightfall-24",
+      "step": 24,
+      "time": "20:26",
+      "severity_tier_in_input": "UNVERIFIED",
+      "truth": "real",
+      "what_is_going_on": "Event ends 20:30. 160 of 160 accounted for, 9 injured of whom 6 carry bite marks, 3 wolf scratches. Dana, Priya and Theo are human again. The moon stays up until 11:52 tomorrow, so follow-up is needed.",
+      "expected_action": "observe",
+      "discord_dispatch": false,
+      "dispatch_rationale": "Threat is over. A short follow-up post is acceptable but not needed. This is the stand-down view.",
+      "sectors": {
+        "hot": [
+          "hack_floor_east"
+        ],
+        "seal": [],
+        "route": []
+      },
+      "panels_expected": [
+        "ThreatBanner",
+        "CivilianTracker",
+        "ThermalReadout",
+        "SourceLedger"
+      ],
+      "panels_optional": [
+        "FloorPlan"
+      ],
+      "panels_discouraged": [
+        "CountermeasurePicker",
+        "EMFGauge"
+      ],
+      "countermeasures_good": [
+        "watch the bitten",
+        "keep the doors latched",
+        "keep silver and garlic at hand until morning"
+      ],
+      "countermeasures_poor": [
+        "evacuate",
+        "new alarm"
+      ],
+      "grounding_note": "Moon sets 11:52 on the 29th and dawn is 07:32 (timeanddate). The folk 'wait for dawn' cure is still a long way off."
+    }
+  ]
+}

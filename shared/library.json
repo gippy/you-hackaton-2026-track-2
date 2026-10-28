@@ -9,6 +9,9 @@
     "lounge": "Lounge",
     "network_closet": "Network closet"
   },
+  "sector_aliases": {
+    "catering_coffee_bar": "catering"
+  },
   "layout": {
     "main_stage": [
       0,

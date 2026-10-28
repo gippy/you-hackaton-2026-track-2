@@ -3,7 +3,7 @@
 //     pnpm start                     build the page, then build the station from the fixture, live
 //     pnpm start --offline           no network or keys: replay the last saved run
 //     pnpm start --live-dispatch     let the page's dispatch button really post to #loft-incident
-//     pnpm start --incident <id>     start from another incident in fixtures/ (default: the official one)
+//     pnpm start --incident <id>     start from another incident in fixtures/ (default: Nightfall's first step)
 //
 // Serves the Vite build of web/ and the /ws stream on one port (default http://127.0.0.1:8666).
 import { execFile } from 'node:child_process';
@@ -14,7 +14,7 @@ import { parseArgs } from 'node:util';
 
 import { WebSocketServer } from 'ws';
 
-import type { FixtureIncident } from '../shared/protocol.ts';
+import type { FixtureIncident, Scenario } from '../shared/protocol.ts';
 import { SPEECH_FILE } from './speech.ts';
 import { Station } from './station.ts';
 
@@ -61,30 +61,47 @@ if (!existsSync(join(DIST, 'index.html'))) {
     process.exit(1);
 }
 
-/** Every incident in fixtures/*.json, the official fixture first. */
+function readTicks(path: string, scenario?: string): FixtureIncident[] {
+    return (JSON.parse(readFileSync(path, 'utf8')).ticks as FixtureIncident[]).map((tick) => ({
+        incident_id: tick.incident_id,
+        severity_tier: tick.severity_tier,
+        raw_incident_stream: tick.raw_incident_stream,
+        source: tick.source === 'simulated' ? 'simulated' : 'official',
+        ...(scenario ? { scenario, step: tick.step, time: tick.time } : {}),
+    }));
+}
+
+/** Single incidents: every fixtures/*.json, the official fixture first. */
 function loadIncidents(): FixtureIncident[] {
-    const files = readdirSync(FIXTURES)
+    return readdirSync(FIXTURES)
         .filter((f) => f.endsWith('.json'))
-        .sort((a, b) => Number(b === OFFICIAL) - Number(a === OFFICIAL) || a.localeCompare(b));
-    return files.flatMap((file) =>
-        (JSON.parse(readFileSync(join(FIXTURES, file), 'utf8')).ticks as FixtureIncident[]).map((tick) => ({
-            incident_id: tick.incident_id,
-            severity_tier: tick.severity_tier,
-            raw_incident_stream: tick.raw_incident_stream,
-            source: tick.source === 'simulated' ? 'simulated' : 'official',
-        })),
-    );
+        .sort((a, b) => Number(b === OFFICIAL) - Number(a === OFFICIAL) || a.localeCompare(b))
+        .flatMap((file) => readTicks(join(FIXTURES, file)));
+}
+
+/** Scenarios: every fixtures/<id>/scenario.json, played step by step. Other files there (answer keys) are not read. */
+function loadScenarios(): Scenario[] {
+    return readdirSync(FIXTURES, { withFileTypes: true })
+        .filter((d) => d.isDirectory() && existsSync(join(FIXTURES, d.name, 'scenario.json')))
+        .map((d) => ({
+            id: d.name,
+            title: d.name[0].toUpperCase() + d.name.slice(1),
+            steps: readTicks(join(FIXTURES, d.name, 'scenario.json'), d.name),
+        }));
 }
 
 const incidents = loadIncidents();
-const firstIncident = args.incident ?? incidents[0].incident_id;
-if (!incidents.some((i) => i.incident_id === firstIncident)) {
-    console.error(`No incident with id ${firstIncident}. Known ids: ${incidents.map((i) => i.incident_id).join(', ')}`);
+const scenarios = loadScenarios();
+const known = [...scenarios.flatMap((s) => s.steps), ...incidents];
+// The demo opens on the first scenario's first step; --incident picks any other.
+const firstIncident = args.incident ?? known[0].incident_id;
+if (!known.some((i) => i.incident_id === firstIncident)) {
+    console.error(`No incident with id ${firstIncident}. Known ids: ${known.map((i) => i.incident_id).join(', ')}`);
     process.exit(1);
 }
 
 const python = process.env.PYTHON ?? join(ROOT, '.venv', 'bin', 'python');
-const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], incidents });
+const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], incidents, scenarios });
 
 const server = createServer((req, res) => {
     const path = (req.url ?? '/').split('?')[0];
