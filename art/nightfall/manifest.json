@@ -107,6 +107,15 @@
         "width": 1024,
         "height": 1024
     },
+    "entity_stage_subwoofer": {
+        "file": "art/nightfall/entity_stage_subwoofer.webp",
+        "kind": "entity",
+        "alt": "A big stage speaker blasting a cone of low sound across a bare stage: an infrasound sweep, not a phantom",
+        "prompt": "A big black stage subwoofer speaker cabinet standing alone on a bare stage floor, front view, its large round cone pushing out thick angular rings of sound waves, a faint grey wisp of shape in the waves. Medium shot, slightly low angle, the cabinet centered. Warm amber stage light from above, hard-edged shadows. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4608,
+        "width": 1024,
+        "height": 1024
+    },
     "sector_entrance": {
         "file": "art/nightfall/sector_entrance.webp",
         "kind": "sector",
