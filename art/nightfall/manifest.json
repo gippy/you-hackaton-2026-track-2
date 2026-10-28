@@ -80,6 +80,24 @@
         "width": 1024,
         "height": 1024
     },
+    "entity_costume_zombie": {
+        "file": "art/nightfall/entity_costume_zombie.webp",
+        "kind": "entity",
+        "alt": "A grinning young woman in smudged grey face paint and a torn hoodie, waving with a coffee cup and a name badge: a costume, not a zombie",
+        "prompt": "A cheerful young woman with a messy ponytail and an ordinary human face, grinning with healthy pink cheeks under smudged grey face paint that stops at her hairline, dressed as a zombie for Halloween in a hoodie with fake torn sleeves, a name tag on a lanyard, holding a paper coffee cup and waving, standing centered on a plain dark backdrop. Three-quarter full body view, slightly low camera angle, lots of empty black space around the figure. Warm amber light from the front, hard-edged shadow shapes. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4614,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_limping_staff": {
+        "file": "art/nightfall/entity_limping_staff.webp",
+        "kind": "entity",
+        "alt": "A wincing staff member with a lanyard and clipboard limping on a bandaged foot: an injury, not a zombie",
+        "prompt": "A tired event staff member in a plain polo shirt and a lanyard, limping forward with one ankle wrapped in a bandage, holding a clipboard, flushed sweaty face, mouth open mid-sentence, standing centered on a plain dark backdrop. Three-quarter full body view, slightly low camera angle, flat even composition with lots of empty black space around the figure. Warm amber light from the front, hard-edged shadow shapes. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4606,
+        "width": 1024,
+        "height": 1024
+    },
     "sector_entrance": {
         "file": "art/nightfall/sector_entrance.webp",
         "kind": "sector",
