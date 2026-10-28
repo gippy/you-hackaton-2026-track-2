@@ -34,7 +34,7 @@ INCIDENT_SCHEMA = {
     "additionalProperties": False,
     "required": ["entity", "entity_class", "threat_level", "sector", "location_detail", "emf_mg", "emf_trend",
                  "temperature_c", "civilians", "systems", "evidence_of_threat", "ordinary_explanation", "deliberate_act",
-                 "verdict", "people_in_reach", "people_hurt", "severity", "summary"],
+                 "creature_countered", "verdict", "people_in_reach", "people_hurt", "severity", "summary"],
     "properties": {
         "entity": {"type": "string", "description": "What is haunting, as reported, e.g. 'level-3 Banshee'"},
         "entity_class": {"type": "string", "enum": list(library.PLAYBOOKS)},
@@ -60,6 +60,11 @@ INCIDENT_SCHEMA = {
         "evidence_of_threat": {"type": "string", "description": "What in the report shows a real, present danger to people, or 'none'. Under 25 words"},
         "ordinary_explanation": {"type": ["string", "null"], "description": "An ordinary explanation the report's own evidence supports, with that evidence, else null. Under 25 words"},
         "deliberate_act": {"type": "boolean", "description": "true when the report names someone who deliberately caused the disruption (threw a breaker, forced a door). A guest mistaken for a monster did nothing deliberate"},
+        "creature_countered": {"type": "boolean", "description": (
+            "true when the report shows a person or thing held back, repelled or reacting to one of the unit's countermeasures ("
+            + ", ".join(v.lower() for v in library.ARSENAL.values())
+            + ") or to a threshold or barricade: hissing, flinching, burning, refusing to cross. "
+            "A costume, a prop or a smell alone is false")},
         "verdict": {"type": "string", "enum": ["real_threat", "harmless", "unclear"]},
         "people_in_reach": {"type": "integer", "minimum": 0, "description": "People the threat can reach right now, not everyone present"},
         "people_hurt": {"type": "integer", "minimum": 0, "description": "People the report says are hurt, bitten, collapsed or pinned"},
@@ -77,9 +82,9 @@ EXTRACT_SYSTEM = (
     "even when asleep, disguised or only claimed; spectral for ghosts, phantoms, apparitions, banshees and poltergeists; "
     "anomalous only for cursed technology, rifts and signals with no creature in the report. "
     "Rate severity from the evidence in the report, never from the feed's tier label: the label is a sensor guess and "
-    "can be wrong in both directions. Fill evidence_of_threat, ordinary_explanation, deliberate_act and verdict before "
+    "can be wrong in both directions. Fill evidence_of_threat, ordinary_explanation, deliberate_act, creature_countered and verdict before "
     "severity. verdict is harmless only when the report's own evidence (readings, measurements, witness checks, logs) "
-    "supports an ordinary explanation and nobody acted deliberately; real_threat when a creature or hazard is acting; "
+    "supports an ordinary explanation, nobody acted deliberately and nothing is held back or repelled by a countermeasure; real_threat when a creature or hazard is acting; "
     "unclear otherwise. " + UNTRUSTED
 )
 
@@ -253,6 +258,10 @@ class HauntFlow(Flow[HauntState]):
             # Someone caused it on purpose, so it is not harmless, whatever else explains it.
             incident["verdict"] = "unclear"
             self.state.notes.append("someone acted deliberately, so the harmless verdict became unclear")
+        if incident.get("verdict") == "harmless" and incident.get("creature_countered"):
+            # Something is held back or reacting to a countermeasure: a creature is present, whatever else explains the report.
+            incident["verdict"] = "unclear"
+            self.state.notes.append("something is held back or repelled by a countermeasure, so the harmless verdict became unclear")
         self.state.incident, self.state.models = incident, [model]
         self._emit({"type": "incident", "incident": incident, "incident_id": self.state.incident_id,
                     "severity_tier": self.state.severity_tier, "raw": self.state.raw})

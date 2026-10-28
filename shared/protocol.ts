@@ -24,6 +24,7 @@ export interface Incident {
     evidence_of_threat?: string;
     ordinary_explanation?: string | null;
     deliberate_act?: boolean;
+    creature_countered?: boolean;
     verdict?: 'real_threat' | 'harmless' | 'unclear';
     people_in_reach?: number;
     people_hurt?: number;
