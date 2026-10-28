@@ -424,8 +424,9 @@ class HauntFlow(Flow[HauntState]):
             return ""
         return ("\n\nWhat earlier reports in this scenario established, oldest first:\n" + "\n".join(lines) +
                 "\nUse it to name what this report refers back to (\"the figures\", \"they\") and to pick its entity_class. "
-                "Judge this report's threat from its own evidence, but a creature the earlier reports confirmed is never "
-                "an ordinary explanation.")
+                "Judge this report's verdict from its own evidence, as for any report: when its own readings and checks explain "
+                "it (a green badge read, a normal temperature, a named cause), it is harmless even here; when it describes "
+                "the figures without such checks, the earlier findings say what they are.")
 
     def _sky_facts(self) -> str:
         """The sky's times and the scenario clock, for a scenario step. Empty for a pasted report."""

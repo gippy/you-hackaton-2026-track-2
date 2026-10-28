@@ -1,96 +1,96 @@
 # Nightfall eval report
 
-Generated 2026-10-28 16:00 · scenario `fixtures/nightfall/scenario.json` · answer key `fixtures/nightfall/answer-key.json` · Baseline: pipeline `d0f4cdd6fd` · Pass E: pipeline `963c226a64` · Pass F: pipeline `963c226a64`
+Generated 2026-10-28 16:54 · scenario `fixtures/nightfall/scenario.json` · answer key `fixtures/nightfall/answer-key.json` · Baseline: pipeline `d0f4cdd6fd` · Pass I: pipeline `c94aa03f3b` · Pass J: pipeline `c94aa03f3b`
 
 Dispatch is scored from `recommended_action` (observe = no dispatch). Nothing was sent to Discord or PagerDuty. Worker runs carry `PROOF_CONTEXT=eval` in the proof ledger.
 
 ## Score
 
-| | Baseline | Pass E | Pass F | Mean of passes |
+| | Baseline | Pass I | Pass J | Mean of passes |
 |---|---|---|---|---|
-| Points / 144 | 114.00 | 132.30 | 129.55 | 130.93 |
+| Points / 144 | 114.00 | 133.30 | 136.42 | 134.86 |
 
 ## Metrics
 
-| Metric | Baseline | Pass E | Pass F |
+| Metric | Baseline | Pass I | Pass J |
 |---|---|---|---|
-| **Misses** (key says contain/evacuate, model observed) | **0/14** | **1/14** | **1/14** |
-| False alarms (harmless step, model acts) | 3/5 | 1/5 | 1/5 |
-| Harmless handled calmly (observe, low banner, no discouraged panel) | 0/5 | 4/5 | 4/5 |
-| Harmless with the `all_clear` cue | 1/5 | 4/5 | 4/5 |
+| **Misses** (key says contain/evacuate, model observed) | **0/14** | **0/14** | **0/14** |
+| False alarms (harmless step, model acts) | 3/5 | 1/5 | 0/5 |
+| Harmless handled calmly (observe, low banner, no discouraged panel) | 0/5 | 4/5 | 5/5 |
+| Harmless with the `all_clear` cue | 1/5 | 4/5 | 5/5 |
 | Over-escalations (real step the key wants watched, model acts) | 4/5 | 1/5 | 1/5 |
-| Evacuate matches (key says evacuate) | 0/4 | 2/4 | 2/4 |
-| Action match | 13/24 | 19/24 | 17/24 |
-| Dispatch match | 17/24 | 21/24 | 21/24 |
-| Hot sector match | 23/24 | 24/24 | 24/24 |
-| Routed to the key's playbook (corporeal) | 3/24 | 15/24 | 17/24 |
-| Intake severity copies the feed tier | 20/20 | 9/20 | 11/20 |
-| Panel recall, mean | 92% | 97% | 94% |
-| Steps with a discouraged panel | 9/24 | 3/24 | 3/24 |
-| Distinct layouts (key expects 13) | 12 | 16 | 17 |
+| Evacuate matches (key says evacuate) | 0/4 | 3/4 | 2/4 |
+| Action match | 13/24 | 20/24 | 20/24 |
+| Dispatch match | 17/24 | 22/24 | 23/24 |
+| Hot sector match | 23/24 | 23/24 | 23/24 |
+| Routed to the key's playbook (corporeal) | 3/24 | 21/24 | 22/24 |
+| Intake severity copies the feed tier | 20/20 | 12/20 | 13/20 |
+| Panel recall, mean | 92% | 97% | 98% |
+| Steps with a discouraged panel | 9/24 | 3/24 | 1/24 |
+| Distinct layouts (key expects 13) | 12 | 13 | 12 |
 | Failures | 0/24 | 0/24 | 0/24 |
-| Latency per step, mean | 14.7s | 12.5s | 13.6s |
-| Latency per step, median | 13.6s | 12.3s | 13.0s |
-| Latency per step, p95 | 19.8s | 14.9s | 18.3s |
-| Latency per step, max | 23.6s | 15.0s | 20.2s |
-| Time to the `incident` event (earliest thing the page could show) | 3.4s | 3.7s | 3.8s |
-| **Time to the first panel**, mean | 12.3s | 10.7s | 11.7s |
-| Time to the first panel, p95 | 17.5s | 12.7s | 16.1s |
-| Time to the first panel, max | 22.5s | 12.8s | 17.0s |
-| Time to the last panel, mean | 14.1s | 11.9s | 13.0s |
+| Latency per step, mean | 14.7s | 16.1s | 16.7s |
+| Latency per step, median | 13.6s | 15.5s | 16.0s |
+| Latency per step, p95 | 19.8s | 20.0s | 22.7s |
+| Latency per step, max | 23.6s | 25.1s | 32.5s |
+| Time to the `incident` event (earliest thing the page could show) | 3.4s | 4.9s | 4.5s |
+| **Time to the first panel**, mean | 12.3s | 13.6s | 14.4s |
+| Time to the first panel, p95 | 17.5s | 17.7s | 19.4s |
+| Time to the first panel, max | 22.5s | 21.5s | 29.5s |
+| Time to the last panel, mean | 14.1s | 15.4s | 15.9s |
 
 ## Action confusion (rows = key, columns = model: observe / contain / evacuate)
 
-| key | Baseline | Pass E | Pass F |
+| key | Baseline | Pass I | Pass J |
 |---|---|---|---|
-| observe | 3 / 7 / 0 | 8 / 2 / 0 | 8 / 2 / 0 |
-| contain | 0 / 10 / 0 | 1 / 9 / 0 | 1 / 7 / 2 |
-| evacuate | 0 / 4 / 0 | 0 / 2 / 2 | 0 / 2 / 2 |
+| observe | 3 / 7 / 0 | 8 / 2 / 0 | 9 / 1 / 0 |
+| contain | 0 / 10 / 0 | 0 / 9 / 1 | 0 / 9 / 1 |
+| evacuate | 0 / 4 / 0 | 0 / 1 / 3 | 0 / 2 / 2 |
 
 ## Per step
 
 Cells are `action pts`. Δ panels: `-X` an expected panel missing, `!X` a discouraged one present. A `*` marks an action different from the key.
 
-| # | Truth | Key | Feed tier | Baseline act pts | Pass E act pts | Pass F act pts | Pass E Δ panels | Pass F Δ panels | Flip A/B |
+| # | Truth | Key | Feed tier | Baseline act pts | Pass I act pts | Pass J act pts | Pass I Δ panels | Pass J Δ panels | Flip A/B |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | H | observe | ELEVATED_HAUNT | contain* 2.5 | observe 6 | observe 6 | – | – |  |
-| 2 | R | observe | UNVERIFIED | contain* 2.75 | observe 5 | observe 5 | !CivilianTracker | !CivilianTracker |  |
+| 2 | R | observe | UNVERIFIED | contain* 2.75 | observe 4 | observe 5 | !CivilianTracker | – |  |
 | 3 | R | observe | LOW_HAUNT | contain* 4 | observe 6 | observe 6 | – | – |  |
 | 4 | H | observe | UNVERIFIED | observe 4.5 | observe 6 | observe 6 | – | – |  |
-| 5 | R | contain (D) | ELEVATED_HAUNT | contain 5 | contain 6 | evacuate* 5 | – | – | flip |
+| 5 | R | contain (D) | ELEVATED_HAUNT | contain 5 | contain 6 | contain 6 | – | – |  |
 | 6 | R | observe | UNVERIFIED | contain* 3 | observe 6 | observe 6 | – | – |  |
-| 7 | R | observe | LOW_HAUNT | observe 6 | observe 5.75 | observe 5.75 | -CivilianTracker | -CivilianTracker |  |
-| 8 | H | observe | CRITICAL_HAUNT | contain* 3 | contain* 3 | contain* 3 | !CountermeasurePicker !CivilianTracker | !CountermeasurePicker !CivilianTracker |  |
+| 7 | R | observe | LOW_HAUNT | observe 6 | observe 5.75 | observe 6 | -CivilianTracker | – |  |
+| 8 | H | observe | CRITICAL_HAUNT | contain* 3 | contain* 3 | observe 5.667 | !CountermeasurePicker !CivilianTracker | -EMFGauge | flip |
 | 9 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
 | 10 | R | contain (D) | CRITICAL_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
 | 11 | H | observe | LOW_HAUNT | observe 5 | observe 6 | observe 6 | – | – |  |
 | 12 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | contain* 5 | contain* 5 | – | – |  |
-| 13 | R | contain (D) | ELEVATED_HAUNT | contain 5 | contain 6 | contain 6 | – | – |  |
+| 13 | R | contain (D) | ELEVATED_HAUNT | contain 5 | contain 6 | evacuate* 5 | – | – | flip |
 | 14 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
 | 15 | R | contain (D) | LOW_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
-| 16 | R | contain (D) | CRITICAL_HAUNT | contain 6 | observe* 4 | observe* 3.5 | – | -FloorPlan -CivilianTracker |  |
-| 17 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
+| 16 | R | contain (D) | CRITICAL_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
+| 17 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 5.75 | contain 5.75 | -SystemsBoard | -SystemsBoard |  |
 | 18 | H | observe | ELEVATED_HAUNT | contain* 2.5 | observe 6 | observe 6 | – | – |  |
-| 19 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | contain* 5 | contain* 5 | – | – |  |
-| 20 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | evacuate 6 | evacuate 6 | – | – |  |
+| 19 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | evacuate 6 | evacuate 6 | – | – |  |
+| 20 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | evacuate 6 | contain* 5 | – | – | flip |
 | 21 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | evacuate 5.8 | evacuate 6 | -ThermalReadout | – |  |
-| 22 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 6 | evacuate* 4.8 | – | -SystemsBoard | flip |
+| 22 | R | contain (D) | ELEVATED_HAUNT | contain 6 | evacuate* 5 | contain 6 | – | – | flip |
 | 23 | R | contain (D) | LOW_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
-| 24 | R | observe | UNVERIFIED | contain* 2.75 | contain* 2.75 | contain* 2.5 | -SourceLedger !CountermeasurePicker | -ThermalReadout -SourceLedger !CountermeasurePicker |  |
+| 24 | R | observe | UNVERIFIED | contain* 2.75 | contain* 3 | contain* 3 | !CountermeasurePicker | !CountermeasurePicker |  |
 
 ## Where the points went
 
-| Criterion | Baseline | Pass E | Pass F |
+| Criterion | Baseline | Pass I | Pass J |
 |---|---|---|---|
-| action | 11.00 | 5.00 | 7.00 |
-| dispatch | 7.00 | 3.00 | 3.00 |
-| hot | 1.00 | 0.00 | 0.00 |
-| recall | 2.00 | 0.70 | 1.45 |
-| no_discouraged | 9.00 | 3.00 | 3.00 |
+| action | 11.00 | 4.00 | 4.00 |
+| dispatch | 7.00 | 2.00 | 1.00 |
+| hot | 1.00 | 1.00 | 1.00 |
+| recall | 2.00 | 0.70 | 0.58 |
+| no_discouraged | 9.00 | 3.00 | 1.00 |
 | no_failure | 0.00 | 0.00 | 0.00 |
 
-- **Pass E**: misses [16]; false alarms [8]; over-escalations [24]; contain/evacuate mismatches [12, 19]; discouraged panels CivilianTracker [2, 8]; CountermeasurePicker [8, 24]; pipeline notes dropped an EMFGauge showing an ordinary reading ×2; dropped a sky warning that states times instead of an order ×10; the civilian count 140 became the 4 people in reach ×1; someone acted deliberately, so the harmless verdict became unclear ×1
-- **Pass F**: misses [16]; false alarms [8]; over-escalations [24]; contain/evacuate mismatches [5, 12, 19, 22]; discouraged panels CivilianTracker [2, 8]; CountermeasurePicker [8, 24]; pipeline notes dropped a sky warning that states times instead of an order ×12; dropped an EMFGauge showing an ordinary reading ×1; the civilian count 140 became the 4 people in reach ×1; someone acted deliberately, so the harmless verdict became unclear ×1
+- **Pass I**: misses none; false alarms [8]; over-escalations [24]; contain/evacuate mismatches [12, 22]; discouraged panels CivilianTracker [2, 8]; CountermeasurePicker [8, 24]; pipeline notes dropped a quick action this station cannot run: call_expert entrance ×1; dropped a ThreatBanner title over 6 words or 32 characters ×4; dropped a quick action this station cannot run: seal lounge ×2; dropped a quick action this station cannot run: call_expert half ×1; dropped a quick action this station cannot run: call_expert lounge ×1; dropped a quick action this station cannot run: unseal catering ×1; dropped a sky warning that states times instead of an order ×12; dropped a ThermalReadout title over 6 words or 32 characters ×1; dropped a quick action this station cannot run: seal network_closet ×1; dropped a quick action this station cannot run: call_expert registration ×1; dropped 1 evidence quote(s) not found in the report ×3; dropped a quick action this station cannot run: call_expert catering ×1; the EMF reading is above its threshold: danger ×1; dropped a quick action this station cannot run: countermeasure raise_blinds ×1; dropped a quick action this station cannot run: seal hack_floor_east ×2; dropped a quick action this station cannot run: unseal hack_floor_west ×1; dropped a quick action this station cannot run: seal catering ×2; dropped a quick action this station cannot run: seal entrance ×2; dropped a ThermalReadout showing its normal temperature ×1; dropped a SystemsBoard with no systems ×1; dropped a quick action this station cannot run: unseal main_stage ×1; dropped a quick action this station cannot run: seal main_stage ×2
+- **Pass J**: misses none; false alarms none; over-escalations [24]; contain/evacuate mismatches [12, 13, 20]; discouraged panels CountermeasurePicker [24]; pipeline notes dropped a quick action this station cannot run: call_expert entrance ×1; dropped a quick action this station cannot run: call_expert catering ×1; dropped a quick action this station cannot run: seal lounge ×1; dropped a quick action this station cannot run: call_expert lounge ×1; dropped a quick action this station cannot run: unseal catering ×1; dropped a sky warning that states times instead of an order ×11; dropped a quick action this station cannot run: seal hack_floor_west ×1; dropped a ThreatBanner title over 6 words or 32 characters ×5; dropped a quick action this station cannot run: seal registration ×2; dropped a quick action this station cannot run: call_expert half ×1; dropped a quick action this station cannot run: call_expert flare_line ×1; dropped a quick action this station cannot run: unseal network_closet ×1; dropped a quick action this station cannot run: seal hack_floor_east ×2; dropped a quick action this station cannot run: countermeasure garlic_line ×2; dropped a quick action this station cannot run: unseal hack_floor_west ×1; dropped a ThermalReadout title over 6 words or 32 characters ×1; dropped a SkyClock title over 6 words or 32 characters ×1; dropped a quick action this station cannot run: seal catering ×2; dropped a quick action this station cannot run: seal network_closet ×1; dropped a quick action this station cannot run: seal entrance ×1; dropped a quick action this station cannot run: unseal main_stage ×1; dropped a quick action this station cannot run: seal main_stage ×3; a safe route that stopped inside the building now ends at the entrance ×1
 
 ## Status after the guard experiments (15:15)
 
