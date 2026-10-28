@@ -172,16 +172,7 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
         case 'CountermeasurePicker':
             return <Picker p={c.props} ctx={ctx} />;
         case 'SystemsBoard':
-            return (
-                <ul className="systems">
-                    {c.props.systems.map((s) => (
-                        <li key={s.name}>
-                            <span>{s.name}</span>
-                            <b className={s.status}>{s.status}</b>
-                        </li>
-                    ))}
-                </ul>
-            );
+            return <Systems systems={c.props.systems} />;
         case 'SkyClock':
             return <SkyClock p={c.props} ctx={ctx} />;
         case 'EntityCard': {
@@ -312,12 +303,15 @@ function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
     );
 }
 
-const LEVELS = { strong: 4, moderate: 3, weak: 2, unproven: 1 };
+const LEVELS = { strong: 3, moderate: 2, weak: 1, unproven: 0 };
+// A target that only names a playbook class or says unknown tells the operator nothing.
+const VAGUE_TARGET = new Set(['', 'unknown', 'corporeal', 'spectral', 'anomalous', 'entity']);
 
 function Picker({ p, ctx }: { p: Props<'CountermeasurePicker'>; ctx: Ctx }) {
+    const vague = p.target_entity.toLowerCase().split(/\s+/).every((w) => VAGUE_TARGET.has(w));
     return (
         <div>
-            <div className="muted small spaced">Target: {p.target_entity}. Pick one for the expert.</div>
+            <div className="muted small spaced">{vague ? 'Pick one for the expert.' : `Target: ${p.target_entity}. Pick one for the expert.`}</div>
             <fieldset className="options">
                 <legend className="sr-only">Countermeasure for the expert</legend>
                 {p.options.map((o) => {
@@ -336,21 +330,25 @@ function Picker({ p, ctx }: { p: Props<'CountermeasurePicker'>; ctx: Ctx }) {
                                 <span className="name">
                                     {icon && <img className="icon" src={artUrl(icon)} alt="" aria-hidden="true" />}
                                     {ctx.library.arsenal[o.id] ?? o.id}
-                                    <span className="support" title={`${o.support} support in the sources`}>
-                                        {[1, 2, 3, 4].map((n) => (
+                                </span>
+                                {o.id === p.recommended && <span className="tag">recommended</span>}
+                            </label>
+                            <div className="why-cm">
+                                <span className="meter">
+                                    <span className="support" aria-hidden="true">
+                                        {[1, 2, 3].map((n) => (
                                             <i key={n} className={n <= LEVELS[o.support] ? 'on' : ''} />
                                         ))}
                                     </span>
-                                    <span className="muted small">{o.support}</span>
-                                    {o.id === p.recommended && <span className="tag">recommended</span>}
+                                    {o.support} support
                                 </span>
-                            </label>
-                            <div className="why-cm">
                                 {o.rationale}{' '}
                                 {src ? (
-                                    <Link url={src.url}>
-                                        [{src.n}] {domain(src.url)}
-                                    </Link>
+                                    <span className="cite" title={src.title}>
+                                        <Link url={src.url}>
+                                            [{src.n}] {domain(src.url)}
+                                        </Link>
+                                    </span>
                                 ) : (
                                     <span>(no source)</span>
                                 )}
@@ -360,6 +358,29 @@ function Picker({ p, ctx }: { p: Props<'CountermeasurePicker'>; ctx: Ctx }) {
                 })}
             </fieldset>
         </div>
+    );
+}
+
+const STATUS_ORDER = { offline: 0, degraded: 1, online: 2 };
+
+/** "rear_exit_door_R2" reads as "Rear exit door R2". */
+function systemName(name: string): string {
+    const s = name.replace(/_/g, ' ').trim();
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function Systems({ systems }: { systems: Props<'SystemsBoard'>['systems'] }) {
+    // Broken systems first, so the eye lands on what is down.
+    const sorted = [...systems].sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
+    return (
+        <ul className="systems">
+            {sorted.map((s, i) => (
+                <li key={i} className={s.status}>
+                    <span>{systemName(s.name)}</span>
+                    <b>{s.status}</b>
+                </li>
+            ))}
+        </ul>
     );
 }
 
