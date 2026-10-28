@@ -52,7 +52,10 @@ INCIDENT_SCHEMA = {
                 "location": {"type": "string"},
             },
         },
-        "systems": {"type": "array", "items": {
+        "systems": {"type": "array", "description": (
+            "Facility systems the report names (power, lights, doors, network, cameras, lifts), not countermeasures, "
+            "people, apps or readings. online when the report shows it working, degraded when it works badly, "
+            "offline when it is down or jammed"), "items": {
             "type": "object", "additionalProperties": False, "required": ["name", "status"],
             "properties": {"name": {"type": "string"},
                            "status": {"type": "string", "enum": ["online", "degraded", "offline"]}}}},
@@ -104,6 +107,8 @@ COMPOSE_SYSTEM = (
     + "\nFill props with values from the incident. Never invent sensor readings the incident does not report. "
     "Countermeasure options must come from the playbook arsenal and be justified by the numbered sources; "
     "set `source` to the source number that supports each one and `support` to how strongly it does. "
+    "Offer only what the lore ties to this entity: garlic_line, no_invitation and seed_scatter against vampires only, "
+    "and raise_blinds only before sunset, since daylight is the weapon. "
     "Keep every rationale and directive short: under 20 words. Pick the theme that fits the entity. "
     "The incident carries a verdict, people_in_reach and people_hurt; build the station from them, never from the feed "
     "tier. Choose recommended_action with this rubric: observe when the verdict is harmless, or when the threat is real "
@@ -229,6 +234,7 @@ class HauntState(BaseModel):
     notes: list[str] = []
     models: list[str] = []
     sky: dict = {}  # scenario steps only: server/sky.ts output, with minutes_to each event at the step's clock
+    moves: dict = {}  # what the operator did on the step before, when the page sent it on (shared/protocol.ts OperatorMoves)
 
 
 class HauntFlow(Flow[HauntState]):
@@ -355,6 +361,22 @@ class HauntFlow(Flow[HauntState]):
                 f"{clock}Minutes to each event (negative once passed): {minutes}. "
                 "Use SkyClock when the time of day changes the threat, and cite the sky sources in it.")
 
+    def _moves_facts(self) -> str:
+        """What the operator did on the step before, for this station to build on. Empty when the page sent nothing."""
+        moves = self.state.moves
+        if not moves:
+            return ""
+        pick = library.ARSENAL.get(moves.get("countermeasure") or "")
+        sealed = [library.SECTORS.get(s, s) for s in moves.get("sealed") or []]
+        parts = [f"picked {pick}" if pick else "picked no countermeasure",
+                 f"sealed {', '.join(sealed)}" if sealed else "sealed nothing"]
+        if moves.get("people") is not None:
+            parts.append(f"got {moves.get('people_out', 0)} of {moves['people']} people out")
+        return (f"\n\nWhat the operator did at the previous step ({moves.get('time') or 'earlier'}): {'; '.join(parts)}. "
+                "Build on it: keep those sectors sealed in the FloorPlan unless this report shows they no longer need to be, "
+                "say in the ThreatBanner directive whether the picked countermeasure still fits, and count only the people "
+                "still inside.")
+
     @listen(ground)
     def compose(self):
         self.step("compose", "running", "Parasail is choosing and ordering components")
@@ -365,6 +387,7 @@ class HauntFlow(Flow[HauntState]):
             f"Playbook: {book['label']}. Arsenal ids: {', '.join(book['arsenal'])}.\n\n"
             f"Numbered sources from You.com:\n{sources}\n\nLore Researcher notes:\n{self.state.research or 'none'}"
             + self._sky_facts()
+            + self._moves_facts()
         )
         has_sky = bool(self.state.sky)
         # Decided before streaming, because recommended_action is the last field the model writes.
