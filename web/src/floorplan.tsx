@@ -29,7 +29,7 @@ export function FloorPlan({ p, ctx }: { p: Props; ctx: Ctx }) {
             {view === 'floor' ? <FloorView p={p} ctx={ctx} /> : <AreaView anchor={p.anchor && p.anchor !== 'none' ? p.anchor : null} />}
             {scene && (
                 <figure className="scene">
-                    <span className="crt-img">
+                    <span className="framed-img">
                         <img src={artUrl(scene.file)} alt={scene.alt} loading="lazy" />
                     </span>
                     <figcaption className="muted small">{scene.alt}</figcaption>

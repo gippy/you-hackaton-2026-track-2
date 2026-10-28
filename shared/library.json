@@ -75,7 +75,7 @@
     }
   },
   "components": {
-    "ThreatBanner": "One-line situation headline and the directive for the floor. Use when the incident needs an immediate order.",
+    "ThreatBanner": "The incident headline, which the page builds from the intake, and one directive for the floor. In every station.",
     "EMFGauge": "Live electromagnetic field gauge in milligauss, with a danger threshold and trend. Only when the incident reports EMF.",
     "ThermalReadout": "Temperature anomaly against the room baseline. Only when the incident reports a temperature.",
     "FloorPlan": "Loft floor plan: the hot sector, sectors to seal, and a safe route out.",

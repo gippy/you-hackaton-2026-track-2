@@ -79,12 +79,23 @@ export class PanelBoundary extends ReactComponent<{ name: string; children: Reac
 const LEAD_MINUTES = 30; // a sky event gets a warning this long before it
 const AFTER_MINUTES = 10; // and keeps saying "now" this long after
 
-/** The sky events from half an hour ahead of `reference` to just past it, each with what to do as it nears. */
-function skyWarnings(sky: Sky, reference: number, advice: Library['sky_advice']): { event: SkyEvent; minutes: number; todo: string }[] {
+/**
+ * The sky events from half an hour ahead of `reference` to just past it, each with what to do as it nears.
+ * The model's focus event is listed however far ahead it is, with the model's own warning as its order;
+ * the library's advice covers the other events.
+ */
+function skyWarnings(
+    sky: Sky,
+    reference: number,
+    advice: Library['sky_advice'],
+    focus: SkyEvent['id'],
+    warning: string,
+): { event: SkyEvent; minutes: number; todo: string }[] {
     return sky.events.flatMap((event) => {
         const minutes = Math.round((Date.parse(event.at) - reference) / 60000);
-        if (!event.at || minutes > LEAD_MINUTES || minutes < -AFTER_MINUTES) return [];
-        return [{ event, minutes, todo: advice?.[event.id] ?? '' }];
+        const focused = event.id === focus;
+        if (!event.at || minutes < -AFTER_MINUTES || (minutes > LEAD_MINUTES && !focused)) return [];
+        return [{ event, minutes, todo: (focused && warning) || (advice?.[event.id] ?? '') }];
     });
 }
 
@@ -125,7 +136,8 @@ export function Card({ index, component, ctx, span, tall }: { index: number; com
         component.type === 'ThreatBanner' ? `threat sev-${component.props?.severity}` : component.type === 'FloorPlan' ? 'floor' : component.type === 'EMFGauge' ? 'gauge' : '';
     return (
         <article className={`card ${extra}`} style={{ gridColumn: `span ${span}`, gridRow: tall ? 'span 2' : undefined }}>
-            <header title={component.why}>
+            {/* The incident headline is the panel's own title, so its frame header is for screen readers only. */}
+            <header title={component.why} className={component.type === 'ThreatBanner' ? 'sr-only' : undefined}>
                 <h3>{TITLES[component.type] ?? component.type}</h3>
                 <span className="order" title={component.type}>
                     #{index + 1}
@@ -146,7 +158,6 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
                 <IncidentHead incident={ctx.incident} ctx={ctx} action={ctx.action} directive={c.props.directive} />
             ) : (
                 <div className="incident-head">
-                    <div className="headline">{c.props.headline}</div>
                     <p className="directive">{c.props.directive}</p>
                 </div>
             );
@@ -178,7 +189,7 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
             return (
                 <figure className="entity">
                     {asset && (
-                        <span className="crt-img">
+                        <span className="framed-img">
                             <img src={artUrl(asset.file)} alt={asset.alt} loading="lazy" />
                         </span>
                     )}
@@ -382,13 +393,12 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
     }, [mode]);
     if (!sky) return <p className="muted">No sky data for this run.</p>;
     const reference = mode === 'scenario' && sky.clock_at ? Date.parse(sky.clock_at) : now;
-    const warnings = skyWarnings(sky, reference, ctx.library.sky_advice);
+    const warnings = skyWarnings(sky, reference, ctx.library.sky_advice, p.focus, p.warning);
     const cited = p.cited.map((n) => ctx.sources.find((s) => s.n === n)).filter((s): s is Source => Boolean(s));
     const hero = ctx.art.hero_moonrise;
     return (
-        <div className="sky crt-bg" style={hero ? { backgroundImage: `linear-gradient(90deg, var(--panel) 40%, transparent), url(${artUrl(hero.file)})` } : undefined}>
+        <div className="sky" style={hero ? { backgroundImage: `linear-gradient(90deg, var(--panel) 40%, transparent), url(${artUrl(hero.file)})` } : undefined}>
             <div className="sky-head">
-                <span className="warning">{p.warning}</span>
                 <span className="seg" role="group" aria-label="Count down from">
                     {sky.clock && (
                         <button type="button" className={mode === 'scenario' ? 'on' : ''} aria-pressed={mode === 'scenario'} onClick={() => setMode('scenario')}>
@@ -408,9 +418,6 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
                             <span className="muted small">{e.label}</span>
                             <b className="time">{e.local}</b>
                             <span className="count">{countdown(ms, mode === 'live')}</span>
-                            <span className="muted small" title={e.source === 'wttr.in' ? `suncalc computed ${e.computed}` : 'computed offline'}>
-                                {e.source === 'wttr.in' ? 'wttr.in' : 'computed'}
-                            </span>
                         </div>
                     );
                 })}

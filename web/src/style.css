@@ -347,8 +347,7 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 
 /* --- sky clock ---------------------------------------------------------------------------- */
 .sky { display: flex; flex-direction: column; gap: 10px; background-size: cover; background-position: right center; padding: 6px; }
-.sky-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
-.sky-head .warning { font: 17px/1.2 var(--display); color: var(--hi); text-transform: uppercase; }
+.sky-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
 .seg { display: inline-flex; border: 1px solid var(--amber); }
 .seg button { background: transparent; color: var(--amber); clip-path: none; padding: 4px 10px; font-size: 16px; }
 .seg button.on { background: var(--amber); color: var(--bg); }
@@ -367,19 +366,18 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .moon-lit { fill: var(--hi); }
 
 /* --- art ----------------------------------------------------------------------------------- */
-.crt-img { position: relative; display: block; overflow: hidden; border: 1px solid var(--line); }
-.crt-img img { display: block; width: 100%; }
-.crt-bg { position: relative; }
+.framed-img { position: relative; display: block; overflow: hidden; border: 1px solid var(--line); }
+.framed-img img { display: block; width: 100%; }
 /* The portrait keeps its size however wide the card is; on a wide card the caption sits beside it. */
 .entity { margin: 0; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px 16px; }
-.entity .crt-img { width: min(100%, 300px); flex: none; }
+.entity .framed-img { width: min(100%, 300px); flex: none; }
 .entity img { aspect-ratio: 1; object-fit: cover; }
 .entity figcaption { flex: 1 1 200px; }
 .pill.verdict-real { color: var(--bg); background: var(--red); border-color: var(--red); }
 .pill.verdict-look-alike { color: var(--spook); border-color: var(--spook); }
 .pill.verdict-unconfirmed { color: var(--hi); border-color: var(--hi); }
 .scene { margin: 10px 0 0; display: flex; gap: 10px; align-items: center; }
-.scene .crt-img { width: 170px; flex: none; }
+.scene .framed-img { width: 170px; flex: none; }
 .scene img { aspect-ratio: 16 / 10; object-fit: cover; }
 
 /* --- expert calls -------------------------------------------------------------------------- */

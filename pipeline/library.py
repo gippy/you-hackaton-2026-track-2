@@ -151,8 +151,7 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
     source_ref = {"type": "integer", "minimum": 0, "maximum": source_count,
                   "description": "1-based number of the supporting source, 0 if none"}
     variants = [
-        _component("ThreatBanner", {"severity": _enum(SEVERITIES), "headline": {"type": "string"},
-                                    "directive": {"type": "string"}}),
+        _component("ThreatBanner", {"severity": _enum(SEVERITIES), "directive": {"type": "string"}}),
         _component("EMFGauge", {"value_mg": {"type": "number"}, "threshold_mg": {"type": "number"},
                                 "trend": _enum(["rising", "steady", "falling"]),
                                 "status": _enum(["nominal", "elevated", "danger"])}),
@@ -189,7 +188,8 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
     if sky:
         variants.append(_component("SkyClock", {
             "focus": {**_enum(SKY_EVENTS), "description": "The sky event that matters most for this incident"},
-            "warning": {"type": "string", "description": "What to do before that event, under 15 words"},
+            "warning": {"type": "string", "description": ("An order to the floor for before that event, e.g. 'Clear the stage and arm the netting before it rises'. "
+                                        "No times, minutes or moon phase: the clock shows them. Under 15 words")},
             "cited": {"type": "array", "items": source_ref}}))
     return _obj({
         "title": {"type": "string", "description": "Station title for this incident, under 8 words"},
@@ -234,6 +234,9 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
             continue
         seen.add(kind)
         props = comp.get("props") or {}
+        if kind == "ThreatBanner" and calm and props.get("severity") != "low":
+            notes.append("the intake judged the report harmless: a low ThreatBanner")
+            props["severity"] = "low"
         if kind == "CountermeasurePicker":
             options, ids = [], set()
             for opt in props.get("options") or []:
@@ -261,6 +264,10 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
         if kind == "EntityCard" and props.get("image") not in ENTITY_IMAGES:
             notes.append("dropped an EntityCard with an unknown image")
             continue
+        if kind == "SkyClock" and any(ch.isdigit() for ch in props.get("warning") or ""):
+            # A time or a countdown in the warning goes stale as the clock runs; the page then uses the library's order.
+            notes.append("dropped a sky warning that states times instead of an order")
+            props["warning"] = ""
         if kind in ("SourceLedger", "SkyClock"):
             props["cited"] = sorted({n for n in props.get("cited") or [] if 1 <= n <= source_count})
         components.append({"type": kind, "why": comp.get("why", ""), "props": props})
