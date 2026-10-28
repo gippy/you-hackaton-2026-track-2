@@ -74,7 +74,7 @@ apify secrets add oneSecret "$ONE_SECRET"
 git ls-files --cached --others --exclude-standard | grep -E '(^|/)\.env|\.onerc|\.venv/|\.pem$|\.key$' || echo "no secrets in the upload"
 ```
 
-`.env` and `.onerc` are in `.gitignore`, so they stay home. `eval/`, `scenarios/` and `smoke_test.py` are not gitignored and would be uploaded as source (the Actor is private, and the image build does not copy them). Add them to a `.actorignore` if you would rather keep them off the platform.
+`.env` and `.onerc` are in `.gitignore`, so they stay home. `.actorignore` keeps `proof/`, `docs/`, `scripts/` and the local-only folders out of the upload; the image reads none of them. It also keeps a clean clone under the size where the CLI sends inline source files, which the API otherwise refuses with `sourceFilesTooLarge`.
 
 ### 3. Push
 

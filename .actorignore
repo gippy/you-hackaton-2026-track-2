@@ -1,0 +1,10 @@
+# Files apify push leaves out of the upload. None of them is read by the image (see .dockerignore),
+# and without them a clean clone fits the platform's source-files limit (sourceFilesTooLarge otherwise).
+proof
+docs
+scripts
+eval
+scenarios
+review
+submission
+smoke_test.py
