@@ -266,18 +266,22 @@ function Thermal(p: Props<'ThermalReadout'>) {
 
 const MAX_SQUARES = 24;
 
+/** The tracker's squares: up to 24, one per person in a small group, else one per equal share of the crowd (the last takes the rest). */
+export function squares(count: number, extracted: number[]) {
+    const per = Math.max(1, Math.ceil(count / MAX_SQUARES));
+    const total = Math.ceil(count / per);
+    const size = (i: number) => Math.min(per, count - i * per);
+    const out = extracted.filter((i) => i < total);
+    return { per, total, size, out, people: out.reduce((sum, i) => sum + size(i), 0) };
+}
+
 function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
-    // Up to 24 squares: one per person in a small group, else one per equal share of the crowd (the last takes the rest).
-    const per = Math.max(1, Math.ceil(p.count / MAX_SQUARES));
-    const squares = Math.ceil(p.count / per);
-    const size = (i: number) => Math.min(per, p.count - i * per);
-    const extracted = ctx.operator.extracted.filter((i) => i < squares);
-    const out = extracted.reduce((sum, i) => sum + size(i), 0);
+    const { per, total, size, out: extracted, people: out } = squares(p.count, ctx.operator.extracted);
     return (
         <div>
             <div className="muted small">{per > 1 ? `Each square is ${per} people. Click one when they are out.` : 'Click a person when they are out.'}</div>
             <div className="people">
-                {Array.from({ length: squares }, (_, i) => {
+                {Array.from({ length: total }, (_, i) => {
                     const safe = extracted.includes(i);
                     return (
                         <button

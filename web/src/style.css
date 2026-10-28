@@ -190,6 +190,8 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .stage { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
 .report-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; }
 .report-head h2 { margin: 0; }
+.moves { margin: 6px 0 0; color: var(--hi); }
+.moves::before { content: '>> '; color: var(--amber); }
 .report-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; }
 .report-nav select { flex: 1 1 260px; min-width: 0; }
 .report-nav .menu { margin-left: auto; }

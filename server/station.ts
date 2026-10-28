@@ -12,7 +12,7 @@ import { createInterface } from 'node:readline';
 import type { WebSocket, WebSocketServer } from 'ws';
 
 import library from '../shared/library.json' with { type: 'json' };
-import type { ArtAsset, ClientMessage, Expert, FixtureIncident, Floor, FlowEvent, Library, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
+import type { ArtAsset, ClientMessage, Expert, FixtureIncident, Floor, FlowEvent, Library, OperatorMoves, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
 import { Pager, type PageRequest } from './pager.ts';
 import { skyFor, today } from './sky.ts';
 import { speak } from './speech.ts';
@@ -84,7 +84,7 @@ export class Station {
                 } catch {
                     return;
                 }
-                if (msg.type === 'compile' && msg.incident_id) void this.compileIncident(String(msg.incident_id));
+                if (msg.type === 'compile' && msg.incident_id) void this.compileIncident(String(msg.incident_id), checkMoves(msg.moves));
                 else if (msg.type === 'compile') void this.compile(String(msg.raw ?? '').slice(0, 4000), '', '');
                 else if (msg.type === 'call_expert') this.callExpert(ws, msg);
                 else if (msg.type === 'resolve_page') {
@@ -109,15 +109,18 @@ export class Station {
     // --- runs ---------------------------------------------------------------------------
 
     /** Build the station for a fixture incident, by id. Returns false when no fixture has that id. */
-    compileIncident(incidentId: string): boolean {
+    compileIncident(incidentId: string, moves?: OperatorMoves): boolean {
         const incident = [...this.opts.scenarios.flatMap((s) => s.steps), ...this.opts.incidents].find((i) => i.incident_id === incidentId);
         if (!incident) return false;
-        void this.compile(incident.raw_incident_stream, incident.incident_id, incident.severity_tier, incident.time ?? '');
+        void this.compile(incident.raw_incident_stream, incident.incident_id, incident.severity_tier, incident.time ?? '', moves);
         return true;
     }
 
-    /** Run the pipeline on a report. `clock` is a scenario step's "HH:MM": the step then gets a sky. */
-    async compile(raw: string, incidentId: string, severityTier: string, clock = ''): Promise<void> {
+    /**
+     * Run the pipeline on a report. `clock` is a scenario step's "HH:MM": the step then gets a sky. `moves` are
+     * what the operator did on the step before, for the station to build on.
+     */
+    async compile(raw: string, incidentId: string, severityTier: string, clock = '', moves?: OperatorMoves): Promise<void> {
         if (!raw.trim()) return;
         if (this.busy) {
             this.broadcastOnly({ type: 'error', detail: 'A run is already in progress.' });
@@ -130,7 +133,7 @@ export class Station {
                 return;
             }
             this.history = [];
-            this.emit({ type: 'run_begin', incident_id: incidentId, source: 'live', requested: incidentId });
+            this.emit({ type: 'run_begin', incident_id: incidentId, source: 'live', requested: incidentId, moves });
             const events: SavedRun['events'] = [];
             const t0 = Date.now();
             const record = (msg: FlowEvent) => {
@@ -141,7 +144,7 @@ export class Station {
             if (sky) record({ type: 'sky', sky });
             let state: RunState;
             try {
-                state = await this.runWorker({ raw, incident_id: incidentId, severity_tier: severityTier, sky }, record);
+                state = await this.runWorker({ raw, incident_id: incidentId, severity_tier: severityTier, sky, moves }, record);
             } catch (err) {
                 const detail = (err as Error).message;
                 console.error(`Pipeline failed: ${detail}`);
@@ -285,6 +288,21 @@ const short = (text: string, limit: number) => {
     const flat = (text || '').split(/\s+/).join(' ').trim();
     return flat.length <= limit ? flat : `${flat.slice(0, limit - 1).trimEnd()}…`;
 };
+
+/** The operator's moves from a page, kept only where they name the library's countermeasures and sectors. */
+function checkMoves(raw: unknown): OperatorMoves | undefined {
+    if (!raw || typeof raw !== 'object') return undefined;
+    const m = raw as Partial<OperatorMoves>;
+    const count = (n: unknown) => (typeof n === 'number' && Number.isFinite(n) && n >= 0 ? Math.min(Math.round(n), 100000) : null);
+    return {
+        step: String(m.step ?? '').slice(0, 80),
+        time: String(m.time ?? '').slice(0, 5),
+        countermeasure: typeof m.countermeasure === 'string' && m.countermeasure in library.arsenal ? m.countermeasure : null,
+        sealed: Array.isArray(m.sealed) ? [...new Set(m.sealed.filter((id): id is string => typeof id === 'string' && id in library.sectors))] : [],
+        people_out: count(m.people_out) ?? 0,
+        people: count(m.people),
+    };
+}
 
 /** The PagerDuty incident for a call: the station's headline as the title, and what the expert needs to know. */
 export function pageRequest(state: RunState, expert: Expert, countermeasure: string | null): PageRequest {

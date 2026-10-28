@@ -214,7 +214,7 @@ export type ServerMessage =
     | FlowEvent
     | { type: 'hello'; mode: 'live' | 'offline'; library: Library; incidents: FixtureIncident[]; scenarios: Scenario[]; art: Record<string, ArtAsset>; floor: Floor | null }
     /** `requested` is the incident a viewer asked for; a snapshot replay may show another one. */
-    | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string; requested?: string }
+    | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string; requested?: string; moves?: OperatorMoves }
     /** Sent after the replay to a viewer that just connected: what follows is live. */
     | { type: 'synced' }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
@@ -223,8 +223,18 @@ export type ServerMessage =
     | { type: 'speech'; url: string; cue?: string }
     | { type: 'error'; detail: string };
 
+/** What the operator did on a scenario step, sent with the next step so its station can build on it. */
+export interface OperatorMoves {
+    step: string; // the incident id of the step the moves were made on
+    time: string; // that step's scenario clock, "HH:MM"
+    countermeasure: string | null; // an arsenal id
+    sealed: string[]; // sector ids
+    people_out: number; // people marked extracted on the civilian tracker
+    people: number | null; // the tracker's count, when there was a tracker
+}
+
 export type ClientMessage =
-    | { type: 'compile'; raw?: string; incident_id?: string }
+    | { type: 'compile'; raw?: string; incident_id?: string; moves?: OperatorMoves }
     /** Page an expert about the station on screen, with the countermeasure the operator picked. */
     | { type: 'call_expert'; expert: Expert; countermeasure: string | null }
     | { type: 'resolve_page'; key: string };

@@ -1,7 +1,7 @@
 // The page's state: everything the server has streamed for the current run, plus the operator's choices.
 // Every server message goes through `reduce`, so a late joiner that gets the history replayed ends up
 // in the same state as a page that watched the run live.
-import type { ArtAsset, Component, FixtureIncident, Floor, Incident, Library, PageInfo, Scenario, Sky, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
+import type { ArtAsset, Component, FixtureIncident, Floor, Incident, Library, Manifest, OperatorMoves, PageInfo, Scenario, ServerMessage, Sky, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
 export interface Step {
     state?: StepState;
@@ -39,6 +39,8 @@ export interface State {
     components: Component[];
     manifest: Manifest | null;
     operator: Operator;
+    /** What the operator did on the step before, when this run builds on it. */
+    moves: OperatorMoves | null;
     /** Set when another viewer of this shared station started the run on screen. */
     notice: string | null;
 }
@@ -75,6 +77,7 @@ export const initial: State = {
     components: [],
     manifest: null,
     operator: OPERATOR,
+    moves: null,
     notice: null,
 };
 
@@ -136,6 +139,9 @@ function server(state: State, msg: ServerMessage, foreign = false): State {
                 art: state.art,
                 floor: state.floor,
                 source: msg.source,
+                // A run that builds on the operator's moves keeps their seals on the map.
+                moves: msg.moves ?? null,
+                operator: msg.moves ? { ...OPERATOR, sealed: msg.moves.sealed } : OPERATOR,
                 banner: msg.detail ? { text: msg.detail, kind: 'info' } : null,
                 notice: foreign ? `Another viewer of this station started ${runLabel(state, msg.requested ?? msg.incident_id)}.` : null,
             };
