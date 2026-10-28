@@ -273,6 +273,7 @@ export interface OperatorMoves {
     sealed: string[]; // sector ids
     people_out: number; // people marked extracted on the civilian tracker
     people: number | null; // the tracker's count, when there was a tracker
+    experts: { expert: Expert; status: PageInfo['status']; by: string[] }[]; // experts called and not yet stood down
 }
 
 export type ClientMessage =

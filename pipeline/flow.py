@@ -451,10 +451,18 @@ class HauntFlow(Flow[HauntState]):
                  f"sealed {', '.join(sealed)}" if sealed else "sealed nothing"]
         if moves.get("people") is not None:
             parts.append(f"got {moves.get('people_out', 0)} of {moves['people']} people out")
+        called = [f"{library.EXPERTS.get(e.get('expert'), {}).get('label', e.get('expert'))} "
+                  + (f"(acknowledged by {', '.join(e['by'])}, on the way)" if e.get("status") == "acknowledged" and e.get("by")
+                     else "(paged, not yet acknowledged)")
+                  for e in moves.get("experts") or []]
+        if called:
+            parts.append(f"called the {' and the '.join(called)}")
         return (f"\n\nWhat the operator did at the previous step ({moves.get('time') or 'earlier'}): {'; '.join(parts)}. "
                 "Build on it: keep those sectors sealed in the FloorPlan unless this report shows they no longer need to be, "
                 "say in the ThreatBanner directive whether the picked countermeasure still fits, and count only the people "
-                "still inside.")
+                "still inside."
+                + (" An expert already called is on the way: never tell the floor to call them again, and say what to hand "
+                   "over when they arrive." if called else ""))
 
 
 # ---- streaming helpers for compose

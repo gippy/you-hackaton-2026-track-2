@@ -11,7 +11,7 @@ import { createInterface } from 'node:readline';
 import type { RawData, WebSocket, WebSocketServer } from 'ws';
 
 import library from '../shared/library.json' with { type: 'json' };
-import type { ArtAsset, ClientMessage, Expert, Finding, FixtureIncident, Floor, FlowEvent, Library, OperatorMoves, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
+import type { ArtAsset, ClientMessage, Expert, Finding, FixtureIncident, Floor, FlowEvent, Library, OperatorMoves, PageInfo, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
 import { Pager, pageRequest } from './pager.ts';
 import { skyFor } from './sky.ts';
 import { speak } from './speech.ts';
@@ -348,5 +348,12 @@ function checkMoves(raw: unknown): OperatorMoves | undefined {
         sealed: Array.isArray(m.sealed) ? [...new Set(m.sealed.filter((id): id is string => typeof id === 'string' && id in library.sectors))] : [],
         people_out: count(m.people_out) ?? 0,
         people: count(m.people),
+        experts: (Array.isArray(m.experts) ? m.experts : [])
+            .filter((e) => e && typeof e === 'object' && e.expert in library.experts && OPEN_CALLS.includes(e.status))
+            .slice(0, 2)
+            .map((e) => ({ expert: e.expert, status: e.status, by: (Array.isArray(e.by) ? e.by : []).map((name) => String(name).slice(0, 40)).slice(0, 3) })),
     };
 }
+
+/** Calls that still stand: the expert is on the way or, with paging off, would be. */
+const OPEN_CALLS: PageInfo['status'][] = ['sending', 'triggered', 'acknowledged', 'off'];

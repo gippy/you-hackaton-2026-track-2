@@ -37,6 +37,10 @@ function movesOn(state: State, current: FixtureIncident): OperatorMoves {
         sealed: operator.sealed,
         people_out: count === null ? 0 : squares(count, operator.extracted).people,
         people: count,
+        // Every call still standing, from any step: the expert is on the way, so the next station knows.
+        experts: state.pages
+            .filter((p) => ['sending', 'triggered', 'acknowledged', 'off'].includes(p.status))
+            .map((p) => ({ expert: p.expert, status: p.status, by: p.acknowledged_by })),
     };
 }
 
@@ -144,6 +148,7 @@ export function ReportPanel({
                         state.moves.countermeasure ? (library.arsenal[state.moves.countermeasure] ?? state.moves.countermeasure) : 'no countermeasure picked',
                         state.moves.sealed.length ? `sealed ${state.moves.sealed.map((id) => library.sectors[id] ?? id).join(', ')}` : 'nothing sealed',
                         state.moves.people !== null ? `${state.moves.people_out} of ${state.moves.people} people out` : '',
+                        ...(state.moves.experts ?? []).map((e) => `${library.experts[e.expert]?.label ?? e.expert} called (${e.status === 'off' ? 'paging off' : e.status})`),
                     ]
                         .filter(Boolean)
                         .join(' · ')}
