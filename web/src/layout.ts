@@ -13,7 +13,8 @@
 //   SourceLedger                 full width, last
 //
 // Everything else fills rows of 12 in the model's order; a row that cannot take the next panel is
-// widened so it has no gap.
+// widened so it has no gap. A row of two with the EntityCard keeps the portrait at 4 and gives the
+// other panel 8, so the row is no taller than the art.
 import type { Component, ComponentType } from '../../shared/protocol.ts';
 
 export interface Placed {
@@ -48,7 +49,11 @@ export function layout(components: (Component | undefined)[]): Placed[] {
     let row: Placed[] = [];
     const flush = () => {
         const used = row.reduce((sum, p) => sum + p.span, 0);
-        if (used < 12) {
+        const entity = row.find((p) => p.component.type === 'EntityCard');
+        if (row.length === 2 && entity) {
+            // The square portrait sets a short row at 4 columns, and its neighbour gets the width.
+            row.forEach((p) => (p.span = p === entity ? 4 : 8));
+        } else if (used < 12) {
             // Share the row equally when that divides it, else give the remainder to the last panel.
             if (12 % row.length === 0) row.forEach((p) => (p.span = 12 / row.length));
             else row[row.length - 1].span += 12 - used;

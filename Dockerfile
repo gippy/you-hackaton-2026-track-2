@@ -90,4 +90,5 @@ EXPOSE 4321
 
 # Apify sets ACTOR_WEB_SERVER_PORT (4321). `exec` replaces the shell with node, so tini's SIGTERM reaches it.
 ENTRYPOINT ["tini", "--"]
-CMD ["sh", "-c", "exec node server/main.ts --host 0.0.0.0 --port $ACTOR_WEB_SERVER_PORT --no-browser"]
+# Opens on Nightfall step 21, a real threat to act on (step 1 is a costume, step 18 can come out harmless).
+CMD ["sh", "-c", "exec node server/main.ts --host 0.0.0.0 --port $ACTOR_WEB_SERVER_PORT --no-browser --incident sim-nightfall-21"]

@@ -2,7 +2,7 @@ import { type FormEvent, type KeyboardEvent, useEffect, useReducer, useRef, useS
 
 import type { Action, ClientMessage, ServerMessage, StepId } from '../../shared/protocol.ts';
 import type { Incident } from '../../shared/protocol.ts';
-import { Card, IncidentHead, Link, type Ctx } from './components.tsx';
+import { Card, IncidentHead, Link, PanelBoundary, upcomingWarnings, type Ctx } from './components.tsx';
 import { FloorPlan } from './floorplan.tsx';
 import { layout } from './layout.ts';
 import { artUrl, withToken } from './url.ts';
@@ -147,6 +147,7 @@ export function App() {
         incident: incident?.incident ?? null, clock, action: state.manifest?.recommended_action ?? null, operator, send,
     };
     const hasSkyClock = state.components.some((c) => c?.type === 'SkyClock');
+    const skyWarnings = upcomingWarnings(state.skyWarnings, state.sky, state.sky?.clock_at ? Date.parse(state.sky.clock_at) : Date.now());
     const sourceLabel = !state.connected ? 'disconnected' : state.source === 'snapshot' ? 'saved run' : state.source === 'live' ? 'live run' : state.mode ?? 'connecting';
     const armed = live && state.liveDispatch;
     // Where the station on screen sits in a scenario, when it is one of its steps.
@@ -179,6 +180,7 @@ export function App() {
 
     const dispatch = (e: FormEvent) => {
         e.preventDefault();
+        if (!state.manifest || state.dispatching) return; // aria-disabled, so the button keeps focus
         if (armed && !confirm('Post this containment alert to the real #loft-incident channel?')) return;
         if (pageArmed && !confirm('If the model marked this critical, really page the on-call through PagerDuty?')) return;
         // The click is the interaction browsers wait for: with sound off it allows only this dispatch's spoken reply.
@@ -260,7 +262,7 @@ export function App() {
                             <option value="evacuate">Evacuate</option>
                             <option value="observe">Observe</option>
                         </select>
-                        <button type="submit" className={calm ? 'ghost' : ''} disabled={!state.manifest || state.dispatching}>
+                        <button type="submit" className={calm ? 'ghost' : ''} aria-disabled={!state.manifest || state.dispatching}>
                             {state.dispatching ? 'Dispatching…' : calm ? 'Dispatch anyway' : 'Dispatch to #loft-incident'}
                         </button>
                         <span className="modes">
@@ -343,7 +345,7 @@ export function App() {
                                     </li>
                                 ))}
                             </ol>
-                            <button type="button" className="link" onClick={() => setAllSteps(!allSteps)}>
+                            <button type="button" className="link" aria-expanded={allSteps} onClick={() => setAllSteps(!allSteps)}>
                                 {allSteps ? 'Show fewer' : `Show all ${scenario.steps.length}`}
                             </button>
                         </section>
@@ -378,7 +380,7 @@ export function App() {
                         <h2>Report</h2>
                         <blockquote className={`raw ${fullLog ? '' : 'clamp'}`}>{incident?.raw ?? 'The raw report appears here.'}</blockquote>
                         {incident && (
-                            <button type="button" className="link" onClick={() => setFullLog(!fullLog)}>
+                            <button type="button" className="link" aria-expanded={fullLog} onClick={() => setFullLog(!fullLog)}>
                                 {fullLog ? 'Show less' : 'Show full log'}
                             </button>
                         )}
@@ -454,16 +456,17 @@ export function App() {
                 <section className="stage" id="station" tabIndex={-1}>
                     <div className="stage-head">
                         <h2>Station</h2>
-                        <span className="muted small">Components chosen and ordered by the model</span>
                         <button type="button" className="link" aria-pressed={reasoning} onClick={() => setReasoning(!reasoning)}>
-                            {reasoning ? 'Hide reasoning' : 'Show reasoning'}
+                            Reasoning
                         </button>
                     </div>
                     <div className={`components ${reasoning ? 'reasoning' : ''}`}>
                         {ctx && state.components.length ? (
                             layout(state.components).map((p) => <Card key={`${p.index}-${p.component.type}`} index={p.index} component={p.component} ctx={ctx} span={p.span} tall={p.tall} />)
                         ) : ctx && incident ? (
-                            <Provisional incident={incident.incident} ctx={ctx} stage={!state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…'} />
+                            <PanelBoundary key={incident.incident_id} name="Provisional">
+                                <Provisional incident={incident.incident} ctx={ctx} stage={!state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…'} />
+                            </PanelBoundary>
                         ) : (
                             <div className="empty hero crt-bg" style={state.art.hero_station_night ? { backgroundImage: `url(${artUrl(state.art.hero_station_night.file)})` } : undefined}>
                                 {!incident ? 'Reading the incident…' : !state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…'}
@@ -487,13 +490,13 @@ export function App() {
                             </details>
                         </section>
                     )}
-                    {state.skyWarnings.length > 0 && !hasSkyClock && (
+                    {skyWarnings.length > 0 && !hasSkyClock && (
                         <section className="panel pages">
                             <h2>
                                 Sky warnings <em className="partner">One → Discord, edited in place</em>
                             </h2>
                             <ul>
-                                {state.skyWarnings.map((w) => (
+                                {skyWarnings.map((w) => (
                                     <li key={w.event}>
                                         <div className="page-head">
                                             <span className={`pill ${w.minutes <= 10 ? 'page-triggered' : 'muted'}`}>{w.minutes > 0 ? `T-${w.minutes} min` : 'now'}</span>

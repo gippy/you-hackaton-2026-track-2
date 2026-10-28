@@ -64,7 +64,7 @@ export function Link({ url, children }: { url: string; children?: ReactNode }) {
 }
 
 /** One panel failing to render shows a small notice instead of blanking the whole station. */
-class PanelBoundary extends ReactComponent<{ name: string; children: ReactNode }, { failed: boolean }> {
+export class PanelBoundary extends ReactComponent<{ name: string; children: ReactNode }, { failed: boolean }> {
     state = { failed: false };
     static getDerivedStateFromError() {
         return { failed: true };
@@ -77,6 +77,18 @@ class PanelBoundary extends ReactComponent<{ name: string; children: ReactNode }
     }
 }
 
+/**
+ * Sky warnings still ahead of `reference`, with their minutes recomputed: a warning keeps the minutes
+ * from when it was posted, and stepping through the scenario moves the clock past it.
+ */
+export function upcomingWarnings(warnings: SkyWarning[], sky: Sky | null, reference: number): SkyWarning[] {
+    return warnings.flatMap((w) => {
+        const event = sky?.events.find((e) => e.id === w.event);
+        const minutes = event ? Math.round((Date.parse(event.at) - reference) / 60000) : w.minutes;
+        return minutes < -1 ? [] : [{ ...w, minutes, text: w.text.replace(/, (?:in \d+ min|now)/, '') }];
+    });
+}
+
 const VERDICT = { real_threat: 'Real', harmless: 'Harmless', unclear: 'Unclear' } as const;
 
 /**
@@ -85,11 +97,14 @@ const VERDICT = { real_threat: 'Real', harmless: 'Harmless', unclear: 'Unclear' 
  */
 export function IncidentHead({ incident, ctx, action, directive }: { incident: Incident; ctx: Ctx; action: Action | null; directive: string }) {
     const people = incident.people_in_reach ?? incident.civilians?.count;
+    const harmless = incident.verdict === 'harmless';
+    // The detail in parentheses is in the directive and the report; the headline stays one or two lines.
+    const entity = incident.entity.replace(/\s*\([^)]*\)/g, '');
     const parts = [
-        incident.entity,
+        harmless ? `False alarm: ${entity}` : entity,
         ctx.library.sectors[incident.sector] ?? incident.sector,
         ctx.clock,
-        people === undefined ? '' : people > 0 ? `${people} people` : 'no one in reach',
+        people === undefined ? '' : people > 0 ? `${people} ${harmless ? 'nearby' : 'people'}` : 'no one in reach',
     ];
     return (
         <div className="incident-head">
@@ -368,6 +383,7 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
     }, [mode]);
     if (!sky) return <p className="muted">No sky data for this run.</p>;
     const reference = mode === 'scenario' && sky.clock_at ? Date.parse(sky.clock_at) : now;
+    const warnings = upcomingWarnings(ctx.skyWarnings, sky, reference);
     const cited = p.cited.map((n) => ctx.sources.find((s) => s.n === n)).filter((s): s is Source => Boolean(s));
     const hero = ctx.art.hero_moonrise;
     return (
@@ -406,9 +422,9 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
                     </span>
                 </div>
             </div>
-            {ctx.skyWarnings.length > 0 && (
+            {warnings.length > 0 && (
                 <ul className="sky-warnings">
-                    {ctx.skyWarnings.map((w) => (
+                    {warnings.map((w) => (
                         <li key={w.event}>
                             <span className={`pill ${w.minutes <= 10 ? 'page-triggered' : 'muted'}`}>{w.minutes > 0 ? `T-${w.minutes}` : 'now'}</span>
                             <span>{w.text.replace(/^\[[^\]]+\] SIMULATED sky warning · /, '')}</span>
