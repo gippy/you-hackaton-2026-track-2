@@ -87,7 +87,7 @@ Other ways to run it:
 ```bash
 pnpm start --offline          # no network and no keys: replays the last saved run
 pnpm start --live-dispatch    # shows a "Live post" switch that really posts to #loft-incident
-pnpm start --incident sim-2026-0102   # start from another incident in fixtures/ (default: Nightfall's first step)
+pnpm start --incident sim-2026-0102   # start from another incident in fixtures/ (default: Nightfall step 20, a real threat)
 pnpm start --live-page        # shows a "Live page" switch that really pages the on-call through PagerDuty
 pnpm start --sky-warnings live      # count the sky warnings down in real time (default: the scenario's clock; off turns them off)
 pnpm start --live-sky-warnings      # really post the sky warnings to #loft-incident and edit them as they count down

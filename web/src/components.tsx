@@ -113,8 +113,8 @@ export function Card({ index, component, ctx, span, tall }: { index: number; com
         <article className={`card ${extra}`} style={{ gridColumn: `span ${span}`, gridRow: tall ? 'span 2' : undefined }}>
             <header title={component.why}>
                 <h3>{TITLES[component.type] ?? component.type}</h3>
-                <span className="order">
-                    #{index + 1} {component.type}
+                <span className="order" title={component.type}>
+                    #{index + 1}
                 </span>
             </header>
             {component.why && <p className="why">{component.why}</p>}
@@ -253,7 +253,7 @@ function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
                             type="button"
                             className={`person ${safe ? 'safe' : ''}`}
                             aria-pressed={safe}
-                            aria-label={`Person ${i + 1}: ${safe ? 'extracted' : 'mark extracted'}`}
+                            aria-label={`Person ${i + 1}`}
                             title="Mark extracted"
                             onClick={() => ctx.send({ type: 'toggle-person', index: i })}
                         >
@@ -274,7 +274,7 @@ function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
                 <dd className={p.priority === 'immediate' ? 'status-danger' : ''}>{p.priority}</dd>
                 <dt>Extracted</dt>
                 <dd>
-                    <b>{extracted.length}</b> of {shown}
+                    <b>{extracted.length}</b> of the {shown} shown
                 </dd>
             </dl>
         </div>
@@ -287,31 +287,33 @@ function Picker({ p, ctx }: { p: Props<'CountermeasurePicker'>; ctx: Ctx }) {
     return (
         <div>
             <div className="muted small spaced">Target: {p.target_entity}. Pick one to dispatch.</div>
-            <div className="options">
+            <fieldset className="options">
+                <legend className="sr-only">Countermeasure to dispatch</legend>
                 {p.options.map((o) => {
                     const src = ctx.sources.find((s) => s.n === o.source);
+                    const icon = ctx.art[ctx.library.arsenal_icons[o.id]];
                     return (
-                        <label key={o.id} className="option">
-                            <input
-                                type="radio"
-                                name="countermeasure"
-                                value={o.id}
-                                checked={ctx.operator.countermeasure === o.id}
-                                onChange={() => ctx.send({ type: 'countermeasure', id: o.id })}
-                            />
-                            <div className="name">
-                                {ctx.art[ctx.library.arsenal_icons[o.id]] && (
-                                    <img className="icon" src={artUrl(ctx.art[ctx.library.arsenal_icons[o.id]].file)} alt="" aria-hidden="true" />
-                                )}
-                                {ctx.library.arsenal[o.id] ?? o.id}
-                                <span className="support" title={`${o.support} support in the sources`}>
-                                    {[1, 2, 3, 4].map((n) => (
-                                        <i key={n} className={n <= LEVELS[o.support] ? 'on' : ''} />
-                                    ))}
+                        <div key={o.id} className="option">
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="countermeasure"
+                                    value={o.id}
+                                    checked={ctx.operator.countermeasure === o.id}
+                                    onChange={() => ctx.send({ type: 'countermeasure', id: o.id })}
+                                />
+                                <span className="name">
+                                    {icon && <img className="icon" src={artUrl(icon.file)} alt="" aria-hidden="true" />}
+                                    {ctx.library.arsenal[o.id] ?? o.id}
+                                    <span className="support" title={`${o.support} support in the sources`}>
+                                        {[1, 2, 3, 4].map((n) => (
+                                            <i key={n} className={n <= LEVELS[o.support] ? 'on' : ''} />
+                                        ))}
+                                    </span>
+                                    <span className="muted small">{o.support}</span>
+                                    {o.id === p.recommended && <span className="tag">recommended</span>}
                                 </span>
-                                <span className="muted small">{o.support}</span>
-                                {o.id === p.recommended && <span className="tag">recommended</span>}
-                            </div>
+                            </label>
                             <div className="why-cm">
                                 {o.rationale}{' '}
                                 {src ? (
@@ -322,10 +324,10 @@ function Picker({ p, ctx }: { p: Props<'CountermeasurePicker'>; ctx: Ctx }) {
                                     <span>(no source)</span>
                                 )}
                             </div>
-                        </label>
+                        </div>
                     );
                 })}
-            </div>
+            </fieldset>
         </div>
     );
 }

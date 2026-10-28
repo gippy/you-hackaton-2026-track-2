@@ -103,8 +103,10 @@ function loadScenarios(): Scenario[] {
 const incidents = loadIncidents();
 const scenarios = loadScenarios();
 const known = [...scenarios.flatMap((s) => s.steps), ...incidents];
-// The demo opens on the first scenario's first step; --incident picks any other.
-const firstIncident = args.incident ?? known[0].incident_id;
+// The demo opens on Nightfall step 20, a real threat with a decision to make (step 1 is a costume);
+// --incident picks any other.
+const DEMO_INCIDENT = 'sim-nightfall-20';
+const firstIncident = args.incident ?? (known.some((i) => i.incident_id === DEMO_INCIDENT) ? DEMO_INCIDENT : known[0].incident_id);
 if (!known.some((i) => i.incident_id === firstIncident)) {
     console.error(`No incident with id ${firstIncident}. Known ids: ${known.map((i) => i.incident_id).join(', ')}`);
     process.exit(1);

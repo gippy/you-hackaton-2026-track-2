@@ -86,6 +86,10 @@ export const initial: State = {
     notice: null,
 };
 
+/** The model sometimes opens its title with the fixture id ("SIM NIGHTFALL 21 — …"); the step shows elsewhere. */
+const cleanTitle = (title: string) =>
+    title.replace(/^\s*sim[- ]nightfall[- ]\d+\s*[—–:-]\s*/i, '').replace(/\s*(?:[—–-]\s*|\()sim[- ]nightfall[- ]\d+\)?\s*$/i, '').trim() || title;
+
 const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
 
 /**
@@ -157,7 +161,7 @@ function server(state: State, msg: ServerMessage, foreign = false): State {
         case 'sky':
             return { ...state, sky: msg.sky };
         case 'frame':
-            return { ...state, title: msg.title ?? state.title, theme: msg.theme ?? state.theme };
+            return { ...state, title: msg.title ? cleanTitle(msg.title) : state.title, theme: msg.theme ?? state.theme };
         case 'component': {
             const components = [...state.components];
             components[msg.index] = withDefaults(msg.component);
@@ -167,7 +171,7 @@ function server(state: State, msg: ServerMessage, foreign = false): State {
             const manifest = { ...msg.manifest, components: (msg.manifest.components ?? []).map(withDefaults) };
             const operator = manifest.components.reduce(adopt, { ...state.operator, action: manifest.recommended_action });
             const notes = msg.notes?.length && msg.source === 'live' ? { text: `Pipeline notes: ${msg.notes.join('; ')}`, kind: 'info' as const } : state.banner;
-            return { ...state, manifest, components: manifest.components, title: manifest.title, theme: manifest.theme, operator, banner: notes };
+            return { ...state, manifest, components: manifest.components, title: manifest.title ? cleanTitle(manifest.title) : state.title, theme: manifest.theme, operator, banner: notes };
         }
         case 'dispatch':
             return { ...state, dispatch: msg, dispatching: false };

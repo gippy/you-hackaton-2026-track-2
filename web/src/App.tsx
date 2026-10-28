@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useReducer, useRef, useState } from 'react';
+import { type FormEvent, type KeyboardEvent, useEffect, useReducer, useRef, useState } from 'react';
 
 import type { Action, ClientMessage, ServerMessage, StepId } from '../../shared/protocol.ts';
 import type { Incident } from '../../shared/protocol.ts';
@@ -47,6 +47,9 @@ function Provisional({ incident, ctx, stage }: { incident: Incident; ctx: Ctx; s
         </>
     );
 }
+
+/** A feed tier as words: CRITICAL_HAUNT reads "critical haunt". */
+const tier = (raw: string) => raw.replace(/_/g, ' ').toLowerCase();
 
 /** A timeline label: the report's first clause, without its "ALERT 18:15" prefix, cut at a word and never mid-word. */
 function stepLabel(raw: string): string {
@@ -104,11 +107,11 @@ export function App() {
                 const msg = JSON.parse(ev.data) as ServerMessage;
                 if (msg.type === 'synced') synced.current = true;
                 let foreign = false;
-                if (msg.type === 'run_begin') {
-                    foreign = synced.current && requested.current !== (msg.requested ?? msg.incident_id);
-                    requested.current = null;
-                }
-                if (msg.type === 'error') requested.current = null; // for example "a run is already in progress"
+                // A failed run sends run_begin, error, then run_begin for the saved replay of the same request:
+                // the request stays this tab's own until its run ends, or until the server refuses it outright.
+                if (msg.type === 'run_begin') foreign = synced.current && requested.current !== (msg.requested ?? msg.incident_id);
+                if (msg.type === 'run_end') requested.current = null;
+                if (msg.type === 'error' && /already in progress/i.test(msg.detail)) requested.current = null;
                 sound.current.onMessage(msg);
                 send({ type: 'server', msg, foreign });
             };
@@ -164,17 +167,31 @@ export function App() {
     const calm = state.manifest?.recommended_action === 'observe';
     const pageArmed = livePage && state.livePage;
 
+    // The timeline is one Tab stop: the arrow keys move between its steps.
+    const roving = (e: KeyboardEvent<HTMLOListElement>) => {
+        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+        const buttons = [...e.currentTarget.querySelectorAll('button')];
+        const next = buttons[buttons.indexOf(document.activeElement as HTMLButtonElement) + (e.key === 'ArrowDown' ? 1 : -1)];
+        if (!next) return;
+        e.preventDefault();
+        next.focus();
+    };
+
     const dispatch = (e: FormEvent) => {
         e.preventDefault();
         if (armed && !confirm('Post this containment alert to the real #loft-incident channel?')) return;
         if (pageArmed && !confirm('If the model marked this critical, really page the on-call through PagerDuty?')) return;
-        if (!soundOn) enableSound(true); // the click is the interaction browsers wait for before playing audio
+        // The click is the interaction browsers wait for: with sound off it allows only this dispatch's spoken reply.
+        if (!soundOn) sound.current.voiceOnce = true;
         send({ type: 'dispatching' });
         post({ type: 'dispatch', action: operator.action, countermeasure: operator.countermeasure, sealed: operator.sealed, extracted: operator.extracted.length, live: armed, live_page: pageArmed });
     };
 
     return (
         <>
+            <a className="skip" href="#station">
+                Skip to the station
+            </a>
             <header className="topbar">
                 <div className="brand">
                     <span className="sigil" aria-hidden="true">
@@ -182,12 +199,35 @@ export function App() {
                     </span>
                     <div>
                         <h1>{state.title}</h1>
-                        <div className="sub">
-                            {current
-                                ? `${scenario?.title} · step ${current.step}/${scenario?.steps.length} · ${current.time}`
-                                : incident
-                                  ? incident.incident_id || 'pasted incident'
-                                  : 'waiting for an incident'}
+                        <div className="subrow">
+                            <div className="sub">
+                                {current ? `${scenario?.title} · ${current.time}` : incident ? incident.incident_id || 'pasted incident' : 'waiting for an incident'}
+                            </div>
+                            {scenario && (
+                                // Buttons stay focusable while a run streams (aria-disabled), so stepping by keyboard is one key per step.
+                                <nav className="stepper" aria-label={`Scenario ${scenario.title}`}>
+                                    <button
+                                        type="button"
+                                        className="ghost"
+                                        disabled={!mine || mine.step === 1}
+                                        aria-disabled={running}
+                                        onClick={() => !running && mine && compileId(scenario.steps[mine.step! - 2].incident_id)}
+                                    >
+                                        ◀ Previous
+                                    </button>
+                                    <span className="muted small">
+                                        {current ? `Step ${current.step} of ${scenario.steps.length}` : mine ? `Step ${mine.step} of ${scenario.steps.length}` : 'Not started'}
+                                        {current && mine && mine !== current ? ` (yours: ${mine.step})` : ''}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        aria-disabled={running || mine?.step === scenario.steps.length}
+                                        onClick={() => !running && mine?.step !== scenario.steps.length && compileId(scenario.steps[mine ? mine.step! : 0].incident_id)}
+                                    >
+                                        {mine ? 'Next step ▶' : 'Start ▶'}
+                                    </button>
+                                </nav>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -196,13 +236,14 @@ export function App() {
                         <span className={`state ${state.source === 'snapshot' || state.mode === 'offline' ? 'snapshot' : state.connected ? 'live' : 'muted'}`}>{sourceLabel}</span>
                     </div>
                     <div className="group" aria-label="Sound">
-                        <button type="button" className="ghost" aria-pressed={soundOn} onClick={() => enableSound(!soundOn)}>
-                            {soundOn ? 'Mute' : 'Sound on'}
+                        <button type="button" className={`ghost ${soundOn ? 'on' : ''}`} aria-pressed={soundOn} onClick={() => enableSound(!soundOn)}>
+                            Sound<span aria-hidden="true">{soundOn ? ' ◉' : ' ○'}</span>
                         </button>
                         <input
                             type="range"
                             className="volume"
                             aria-label="Volume"
+                            aria-valuetext={`${Math.round(volume * 100)}%`}
                             min={0}
                             max={1}
                             step={0.05}
@@ -246,6 +287,16 @@ export function App() {
                             )}
                             <span className="cm">{calm ? 'No dispatch needed' : operator.countermeasure ? (library?.arsenal[operator.countermeasure] ?? operator.countermeasure) : 'No countermeasure'}</span>
                         </span>
+                        <span className="dispatch-result" role="status">
+                            {state.dispatch && !state.dispatching && (
+                                <>
+                                    {state.dispatch.error
+                                        ? 'Dispatch failed'
+                                        : { 'dry-run': 'Dry run done, nothing posted', live: 'Posted to #loft-incident', offline: 'Offline: One not called' }[state.dispatch.mode]}{' '}
+                                    · <a href="#dispatch-log">details</a>
+                                </>
+                            )}
+                        </span>
                     </form>
                 </div>
             </header>
@@ -256,43 +307,36 @@ export function App() {
                 </div>
             )}
             {state.banner && (
-                <div className={`banner ${state.banner.kind === 'error' ? 'error' : ''}`} role="status">
+                <div className={`banner ${state.banner.kind === 'error' ? 'error' : ''}`} role={state.banner.kind === 'error' ? 'alert' : 'status'}>
                     {state.banner.text}
                 </div>
             )}
 
             <main className="layout">
+                <div className="sr-only" role="status" aria-live="polite">
+                    {running
+                        ? `Building the station for ${current ? `step ${current.step}` : 'the incident'}…`
+                        : state.manifest && incident
+                          ? `Station ready: ${state.components.filter(Boolean).length} panels. ${incident.incident.entity} in ${library?.sectors[incident.incident.sector] ?? incident.incident.sector}. Recommended: ${state.manifest.recommended_action}.`
+                          : ''}
+                    {state.dispatch && !state.dispatching ? ` Dispatch ${state.dispatch.mode}${state.dispatch.error ? ' failed' : ' done'}.` : ''}
+                </div>
                 <aside className="rail">
                     {scenario && (
                         <section className="panel">
                             <h2>
                                 Scenario: {scenario.title} <em className="partner">simulated</em>
                             </h2>
-                            <div className="stepper">
-                                <button type="button" className="ghost" disabled={running || !mine || mine.step === 1} onClick={() => mine && compileId(scenario.steps[mine.step! - 2].incident_id)}>
-                                    ◀ Previous
-                                </button>
-                                <span className="muted small">
-                                    {current ? `Step ${current.step} of ${scenario.steps.length}, ${current.time}` : 'Not started'}
-                                    {mine && mine !== current ? ` (yours: step ${mine.step})` : ''}
-                                </span>
-                                <button
-                                    type="button"
-                                    disabled={running || mine?.step === scenario.steps.length}
-                                    onClick={() => compileId(scenario.steps[mine ? mine.step! : 0].incident_id)}
-                                >
-                                    {mine ? 'Next step ▶' : 'Start ▶'}
-                                </button>
-                            </div>
-                            <ol className="timeline">
+                            <ol className="timeline" onKeyDown={roving}>
                                 {visibleSteps.map((step) => (
                                     <li key={step.incident_id}>
                                         <button
                                             type="button"
                                             className={step.incident_id === current?.incident_id ? 'active' : ''}
                                             title={step.raw_incident_stream}
-                                            disabled={running}
-                                            onClick={() => compileId(step.incident_id)}
+                                            tabIndex={step === (current ?? mine ?? visibleSteps[0]) ? 0 : -1}
+                                            aria-disabled={running}
+                                            onClick={() => !running && compileId(step.incident_id)}
                                         >
                                             <time>{step.time}</time> {stepLabel(step.raw_incident_stream)}
                                         </button>
@@ -360,7 +404,7 @@ export function App() {
                                 {incident.severity_tier && (
                                     <>
                                         <dt>Feed tier</dt>
-                                        <dd>{incident.severity_tier}</dd>
+                                        <dd>{tier(incident.severity_tier)}</dd>
                                     </>
                                 )}
                             </dl>
@@ -376,10 +420,10 @@ export function App() {
                                         type="button"
                                         className={`ghost ${incident?.incident_id === i.incident_id ? 'active' : ''}`}
                                         title={i.raw_incident_stream}
-                                        disabled={running}
-                                        onClick={() => compileId(i.incident_id)}
+                                        aria-disabled={running}
+                                        onClick={() => !running && compileId(i.incident_id)}
                                     >
-                                        <b>{i.incident_id}</b> {i.severity_tier}
+                                        <b>{i.incident_id}</b> {tier(i.severity_tier)}
                                         {i.source === 'simulated' && <span className="tag">simulated</span>}
                                         <span className="snippet">{i.raw_incident_stream.slice(0, 90)}…</span>
                                     </button>
@@ -407,7 +451,7 @@ export function App() {
                     </section>
                 </aside>
 
-                <section className="stage">
+                <section className="stage" id="station" tabIndex={-1}>
                     <div className="stage-head">
                         <h2>Station</h2>
                         <span className="muted small">Components chosen and ordered by the model</span>
@@ -427,13 +471,13 @@ export function App() {
                         )}
                     </div>
                     {state.dispatch && (
-                        <section className="panel dispatch-log">
+                        <section className="panel dispatch-log" id="dispatch-log">
                             <h2>
                                 Dispatch <em className="partner">One → Discord</em>
                             </h2>
                             <pre>{state.dispatch.text}</pre>
                             {state.dispatch.paging && <p className="muted small">{state.dispatch.paging}</p>}
-                            <details open>
+                            <details>
                                 <summary>
                                     {state.dispatch.error
                                         ? `${state.dispatch.mode === 'live' ? 'Live post' : 'Dry run'} failed`

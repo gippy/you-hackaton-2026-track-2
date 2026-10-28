@@ -2,8 +2,10 @@
 // appear and in what order; the page decides how wide each type is, so the station is always laid
 // out the same way and leaves no gaps.
 //
-//   ThreatBanner and SkyClock    full width, first
-//   FloorPlan                    8 columns, with up to two small panels stacked beside it
+//   ThreatBanner                 full width, first
+//   FloorPlan                    8 columns, with the CountermeasurePicker beside it (the operator's
+//                                one decision stays near the top), or else up to two small panels
+//   SkyClock                     full width, after that row
 //   CivilianTracker,
 //   CountermeasurePicker         6 columns
 //   EntityCard, SystemsBoard,
@@ -21,7 +23,8 @@ export interface Placed {
     tall: boolean; // spans two rows (the floor plan beside two stacked panels)
 }
 
-const FIRST: ComponentType[] = ['ThreatBanner', 'SkyClock'];
+const FIRST: ComponentType[] = ['ThreatBanner'];
+const AFTER_FLOOR: ComponentType[] = ['SkyClock'];
 const LAST: ComponentType[] = ['SourceLedger'];
 const SMALL: ComponentType[] = ['EntityCard', 'SystemsBoard', 'ThermalReadout', 'EMFGauge'];
 const MEDIUM: ComponentType[] = ['CivilianTracker', 'CountermeasurePicker'];
@@ -29,18 +32,18 @@ const MEDIUM: ComponentType[] = ['CivilianTracker', 'CountermeasurePicker'];
 export function layout(components: (Component | undefined)[]): Placed[] {
     const items = components.flatMap((component, index) => (component ? [{ component, index }] : []));
     const of = (types: ComponentType[]) => items.filter((x) => types.includes(x.component.type));
-    const out: Placed[] = of(FIRST)
-        .sort((a, b) => FIRST.indexOf(a.component.type) - FIRST.indexOf(b.component.type))
-        .map((x) => ({ ...x, span: 12, tall: false }));
+    const out: Placed[] = of(FIRST).map((x) => ({ ...x, span: 12, tall: false }));
 
-    let rest = items.filter((x) => !FIRST.includes(x.component.type) && !LAST.includes(x.component.type));
+    let rest = items.filter((x) => ![...FIRST, ...AFTER_FLOOR, ...LAST].includes(x.component.type));
     const floor = rest.find((x) => x.component.type === 'FloorPlan');
     if (floor) {
-        const beside = rest.filter((x) => SMALL.includes(x.component.type)).slice(0, 2);
+        const picker = rest.find((x) => x.component.type === 'CountermeasurePicker');
+        const beside = picker ? [picker] : rest.filter((x) => SMALL.includes(x.component.type)).slice(0, 2);
         out.push({ ...floor, span: beside.length ? 8 : 12, tall: beside.length === 2 });
         out.push(...beside.map((x) => ({ ...x, span: 4, tall: false })));
         rest = rest.filter((x) => x !== floor && !beside.includes(x));
     }
+    out.push(...of(AFTER_FLOOR).map((x) => ({ ...x, span: 12, tall: false })));
 
     let row: Placed[] = [];
     const flush = () => {

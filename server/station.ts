@@ -46,6 +46,8 @@ export interface StationOptions {
 
 type WorkerLine = FlowEvent | { type: 'result'; state: RunState } | { type: 'fatal'; detail: string };
 
+/** When a run was saved, in the venue's time ("6:42 PM"), for the replay notice. */
+const savedAt = (iso: string) => new Date(iso).toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit' });
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export class Station {
@@ -261,7 +263,7 @@ export class Station {
         this.run = saved;
         const { state } = saved;
         const other = incidentId && state.incident_id !== incidentId ? ` No run of ${incidentId} is saved, so this is ${state.incident_id || 'another incident'}.` : '';
-        this.emit({ type: 'run_begin', incident_id: state.incident_id, source: 'snapshot', detail: `${reason}${other} Saved ${saved.saved_at}.`, requested: incidentId });
+        this.emit({ type: 'run_begin', incident_id: state.incident_id, source: 'snapshot', detail: `${reason}${other} Saved at ${savedAt(saved.saved_at)}.`, requested: incidentId });
         let last = 0;
         for (const { t, msg } of saved.events) {
             await sleep(Math.min(Math.max((t - last) * 1000, 0), REPLAY_GAP_MS));

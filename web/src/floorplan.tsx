@@ -16,7 +16,7 @@ export function FloorPlan({ p, ctx }: { p: Props; ctx: Ctx }) {
     const [view, setView] = useState<'floor' | 'area'>(p.view === 'area' ? 'area' : 'floor');
     const scene = p.scene && ctx.art[p.scene];
     return (
-        <div>
+        <div className="floor">
             <div className="seg spaced" role="group" aria-label="Map view">
                 <button type="button" className={view === 'floor' ? 'on' : ''} aria-pressed={view === 'floor'} onClick={() => setView('floor')}>
                     Floor
@@ -99,7 +99,7 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
     const { width, height } = floor.space;
     return (
         <div>
-            <svg viewBox={`-2 -2 ${width + 4} ${height + 4}`} role="img" aria-label={`Floor schematic, hot sector ${sectors[p.hot_sector] ?? p.hot_sector}`} className="floor-svg">
+            <svg viewBox={`-2 -2 ${width + 4} ${height + 4}`} role="group" aria-label={`Floor schematic, hot sector ${sectors[p.hot_sector] ?? p.hot_sector}`} className="floor-svg">
                 <defs>
                     <pattern id="hatch" width={2} height={2} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
                         <rect width={2} height={2} style={{ fill: 'var(--bg)' }} />
@@ -143,17 +143,8 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                             <polygon
                                 points={points(z.polygon)}
                                 className={`sector ${id === p.hot_sector ? 'hot' : ''} ${sealed.includes(id) ? 'sealed' : ''}`}
-                                tabIndex={0}
-                                role="button"
-                                aria-pressed={sealed.includes(id)}
-                                aria-label={`${sectors[id] ?? z.label}: seal or unseal`}
+                                aria-hidden="true"
                                 onClick={toggle}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                        e.preventDefault();
-                                        toggle();
-                                    }
-                                }}
                             />
                             <text x={z.label_at[0]} y={z.label_at[1]} textAnchor="middle" className="zone-label">
                                 {z.label}
@@ -186,7 +177,7 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                 </span>
                 <span>
                     <i className="sw-sealed" />
-                    sealed (click a sector to change)
+                    sealed
                 </span>
                 <span>
                     <i className="sw-route" />
@@ -194,7 +185,14 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                 </span>
                 <span title={floor.notice}>Schematic, not to scale</span>
             </div>
-            <div className="muted small">{sealed.length ? `Sealed: ${sealed.map((id) => sectors[id] ?? id).join(', ')}` : 'No sectors sealed.'}</div>
+            <div className="muted small seal-label">Seal sectors (or click one on the plan)</div>
+            <div className="seg seal-list" role="group" aria-label="Seal sectors">
+                {Object.entries(sectors).map(([id, name]) => (
+                    <button key={id} type="button" className={sealed.includes(id) ? 'on' : ''} aria-pressed={sealed.includes(id)} onClick={() => ctx.send({ type: 'toggle-seal', sector: id })}>
+                        {name}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 }
