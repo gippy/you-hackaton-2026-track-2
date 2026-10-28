@@ -254,6 +254,11 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
                 props["anchor"] = "none"
             if props.get("view") not in ("floor", "area"):
                 props["view"] = "area" if props["anchor"] != "none" else "floor"
+        reach = (incident or {}).get("people_in_reach") or 0
+        if kind == "CivilianTracker" and reach and (props.get("count") or 0) > reach:
+            # The headline counts the people the threat can reach; the tracker never shows more than that.
+            notes.append(f"the civilian count {props.get('count')} became the {reach} people in reach")
+            props["count"] = reach
         if kind == "EntityCard" and props.get("image") not in ENTITY_IMAGES:
             notes.append("dropped an EntityCard with an unknown image")
             continue

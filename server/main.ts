@@ -7,6 +7,7 @@
 //
 // Serves the Vite build of web/ and the /ws stream on one port (default http://127.0.0.1:8666).
 import { execFile } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { extname, join, normalize, resolve } from 'node:path';
@@ -105,12 +106,13 @@ if (!known.some((i) => i.incident_id === firstIncident)) {
     process.exit(1);
 }
 
-/** The art library's entries the page needs: file, kind and alt text. Empty when there is no art. */
+/** The art library's entries the page needs: file, kind, alt text and a content hash. Empty when there is no art. */
 function loadArt(): Record<string, ArtAsset> {
     const path = join(ART, 'manifest.json');
     if (!existsSync(path)) return {};
     const entries = Object.entries(JSON.parse(readFileSync(path, 'utf8')) as Record<string, ArtAsset>);
-    return Object.fromEntries(entries.map(([id, a]) => [id, { file: a.file, kind: a.kind, alt: a.alt }]));
+    const version = (file: string) => (existsSync(join(ROOT, file)) ? createHash('sha1').update(readFileSync(join(ROOT, file))).digest('hex').slice(0, 8) : undefined);
+    return Object.fromEntries(entries.map(([id, a]) => [id, { file: a.file, kind: a.kind, alt: a.alt, v: version(a.file) }]));
 }
 
 const python = process.env.PYTHON ?? join(ROOT, '.venv', 'bin', 'python');

@@ -190,7 +190,7 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
                 <figure className="entity">
                     {asset && (
                         <span className="framed-img">
-                            <img src={artUrl(asset.file)} alt={asset.alt} loading="lazy" />
+                            <img src={artUrl(asset)} alt={asset.alt} loading="lazy" />
                         </span>
                     )}
                     <figcaption>
@@ -264,13 +264,20 @@ function Thermal(p: Props<'ThermalReadout'>) {
     );
 }
 
+const MAX_SQUARES = 24;
+
 function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
-    const shown = Math.min(p.count, 24);
-    const extracted = ctx.operator.extracted;
+    // Up to 24 squares: one per person in a small group, else one per equal share of the crowd (the last takes the rest).
+    const per = Math.max(1, Math.ceil(p.count / MAX_SQUARES));
+    const squares = Math.ceil(p.count / per);
+    const size = (i: number) => Math.min(per, p.count - i * per);
+    const extracted = ctx.operator.extracted.filter((i) => i < squares);
+    const out = extracted.reduce((sum, i) => sum + size(i), 0);
     return (
         <div>
+            <div className="muted small">{per > 1 ? `Each square is ${per} people. Click one when they are out.` : 'Click a person when they are out.'}</div>
             <div className="people">
-                {Array.from({ length: shown }, (_, i) => {
+                {Array.from({ length: squares }, (_, i) => {
                     const safe = extracted.includes(i);
                     return (
                         <button
@@ -278,15 +285,14 @@ function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
                             type="button"
                             className={`person ${safe ? 'safe' : ''}`}
                             aria-pressed={safe}
-                            aria-label={`Person ${i + 1}`}
+                            aria-label={per > 1 ? `Group ${i + 1}, ${size(i)} people` : `Person ${i + 1}`}
                             title="Mark extracted"
                             onClick={() => ctx.send({ type: 'toggle-person', index: i })}
                         >
-                            {safe ? '✓' : '☺'}
+                            {safe ? '✓' : per > 1 ? size(i) : '☺'}
                         </button>
                     );
                 })}
-                {p.count > shown && <span className="muted">+{p.count - shown}</span>}
             </div>
             <dl className="kv">
                 <dt>Count</dt>
@@ -299,7 +305,7 @@ function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
                 <dd className={p.priority === 'immediate' ? 'status-danger' : ''}>{p.priority}</dd>
                 <dt>Extracted</dt>
                 <dd>
-                    <b>{extracted.length}</b> of the {shown} shown
+                    <b>{out}</b> of {p.count}
                 </dd>
             </dl>
         </div>
@@ -328,7 +334,7 @@ function Picker({ p, ctx }: { p: Props<'CountermeasurePicker'>; ctx: Ctx }) {
                                     onChange={() => ctx.send({ type: 'countermeasure', id: o.id })}
                                 />
                                 <span className="name">
-                                    {icon && <img className="icon" src={artUrl(icon.file)} alt="" aria-hidden="true" />}
+                                    {icon && <img className="icon" src={artUrl(icon)} alt="" aria-hidden="true" />}
                                     {ctx.library.arsenal[o.id] ?? o.id}
                                     <span className="support" title={`${o.support} support in the sources`}>
                                         {[1, 2, 3, 4].map((n) => (
@@ -397,7 +403,7 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
     const cited = p.cited.map((n) => ctx.sources.find((s) => s.n === n)).filter((s): s is Source => Boolean(s));
     const hero = ctx.art.hero_moonrise;
     return (
-        <div className="sky" style={hero ? { backgroundImage: `linear-gradient(90deg, var(--panel) 40%, transparent), url(${artUrl(hero.file)})` } : undefined}>
+        <div className="sky" style={hero ? { backgroundImage: `linear-gradient(90deg, var(--panel) 40%, transparent), url(${artUrl(hero)})` } : undefined}>
             <div className="sky-head">
                 <span className="seg" role="group" aria-label="Count down from">
                     {sky.clock && (

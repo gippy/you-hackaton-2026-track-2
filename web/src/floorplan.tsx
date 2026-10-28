@@ -34,7 +34,7 @@ export function FloorPlan({ p, ctx }: { p: Props; ctx: Ctx }) {
             {scene && (
                 <figure className="scene">
                     <span className="framed-img">
-                        <img src={artUrl(scene.file)} alt={scene.alt} loading="lazy" />
+                        <img src={artUrl(scene)} alt={scene.alt} loading="lazy" />
                     </span>
                     <figcaption className="muted small">{scene.alt}</figcaption>
                 </figure>

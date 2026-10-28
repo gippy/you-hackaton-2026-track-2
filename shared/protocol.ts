@@ -138,6 +138,8 @@ export interface ArtAsset {
     file: string;
     kind: 'entity' | 'sector' | 'hero' | 'icon';
     alt: string;
+    /** A short hash of the file's content, so a re-rendered image under the same name is not served from a cache. */
+    v?: string;
 }
 
 export interface Library {

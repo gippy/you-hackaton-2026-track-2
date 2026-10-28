@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 
 import type { ClientMessage, Expert, PageInfo, ServerMessage, StepId } from '../../shared/protocol.ts';
 import type { Incident } from '../../shared/protocol.ts';
@@ -108,8 +108,6 @@ export function App() {
     // whatever run another viewer started, and it can tell its own runs from theirs.
     const [cursor, setCursor] = useState<string | null>(null);
     const [reasoning, setReasoning] = useState(false); // the model's "why" for each panel, on demand
-    const [allSteps, setAllSteps] = useState(false);
-    const [fullLog, setFullLog] = useState(false);
     const requested = useRef<string | null>(null);
     const synced = useRef(false);
 
@@ -177,9 +175,10 @@ export function App() {
     };
     // This tab's own place in the scenario: the step it last asked for, else the step on screen.
     const mine = scenario?.steps.find((step) => step.incident_id === cursor) ?? current;
-    // The step list shows five steps around the one on screen, or all of them on request.
-    const at = Math.max(0, scenario?.steps.indexOf(current ?? mine ?? scenario.steps[0]) ?? 0);
-    const visibleSteps = !scenario ? [] : allSteps ? scenario.steps : scenario.steps.slice(Math.max(0, Math.min(at - 2, scenario.steps.length - 5)), Math.max(0, Math.min(at - 2, scenario.steps.length - 5)) + 5);
+    // The report panel shows the step or incident this tab picked, from the fixtures, so its text is there before the run.
+    const picked = cursor ?? incident?.incident_id ?? '';
+    const pickedFixture = [...state.scenarios.flatMap((s) => s.steps), ...state.incidents].find((x) => x.incident_id === picked);
+    const pickedStep = scenario?.steps.find((step) => step.incident_id === picked);
     // The expert the code-mapped playbook points to is the primary button; a harmless report needs neither.
     const harmless = incident?.incident.verdict === 'harmless';
     const recommended = harmless || !library || !state.playbook ? null : EXPERTS.find((x) => library.experts[x].playbooks.includes(state.playbook!)) ?? null;
@@ -188,15 +187,6 @@ export function App() {
     // This step's page for an expert (a pasted report's id is made on the server, so match any pasted one).
     const pageFor = (expert: Expert) => state.pages.find((p) => p.expert === expert && (incident?.incident_id ? p.incident_id === incident.incident_id : p.incident_id.startsWith('pasted-')));
 
-    // The timeline is one Tab stop: the arrow keys move between its steps.
-    const roving = (e: KeyboardEvent<HTMLOListElement>) => {
-        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-        const buttons = [...e.currentTarget.querySelectorAll('button')];
-        const next = buttons[buttons.indexOf(document.activeElement as HTMLButtonElement) + (e.key === 'ArrowDown' ? 1 : -1)];
-        if (!next) return;
-        e.preventDefault();
-        next.focus();
-    };
 
     const callExpert = (expert: Expert) => {
         const open = pageFor(expert);
@@ -222,31 +212,6 @@ export function App() {
                             <div className="sub">
                                 {current ? `${scenario?.title} · ${current.time}` : incident ? incident.incident_id || 'pasted incident' : 'waiting for an incident'}
                             </div>
-                            {scenario && (
-                                // Buttons stay focusable while a run streams (aria-disabled), so stepping by keyboard is one key per step.
-                                <nav className="stepper" aria-label={`Scenario ${scenario.title}`}>
-                                    <button
-                                        type="button"
-                                        className="ghost"
-                                        disabled={!mine || mine.step === 1}
-                                        aria-disabled={running}
-                                        onClick={() => !running && mine && compileId(scenario.steps[mine.step! - 2].incident_id)}
-                                    >
-                                        ◀ Previous
-                                    </button>
-                                    <span className="muted small">
-                                        {current ? `Step ${current.step} of ${scenario.steps.length}` : mine ? `Step ${mine.step} of ${scenario.steps.length}` : 'Not started'}
-                                        {current && mine && mine !== current ? ` (yours: ${mine.step})` : ''}
-                                    </span>
-                                    <button
-                                        type="button"
-                                        aria-disabled={running || mine?.step === scenario.steps.length}
-                                        onClick={() => !running && mine?.step !== scenario.steps.length && compileId(scenario.steps[mine ? mine.step! : 0].incident_id)}
-                                    >
-                                        {mine ? 'Next step ▶' : 'Start ▶'}
-                                    </button>
-                                </nav>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -342,32 +307,6 @@ export function App() {
                         .join('')}
                 </div>
                 <aside className="rail">
-                    {scenario && (
-                        <section className="panel">
-                            <h2>
-                                Scenario: {scenario.title} <em className="partner">simulated</em>
-                            </h2>
-                            <ol className="timeline" onKeyDown={roving}>
-                                {visibleSteps.map((step) => (
-                                    <li key={step.incident_id}>
-                                        <button
-                                            type="button"
-                                            className={step.incident_id === current?.incident_id ? 'active' : ''}
-                                            title={step.raw_incident_stream}
-                                            tabIndex={step === (current ?? mine ?? visibleSteps[0]) ? 0 : -1}
-                                            aria-disabled={running}
-                                            onClick={() => !running && compileId(step.incident_id)}
-                                        >
-                                            <time>{step.time}</time> {stepLabel(step.raw_incident_stream)}
-                                        </button>
-                                    </li>
-                                ))}
-                            </ol>
-                            <button type="button" className="link" aria-expanded={allSteps} onClick={() => setAllSteps(!allSteps)}>
-                                {allSteps ? 'Show fewer' : `Show all ${scenario.steps.length}`}
-                            </button>
-                        </section>
-                    )}
                     <section className="panel">
                         <h2>Pipeline</h2>
                         <ol className="steps">
@@ -395,13 +334,8 @@ export function App() {
                     </section>
 
                     <section className="panel">
-                        <h2>Report</h2>
-                        <blockquote className={`raw ${fullLog ? '' : 'clamp'}`}>{incident?.raw ?? 'The raw report appears here.'}</blockquote>
-                        {incident && (
-                            <button type="button" className="link" aria-expanded={fullLog} onClick={() => setFullLog(!fullLog)}>
-                                {fullLog ? 'Show less' : 'Show full log'}
-                            </button>
-                        )}
+                        <h2>Intake</h2>
+                        {!incident && <p className="muted small">The facts the model reads from the report appear here.</p>}
                         {incident && library && (
                             <dl className="facts">
                                 <dt>Verdict</dt>
@@ -431,26 +365,6 @@ export function App() {
                         )}
                     </section>
 
-                    <section className="panel">
-                        <h2>Single incidents</h2>
-                        <ul className="incidents">
-                            {state.incidents.map((i) => (
-                                <li key={i.incident_id}>
-                                    <button
-                                        type="button"
-                                        className={`ghost ${incident?.incident_id === i.incident_id ? 'active' : ''}`}
-                                        title={i.raw_incident_stream}
-                                        aria-disabled={running}
-                                        onClick={() => !running && compileId(i.incident_id)}
-                                    >
-                                        <b>{i.incident_id}</b> {tier(i.severity_tier)}
-                                        {i.source === 'simulated' && <span className="tag">simulated</span>}
-                                        <span className="snippet">{i.raw_incident_stream.slice(0, 90)}…</span>
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
 
                     <section className="panel">
                         <h2>New incident</h2>
@@ -472,6 +386,69 @@ export function App() {
                 </aside>
 
                 <section className="stage" id="station" tabIndex={-1}>
+                    {/* The report the station is built from, and the controls that pick it: a step back or on, or any step or incident. */}
+                    <section className="panel report" aria-labelledby="report-title">
+                        <div className="report-head">
+                            <h2 id="report-title">Incident report</h2>
+                            <span className="muted small">
+                                {pickedStep && scenario
+                                    ? `${scenario.title} · step ${pickedStep.step} of ${scenario.steps.length} · ${pickedStep.time}`
+                                    : pickedFixture
+                                      ? pickedFixture.incident_id
+                                      : incident
+                                        ? 'Pasted report'
+                                        : 'Waiting for an incident'}
+                                {pickedFixture ? ` · feed tier ${tier(pickedFixture.severity_tier)}` : ''}
+                                {pickedFixture?.source === 'simulated' ? ' · simulated' : ''}
+                                {current && mine && mine !== current ? ` · on screen: step ${current.step}` : ''}
+                            </span>
+                        </div>
+                        {/* Controls stay focusable while a run streams (aria-disabled), so stepping by keyboard is one key per step. */}
+                        <div className="report-nav">
+                            {scenario && (
+                                <button
+                                    type="button"
+                                    className="ghost"
+                                    disabled={!mine || mine.step === 1}
+                                    aria-disabled={running}
+                                    onClick={() => !running && mine && compileId(scenario.steps[mine.step! - 2].incident_id)}
+                                >
+                                    ◀ Previous
+                                </button>
+                            )}
+                            <select aria-label="Pick a step or an incident" value={pickedFixture ? picked : ''} aria-disabled={running} onChange={(e) => !running && e.target.value && compileId(e.target.value)}>
+                                {!pickedFixture && <option value="">{incident ? 'Pasted report' : 'Pick a step or an incident…'}</option>}
+                                {state.scenarios.map((s) => (
+                                    <optgroup key={s.id} label={`${s.title} (simulated)`}>
+                                        {s.steps.map((step) => (
+                                            <option key={step.incident_id} value={step.incident_id}>
+                                                {`${step.step}. ${step.time} · ${stepLabel(step.raw_incident_stream)}`}
+                                            </option>
+                                        ))}
+                                    </optgroup>
+                                ))}
+                                {state.incidents.length > 0 && (
+                                    <optgroup label="Single incidents">
+                                        {state.incidents.map((i) => (
+                                            <option key={i.incident_id} value={i.incident_id}>
+                                                {`${i.incident_id} · ${tier(i.severity_tier)}${i.source === 'simulated' ? ' (simulated)' : ''}`}
+                                            </option>
+                                        ))}
+                                    </optgroup>
+                                )}
+                            </select>
+                            {scenario && (
+                                <button
+                                    type="button"
+                                    aria-disabled={running || mine?.step === scenario.steps.length}
+                                    onClick={() => !running && mine?.step !== scenario.steps.length && compileId(scenario.steps[mine ? mine.step! : 0].incident_id)}
+                                >
+                                    {mine ? 'Next step ▶' : 'Start ▶'}
+                                </button>
+                            )}
+                        </div>
+                        <blockquote className="report-text">{pickedFixture?.raw_incident_stream ?? incident?.raw ?? 'The raw report appears here.'}</blockquote>
+                    </section>
                     <div className="stage-head">
                         <h2>Station</h2>
                         <button type="button" className="link" aria-pressed={reasoning} onClick={() => setReasoning(!reasoning)}>
@@ -486,7 +463,7 @@ export function App() {
                                 <Provisional incident={incident.incident} ctx={ctx} stage={!state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…'} />
                             </PanelBoundary>
                         ) : (
-                            <div className="empty hero" style={state.art.hero_station_night ? { backgroundImage: `url(${artUrl(state.art.hero_station_night.file)})` } : undefined}>
+                            <div className="empty hero" style={state.art.hero_station_night ? { backgroundImage: `url(${artUrl(state.art.hero_station_night)})` } : undefined}>
                                 {!incident ? 'Reading the incident…' : !state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…'}
                             </div>
                         )}
