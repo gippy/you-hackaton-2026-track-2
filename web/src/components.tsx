@@ -2,7 +2,7 @@
 // it never writes markup. Model and web text is rendered as React text, and only http(s) links render.
 import { type ReactNode, useEffect, useState } from 'react';
 
-import type { ArtAsset, Component, ComponentType, Floor, Library, Sky, Source } from '../../shared/protocol.ts';
+import type { ArtAsset, Component, ComponentType, Floor, Library, Sky, SkyWarning, Source } from '../../shared/protocol.ts';
 import { FloorPlan } from './floorplan.tsx';
 import type { Event, Operator } from './station.ts';
 import { artUrl } from './url.ts';
@@ -12,7 +12,10 @@ export interface Ctx {
     art: Record<string, ArtAsset>;
     floor: Floor | null;
     sources: Source[];
+    /** Numbers of the sources the plan relies on: cited by the ledger, a countermeasure or the sky clock. */
+    cited: Set<number>;
     sky: Sky | null;
+    skyWarnings: SkyWarning[];
     operator: Operator;
     send: (event: Event) => void;
 }
@@ -31,8 +34,6 @@ export const TITLES: Record<ComponentType, string> = {
     SkyClock: 'Sky clock',
     EntityCard: 'Entity',
 };
-
-const WIDE = new Set<ComponentType>(['ThreatBanner', 'FloorPlan', 'CountermeasurePicker', 'SkyClock']);
 
 export function domain(url: string): string {
     try {
@@ -58,11 +59,12 @@ export function Link({ url, children }: { url: string; children?: ReactNode }) {
     return <span>{children ?? url}</span>;
 }
 
-export function Card({ index, component, ctx }: { index: number; component: Component; ctx: Ctx }) {
+/** One component as a terminal window. `span` and `tall` come from layout.ts, never from the model. */
+export function Card({ index, component, ctx, span, tall }: { index: number; component: Component; ctx: Ctx; span: number; tall: boolean }) {
     const extra =
         component.type === 'ThreatBanner' ? `threat sev-${component.props.severity}` : component.type === 'FloorPlan' ? 'floor' : component.type === 'EMFGauge' ? 'gauge' : '';
     return (
-        <article className={`card ${WIDE.has(component.type) ? 'wide' : ''} ${extra}`}>
+        <article className={`card ${extra}`} style={{ gridColumn: `span ${span}`, gridRow: tall ? 'span 2' : undefined }}>
             <header>
                 <h3>{TITLES[component.type] ?? component.type}</h3>
                 <span className="order">
@@ -122,22 +124,8 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
                 </figure>
             );
         }
-        case 'SourceLedger': {
-            const cited = c.props.cited.length ? c.props.cited : ctx.sources.map((s) => s.n);
-            return (
-                <ol className="ledger">
-                    {cited.map((n) => {
-                        const s = ctx.sources.find((x) => x.n === n);
-                        return s ? (
-                            <li key={n} value={n}>
-                                <Link url={s.url}>{s.title}</Link>
-                                <p>{(s.snippet || s.description).slice(0, 220)}</p>
-                            </li>
-                        ) : null;
-                    })}
-                </ol>
-            );
-        }
+        case 'SourceLedger':
+            return <Ledger cited={new Set([...c.props.cited, ...ctx.cited])} sources={ctx.sources} />;
     }
 }
 
@@ -366,6 +354,19 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
                     </span>
                 </div>
             </div>
+            {ctx.skyWarnings.length > 0 && (
+                <ul className="sky-warnings">
+                    {ctx.skyWarnings.map((w) => (
+                        <li key={w.event}>
+                            <span className={`pill ${w.minutes <= 10 ? 'page-triggered' : 'muted'}`}>{w.minutes > 0 ? `T-${w.minutes}` : 'now'}</span>
+                            <span>{w.text.replace(/^\[[^\]]+\] SIMULATED sky warning · /, '')}</span>
+                            <span className="muted small">
+                                Discord {w.mode === 'live' ? 'post' : w.mode}, edited {w.edits}×
+                            </span>
+                        </li>
+                    ))}
+                </ul>
+            )}
             {cited.length > 0 && (
                 <div className="muted small">
                     Sky sources:{' '}
@@ -378,6 +379,32 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
                     ))}
                 </div>
             )}
+        </div>
+    );
+}
+
+/** The sources, compact: the five the plan leans on most as title and domain, the rest and the snippets on click. */
+function Ledger({ cited, sources }: { cited: Set<number>; sources: Source[] }) {
+    const ordered = [...sources].sort((a, b) => Number(cited.has(b.n)) - Number(cited.has(a.n)) || a.n - b.n);
+    const item = (s: Source, snippet: boolean) => (
+        <li key={s.n} className={cited.has(s.n) ? 'cited' : ''}>
+            <span className="n">[{s.n}]</span>
+            <Link url={s.url}>{s.title || domain(s.url)}</Link>
+            <span className="domain">
+                {domain(s.url)}
+                {cited.has(s.n) ? ' · relied on' : ''}
+            </span>
+            {snippet && <p className="snippet">{s.snippet || s.description}</p>}
+        </li>
+    );
+    if (!sources.length) return <p className="muted">No sources yet.</p>;
+    return (
+        <div className="ledger">
+            <ol className="ledger-top">{ordered.slice(0, 5).map((s) => item(s, false))}</ol>
+            <details>
+                <summary>{ordered.length > 5 ? `All ${ordered.length} sources, with snippets` : 'Snippets'}</summary>
+                <ol className="ledger-all">{ordered.map((s) => item(s, true))}</ol>
+            </details>
         </div>
     );
 }

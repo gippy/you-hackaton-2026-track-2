@@ -4,6 +4,7 @@ import type { Action, ClientMessage, ServerMessage, StepId } from '../../shared/
 import type { Incident } from '../../shared/protocol.ts';
 import { Card, domain, Link, type Ctx } from './components.tsx';
 import { FloorPlan } from './floorplan.tsx';
+import { layout } from './layout.ts';
 import { artUrl, withToken } from './url.ts';
 import { SoundBoard } from './audio.ts';
 import { initial, reduce } from './station.ts';
@@ -29,7 +30,7 @@ function Provisional({ incident, ctx, stage }: { incident: Incident; ctx: Ctx; s
               : 'Unclear at intake. Grounding before anyone acts.';
     return (
         <>
-            <article className={`card wide threat sev-${incident.severity} provisional`}>
+            <article className={`card threat sev-${incident.severity} provisional`} style={{ gridColumn: 'span 12' }}>
                 <header>
                     <h3>Provisional</h3>
                     <span className="order">intake only · {stage}</span>
@@ -37,7 +38,7 @@ function Provisional({ incident, ctx, stage }: { incident: Incident; ctx: Ctx; s
                 <div className="headline">{incident.summary}</div>
                 <div className="directive">{directive}</div>
             </article>
-            <article className="card wide provisional">
+            <article className="card provisional" style={{ gridColumn: 'span 12' }}>
                 <header>
                     <h3>Hot sector</h3>
                     <span className="order">intake only</span>
@@ -112,12 +113,13 @@ export function App() {
 
     const post = (msg: ClientMessage) => ws.current?.readyState === WebSocket.OPEN && ws.current.send(JSON.stringify(msg));
     const { incident, library, operator } = state;
-    const ctx: Ctx | null = library && { library, art: state.art, floor: state.floor, sources: state.sources, sky: state.sky, operator, send };
     const cited = new Set<number>();
     for (const c of state.components) {
-        if (c?.type === 'SourceLedger') c.props.cited.forEach((n) => cited.add(n));
+        if (c?.type === 'SourceLedger' || c?.type === 'SkyClock') c.props.cited.forEach((n) => cited.add(n));
         if (c?.type === 'CountermeasurePicker') c.props.options.forEach((o) => o.source && cited.add(o.source));
     }
+    const ctx: Ctx | null = library && { library, art: state.art, floor: state.floor, sources: state.sources, cited, sky: state.sky, skyWarnings: state.skyWarnings, operator, send };
+    const hasSkyClock = state.components.some((c) => c?.type === 'SkyClock');
     const sourceLabel = !state.connected ? 'disconnected' : state.source === 'snapshot' ? 'saved run' : state.source === 'live' ? 'live run' : state.mode ?? 'connecting';
     const armed = live && state.liveDispatch;
     // Where the station on screen sits in a scenario, when it is one of its steps.
@@ -159,57 +161,57 @@ export function App() {
                                 : incident
                                   ? `${incident.incident_id || 'pasted incident'} · ${incident.severity_tier || `threat ${incident.incident.threat_level}/5`}`
                                   : 'waiting for an incident'}
+                            {incident && <span className={`pill sev-${incident.incident.severity}`}>{incident.incident.severity}</span>}
                         </div>
                     </div>
                 </div>
-                <div className="status">
-                    {incident && <span className={`pill sev-${incident.incident.severity}`}>{incident.incident.severity}</span>}
-                    <span className={`pill ${state.source === 'snapshot' || state.mode === 'offline' ? 'snapshot' : state.connected ? 'live' : 'muted'}`}>{sourceLabel}</span>
-                    <button type="button" className="ghost" aria-pressed={soundOn} onClick={() => enableSound(!soundOn)}>
-                        {soundOn ? 'Mute' : 'Enable sound'}
-                    </button>
-                    <input
-                        type="range"
-                        className="volume"
-                        aria-label="Volume"
-                        min={0}
-                        max={1}
-                        step={0.05}
-                        value={volume}
-                        onChange={(e) => {
-                            sound.current.setVolume(Number(e.target.value));
-                            setVolume(Number(e.target.value));
-                        }}
-                    />
-                </div>
-                <form className="dispatch" aria-label="Dispatch a containment alert" onSubmit={dispatch}>
-                    <label>
-                        Action
-                        <select value={operator.action} onChange={(e) => send({ type: 'action', value: e.target.value as Action })}>
+                <div className="controls">
+                    <div className="group" aria-label="Station status">
+                        <span className={`pill ${state.source === 'snapshot' || state.mode === 'offline' ? 'snapshot' : state.connected ? 'live' : 'muted'}`}>{sourceLabel}</span>
+                        <span className={`pill ${armed ? 'armed' : 'muted'}`}>{state.mode === 'offline' ? 'offline' : armed ? 'live post' : 'dry run'}</span>
+                    </div>
+                    <div className="group" aria-label="Sound">
+                        <button type="button" className="ghost" aria-pressed={soundOn} onClick={() => enableSound(!soundOn)}>
+                            {soundOn ? 'Mute' : 'Sound on'}
+                        </button>
+                        <input
+                            type="range"
+                            className="volume"
+                            aria-label="Volume"
+                            min={0}
+                            max={1}
+                            step={0.05}
+                            value={volume}
+                            onChange={(e) => {
+                                sound.current.setVolume(Number(e.target.value));
+                                setVolume(Number(e.target.value));
+                            }}
+                        />
+                    </div>
+                    <form className="group dispatch" aria-label="Dispatch a containment alert" onSubmit={dispatch}>
+                        <select aria-label="Action" value={operator.action} onChange={(e) => send({ type: 'action', value: e.target.value as Action })}>
                             <option value="contain">Contain</option>
                             <option value="evacuate">Evacuate</option>
                             <option value="observe">Observe</option>
                         </select>
-                    </label>
-                    <span className="cm">
-                        Countermeasure: <b>{operator.countermeasure ? library?.arsenal[operator.countermeasure] : 'none picked'}</b>
-                    </span>
-                    {state.liveDispatch && (
-                        <label className="live-toggle">
-                            <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} /> Live post
-                        </label>
-                    )}
-                    {state.livePage && (
-                        <label className="live-toggle">
-                            <input type="checkbox" checked={livePage} onChange={(e) => setLivePage(e.target.checked)} /> Live page
-                        </label>
-                    )}
-                    {calm && <span className="cm">The model says observe: no dispatch needed.</span>}
-                    <button type="submit" className={calm ? 'ghost' : ''} disabled={!state.manifest || state.dispatching}>
-                        {state.dispatching ? 'Dispatching…' : calm ? 'Dispatch anyway' : 'Dispatch to #loft-incident'}
-                    </button>
-                    <span className={`pill ${armed ? 'armed' : 'muted'}`}>{state.mode === 'offline' ? 'offline' : armed ? 'live' : 'dry run'}</span>
-                </form>
+                        {state.liveDispatch && (
+                            <label className="live-toggle">
+                                <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} /> Live post
+                            </label>
+                        )}
+                        {state.livePage && (
+                            <label className="live-toggle">
+                                <input type="checkbox" checked={livePage} onChange={(e) => setLivePage(e.target.checked)} /> Live page
+                            </label>
+                        )}
+                        <button type="submit" className={calm ? 'ghost' : ''} disabled={!state.manifest || state.dispatching}>
+                            {state.dispatching ? 'Dispatching…' : calm ? 'Dispatch anyway' : 'Dispatch to #loft-incident'}
+                        </button>
+                        <span className="cm">
+                            {calm ? 'Model: observe, no dispatch needed' : `Countermeasure: ${operator.countermeasure ? (library?.arsenal[operator.countermeasure] ?? operator.countermeasure) : 'none picked'}`}
+                        </span>
+                    </form>
+                </div>
             </header>
 
             {state.notice && (
@@ -325,24 +327,6 @@ export function App() {
                     </section>
 
                     <section className="panel">
-                        <h2>
-                            Sources <em className="partner">You.com</em>
-                        </h2>
-                        <ol className="sources">
-                            {state.sources.length ? (
-                                state.sources.map((s) => (
-                                    <li key={s.n} value={s.n} className={cited.has(s.n) ? 'cited' : ''}>
-                                        <Link url={s.url}>{s.title || s.url}</Link>
-                                        <span className="domain">{domain(s.url)}</span>
-                                    </li>
-                                ))
-                            ) : (
-                                <li className="muted">{incident ? 'Searching…' : 'No sources yet.'}</li>
-                            )}
-                        </ol>
-                    </section>
-
-                    <section className="panel">
                         <h2>Single incidents</h2>
                         <ul className="incidents">
                             {state.incidents.map((i) => (
@@ -391,7 +375,7 @@ export function App() {
                     </div>
                     <div className="components">
                         {ctx && state.components.length ? (
-                            state.components.map((c, i) => c && <Card key={`${i}-${c.type}`} index={i} component={c} ctx={ctx} />)
+                            layout(state.components).map((p) => <Card key={`${p.index}-${p.component.type}`} index={p.index} component={p.component} ctx={ctx} span={p.span} tall={p.tall} />)
                         ) : ctx && incident ? (
                             <Provisional incident={incident.incident} ctx={ctx} stage={!state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…'} />
                         ) : (
@@ -417,7 +401,7 @@ export function App() {
                             </details>
                         </section>
                     )}
-                    {state.skyWarnings.length > 0 && (
+                    {state.skyWarnings.length > 0 && !hasSkyClock && (
                         <section className="panel pages">
                             <h2>
                                 Sky warnings <em className="partner">One → Discord, edited in place</em>
