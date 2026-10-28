@@ -111,8 +111,9 @@ def anchors() -> dict[str, str]:
             if f["properties"].get("kind") == "anchor"}
 
 
-def _obj(props: dict, required: list[str] | None = None) -> dict:
-    return {"type": "object", "properties": props, "required": required or list(props), "additionalProperties": False}
+def _obj(props: dict) -> dict:
+    """A strict object schema: every property required, nothing else allowed."""
+    return {"type": "object", "properties": props, "required": list(props), "additionalProperties": False}
 
 
 def _enum(values) -> dict:
