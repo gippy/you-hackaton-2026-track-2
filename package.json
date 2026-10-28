@@ -13,6 +13,7 @@
         "serve": "node server/main.ts",
         "dev": "node --watch server/main.ts --no-browser",
         "dev:web": "vite",
+        "art": "node scripts/art.ts",
         "build": "vite build",
         "type-check": "tsc --noEmit && tsc --noEmit -p web",
         "check": "pnpm run type-check && pnpm run build"

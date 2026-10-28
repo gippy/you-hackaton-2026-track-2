@@ -117,6 +117,24 @@ Every line comes from the current incident and the operator's choices. The page 
 
 The Discord action's URL template names the channel `channelId` and its validator checks `channel_id`, so the request sends both.
 
+## Art
+
+The art is made on a Mac with Apple Silicon. Parasail turns a short brief into image prompts in the station's palette, and [Z-Image Turbo](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo) renders each prompt locally through [mflux](https://github.com/mflux-community/mflux). Install mflux once. The first render downloads the 4-bit model, about 6 GB:
+
+```bash
+uv tool install --python 3.13 mflux
+```
+
+Then describe what you need:
+
+```bash
+pnpm art "a hero image for the landing screen"
+pnpm art --count 4 --size 1536x864 "the entities from the simulated incidents"
+pnpm art --prompt "an exact prompt, rendered as written" --seed 7
+```
+
+Images land in `art/`. `art/prompts.jsonl` keeps each image's prompt and seed, so a good image can be rendered again or varied with another seed.
+
 ## Project layout
 
 ```text
@@ -124,6 +142,7 @@ pipeline/        Python: the CrewAI Flow, the You.com tool, Parasail calls, the 
 server/          TypeScript: HTTP and WebSocket server, runs and replays, One dispatch
 web/             Vite + React page
 shared/          library.json and protocol.ts, read by all three
+scripts/         art.ts: Parasail writes image prompts, Z-Image Turbo renders them locally
 fixtures/        the published Track 2 incident, plus three simulated ones
 snapshots/       a saved run, for offline mode on a fresh clone
 ```
