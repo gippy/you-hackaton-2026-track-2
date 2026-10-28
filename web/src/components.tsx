@@ -76,29 +76,6 @@ export class PanelBoundary extends ReactComponent<{ name: string; children: Reac
     }
 }
 
-const LEAD_MINUTES = 30; // a sky event gets a warning this long before it
-const AFTER_MINUTES = 10; // and keeps saying "now" this long after
-
-/**
- * The sky events from half an hour ahead of `reference` to just past it, each with what to do as it nears.
- * The model's focus event is listed however far ahead it is, with the model's own warning as its order;
- * the library's advice covers the other events.
- */
-function skyWarnings(
-    sky: Sky,
-    reference: number,
-    advice: Library['sky_advice'],
-    focus: SkyEvent['id'],
-    warning: string,
-): { event: SkyEvent; minutes: number; todo: string }[] {
-    return sky.events.flatMap((event) => {
-        const minutes = Math.round((Date.parse(event.at) - reference) / 60000);
-        const focused = event.id === focus;
-        if (!event.at || minutes < -AFTER_MINUTES || (minutes > LEAD_MINUTES && !focused)) return [];
-        return [{ event, minutes, todo: (focused && warning) || (advice?.[event.id] ?? '') }];
-    });
-}
-
 const VERDICT = { real_threat: 'Real', harmless: 'Harmless', unclear: 'Unclear' } as const;
 
 /**
@@ -373,6 +350,29 @@ function countdown(ms: number, live: boolean): string {
     if (ms < 0) return minutes === 0 ? 'now' : `${-minutes} min ago`;
     if (live && ms < 10 * 60000) return `in ${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
     return minutes >= 60 ? `in ${Math.floor(minutes / 60)} h ${minutes % 60} min` : `in ${minutes} min`;
+}
+
+const LEAD_MINUTES = 30; // a sky event gets a warning this long before it
+const AFTER_MINUTES = 10; // and keeps saying "now" this long after
+
+/**
+ * The sky events from half an hour ahead of `reference` to just past it, each with what to do as it nears.
+ * The model's focus event is listed however far ahead it is, with the model's own warning as its order;
+ * the library's advice covers the other events.
+ */
+function skyWarnings(
+    sky: Sky,
+    reference: number,
+    advice: Library['sky_advice'],
+    focus: SkyEvent['id'],
+    warning: string,
+): { event: SkyEvent; minutes: number; todo: string }[] {
+    return sky.events.flatMap((event) => {
+        const minutes = Math.round((Date.parse(event.at) - reference) / 60000);
+        const focused = event.id === focus;
+        if (!event.at || minutes < -AFTER_MINUTES || (minutes > LEAD_MINUTES && !focused)) return [];
+        return [{ event, minutes, todo: (focused && warning) || (advice?.[event.id] ?? '') }];
+    });
 }
 
 /** The moon's lit part: waning lights the left side and waxing the right, as seen from the northern hemisphere. */
