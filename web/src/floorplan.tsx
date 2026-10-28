@@ -47,9 +47,6 @@ export function FloorPlan({ p, ctx }: { p: Props; ctx: Ctx }) {
 
 const points = (poly: Point[]) => poly.map(([x, y]) => `${x},${y}`).join(' ');
 
-/** Where floor.json draws a block's name. shared/protocol.ts's Floor type does not list these two fields yet. */
-type BlockLabel = { label_at?: Point; label_anchor?: 'start' | 'middle' | 'end' };
-
 /**
  * The model's route through its sectors as a walkable line (route.ts): through the doors, round sealed
  * sectors, then out the last sector's exit. The start is where people are now, so it is never avoided.
@@ -74,7 +71,7 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
     const { sectors, sector_aliases } = ctx.library;
     // floor.json names sectors with the official slugs; the station's id for catering_coffee_bar is catering.
     const idOf = (slug: string) => sector_aliases[slug] ?? slug;
-    const name = (slug: string) => sectors[idOf(slug)] ?? floor.blocks?.find((b) => b.id === slug)?.aws_name ?? slug;
+    const name = (slug: string) => sectors[idOf(slug)] ?? floor.blocks.find((b) => b.id === slug)?.aws_name ?? slug;
     const names = (slugs: string[]) => slugs.map(name).join(', ');
     const path = route?.points ?? [];
     const end = path[path.length - 1];
@@ -94,33 +91,17 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                     </pattern>
                 </defs>
                 <polygon points={points(floor.outline)} className="outline" />
-                {(floor.blocks ?? []).map((b) => {
-                    // AWS's name for the block, where floor.json puts it: clear of borders, of the sector labels and of the
-                    // route markers, and beside the block when the block is too narrow for its name. Older data has no
-                    // label_at: then the name goes in the block's bottom-left corner.
-                    const placed = b as typeof b & BlockLabel;
-                    const corner = Math.min(...b.polygon.map((p) => p[0]));
-                    const at: Point = placed.label_at ?? [corner + 1.2, Math.max(...b.polygon.filter((p) => p[0] === corner).map((p) => p[1])) - 1.2];
-                    return (
-                        <g key={b.id}>
-                            <polygon points={points(b.polygon)} className="block">
-                                <title>{`${b.aws_name} (AWS's name)`}</title>
-                            </polygon>
-                            <text x={at[0]} y={at[1]} textAnchor={placed.label_anchor ?? 'start'} className="area-label">
-                                {b.aws_name}
-                            </text>
-                        </g>
-                    );
-                })}
-                {floor.open_middle && <polygon points={points(floor.open_middle)} className="open-middle" />}
-                {(floor.areas ?? []).map((a) => (
-                    <g key={a.id}>
-                        <polygon points={points(a.polygon)} className="area" />
-                        <text x={a.label_at[0]} y={a.label_at[1]} className="area-label" textAnchor="middle">
-                            {a.label}
+                {floor.blocks.map((b) => (
+                    <g key={b.id}>
+                        <polygon points={points(b.polygon)} className="block">
+                            <title>{`${b.aws_name} (AWS's name)`}</title>
+                        </polygon>
+                        <text x={b.label_at[0]} y={b.label_at[1]} textAnchor={b.label_anchor} className="area-label">
+                            {b.aws_name}
                         </text>
                     </g>
                 ))}
+                {floor.open_middle && <polygon points={points(floor.open_middle)} className="open-middle" />}
                 {floor.zones.map((z) => {
                     const id = idOf(z.slug);
                     const toggle = () => ctx.send({ type: 'toggle-seal', sector: id });

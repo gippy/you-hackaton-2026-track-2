@@ -3,7 +3,7 @@
 // in the same state as a page that watched the run live.
 import type { ArtAsset, Component, FixtureIncident, Floor, Incident, Library, Manifest, OperatorMoves, PageInfo, Scenario, ServerMessage, Sky, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
-export interface Step {
+interface Step {
     state?: StepState;
     detail?: string;
     ms?: number;
@@ -123,7 +123,7 @@ function runLabel(state: State, id: string): string {
     return id || 'a pasted incident';
 }
 
-function server(state: State, msg: ServerMessage, foreign = false): State {
+function applyServerMessage(state: State, msg: ServerMessage, foreign = false): State {
     switch (msg.type) {
         case 'hello':
             return { ...state, mode: msg.mode, library: msg.library, incidents: msg.incidents, scenarios: msg.scenarios, art: msg.art, floor: msg.floor };
@@ -183,7 +183,7 @@ function server(state: State, msg: ServerMessage, foreign = false): State {
 export function reduce(state: State, event: Event): State {
     switch (event.type) {
         case 'server':
-            return server(state, event.msg, event.foreign);
+            return applyServerMessage(state, event.msg, event.foreign);
         case 'connected':
             return { ...state, connected: event.value };
         case 'countermeasure':
