@@ -157,6 +157,7 @@ export class Pager {
         }
     }
 
+    /** Resolve one page in PagerDuty. A failure is shown on the page. */
     async resolve(page: PageInfo): Promise<void> {
         if (!page.id) return;
         try {
