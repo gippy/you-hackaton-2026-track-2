@@ -44,6 +44,15 @@
         "width": 1024,
         "height": 1024
     },
+    "entity_zombie": {
+        "file": "art/nightfall/entity_zombie.webp",
+        "kind": "entity",
+        "alt": "A grey-faced zombie in a torn office shirt and tie lurching forward under a street lamp, clawed hands reaching out",
+        "prompt": "A shambling cartoon zombie in a torn office shirt and a loose tie, seen from the chest up, both arms reaching forward, grey sunken face, slack open jaw, blank staring eyes, ragged torn sleeves. Medium close-up, slightly low angle, the zombie centered and lurching toward the viewer. A single orange street lamp behind him casts a hard-edged amber silhouette. Colors limited to black, amber, orange and small blood-red accents at the mouth and torn cuffs. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4602,
+        "width": 1024,
+        "height": 1024
+    },
     "sector_entrance": {
         "file": "art/nightfall/sector_entrance.webp",
         "kind": "sector",
