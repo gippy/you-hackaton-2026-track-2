@@ -16,6 +16,7 @@ import { alertText, channelId, send } from './dispatch.ts';
 import { OneError } from './one.ts';
 import { Pager } from './pager.ts';
 import { skyFor, today } from './sky.ts';
+import { SkyWarnings } from './skywarn.ts';
 import { speak } from './speech.ts';
 
 const REPLAY_GAP_MS = 350; // longest pause between replayed messages
@@ -33,6 +34,8 @@ export interface StationOptions {
     offline: boolean;
     liveDispatch: boolean;
     livePage: boolean;
+    skyWarnings: 'scenario' | 'live' | 'off';
+    liveSkyWarnings: boolean;
     incidents: FixtureIncident[];
     scenarios: Scenario[];
 }
@@ -49,11 +52,20 @@ export class Station {
     private readonly opts: StationOptions;
     private readonly outDir: string;
     private readonly pager: Pager;
+    private readonly warnings: SkyWarnings;
 
     constructor(opts: StationOptions) {
         this.opts = opts;
         this.outDir = join(opts.root, 'out');
         this.pager = new Pager((pages) => this.broadcastOnly({ type: 'pages', pages }));
+        const warnMode = opts.offline ? 'offline' : opts.liveSkyWarnings ? 'live' : 'dry-run';
+        this.warnings = new SkyWarnings(warnMode, (warnings) => this.broadcastOnly({ type: 'sky_warnings', warnings }));
+        if (opts.skyWarnings === 'live' && !opts.offline) {
+            // Real time: recompute the sky each minute (cached after the first fetch) and move the countdowns.
+            const tick = async () => void this.warnings.tick(await skyFor(today(), '', this.outDir, false), new Date(), this.run?.state.manifest);
+            void tick();
+            setInterval(tick, 60_000).unref();
+        }
     }
 
     private hello(): ServerMessage {
@@ -71,7 +83,8 @@ export class Station {
 
     attach(wss: WebSocketServer): void {
         wss.on('connection', (ws) => {
-            for (const msg of [this.hello(), ...this.history, { type: 'pages', pages: this.pager.list() } satisfies ServerMessage]) ws.send(JSON.stringify(msg));
+            const status: ServerMessage[] = [{ type: 'pages', pages: this.pager.list() }, { type: 'sky_warnings', warnings: this.warnings.list() }];
+            for (const msg of [this.hello(), ...this.history, ...status]) ws.send(JSON.stringify(msg));
             this.clients.add(ws);
             ws.on('close', () => this.clients.delete(ws));
             ws.on('message', (data) => {
@@ -151,6 +164,8 @@ export class Station {
             this.save(this.run);
             this.emit({ type: 'run_end', manifest: state.manifest, notes: state.notes, models: state.models, saved_at, source: 'live' });
             console.log(`Station built: ${state.manifest.components.map((c) => c.type).join(', ')}`);
+            // A scenario step moves the scenario clock, and with it the sky warnings' countdowns.
+            if (sky?.clock_at && this.opts.skyWarnings === 'scenario') void this.warnings.tick(sky, new Date(sky.clock_at), state.manifest);
             // The model says watch, not act: the station stands down, so open pages are resolved.
             if (state.manifest.recommended_action === 'observe') void this.pager.resolveAll();
         } finally {

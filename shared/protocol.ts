@@ -153,6 +153,19 @@ export type FlowEvent =
 
 export type DispatchMode = 'dry-run' | 'live' | 'offline';
 
+/** A countdown message for one sky event, posted once and then edited in place. */
+export interface SkyWarning {
+    event: SkyEvent['id'];
+    text: string;
+    minutes: number;
+    mode: DispatchMode;
+    edits: number;
+    message_id?: string;
+    updated_at: string;
+    request?: unknown;
+    error?: string;
+}
+
 /** A PagerDuty page, opened for a critical dispatch and followed until it is resolved. */
 export interface PageInfo {
     key: string;
@@ -176,6 +189,7 @@ export type ServerMessage =
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
     | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string; paging?: string }
     | { type: 'pages'; pages: PageInfo[] }
+    | { type: 'sky_warnings'; warnings: SkyWarning[] }
     | { type: 'speech'; url: string }
     | { type: 'error'; detail: string };
 

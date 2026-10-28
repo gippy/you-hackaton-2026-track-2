@@ -4,6 +4,8 @@
 //     pnpm start --offline           no network or keys: replay the last saved run
 //     pnpm start --live-dispatch     let the page's dispatch button really post to #loft-incident
 //     pnpm start --live-page         let a critical dispatch really page the on-call through PagerDuty
+//     pnpm start --sky-warnings live  count sky warnings down in real time (default: the scenario's clock; off turns them off)
+//     pnpm start --live-sky-warnings really post the sky warnings to #loft-incident, and edit them as they count down
 //     pnpm start --incident <id>     start from another incident in fixtures/ (default: Nightfall's first step)
 //
 // Serves the Vite build of web/ and the /ws stream on one port (default http://127.0.0.1:8666).
@@ -37,6 +39,8 @@ const { values: args } = parseArgs({
         offline: { type: 'boolean', default: false },
         'live-dispatch': { type: 'boolean', default: false },
         'live-page': { type: 'boolean', default: false },
+        'sky-warnings': { type: 'string', default: 'scenario' },
+        'live-sky-warnings': { type: 'boolean', default: false },
         incident: { type: 'string' },
         host: { type: 'string', default: process.env.HOST ?? '127.0.0.1' },
         port: { type: 'string', default: process.env.PORT ?? '8666' },
@@ -103,7 +107,10 @@ if (!known.some((i) => i.incident_id === firstIncident)) {
 }
 
 const python = process.env.PYTHON ?? join(ROOT, '.venv', 'bin', 'python');
-const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], livePage: args['live-page'], incidents, scenarios });
+const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], livePage: args['live-page'], incidents, scenarios,
+    skyWarnings: (['scenario', 'live', 'off'].includes(args['sky-warnings']) ? args['sky-warnings'] : 'scenario') as 'scenario' | 'live' | 'off',
+    liveSkyWarnings: args['live-sky-warnings'],
+});
 
 const server = createServer((req, res) => {
     const path = (req.url ?? '/').split('?')[0];

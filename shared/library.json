@@ -258,5 +258,11 @@
       "prompt": "Bone-chilling winter wind with clattering antlers and a deep hollow growl",
       "duration": 2
     }
+  },
+  "sky_advice": {
+    "sunset": "close the lounge and west-wall blinds, keep the garlic line at catering",
+    "civil_dusk": "house lights up on both hack floors, staff the side doors",
+    "full_dark": "badge check at every door, nobody takes the SW stair alone",
+    "moonrise": "clear the main stage, netting and barricade foam at the ready"
   }
 }

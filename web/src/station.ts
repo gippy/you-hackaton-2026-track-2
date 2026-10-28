@@ -1,7 +1,7 @@
 // The page's state: everything the server has streamed for the current run, plus the operator's choices.
 // Every server message goes through `reduce`, so a late joiner that gets the history replayed ends up
 // in the same state as a page that watched the run live.
-import type { Action, Component, DispatchMode, FixtureIncident, Incident, Library, PageInfo, Scenario, Sky, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
+import type { Action, Component, DispatchMode, FixtureIncident, Incident, Library, PageInfo, Scenario, Sky, SkyWarning, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
 export interface Step {
     state?: StepState;
@@ -22,6 +22,7 @@ export interface State {
     liveDispatch: boolean;
     livePage: boolean;
     pages: PageInfo[];
+    skyWarnings: SkyWarning[];
     library: Library | null;
     incidents: FixtureIncident[];
     scenarios: Scenario[];
@@ -58,6 +59,7 @@ export const initial: State = {
     liveDispatch: false,
     livePage: false,
     pages: [],
+    skyWarnings: [],
     library: null,
     incidents: [],
     scenarios: [],
@@ -98,6 +100,7 @@ function server(state: State, msg: ServerMessage): State {
                 liveDispatch: state.liveDispatch,
                 livePage: state.livePage,
                 pages: state.pages,
+                skyWarnings: state.skyWarnings,
                 library: state.library,
                 incidents: state.incidents,
                 scenarios: state.scenarios,
@@ -132,6 +135,8 @@ function server(state: State, msg: ServerMessage): State {
             return { ...state, dispatch: msg, dispatching: false };
         case 'pages':
             return { ...state, pages: msg.pages };
+        case 'sky_warnings':
+            return { ...state, skyWarnings: msg.warnings };
         case 'error':
             return { ...state, banner: { text: msg.detail, kind: 'error' }, dispatching: false };
         case 'speech':

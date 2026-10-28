@@ -10,6 +10,7 @@ import { connection, findAction, one, OneError } from './one.ts';
 const DEFAULT_CHANNEL = '1564842098740695100'; // the venue's #loft-incident
 const PROJECT = 'Haunted Command Station';
 const MESSAGE_PATH = '/channels/{{channelId}}/messages';
+const EDIT_PATH = '/channels/{{channelId}}/messages/{{messageId}}';
 // Failures where the post may have landed even though no answer came back.
 const UNCERTAIN = /timed out|timeout|socket hang up|econnreset|bad gateway|\b5\d\d\b|429|network/i;
 
@@ -103,4 +104,25 @@ export async function send(text: string, mode: DispatchMode): Promise<DispatchRe
         }
         throw err;
     }
+}
+
+/** Edit a message this station posted, such as a sky warning whose countdown moved. Same modes as `send`. */
+export async function edit(messageId: string, text: string, mode: DispatchMode): Promise<DispatchResult> {
+    const body = { content: text };
+    const channel = channelId();
+    const [id, key] = await Promise.all([
+        findAction('discord', 'update a channel message', 'PATCH', EDIT_PATH, 'keep a posted warning up to date'),
+        connection('discord'),
+    ]);
+    // Both spellings of each path variable, as for the post.
+    const pathVars = { channelId: channel, channel_id: channel, messageId, message_id: messageId };
+    const args = ['actions', 'execute', 'discord', id, key, '-d', JSON.stringify(body), '--path-vars', JSON.stringify(pathVars)];
+    if (mode === 'dry-run') {
+        const res = await one([...args, '--dry-run']);
+        return { mode, request: res.request ?? res };
+    }
+    await one(['actions', 'load', id]);
+    const res = await one(args, 60_000); // an edit that is repeated changes nothing, so a failure is safe to report and retry later
+    const message = res.response ?? res;
+    return { mode, response: { id: message.id, edited_timestamp: message.edited_timestamp } };
 }

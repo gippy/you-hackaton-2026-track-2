@@ -65,6 +65,7 @@ Put the keys in `.env` (it is gitignored):
 | `ONE_SECRET` | The One CLI, for the dispatch |
 | `DISCORD_CHANNEL_ID` | Optional. Defaults to the venue's `#loft-incident` (`1564842098740695100`) |
 | `ONE_DISCORD_CONNECTION_KEY`, `ONE_ELEVENLABS_CONNECTION_KEY` | Optional. Only needed with more than one connection for that platform in One |
+| `PAGERDUTY_SERVICE_ID`, `PAGERDUTY_FROM` | Optional. The service to page and the email PagerDuty requires in the `From` header. By default the station uses the account's only active service and its owner's email |
 | `ELEVENLABS_VOICE_ID` | Optional. The dispatcher's voice, default "Daniel, Steady Broadcaster" (`onwK4e9ZLuTAKqWW03F9`) |
 | `HAUNT_MODEL`, `HAUNT_FALLBACK_MODEL` | Optional. Default `parasail-minimax-m31-flash` and `parasail-deepseek-v41-flash` |
 
@@ -86,7 +87,10 @@ Other ways to run it:
 ```bash
 pnpm start --offline          # no network and no keys: replays the last saved run
 pnpm start --live-dispatch    # shows a "Live post" switch that really posts to #loft-incident
-pnpm start --incident sim-2026-0102   # start from another incident in fixtures/
+pnpm start --incident sim-2026-0102   # start from another incident in fixtures/ (default: Nightfall's first step)
+pnpm start --live-page        # shows a "Live page" switch that really pages the on-call through PagerDuty
+pnpm start --sky-warnings live      # count the sky warnings down in real time (default: the scenario's clock; off turns them off)
+pnpm start --live-sky-warnings      # really post the sky warnings to #loft-incident and edit them as they count down
 pnpm start --port 8667        # another port
 pnpm start --no-browser       # do not open the page
 ```

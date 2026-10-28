@@ -362,6 +362,33 @@ export function App() {
                             </details>
                         </section>
                     )}
+                    {state.skyWarnings.length > 0 && (
+                        <section className="panel pages">
+                            <h2>
+                                Sky warnings <em className="partner">One → Discord, edited in place</em>
+                            </h2>
+                            <ul>
+                                {state.skyWarnings.map((w) => (
+                                    <li key={w.event}>
+                                        <div className="page-head">
+                                            <span className={`pill ${w.minutes <= 10 ? 'page-triggered' : 'muted'}`}>{w.minutes > 0 ? `T-${w.minutes} min` : 'now'}</span>
+                                            <span>{w.text}</span>
+                                        </div>
+                                        <p className="muted small">
+                                            {w.mode === 'live' ? `Posted as message ${w.message_id ?? '?'}` : w.mode === 'dry-run' ? 'Dry run' : 'Offline'}, edited {w.edits} time{w.edits === 1 ? '' : 's'}
+                                        </p>
+                                        {w.error && <p className="status-danger small">{w.error}</p>}
+                                        {w.request !== undefined && (
+                                            <details>
+                                                <summary>{w.edits ? 'The edit request One would send' : 'The post request One would send'}</summary>
+                                                <pre>{JSON.stringify(w.request, null, 2)}</pre>
+                                            </details>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    )}
                     {state.pages.length > 0 && (
                         <section className="panel pages">
                             <h2>
