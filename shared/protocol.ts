@@ -153,15 +153,33 @@ export type FlowEvent =
 
 export type DispatchMode = 'dry-run' | 'live' | 'offline';
 
+/** A PagerDuty page, opened for a critical dispatch and followed until it is resolved. */
+export interface PageInfo {
+    key: string;
+    title: string;
+    urgency: 'high' | 'low';
+    mode: 'dry-run' | 'live';
+    status: 'sending' | 'dry-run' | 'triggered' | 'acknowledged' | 'resolved' | 'failed';
+    opened_at: string;
+    acknowledged_by: string[];
+    id?: string;
+    number?: number;
+    url?: string;
+    request?: unknown;
+    error?: string;
+}
+
 export type ServerMessage =
     | FlowEvent
-    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; library: Library; channel: string; incidents: FixtureIncident[]; scenarios: Scenario[] }
+    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; live_page: boolean; library: Library; channel: string; incidents: FixtureIncident[]; scenarios: Scenario[] }
     | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
-    | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string }
+    | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string; paging?: string }
+    | { type: 'pages'; pages: PageInfo[] }
     | { type: 'speech'; url: string }
     | { type: 'error'; detail: string };
 
 export type ClientMessage =
     | { type: 'compile'; raw?: string; incident_id?: string }
-    | { type: 'dispatch'; action: Action; countermeasure: string | null; sealed: string[]; extracted: number; live: boolean };
+    | { type: 'dispatch'; action: Action; countermeasure: string | null; sealed: string[]; extracted: number; live: boolean; live_page: boolean }
+    | { type: 'resolve_page'; key: string };

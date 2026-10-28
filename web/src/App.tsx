@@ -50,6 +50,7 @@ export function App() {
     };
     const [raw, setRaw] = useState('');
     const [live, setLive] = useState(false);
+    const [livePage, setLivePage] = useState(false);
 
     useEffect(() => {
         let closed = false;
@@ -98,13 +99,15 @@ export function App() {
     const compileId = (id: string) => post({ type: 'compile', incident_id: id });
     // A harmless report: the model recommends watching, so the page does not push a dispatch.
     const calm = state.manifest?.recommended_action === 'observe';
+    const pageArmed = livePage && state.livePage;
 
     const dispatch = (e: FormEvent) => {
         e.preventDefault();
         if (armed && !confirm('Post this containment alert to the real #loft-incident channel?')) return;
+        if (pageArmed && !confirm('If the model marked this critical, really page the on-call through PagerDuty?')) return;
         if (!soundOn) enableSound(true); // the click is the interaction browsers wait for before playing audio
         send({ type: 'dispatching' });
-        post({ type: 'dispatch', action: operator.action, countermeasure: operator.countermeasure, sealed: operator.sealed, extracted: operator.extracted.length, live: armed });
+        post({ type: 'dispatch', action: operator.action, countermeasure: operator.countermeasure, sealed: operator.sealed, extracted: operator.extracted.length, live: armed, live_page: pageArmed });
     };
 
     return (
@@ -161,6 +164,11 @@ export function App() {
                     {state.liveDispatch && (
                         <label className="live-toggle">
                             <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} /> Live post
+                        </label>
+                    )}
+                    {state.livePage && (
+                        <label className="live-toggle">
+                            <input type="checkbox" checked={livePage} onChange={(e) => setLivePage(e.target.checked)} /> Live page
                         </label>
                     )}
                     {calm && <span className="cm">The model says observe: no dispatch needed.</span>}
@@ -343,6 +351,7 @@ export function App() {
                                 Dispatch <em className="partner">One → Discord</em>
                             </h2>
                             <pre>{state.dispatch.text}</pre>
+                            {state.dispatch.paging && <p className="muted small">{state.dispatch.paging}</p>}
                             <details open>
                                 <summary>
                                     {state.dispatch.error
@@ -351,6 +360,41 @@ export function App() {
                                 </summary>
                                 <pre>{JSON.stringify(state.dispatch.error ? { error: state.dispatch.error } : (state.dispatch.request ?? state.dispatch.response), null, 2)}</pre>
                             </details>
+                        </section>
+                    )}
+                    {state.pages.length > 0 && (
+                        <section className="panel pages">
+                            <h2>
+                                Paging <em className="partner">One → PagerDuty</em>
+                            </h2>
+                            <ul>
+                                {state.pages.map((page) => (
+                                    <li key={page.key}>
+                                        <div className="page-head">
+                                            <span className={`pill page-${page.status}`}>
+                                                {page.status === 'acknowledged' && page.acknowledged_by.length ? `acknowledged by ${page.acknowledged_by.join(', ')}` : page.status}
+                                            </span>
+                                            <b>{page.title}</b>
+                                            <span className="muted small">
+                                                {page.urgency} urgency · {page.mode === 'live' ? 'live' : 'dry run'} · {page.key}
+                                            </span>
+                                            {page.url && <Link url={page.url}>#{page.number ?? 'incident'}</Link>}
+                                            {page.status !== 'resolved' && page.status !== 'failed' && page.status !== 'sending' && (
+                                                <button type="button" className="ghost" onClick={() => post({ type: 'resolve_page', key: page.key })}>
+                                                    Resolve
+                                                </button>
+                                            )}
+                                        </div>
+                                        {page.error && <p className="status-danger small">{page.error}</p>}
+                                        {page.request !== undefined && (
+                                            <details>
+                                                <summary>{page.mode === 'dry-run' ? 'Dry run: the exact request One would send' : 'Request'}</summary>
+                                                <pre>{JSON.stringify(page.request, null, 2)}</pre>
+                                            </details>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
                         </section>
                     )}
                 </section>

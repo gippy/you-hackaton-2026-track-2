@@ -3,6 +3,7 @@
 //     pnpm start                     build the page, then build the station from the fixture, live
 //     pnpm start --offline           no network or keys: replay the last saved run
 //     pnpm start --live-dispatch     let the page's dispatch button really post to #loft-incident
+//     pnpm start --live-page         let a critical dispatch really page the on-call through PagerDuty
 //     pnpm start --incident <id>     start from another incident in fixtures/ (default: Nightfall's first step)
 //
 // Serves the Vite build of web/ and the /ws stream on one port (default http://127.0.0.1:8666).
@@ -35,6 +36,7 @@ const { values: args } = parseArgs({
     options: {
         offline: { type: 'boolean', default: false },
         'live-dispatch': { type: 'boolean', default: false },
+        'live-page': { type: 'boolean', default: false },
         incident: { type: 'string' },
         host: { type: 'string', default: process.env.HOST ?? '127.0.0.1' },
         port: { type: 'string', default: process.env.PORT ?? '8666' },
@@ -101,7 +103,7 @@ if (!known.some((i) => i.incident_id === firstIncident)) {
 }
 
 const python = process.env.PYTHON ?? join(ROOT, '.venv', 'bin', 'python');
-const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], incidents, scenarios });
+const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], livePage: args['live-page'], incidents, scenarios });
 
 const server = createServer((req, res) => {
     const path = (req.url ?? '/').split('?')[0];

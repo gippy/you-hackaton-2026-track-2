@@ -1,7 +1,7 @@
 // The page's state: everything the server has streamed for the current run, plus the operator's choices.
 // Every server message goes through `reduce`, so a late joiner that gets the history replayed ends up
 // in the same state as a page that watched the run live.
-import type { Action, Component, DispatchMode, FixtureIncident, Incident, Library, Scenario, Sky, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
+import type { Action, Component, DispatchMode, FixtureIncident, Incident, Library, PageInfo, Scenario, Sky, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
 export interface Step {
     state?: StepState;
@@ -20,6 +20,8 @@ export interface State {
     connected: boolean;
     mode: 'live' | 'offline' | null;
     liveDispatch: boolean;
+    livePage: boolean;
+    pages: PageInfo[];
     library: Library | null;
     incidents: FixtureIncident[];
     scenarios: Scenario[];
@@ -35,7 +37,7 @@ export interface State {
     components: Component[];
     manifest: Manifest | null;
     operator: Operator;
-    dispatch: { mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string } | null;
+    dispatch: { mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string; paging?: string } | null;
     dispatching: boolean;
 }
 
@@ -54,6 +56,8 @@ export const initial: State = {
     connected: false,
     mode: null,
     liveDispatch: false,
+    livePage: false,
+    pages: [],
     library: null,
     incidents: [],
     scenarios: [],
@@ -85,13 +89,15 @@ function adopt(operator: Operator, comp: Component): Operator {
 function server(state: State, msg: ServerMessage): State {
     switch (msg.type) {
         case 'hello':
-            return { ...state, mode: msg.mode, liveDispatch: msg.live_dispatch, library: msg.library, incidents: msg.incidents, scenarios: msg.scenarios };
+            return { ...state, mode: msg.mode, liveDispatch: msg.live_dispatch, livePage: msg.live_page, library: msg.library, incidents: msg.incidents, scenarios: msg.scenarios };
         case 'run_begin':
             return {
                 ...initial,
                 connected: state.connected,
                 mode: state.mode,
                 liveDispatch: state.liveDispatch,
+                livePage: state.livePage,
+                pages: state.pages,
                 library: state.library,
                 incidents: state.incidents,
                 scenarios: state.scenarios,
@@ -124,6 +130,8 @@ function server(state: State, msg: ServerMessage): State {
         }
         case 'dispatch':
             return { ...state, dispatch: msg, dispatching: false };
+        case 'pages':
+            return { ...state, pages: msg.pages };
         case 'error':
             return { ...state, banner: { text: msg.detail, kind: 'error' }, dispatching: false };
         case 'speech':

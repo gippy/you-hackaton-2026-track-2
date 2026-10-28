@@ -14,6 +14,7 @@ import library from '../shared/library.json' with { type: 'json' };
 import type { ClientMessage, FixtureIncident, FlowEvent, Library, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
 import { alertText, channelId, send } from './dispatch.ts';
 import { OneError } from './one.ts';
+import { Pager } from './pager.ts';
 import { skyFor, today } from './sky.ts';
 import { speak } from './speech.ts';
 
@@ -31,6 +32,7 @@ export interface StationOptions {
     python: string;
     offline: boolean;
     liveDispatch: boolean;
+    livePage: boolean;
     incidents: FixtureIncident[];
     scenarios: Scenario[];
 }
@@ -46,10 +48,12 @@ export class Station {
     private busy = false;
     private readonly opts: StationOptions;
     private readonly outDir: string;
+    private readonly pager: Pager;
 
     constructor(opts: StationOptions) {
         this.opts = opts;
         this.outDir = join(opts.root, 'out');
+        this.pager = new Pager((pages) => this.broadcastOnly({ type: 'pages', pages }));
     }
 
     private hello(): ServerMessage {
@@ -57,6 +61,7 @@ export class Station {
             type: 'hello',
             mode: this.opts.offline ? 'offline' : 'live',
             live_dispatch: this.opts.liveDispatch && !this.opts.offline,
+            live_page: this.opts.livePage && !this.opts.offline,
             library: library as unknown as Library,
             channel: channelId(),
             incidents: this.opts.incidents,
@@ -66,7 +71,7 @@ export class Station {
 
     attach(wss: WebSocketServer): void {
         wss.on('connection', (ws) => {
-            for (const msg of [this.hello(), ...this.history]) ws.send(JSON.stringify(msg));
+            for (const msg of [this.hello(), ...this.history, { type: 'pages', pages: this.pager.list() } satisfies ServerMessage]) ws.send(JSON.stringify(msg));
             this.clients.add(ws);
             ws.on('close', () => this.clients.delete(ws));
             ws.on('message', (data) => {
@@ -79,6 +84,10 @@ export class Station {
                 if (msg.type === 'compile' && msg.incident_id) void this.compileIncident(String(msg.incident_id));
                 else if (msg.type === 'compile') void this.compile(String(msg.raw ?? '').slice(0, 4000), '', '');
                 else if (msg.type === 'dispatch') void this.dispatch(ws, msg);
+                else if (msg.type === 'resolve_page') {
+                    const page = this.pager.list().find((p) => p.key === msg.key);
+                    if (page) void this.pager.resolve(page);
+                }
             });
         });
     }
@@ -142,6 +151,8 @@ export class Station {
             this.save(this.run);
             this.emit({ type: 'run_end', manifest: state.manifest, notes: state.notes, models: state.models, saved_at, source: 'live' });
             console.log(`Station built: ${state.manifest.components.map((c) => c.type).join(', ')}`);
+            // The model says watch, not act: the station stands down, so open pages are resolved.
+            if (state.manifest.recommended_action === 'observe') void this.pager.resolveAll();
         } finally {
             this.busy = false;
         }
@@ -250,15 +261,35 @@ export class Station {
         });
         // Offline, the page plays its committed effects and skips the speech quietly.
         if (mode !== 'offline') void this.speakDispatch(text);
+        const paging = mode === 'offline' ? 'Offline: no page.' : this.pageIfCritical(this.run.state, action, text, Boolean(msg.live_page));
         let result: ServerMessage;
         try {
-            result = { type: 'dispatch', text, ...(await send(text, mode)) };
+            result = { type: 'dispatch', text, paging, ...(await send(text, mode)) };
         } catch (err) {
             const detail = err instanceof OneError ? err.message : String(err);
-            result = { type: 'dispatch', mode, text, error: detail.slice(0, 800) };
+            result = { type: 'dispatch', mode, text, paging, error: detail.slice(0, 800) };
         }
         console.log(`\nDispatch (${result.mode}) to #loft-incident:\n${JSON.stringify(result, null, 2)}\n`);
         this.broadcastOnly(result);
+    }
+
+    /** Page the on-call for a dispatch the model marked critical. Returns what the page shows about it. */
+    private pageIfCritical(state: RunState, action: string, text: string, livePage: boolean): string {
+        const banner = state.manifest.components.find((c) => c.type === 'ThreatBanner');
+        const critical = ['critical', 'catastrophic'].includes(banner?.type === 'ThreatBanner' ? banner.props.severity : state.incident.severity);
+        if (action === 'observe' || !critical) return 'No page: the model did not mark this critical.';
+        const live = livePage && this.opts.livePage;
+        const sector = (library.sectors as Record<string, string>)[state.incident.sector] ?? state.incident.sector;
+        void this.pager.open(
+            {
+                key: state.incident_id || `pasted-${Date.now()}`,
+                title: `[SIMULATED] ${state.incident.entity} in ${sector}: ${action}`.slice(0, 250),
+                details: `${text}\n\nSimulated incident from the Haunted Command Station (hackathon demo). Nothing here is real.`,
+                urgency: action === 'evacuate' ? 'high' : 'low',
+            },
+            live,
+        );
+        return live ? 'Paging the on-call through PagerDuty.' : 'Page prepared as a dry run (PagerDuty not called).';
     }
 
     /** Voice the alert in the background; the page plays it when it is ready. A failure is only logged. */
