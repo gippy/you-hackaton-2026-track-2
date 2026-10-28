@@ -53,6 +53,15 @@
         "width": 1024,
         "height": 1024
     },
+    "entity_phantom": {
+        "file": "art/nightfall/entity_phantom.webp",
+        "kind": "entity",
+        "alt": "The glowing ghost of a barista in an apron, with hollow black eyes and windblown hair, standing behind a dark coffee bar",
+        "prompt": "The ghost of a gaunt barista woman with a sharp hollow-cheeked human face, wild windblown hair and a long apron, seen from the waist up, floating behind a coffee bar counter, pale see-through body showing the dark wall behind her, her lower body breaking into jagged wisps of smoke, blank glowing eyes. Medium close-up, slightly low angle, the ghost centered and facing the viewer. Cold amber light from below, hard-edged shadow shapes. Colors limited to black, amber, orange and small blood-red accents at the eyes. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4611,
+        "width": 1024,
+        "height": 1024
+    },
     "sector_entrance": {
         "file": "art/nightfall/sector_entrance.webp",
         "kind": "sector",
@@ -230,6 +239,15 @@
         "alt": "A wolf howling at the sky with sound waves around its head",
         "prompt": "A stylized wolf head in profile facing left, muzzle raised upward in a howl, three curved sound-wave arcs sweeping out from its open mouth. Centered single subject on a pure black field, front view, bold readable silhouette filling the frame. Flat orange and amber fills with hard-edged black shadow shapes, one small blood-red accent in the eye. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
         "seed": 4210,
+        "width": 256,
+        "height": 256
+    },
+    "icon_salt_ring": {
+        "file": "art/nightfall/icons/icon_salt_ring.webp",
+        "kind": "icon",
+        "alt": "A closed ring of salt crystals on the floor",
+        "prompt": "A cartoon icon of a closed ring of coarse salt crystals seen from slightly above, sharp angular crystal chunks piled in a perfect circle, empty black floor inside the ring, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
         "width": 256,
         "height": 256
     }
