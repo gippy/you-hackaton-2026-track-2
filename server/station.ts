@@ -38,6 +38,9 @@ interface StationOptions {
     floor: Floor | null;
 }
 
+/** What a run is built from. A pasted report has an empty id and tier; a scenario step also has its clock time. */
+type Report = Pick<FixtureIncident, 'raw_incident_stream' | 'incident_id' | 'severity_tier' | 'time'>;
+
 /** One line the worker prints on stdout. */
 type WorkerLine = FlowEvent | { type: 'result'; state: RunState } | { type: 'fatal'; detail: string };
 
@@ -93,7 +96,7 @@ export class Station {
             return;
         }
         if (msg.type === 'compile' && msg.incident_id) this.compileIncident(String(msg.incident_id), checkMoves(msg.moves));
-        else if (msg.type === 'compile') void this.compile(String(msg.raw ?? '').slice(0, 4000), '', '');
+        else if (msg.type === 'compile') void this.compile({ raw_incident_stream: String(msg.raw ?? '').slice(0, 4000), incident_id: '', severity_tier: '' });
         else if (msg.type === 'call_expert') this.callExpert(ws, msg);
         else if (msg.type === 'resolve_page') {
             const page = this.pager.list().find((p) => p.key === msg.key);
@@ -118,31 +121,33 @@ export class Station {
     /** Build the station for a fixture incident, by id. Does nothing when no fixture has that id. */
     compileIncident(incidentId: string, moves?: OperatorMoves): void {
         const incident = [...this.opts.scenarios.flatMap((s) => s.steps), ...this.opts.incidents].find((i) => i.incident_id === incidentId);
-        if (incident) void this.compile(incident.raw_incident_stream, incident.incident_id, incident.severity_tier, incident.time ?? '', moves);
+        if (incident) void this.compile(incident, moves);
     }
 
     /**
      * Run the pipeline on a report, one run at a time. Offline, replay a saved run instead.
-     * - `clock` is a scenario step's "HH:MM": the step then gets a sky.
-     * - `moves` are what the operator did on the step before, for the station to build on.
+     * `moves` are what the operator did on the step before, for the station to build on.
      */
-    private async compile(raw: string, incidentId: string, severityTier: string, clock = '', moves?: OperatorMoves): Promise<void> {
-        if (!raw.trim()) return;
+    private async compile(report: Report, moves?: OperatorMoves): Promise<void> {
+        if (!report.raw_incident_stream.trim()) return;
         if (this.busy) {
             this.broadcast({ type: 'error', detail: 'A run is already in progress.' });
             return;
         }
         this.busy = true;
         try {
-            if (this.opts.offline) await this.replay('Offline mode: the pipeline is off, so this is a saved run.', incidentId);
-            else await this.runLive(raw, incidentId, severityTier, clock, moves);
+            if (this.opts.offline) await this.replay('Offline mode: the pipeline is off, so this is a saved run.', report.incident_id);
+            else await this.runLive(report, moves);
         } finally {
             this.busy = false;
         }
     }
 
-    /** A live run: stream the worker's events, then save the result. When the worker fails, replay a saved run. */
-    private async runLive(raw: string, incidentId: string, severityTier: string, clock: string, moves?: OperatorMoves): Promise<void> {
+    /**
+     * A live run: stream the worker's events, then save the result. When the worker fails, replay a saved run.
+     * A scenario step's clock time gives the run a sky.
+     */
+    private async runLive({ raw_incident_stream: raw, incident_id: incidentId, severity_tier, time }: Report, moves?: OperatorMoves): Promise<void> {
         this.history = [];
         this.emit({ type: 'run_begin', incident_id: incidentId, source: 'live', requested: incidentId, moves });
         const events: SavedRun['events'] = [];
@@ -151,11 +156,11 @@ export class Station {
             events.push({ t: (Date.now() - t0) / 1000, msg });
             this.emit(msg);
         };
-        const sky = clock ? await skyFor(clock, this.outDir) : undefined;
+        const sky = time ? await skyFor(time, this.outDir) : undefined;
         if (sky) record({ type: 'sky', sky });
         let state: RunState;
         try {
-            state = await this.runWorker({ raw, incident_id: incidentId, severity_tier: severityTier, sky, moves }, record);
+            state = await this.runWorker({ raw, incident_id: incidentId, severity_tier, sky, moves }, record);
         } catch (err) {
             const detail = (err as Error).message;
             console.error(`Pipeline failed: ${detail}`);
