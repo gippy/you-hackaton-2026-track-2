@@ -102,28 +102,27 @@ export function ReportPanel({
         compile({ incident_id: id, moves });
     };
 
+    // The step or incident this tab picked and its feed tier, plus the step on screen when this tab picked another.
+    const heading = composing
+        ? 'New incident: paste a report'
+        : [
+              pickedStep && scenario
+                  ? `${scenario.title} · step ${pickedStep.step} of ${scenario.steps.length} · ${pickedStep.time}`
+                  : pickedFixture
+                    ? pickedFixture.incident_id
+                    : incident
+                      ? 'Pasted report'
+                      : 'Waiting for an incident',
+              pickedFixture ? ` · feed tier ${tier(pickedFixture.severity_tier)}` : '',
+              pickedFixture?.source === 'simulated' ? ' · simulated' : '',
+              current && mine && mine !== current ? ` · on screen: step ${current.step}` : '',
+          ].join('');
+
     return (
         <section className="panel report" aria-labelledby="report-title">
             <div className="report-head">
                 <h2 id="report-title">Incident report</h2>
-                <span className="muted small">
-                    {composing
-                        ? 'New incident: paste a report'
-                        : pickedStep && scenario
-                        ? `${scenario.title} · step ${pickedStep.step} of ${scenario.steps.length} · ${pickedStep.time}`
-                        : pickedFixture
-                          ? pickedFixture.incident_id
-                          : incident
-                            ? 'Pasted report'
-                            : 'Waiting for an incident'}
-                    {!composing && (
-                        <>
-                            {pickedFixture ? ` · feed tier ${tier(pickedFixture.severity_tier)}` : ''}
-                            {pickedFixture?.source === 'simulated' ? ' · simulated' : ''}
-                            {current && mine && mine !== current ? ` · on screen: step ${current.step}` : ''}
-                        </>
-                    )}
-                </span>
+                <span className="muted small">{heading}</span>
             </div>
             {state.moves && library && (
                 <p className="moves small">
