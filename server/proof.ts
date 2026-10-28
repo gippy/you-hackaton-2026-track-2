@@ -35,7 +35,9 @@ export function scrub(value: unknown): unknown {
 export function record(ledger: 'parasail' | 'partners', entry: Record<string, unknown>): void {
     try {
         mkdirSync(PROOF, { recursive: true });
-        appendFileSync(join(PROOF, `${ledger}.jsonl`), `${JSON.stringify(scrub({ ts: new Date().toISOString(), ...entry }))}\n`);
+        // PROOF_CONTEXT (for example "eval") tells demo lines from test-harness lines.
+        const context = process.env.PROOF_CONTEXT?.trim();
+        appendFileSync(join(PROOF, `${ledger}.jsonl`), `${JSON.stringify(scrub({ ts: new Date().toISOString(), ...(context ? { context } : {}), ...entry }))}\n`);
     } catch (err) {
         console.warn(`proof: could not record a ${ledger} line: ${(err as Error).message}`);
     }
