@@ -2,7 +2,8 @@
 // it never writes markup. Model and web text is rendered as React text, and only http(s) links render.
 import { Component as ReactComponent, type ReactNode, useEffect, useState } from 'react';
 
-import type { Action, ArtAsset, Component, ComponentType, Floor, Incident, Library, Sky, SkyEvent, Source } from '../../shared/protocol.ts';
+import type { Action, ArtAsset, Component, ComponentType, Expert, Floor, Incident, Library, QuickAction, Sky, SkyEvent, Source } from '../../shared/protocol.ts';
+import { QuickActions } from './actions.tsx';
 import { FloorPlan, mapView } from './floorplan.tsx';
 import type { Event, Operator } from './station.ts';
 import { artUrl } from './url.ts';
@@ -21,6 +22,8 @@ export interface Ctx {
     action: Action | null;
     operator: Operator;
     send: (event: Event) => void;
+    /** The manifest's quick actions, the CivilianTracker's count, and the expert call they can make. */
+    quick: { actions: QuickAction[]; people: number | null; call: (expert: Expert) => void; paged: (expert: Expert) => boolean };
 }
 
 type Props<T extends ComponentType> = Extract<Component, { type: T }>['props'];
@@ -138,12 +141,17 @@ export function Card({ index, component, ctx, span, tall }: { index: number; com
 function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
     switch (c.type) {
         case 'ThreatBanner':
-            return ctx.incident ? (
-                <IncidentHead incident={ctx.incident} ctx={ctx} action={ctx.action} directive={c.props.directive} />
-            ) : (
-                <div className="incident-head">
-                    <p className="directive">{c.props.directive}</p>
-                </div>
+            return (
+                <>
+                    {ctx.incident ? (
+                        <IncidentHead incident={ctx.incident} ctx={ctx} action={ctx.action} directive={c.props.directive} />
+                    ) : (
+                        <div className="incident-head">
+                            <p className="directive">{c.props.directive}</p>
+                        </div>
+                    )}
+                    <QuickActions ctx={ctx} />
+                </>
             );
         case 'EMFGauge':
             return <Gauge {...c.props} />;

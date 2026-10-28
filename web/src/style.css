@@ -395,3 +395,21 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 @keyframes sweep { from { transform: rotate(-90deg); } }
 @keyframes march { to { stroke-dashoffset: -18; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* --- evidence highlights in the report: color and underline style both tell the kind ------- */
+.evidence { color: var(--text); padding: 0 2px; text-decoration: none; border-bottom: 2px solid; }
+.evidence.ev-threat { background: rgba(255, 59, 31, 0.24); border-color: var(--red); }
+.evidence.ev-harmless { background: rgba(236, 227, 214, 0.14); border-bottom-style: dotted; border-color: var(--text); }
+.evidence.ev-people { background: rgba(255, 138, 31, 0.22); border-bottom-style: dashed; border-color: var(--amber); }
+mark.evidence { cursor: help; }
+mark.evidence:focus-visible { outline: 2px dashed var(--hi); outline-offset: 2px; }
+/* The reason opens under the highlighted line, across the report box, so it never runs past the panel's edge. */
+.report-text { position: relative; }
+.ev-why { display: none; position: absolute; left: 12px; right: 12px; margin-top: 2px; z-index: 5; padding: 4px 8px; background: var(--panel-2); border: 1px solid var(--amber); color: var(--text); font-size: 13px; line-height: 1.4; }
+mark.evidence:hover .ev-why, mark.evidence:focus .ev-why { display: block; }
+.ev-legend { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 6px 0 0; }
+
+/* --- the model's quick actions under the incident directive ------------------------------- */
+.quick { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 10px; }
+.quick-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.quick button.done { color: var(--text); box-shadow: inset 0 0 0 1px var(--dim); cursor: default; }

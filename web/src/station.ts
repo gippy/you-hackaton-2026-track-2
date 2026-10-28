@@ -53,6 +53,7 @@ export type Event =
     | { type: 'countermeasure'; id: string }
     | { type: 'toggle-seal'; sector: string }
     | { type: 'toggle-person'; index: number }
+    | { type: 'extract'; indexes: number[] }
     | { type: 'map-view'; view: 'floor' | 'area' };
 
 const OPERATOR: Operator = { countermeasure: null, sealed: [], extracted: [], map: null };
@@ -196,6 +197,8 @@ export function reduce(state: State, event: Event): State {
             return { ...state, operator: { ...state.operator, sealed: toggle(state.operator.sealed, event.sector) } };
         case 'toggle-person':
             return { ...state, operator: { ...state.operator, extracted: toggle(state.operator.extracted, event.index) } };
+        case 'extract':
+            return { ...state, operator: { ...state.operator, extracted: [...new Set([...state.operator.extracted, ...event.indexes])] } };
         case 'map-view':
             return { ...state, operator: { ...state.operator, map: event.view } };
     }

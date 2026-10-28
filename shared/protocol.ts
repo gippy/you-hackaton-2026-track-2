@@ -30,6 +30,14 @@ export interface Incident {
     people_hurt?: number;
     severity: Severity;
     summary: string;
+    /** Phrases of the report that drove the reading, each found in it as written. Runs saved before this field have none. */
+    evidence_quotes?: EvidenceQuote[];
+}
+
+export interface EvidenceQuote {
+    quote: string;
+    kind: 'threat' | 'harmless' | 'people';
+    why: string;
 }
 
 export interface Source {
@@ -114,6 +122,15 @@ export interface Manifest {
     components: Component[];
     recommended_action: Action;
     dispatch_rationale: string;
+    /** One-click operator moves the model proposes, each one the station can run. Older saved runs have none. */
+    quick_actions?: QuickAction[];
+}
+
+/** `target` is a sector id (seal, unseal), an arsenal id (countermeasure), all or half (extract) or an expert (call_expert). */
+export interface QuickAction {
+    label: string;
+    kind: 'seal' | 'unseal' | 'countermeasure' | 'extract' | 'call_expert';
+    target: string;
 }
 
 /** The flow's final state, as pipeline/flow.py HauntState dumps it. */

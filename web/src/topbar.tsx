@@ -2,9 +2,9 @@
 // the sound controls and the "Call expert" buttons.
 import { useState } from 'react';
 
-import type { ClientMessage, Expert } from '../../shared/protocol.ts';
+import type { ClientMessage } from '../../shared/protocol.ts';
 import type { SoundBoard } from './audio.ts';
-import { EXPERTS, isOpen, pageFor, pageStatus } from './experts.tsx';
+import { EXPERTS, callExpert, isOpen, pageFor, pageStatus } from './experts.tsx';
 import type { State } from './station.ts';
 
 export function TopBar({ state, subtitle, sound, post }: { state: State; subtitle: string; sound: SoundBoard; post: (msg: ClientMessage) => void }) {
@@ -16,18 +16,10 @@ export function TopBar({ state, subtitle, sound, post }: { state: State; subtitl
     const harmless = state.incident?.incident.verdict === 'harmless';
     const recommended = harmless || !library || !state.playbook ? null : EXPERTS.find((x) => library.experts[x].playbooks.includes(state.playbook!)) ?? null;
     const offline = state.mode === 'offline';
-    const canCall = Boolean(state.manifest) && !offline;
 
     const enableSound = (on: boolean) => {
         sound.setEnabled(on);
         setSoundOn(on);
-    };
-    const callExpert = (expert: Expert) => {
-        const page = pageFor(state, expert);
-        if (!canCall || (page && isOpen(page))) return; // aria-disabled, so the button keeps focus
-        // The click is the interaction browsers wait for: with sound off it allows only this call's sting and voice.
-        if (!soundOn) sound.voiceOnce = true;
-        post({ type: 'call_expert', expert, countermeasure: operator.countermeasure });
     };
 
     return (
@@ -77,9 +69,9 @@ export function TopBar({ state, subtitle, sound, post }: { state: State; subtitl
                                     <button
                                         type="button"
                                         className={expert === recommended ? '' : 'ghost'}
-                                        aria-disabled={!canCall || open}
+                                        aria-disabled={!state.manifest || offline || open}
                                         title={offline ? 'Offline: no expert can be paged' : `Pages ${library.experts[expert].label.toLowerCase()} on call through PagerDuty`}
-                                        onClick={() => callExpert(expert)}
+                                        onClick={() => callExpert(state, expert, sound, post)}
                                     >
                                         {library.experts[expert].label}
                                     </button>
