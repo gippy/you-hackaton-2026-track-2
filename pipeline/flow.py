@@ -160,8 +160,8 @@ def chat_json(schema: dict, name: str, system: str, user: str, on_text: Callable
         except Exception as exc:  # noqa: BLE001 - try the fallback model on any failure
             proof.record("parasail", {"source": source, "purpose": purpose, "model": model, "request": request,
                                       "response": {"content": text, "finish_reason": finish}, "usage": usage,
-                                      "latency_ms": int((time.monotonic() - t0) * 1000), "error": parasail._redact(exc)[:2000]})
-            errors.append(f"{model}: {parasail._redact(exc)[:200]}")
+                                      "latency_ms": int((time.monotonic() - t0) * 1000), "error": parasail.redact(exc)[:2000]})
+            errors.append(f"{model}: {parasail.redact(exc)[:200]}")
     raise FlowFailed("Parasail failed on both models: " + " | ".join(errors))
 
 
@@ -315,7 +315,7 @@ class HauntFlow(Flow[HauntState]):
         try:
             self.state.research = str(researcher.kickoff(prompt).raw)
         except Exception as exc:  # noqa: BLE001 - grounding still happens below without the agent
-            self.state.notes.append(f"Lore Researcher failed: {parasail._redact(exc)[:200]}")
+            self.state.notes.append(f"Lore Researcher failed: {parasail.redact(exc)[:200]}")
         if len(ledger.queries) == 0:
             # The agent answered without searching. Ground it anyway; a manifest without sources is a guess.
             self.state.notes.append("the Lore Researcher skipped its searches; the flow ran them")
