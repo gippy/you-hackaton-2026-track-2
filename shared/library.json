@@ -1,0 +1,147 @@
+{
+  "sectors": {
+    "entrance": "Entrance (525 Market)",
+    "registration": "Registration desk",
+    "main_stage": "Main stage",
+    "hack_floor_east": "Hack floor east",
+    "hack_floor_west": "Hack floor west",
+    "catering": "Catering and coffee bar",
+    "lounge": "Lounge",
+    "network_closet": "Network closet"
+  },
+  "layout": {
+    "main_stage": [
+      0,
+      0,
+      260,
+      140
+    ],
+    "lounge": [
+      260,
+      0,
+      160,
+      140
+    ],
+    "catering": [
+      420,
+      0,
+      180,
+      180
+    ],
+    "hack_floor_west": [
+      0,
+      140,
+      210,
+      130
+    ],
+    "hack_floor_east": [
+      210,
+      140,
+      210,
+      130
+    ],
+    "network_closet": [
+      420,
+      180,
+      180,
+      90
+    ],
+    "registration": [
+      0,
+      270,
+      300,
+      90
+    ],
+    "entrance": [
+      300,
+      270,
+      300,
+      90
+    ]
+  },
+  "arsenal": {
+    "salt_ring": "Salt ring perimeter",
+    "iron_filings": "Iron filing scatter",
+    "uv_floodlights": "UV floodlights",
+    "sage_smoke": "Sage smoke purge",
+    "emf_disruptor": "EMF disruptor pulse",
+    "faraday_mesh": "Faraday mesh drop",
+    "thermal_lances": "Thermal lances",
+    "silver_netting": "Silver netting",
+    "barricade_foam": "Rapid barricade foam",
+    "flare_line": "Magnesium flare line",
+    "sound_cannon": "Infrasound cannon",
+    "power_cut": "Sector power cut"
+  },
+  "playbooks": {
+    "spectral": {
+      "label": "Spectral (apparitions, phantoms, poltergeists)",
+      "arsenal": [
+        "salt_ring",
+        "iron_filings",
+        "uv_floodlights",
+        "sage_smoke",
+        "emf_disruptor",
+        "faraday_mesh",
+        "thermal_lances"
+      ],
+      "lore_focus": "folklore and paranormal-investigation countermeasures against ghosts and apparitions"
+    },
+    "corporeal": {
+      "label": "Corporeal (zombies, werewolves, vampires, cryptids)",
+      "arsenal": [
+        "silver_netting",
+        "barricade_foam",
+        "flare_line",
+        "uv_floodlights",
+        "sound_cannon",
+        "power_cut"
+      ],
+      "lore_focus": "folklore weaknesses of physical monsters and crowd-safety barricading"
+    },
+    "anomalous": {
+      "label": "Anomalous (cursed tech, rifts, unknown signals)",
+      "arsenal": [
+        "faraday_mesh",
+        "emf_disruptor",
+        "power_cut",
+        "salt_ring",
+        "sound_cannon"
+      ],
+      "lore_focus": "electromagnetic interference shielding and folklore of cursed machines"
+    }
+  },
+  "components": {
+    "ThreatBanner": "One-line situation headline and the directive for the floor. Use when the incident needs an immediate order.",
+    "EMFGauge": "Live electromagnetic field gauge in milligauss, with a danger threshold and trend. Only when the incident reports EMF.",
+    "ThermalReadout": "Temperature anomaly against the room baseline. Only when the incident reports a temperature.",
+    "FloorPlan": "Loft floor plan: the hot sector, sectors to seal, and a safe route out.",
+    "CivilianTracker": "People at risk: how many, where, their condition and extraction priority. Only when people are involved.",
+    "CountermeasurePicker": "Ranked countermeasures from the playbook arsenal, each tied to a grounding source. The operator picks one to dispatch.",
+    "SystemsBoard": "Status of facility systems the incident mentions (network, security, power, doors).",
+    "SourceLedger": "The You.com sources the station is grounded in, with the ones the plan leans on marked."
+  },
+  "actions": [
+    "contain",
+    "evacuate",
+    "observe"
+  ],
+  "severities": [
+    "low",
+    "elevated",
+    "critical",
+    "catastrophic"
+  ],
+  "themes": [
+    "crypt-dark",
+    "ectoplasm",
+    "blood-moon",
+    "fog-bank"
+  ],
+  "support": [
+    "strong",
+    "moderate",
+    "weak",
+    "unproven"
+  ]
+}

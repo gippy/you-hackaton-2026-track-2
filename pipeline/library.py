@@ -1,0 +1,141 @@
+"""The fixed vocabulary the model builds a station from: sectors, arsenal, components.
+
+The model never writes markup. It picks components from COMPONENTS, fills their
+props and orders them; Parasail's strict `json_schema` response format makes
+anything outside this library impossible to emit. The page has one renderer per
+component type and nothing else.
+"""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+# One library for the pipeline, the server and the page: shared/library.json.
+_LIB = json.loads((Path(__file__).resolve().parent.parent / "shared" / "library.json").read_text())
+
+SECTORS: dict[str, str] = _LIB["sectors"]               # loft sectors the floor plan draws
+LAYOUT: dict[str, list[int]] = _LIB["layout"]           # x, y, w, h on a 600 x 360 canvas
+ARSENAL: dict[str, str] = _LIB["arsenal"]               # everything the containment team can deploy
+PLAYBOOKS: dict[str, dict] = _LIB["playbooks"]          # the router picks one per incident class
+COMPONENTS: dict[str, str] = _LIB["components"]         # what each component is for, shown to the model
+ACTIONS: list[str] = _LIB["actions"]
+SEVERITIES: list[str] = _LIB["severities"]
+THEMES: list[str] = _LIB["themes"]
+SUPPORT: list[str] = _LIB["support"]                    # how well the sources back a countermeasure
+
+
+def adjacency() -> dict[str, list[str]]:
+    """Sectors that share a wall segment, from LAYOUT."""
+    def touches(a, b):
+        ax, ay, aw, ah = LAYOUT[a]
+        bx, by, bw, bh = LAYOUT[b]
+        side = (ax + aw == bx or bx + bw == ax) and min(ay + ah, by + bh) - max(ay, by) > 0
+        top = (ay + ah == by or by + bh == ay) and min(ax + aw, bx + bw) - max(ax, bx) > 0
+        return side or top
+    return {a: [b for b in LAYOUT if b != a and touches(a, b)] for a in LAYOUT}
+
+
+def _obj(props: dict, required: list[str] | None = None) -> dict:
+    return {"type": "object", "properties": props, "required": required or list(props), "additionalProperties": False}
+
+
+def _enum(values) -> dict:
+    return {"type": "string", "enum": list(values)}
+
+
+def _component(name: str, props: dict) -> dict:
+    return _obj({
+        "type": _enum([name]),
+        "why": {"type": "string", "description": "One sentence: why the commander needs this panel for this incident"},
+        "props": _obj(props),
+    })
+
+
+def manifest_schema(arsenal: list[str], source_count: int) -> dict:
+    """The strict json_schema for one manifest. Arsenal and sources are per run, so the schema is too."""
+    source_ref = {"type": "integer", "minimum": 0, "maximum": source_count,
+                  "description": "1-based number of the supporting source, 0 if none"}
+    variants = [
+        _component("ThreatBanner", {"severity": _enum(SEVERITIES), "headline": {"type": "string"},
+                                    "directive": {"type": "string"}}),
+        _component("EMFGauge", {"value_mg": {"type": "number"}, "threshold_mg": {"type": "number"},
+                                "trend": _enum(["rising", "steady", "falling"]),
+                                "status": _enum(["nominal", "elevated", "danger"])}),
+        _component("ThermalReadout", {"temperature_c": {"type": "number"}, "baseline_c": {"type": "number"},
+                                      "status": _enum(["nominal", "elevated", "danger"])}),
+        _component("FloorPlan", {
+            "hot_sector": _enum(SECTORS),
+            "seal": {"type": "array", "items": _enum(SECTORS), "description": "Distinct sectors to lock down"},
+            "safe_route": {"type": "array", "items": _enum(SECTORS),
+                           "description": "Adjacent sectors from where the people are to the entrance, in order"}}),
+        _component("CivilianTracker", {"count": {"type": "integer"}, "location": {"type": "string"},
+                                       "condition": _enum(["pinned", "trapped", "injured", "evacuating", "safe", "unknown"]),
+                                       "priority": _enum(["immediate", "high", "routine"])}),
+        _component("CountermeasurePicker", {
+            "target_entity": {"type": "string"},
+            "options": {"type": "array", "items": _obj({
+                "id": _enum(arsenal),
+                "support": _enum(SUPPORT),
+                "rationale": {"type": "string", "description": "Under 20 words"}, "source": source_ref})},
+            "recommended": _enum(arsenal)}),
+        _component("SystemsBoard", {"systems": {"type": "array", "items": _obj({
+            "name": {"type": "string"}, "status": _enum(["online", "degraded", "offline"])})}}),
+        _component("SourceLedger", {"cited": {"type": "array", "items": source_ref}}),
+    ]
+    return _obj({
+        "title": {"type": "string", "description": "Station title for this incident, under 8 words"},
+        "theme": _enum(THEMES),
+        "components": {"type": "array", "items": {"anyOf": variants}},
+        "recommended_action": _enum(ACTIONS),
+        "dispatch_rationale": {"type": "string", "description": "One line for the containment alert, under 20 words"},
+    })
+
+
+def clean_manifest(raw: dict, arsenal: list[str], source_count: int) -> tuple[dict, list[str]]:
+    """Keep what the page can render. Returns the manifest and notes on anything dropped.
+
+    The schema already fixes the shape; this only removes repeats and out-of-range references,
+    which a schema cannot express. It never adds a component the model did not choose.
+    """
+    notes: list[str] = []
+    seen: set[str] = set()
+    components = []
+    for comp in raw.get("components") or []:
+        kind = comp.get("type")
+        if kind not in COMPONENTS:
+            notes.append(f"dropped unknown component {kind!r}")
+            continue
+        if kind in seen:
+            notes.append(f"dropped a repeated {kind}")
+            continue
+        seen.add(kind)
+        props = comp.get("props") or {}
+        if kind == "CountermeasurePicker":
+            options, ids = [], set()
+            for opt in props.get("options") or []:
+                if opt.get("id") in arsenal and opt["id"] not in ids:
+                    ids.add(opt["id"])
+                    opt["source"] = opt.get("source") if 0 <= int(opt.get("source") or 0) <= source_count else 0
+                    options.append(opt)
+            props["options"] = sorted(options, key=lambda o: SUPPORT.index(o["support"]) if o.get("support") in SUPPORT else 9)
+            if props.get("recommended") not in ids and options:
+                props["recommended"] = options[0]["id"]
+        if kind == "FloorPlan":
+            props["seal"] = list(dict.fromkeys(s for s in props.get("seal") or [] if s in SECTORS))
+            route = list(dict.fromkeys(s for s in props.get("safe_route") or [] if s in SECTORS))
+            adj = adjacency()
+            if any(b not in adj[a] for a, b in zip(route, route[1:])):
+                notes.append("dropped a safe route that walks through walls")
+                route = []
+            props["safe_route"] = route
+        if kind == "SourceLedger":
+            props["cited"] = sorted({n for n in props.get("cited") or [] if 1 <= n <= source_count})
+        components.append({"type": kind, "why": comp.get("why", ""), "props": props})
+    out = {
+        "title": raw.get("title") or "Haunted command station",
+        "theme": raw.get("theme") if raw.get("theme") in THEMES else THEMES[0],
+        "components": components,
+        "recommended_action": raw.get("recommended_action") if raw.get("recommended_action") in ACTIONS else "contain",
+        "dispatch_rationale": raw.get("dispatch_rationale") or "",
+    }
+    return out, notes

@@ -1,0 +1,25 @@
+# Secrets
+.env
+.onerc
+
+# Local tooling
+.venv/
+__pycache__/
+out/
+mcp-stderr.log
+.DS_Store
+
+# Cloned docs and templates, each its own git repo
+reference/
+
+# Personal prep notes
+PREP.md
+MVP_PROMPT.md
+
+# Third-party agent skills, copied locally for Claude Code
+.claude/
+
+# Node and the Vite build
+node_modules/
+web/dist/
+*.tsbuildinfo
