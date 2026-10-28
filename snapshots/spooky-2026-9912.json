@@ -1,0 +1,717 @@
+{
+  "saved_at": "2026-10-28T18:33:42",
+  "state": {
+    "incident_id": "spooky-2026-9912",
+    "severity_tier": "CRITICAL_HAUNT",
+    "raw": "ALERT: Reports of a level-5 Phantom apparition at the AWS Builder Loft catering sector. Entities are disrupting the local network nodes. 4 engineers are currently pinned behind the coffee bar. Ambient temperature dropped to -4C. EMF emissions registering at 98 milligauss and climbing rapidly. Traditional security systems completely non-responsive.",
+    "incident": {
+      "entity": "level-5 Phantom",
+      "entity_class": "spectral",
+      "threat_level": 5,
+      "sector": "catering",
+      "location_detail": "AWS Builder Loft catering sector, behind the coffee bar",
+      "emf_mg": 98,
+      "emf_trend": "rising",
+      "temperature_c": -4,
+      "civilians": {
+        "count": 4,
+        "condition": "pinned",
+        "location": "behind the coffee bar"
+      },
+      "systems": [
+        {
+          "name": "local network nodes",
+          "status": "degraded"
+        },
+        {
+          "name": "traditional security systems",
+          "status": "offline"
+        }
+      ],
+      "severity": "critical",
+      "summary": "A level-5 Phantom apparition is active in the AWS Builder Loft catering sector, disrupting local network nodes and rendering traditional security systems non-responsive. Four engineers are pinned behind the coffee bar. Ambient temperature has dropped to -4C and EMF readings are at 98 milligauss and climbing rapidly."
+    },
+    "playbook": "spectral",
+    "sources": [
+      {
+        "title": "Protection against Ghosts",
+        "url": "http://gomanzanillo.com/features/ghosts/protection.htm",
+        "description": "Folklore offers many remedies for \"hauntings,\" and here are a few: 1) Chalcedony and Obsidian worn on the person will protect against ghosts. Cetain metals such as silver are also protective. 2) Salt carried in your pocket will keep ghosts at bay. ... Placing an iron rod on a grave will prevent ...",
+        "snippet": "Folklore offers many remedies for \"hauntings,\" and here are a few: 1) Chalcedony and Obsidian worn on the person will protect against ghosts. Cetain metals such as silver are also protective. 2) Salt carried in your pocket will keep ghosts at bay. ... Placing an iron rod on a grave will prevent a ghost from rising out of the ground.",
+        "n": 1,
+        "query": "ghost apparition countermeasures folklore salt iron sage banishing"
+      },
+      {
+        "title": "How to Banish a Ghost/Spirit That's Haunting Your House - ...",
+        "url": "https://witchcraftisan.com/a-spell-to-banish-a-ghost/",
+        "description": "To banish a ghost: This banishing incantation spell will help expel an unwanted ghost or spirit from your space. Before you do anything though, it's worth",
+        "snippet": "This isn’t just folklore, it’s one of the most consistently reported methods across cultures. You can mix a water and salt in a spray bottle and spray all parts of your house using the incantation. Pair it with a smoke cleanse using sage, mugwort or frankincense, moving counterclockwise through the space while you work.",
+        "n": 2,
+        "query": "ghost apparition countermeasures folklore salt iron sage banishing"
+      },
+      {
+        "title": "How to Banish a Ghost",
+        "url": "https://witcheslore.com/bookofshadows/magical-creatures/how-to-banish-a-ghost/",
+        "description": "Embark on a mystical journey to banish a ghost from your home.",
+        "snippet": "This can involve smudging with herbs like sage, cedar, or frankincense. Light the herb bundle or incense and move around your space, focusing on corners, doorways, and areas with ghostly activity. Visualize the smoke carrying away negative energies and the ghostly presence. Create a protective barrier using salt, which is believed to repel spirits.",
+        "n": 3,
+        "query": "ghost apparition countermeasures folklore salt iron sage banishing"
+      },
+      {
+        "title": "Interesting Ways to Get Rid of Ghosts and Demons",
+        "url": "https://www.bryndonovan.com/2015/06/24/interesting-ways-to-get-rid-of-ghosts-and-demons-2/",
+        "description": "If you’re a paranormal or horror writer, an actual ghostbuster, or just exceptionally unlucky, you may need some creative ideas on how to banish ghosts and poltergeists, or exorcise or kill evil spirits and/or demons. Here are a bunch of ways I've read about to get the job done!",
+        "snippet": "If you’re a paranormal or horror writer, an actual ghostbuster, or just exceptionally unlucky, you may need some creative ideas on how to banish ghosts and poltergeists, or exorcise or kill ev…",
+        "n": 4,
+        "query": "ghost apparition countermeasures folklore salt iron sage banishing"
+      },
+      {
+        "title": "EMF in Ghost Hunting: How It Works, False Positives and Field Tests ...",
+        "url": "https://ghostlyactivities.com/ghost-hunting-with-electromagnetic-fields/",
+        "description": "EMF meters can light up for spirits or for wiring. Learn what EMF is, what causes spikes, and simple field tests to reduce false positives.",
+        "snippet": "The electrical components inside cars, such as the alternator and ignition system, produce electromagnetic fields, which can be detected if the investigation is happening near a road or parking area. Certain minerals and natural geological formations can create localized electromagnetic fields. For instance, rocks that contain high concentrations of magnetite can interfere with EMF meters. Some paranormal researchers even believe that these natural EMF “hotspots” might contribute to the ghostly activity reported in certain locations, though this remains speculative.",
+        "n": 5,
+        "query": "paranormal investigation EMF detector UV light ghost containment field practice"
+      },
+      {
+        "title": "EMF Readers for Ghost Hunting | GhostStop",
+        "url": "https://www.ghoststop.com/emf-meter/",
+        "description": "Find EMF readers and all kinds of ghost hunting equipment for your paranormal investigations. Browse through our products now!",
+        "snippet": "As a ghost hunter, it’s vital that you seek out, detect, and document any and all unexplainable phenomena that may be occurring in a given environment. Electromagnetic fields surround us at all times, and theories from within the branch of paranormal investigations suggest that ghosts may have the ability to manipulate these fields.",
+        "n": 6,
+        "query": "paranormal investigation EMF detector UV light ghost containment field practice"
+      },
+      {
+        "title": "Best Ghost Hunting Devices for Halloween: Top 10 Tools to Try",
+        "url": "https://www.poltergeisthouse.com/post/top-10-ghost-hunting-devices-for-your-paranormal-halloween-adventure",
+        "description": "Planning a paranormal Halloween? Our guide covers the top 10 ghost hunting devices, from EMF meters to SLS cameras, to help you find evidence of the supernatural.View our updated 2026 Guide: Top 10 Ghost Hunting Devices for Your Paranormal Adventure (2026 Guide)As the air chills and leaves ...",
+        "snippet": "Planning a paranormal Halloween? Our guide covers the top 10 ghost hunting devices, from EMF meters to SLS cameras, to help you find evidence of the supernatural.View our updated 2026 Guide: Top 10 Ghost Hunting Devices for Your Paranormal Adventure (2026 Guide)As the air chills and leaves turn to shades of rust and gold, something else awakens.",
+        "n": 7,
+        "query": "paranormal investigation EMF detector UV light ghost containment field practice"
+      },
+      {
+        "title": "EMF and Ghost Detection: A Technical Guide for Serious Investigators ...",
+        "url": "https://ukpx.org/2025/10/12/emf-and-ghost-detection-a-technical-guide-for-serious-investigators/",
+        "description": "This article is written for teams who want to bring rigor to paranormal fieldwork. It explains what electromagnetic fields (EMF) are, why some ghost-hunting tools mislead, what instruments are genuinely useful, and how to design investigations that can withstand scrutiny.",
+        "snippet": "This article is written for teams who want to bring rigor to paranormal fieldwork. It explains what electromagnetic fields (EMF) are, why some ghost-hunting tools mislead, what instruments are genu…",
+        "n": 8,
+        "query": "paranormal investigation EMF detector UV light ghost containment field practice"
+      }
+    ],
+    "research": "**Field assessment — level-5 Phantom (spectral), AWS Builder Loft catering sector**\n\n- **salt_ring — SUPPORTED.** Folklore consistently carries salt as the primary apotropaic agent: salt kept on the person keeps ghosts at bay, and salt lines/barriers are the standard perimeter tool in banishing practice [1]. Smudging rites pair the smoke cleanse with a \"protective barrier\" of salt laid around the working area [3]. Deploy the ring around the four pinned engineers and the coffee bar first — it is the cheapest containment you have and it also bounds the entity's movement while you stage the rest.\n- **iron_filings — SUPPORTED (as iron, not as filings).** The same folklore source notes that certain metals are protective and specifically that placing an iron rod on a grave prevents a ghost from rising [1]. The mechanism in the sources is iron/metal presence, so scatter filings as a passive iron lattice around the perimeter and thresholds; treat this as a secondary layer behind the salt ring, not a substitute for it.\n- **sage_smoke — SUPPORTED.** Sage is the single most consistently reported banishing agent across the sources: a water-and-salt spray cleanse paired with sage, mugwort, or frankincense smoke moved through the space [2], and smudging with sage, cedar, or frankincense focused on corners, doorways, and areas of ghostly activity [3]. Use it to purge the catering sector and drive the apparition out of the coffee bar alcove.\n- **uv_floodlights — NOT SUPPORTED.** No source in the results recommends ultraviolet light as a countermeasure against ghosts or apparitions; UV appears only as a documentation/illumination tool in ghost-hunting kit lists [7]. Run them for evidence capture, not for effect.\n- **emf_disruptor — NOT SUPPORTED, and treat the 98 mG reading with suspicion.** The literature treats EMF as a *detection* instrument, not a weapon: EMF meters are used to locate and document unexplained fields [6], and investigators are warned that ordinary electrical sources (alternators, ignition systems, minerals, geological formations) produce exactly the kind of readings you are seeing [5]. Rigorous field guidance stresses that EMF tools mislead and that only genuine instruments should be trusted [8]. A level-5 spectral entity is not documented as being repelled by an EMF pulse. Before you burn the disruptor, have someone walk the loft's electrical panels and HVAC plant — a rising 98 mG in a catering sector with refrigeration and network gear may be equipment, not entity.\n- **faraday_mesh and thermal_lances — NOT SUPPORTED.** Neither Faraday mesh nor thermal lances appear in any source as a countermeasure against ghosts or apparitions. The sources' only thermal/light-adjacent mentions are investigative tools (EMF meters, SLS cameras) [7] and the folklore metal-protection note [1]. Do not spend them on this entity.\n\n**Recommended sequence:** salt_ring perimeter around the engineers → iron_filings lattice on thresholds and corners → sage_smoke purge through the catering sector, moving counterclockwise [2] → verify the EMF source is not building plant before committing the disruptor [5][8]. Note also that a sharp ambient temperature drop is a commonly reported sign of entity presence in ghost-hunting practice [7], so the -4C is corroborating, not diagnostic.",
+    "manifest": {
+      "title": "Containment Station — Incident spooky-2026-9912",
+      "theme": "crypt-dark",
+      "components": [
+        {
+          "type": "ThreatBanner",
+          "why": "Critical level-5 apparition needs an immediate floor-wide order before anything else.",
+          "props": {
+            "severity": "critical",
+            "headline": "Level-5 Phantom active in catering sector; four engineers pinned behind coffee bar.",
+            "directive": "Seal catering, ring the engineers, purge the alcove — no one enters alone."
+          }
+        },
+        {
+          "type": "CivilianTracker",
+          "why": "Four pinned engineers are the priority; extraction order drives every other step.",
+          "props": {
+            "count": 4,
+            "location": "Behind the coffee bar, catering sector",
+            "condition": "pinned",
+            "priority": "immediate"
+          }
+        },
+        {
+          "type": "EMFGauge",
+          "why": "Incident reports 98 mG rising; operator must judge whether the field is entity or plant.",
+          "props": {
+            "value_mg": 98,
+            "threshold_mg": 50,
+            "trend": "rising",
+            "status": "danger"
+          }
+        },
+        {
+          "type": "ThermalReadout",
+          "why": "Incident reports -4C against room baseline; corroborates entity presence.",
+          "props": {
+            "temperature_c": -4,
+            "baseline_c": 18,
+            "status": "danger"
+          }
+        },
+        {
+          "type": "FloorPlan",
+          "why": "Operator needs the hot sector, seal order, and a legal safe route to the entrance.",
+          "props": {
+            "hot_sector": "catering",
+            "seal": [
+              "catering",
+              "network_closet"
+            ],
+            "safe_route": [
+              "catering",
+              "hack_floor_east",
+              "entrance"
+            ]
+          }
+        },
+        {
+          "type": "SystemsBoard",
+          "why": "Network nodes degraded and security offline; doors and comms affect containment.",
+          "props": {
+            "systems": [
+              {
+                "name": "local network nodes",
+                "status": "degraded"
+              },
+              {
+                "name": "traditional security systems",
+                "status": "offline"
+              }
+            ]
+          }
+        },
+        {
+          "type": "CountermeasurePicker",
+          "why": "Operator must pick one dispatch from the supported arsenal, ranked with grounding.",
+          "props": {
+            "target_entity": "level-5 Phantom",
+            "options": [
+              {
+                "id": "salt_ring",
+                "support": "strong",
+                "rationale": "Most consistently reported apotropaic; ring the engineers and coffee bar first.",
+                "source": 1
+              },
+              {
+                "id": "sage_smoke",
+                "support": "strong",
+                "rationale": "Sage smoke cleanse is the most consistently reported banishing method.",
+                "source": 2
+              },
+              {
+                "id": "iron_filings",
+                "support": "moderate",
+                "rationale": "Iron and metals reported protective; scatter as passive lattice behind salt.",
+                "source": 1
+              }
+            ],
+            "recommended": "salt_ring"
+          }
+        }
+      ],
+      "recommended_action": "contain",
+      "dispatch_rationale": "Salt ring first: cheapest perimeter containment around four pinned engineers, then sage purge, iron lattice behind it."
+    },
+    "notes": [],
+    "models": [
+      "parasail-minimax-m31-flash",
+      "parasail-minimax-m31-flash"
+    ],
+    "id": "053ccc33-73e1-4b1e-941d-8d26582cc10d"
+  },
+  "events": [
+    {
+      "t": 1.668,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "running",
+        "detail": "Parasail is structuring the raw report",
+        "ms": 0
+      }
+    },
+    {
+      "t": 3.221,
+      "msg": {
+        "type": "incident",
+        "incident": {
+          "entity": "level-5 Phantom",
+          "entity_class": "spectral",
+          "threat_level": 5,
+          "sector": "catering",
+          "location_detail": "AWS Builder Loft catering sector, behind the coffee bar",
+          "emf_mg": 98,
+          "emf_trend": "rising",
+          "temperature_c": -4,
+          "civilians": {
+            "count": 4,
+            "condition": "pinned",
+            "location": "behind the coffee bar"
+          },
+          "systems": [
+            {
+              "name": "local network nodes",
+              "status": "degraded"
+            },
+            {
+              "name": "traditional security systems",
+              "status": "offline"
+            }
+          ],
+          "severity": "critical",
+          "summary": "A level-5 Phantom apparition is active in the AWS Builder Loft catering sector, disrupting local network nodes and rendering traditional security systems non-responsive. Four engineers are pinned behind the coffee bar. Ambient temperature has dropped to -4C and EMF readings are at 98 milligauss and climbing rapidly."
+        },
+        "incident_id": "spooky-2026-9912",
+        "severity_tier": "CRITICAL_HAUNT",
+        "raw": "ALERT: Reports of a level-5 Phantom apparition at the AWS Builder Loft catering sector. Entities are disrupting the local network nodes. 4 engineers are currently pinned behind the coffee bar. Ambient temperature dropped to -4C. EMF emissions registering at 98 milligauss and climbing rapidly. Traditional security systems completely non-responsive."
+      }
+    },
+    {
+      "t": 3.221,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "done",
+        "detail": "level-5 Phantom in catering (parasail-minimax-m31-flash)",
+        "ms": 1553
+      }
+    },
+    {
+      "t": 3.227,
+      "msg": {
+        "type": "route",
+        "label": "spectral",
+        "playbook": "Spectral (apparitions, phantoms, poltergeists)",
+        "arsenal": [
+          {
+            "id": "salt_ring",
+            "name": "Salt ring perimeter"
+          },
+          {
+            "id": "iron_filings",
+            "name": "Iron filing scatter"
+          },
+          {
+            "id": "uv_floodlights",
+            "name": "UV floodlights"
+          },
+          {
+            "id": "sage_smoke",
+            "name": "Sage smoke purge"
+          },
+          {
+            "id": "emf_disruptor",
+            "name": "EMF disruptor pulse"
+          },
+          {
+            "id": "faraday_mesh",
+            "name": "Faraday mesh drop"
+          },
+          {
+            "id": "thermal_lances",
+            "name": "Thermal lances"
+          }
+        ]
+      }
+    },
+    {
+      "t": 3.227,
+      "msg": {
+        "type": "step",
+        "id": "triage",
+        "state": "done",
+        "detail": "routed to the spectral playbook",
+        "ms": 1558
+      }
+    },
+    {
+      "t": 3.229,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "running",
+        "detail": "Lore Researcher is searching You.com",
+        "ms": 0
+      }
+    },
+    {
+      "t": 4.704,
+      "msg": {
+        "type": "search",
+        "query": "ghost apparition countermeasures folklore salt iron sage banishing",
+        "hits": [
+          {
+            "n": 1,
+            "title": "Protection against Ghosts",
+            "url": "http://gomanzanillo.com/features/ghosts/protection.htm"
+          },
+          {
+            "n": 2,
+            "title": "How to Banish a Ghost/Spirit That's Haunting Your House - ...",
+            "url": "https://witchcraftisan.com/a-spell-to-banish-a-ghost/"
+          },
+          {
+            "n": 3,
+            "title": "How to Banish a Ghost",
+            "url": "https://witcheslore.com/bookofshadows/magical-creatures/how-to-banish-a-ghost/"
+          },
+          {
+            "n": 4,
+            "title": "Interesting Ways to Get Rid of Ghosts and Demons",
+            "url": "https://www.bryndonovan.com/2015/06/24/interesting-ways-to-get-rid-of-ghosts-and-demons-2/"
+          }
+        ]
+      }
+    },
+    {
+      "t": 4.81,
+      "msg": {
+        "type": "search",
+        "query": "paranormal investigation EMF detector UV light ghost containment field practice",
+        "hits": [
+          {
+            "n": 5,
+            "title": "EMF in Ghost Hunting: How It Works, False Positives and Field Tests ...",
+            "url": "https://ghostlyactivities.com/ghost-hunting-with-electromagnetic-fields/"
+          },
+          {
+            "n": 6,
+            "title": "EMF Readers for Ghost Hunting | GhostStop",
+            "url": "https://www.ghoststop.com/emf-meter/"
+          },
+          {
+            "n": 7,
+            "title": "Best Ghost Hunting Devices for Halloween: Top 10 Tools to Try",
+            "url": "https://www.poltergeisthouse.com/post/top-10-ghost-hunting-devices-for-your-paranormal-halloween-adventure"
+          },
+          {
+            "n": 8,
+            "title": "EMF and Ghost Detection: A Technical Guide for Serious Investigators ...",
+            "url": "https://ukpx.org/2025/10/12/emf-and-ghost-detection-a-technical-guide-for-serious-investigators/"
+          }
+        ]
+      }
+    },
+    {
+      "t": 10.557,
+      "msg": {
+        "type": "sources",
+        "sources": [
+          {
+            "title": "Protection against Ghosts",
+            "url": "http://gomanzanillo.com/features/ghosts/protection.htm",
+            "description": "Folklore offers many remedies for \"hauntings,\" and here are a few: 1) Chalcedony and Obsidian worn on the person will protect against ghosts. Cetain metals such as silver are also protective. 2) Salt carried in your pocket will keep ghosts at bay. ... Placing an iron rod on a grave will prevent ...",
+            "snippet": "Folklore offers many remedies for \"hauntings,\" and here are a few: 1) Chalcedony and Obsidian worn on the person will protect against ghosts. Cetain metals such as silver are also protective. 2) Salt carried in your pocket will keep ghosts at bay. ... Placing an iron rod on a grave will prevent a ghost from rising out of the ground.",
+            "n": 1,
+            "query": "ghost apparition countermeasures folklore salt iron sage banishing"
+          },
+          {
+            "title": "How to Banish a Ghost/Spirit That's Haunting Your House - ...",
+            "url": "https://witchcraftisan.com/a-spell-to-banish-a-ghost/",
+            "description": "To banish a ghost: This banishing incantation spell will help expel an unwanted ghost or spirit from your space. Before you do anything though, it's worth",
+            "snippet": "This isn’t just folklore, it’s one of the most consistently reported methods across cultures. You can mix a water and salt in a spray bottle and spray all parts of your house using the incantation. Pair it with a smoke cleanse using sage, mugwort or frankincense, moving counterclockwise through the space while you work.",
+            "n": 2,
+            "query": "ghost apparition countermeasures folklore salt iron sage banishing"
+          },
+          {
+            "title": "How to Banish a Ghost",
+            "url": "https://witcheslore.com/bookofshadows/magical-creatures/how-to-banish-a-ghost/",
+            "description": "Embark on a mystical journey to banish a ghost from your home.",
+            "snippet": "This can involve smudging with herbs like sage, cedar, or frankincense. Light the herb bundle or incense and move around your space, focusing on corners, doorways, and areas with ghostly activity. Visualize the smoke carrying away negative energies and the ghostly presence. Create a protective barrier using salt, which is believed to repel spirits.",
+            "n": 3,
+            "query": "ghost apparition countermeasures folklore salt iron sage banishing"
+          },
+          {
+            "title": "Interesting Ways to Get Rid of Ghosts and Demons",
+            "url": "https://www.bryndonovan.com/2015/06/24/interesting-ways-to-get-rid-of-ghosts-and-demons-2/",
+            "description": "If you’re a paranormal or horror writer, an actual ghostbuster, or just exceptionally unlucky, you may need some creative ideas on how to banish ghosts and poltergeists, or exorcise or kill evil spirits and/or demons. Here are a bunch of ways I've read about to get the job done!",
+            "snippet": "If you’re a paranormal or horror writer, an actual ghostbuster, or just exceptionally unlucky, you may need some creative ideas on how to banish ghosts and poltergeists, or exorcise or kill ev…",
+            "n": 4,
+            "query": "ghost apparition countermeasures folklore salt iron sage banishing"
+          },
+          {
+            "title": "EMF in Ghost Hunting: How It Works, False Positives and Field Tests ...",
+            "url": "https://ghostlyactivities.com/ghost-hunting-with-electromagnetic-fields/",
+            "description": "EMF meters can light up for spirits or for wiring. Learn what EMF is, what causes spikes, and simple field tests to reduce false positives.",
+            "snippet": "The electrical components inside cars, such as the alternator and ignition system, produce electromagnetic fields, which can be detected if the investigation is happening near a road or parking area. Certain minerals and natural geological formations can create localized electromagnetic fields. For instance, rocks that contain high concentrations of magnetite can interfere with EMF meters. Some paranormal researchers even believe that these natural EMF “hotspots” might contribute to the ghostly activity reported in certain locations, though this remains speculative.",
+            "n": 5,
+            "query": "paranormal investigation EMF detector UV light ghost containment field practice"
+          },
+          {
+            "title": "EMF Readers for Ghost Hunting | GhostStop",
+            "url": "https://www.ghoststop.com/emf-meter/",
+            "description": "Find EMF readers and all kinds of ghost hunting equipment for your paranormal investigations. Browse through our products now!",
+            "snippet": "As a ghost hunter, it’s vital that you seek out, detect, and document any and all unexplainable phenomena that may be occurring in a given environment. Electromagnetic fields surround us at all times, and theories from within the branch of paranormal investigations suggest that ghosts may have the ability to manipulate these fields.",
+            "n": 6,
+            "query": "paranormal investigation EMF detector UV light ghost containment field practice"
+          },
+          {
+            "title": "Best Ghost Hunting Devices for Halloween: Top 10 Tools to Try",
+            "url": "https://www.poltergeisthouse.com/post/top-10-ghost-hunting-devices-for-your-paranormal-halloween-adventure",
+            "description": "Planning a paranormal Halloween? Our guide covers the top 10 ghost hunting devices, from EMF meters to SLS cameras, to help you find evidence of the supernatural.View our updated 2026 Guide: Top 10 Ghost Hunting Devices for Your Paranormal Adventure (2026 Guide)As the air chills and leaves ...",
+            "snippet": "Planning a paranormal Halloween? Our guide covers the top 10 ghost hunting devices, from EMF meters to SLS cameras, to help you find evidence of the supernatural.View our updated 2026 Guide: Top 10 Ghost Hunting Devices for Your Paranormal Adventure (2026 Guide)As the air chills and leaves turn to shades of rust and gold, something else awakens.",
+            "n": 7,
+            "query": "paranormal investigation EMF detector UV light ghost containment field practice"
+          },
+          {
+            "title": "EMF and Ghost Detection: A Technical Guide for Serious Investigators ...",
+            "url": "https://ukpx.org/2025/10/12/emf-and-ghost-detection-a-technical-guide-for-serious-investigators/",
+            "description": "This article is written for teams who want to bring rigor to paranormal fieldwork. It explains what electromagnetic fields (EMF) are, why some ghost-hunting tools mislead, what instruments are genuinely useful, and how to design investigations that can withstand scrutiny.",
+            "snippet": "This article is written for teams who want to bring rigor to paranormal fieldwork. It explains what electromagnetic fields (EMF) are, why some ghost-hunting tools mislead, what instruments are genu…",
+            "n": 8,
+            "query": "paranormal investigation EMF detector UV light ghost containment field practice"
+          }
+        ],
+        "research": "**Field assessment — level-5 Phantom (spectral), AWS Builder Loft catering sector**\n\n- **salt_ring — SUPPORTED.** Folklore consistently carries salt as the primary apotropaic agent: salt kept on the person keeps ghosts at bay, and salt lines/barriers are the standard perimeter tool in banishing practice [1]. Smudging rites pair the smoke cleanse with a \"protective barrier\" of salt laid around the working area [3]. Deploy the ring around the four pinned engineers and the coffee bar first — it is the cheapest containment you have and it also bounds the entity's movement while you stage the rest.\n- **iron_filings — SUPPORTED (as iron, not as filings).** The same folklore source notes that certain metals are protective and specifically that placing an iron rod on a grave prevents a ghost from rising [1]. The mechanism in the sources is iron/metal presence, so scatter filings as a passive iron lattice around the perimeter and thresholds; treat this as a secondary layer behind the salt ring, not a substitute for it.\n- **sage_smoke — SUPPORTED.** Sage is the single most consistently reported banishing agent across the sources: a water-and-salt spray cleanse paired with sage, mugwort, or frankincense smoke moved through the space [2], and smudging with sage, cedar, or frankincense focused on corners, doorways, and areas of ghostly activity [3]. Use it to purge the catering sector and drive the apparition out of the coffee bar alcove.\n- **uv_floodlights — NOT SUPPORTED.** No source in the results recommends ultraviolet light as a countermeasure against ghosts or apparitions; UV appears only as a documentation/illumination tool in ghost-hunting kit lists [7]. Run them for evidence capture, not for effect.\n- **emf_disruptor — NOT SUPPORTED, and treat the 98 mG reading with suspicion.** The literature treats EMF as a *detection* instrument, not a weapon: EMF meters are used to locate and document unexplained fields [6], and investigators are warned that ordinary electrical sources (alternators, ignition systems, minerals, geological formations) produce exactly the kind of readings you are seeing [5]. Rigorous field guidance stresses that EMF tools mislead and that only genuine instruments should be trusted [8]. A level-5 spectral entity is not documented as being repelled by an EMF pulse. Before you burn the disruptor, have someone walk the loft's electrical panels and HVAC plant — a rising 98 mG in a catering sector with refrigeration and network gear may be equipment, not entity.\n- **faraday_mesh and thermal_lances — NOT SUPPORTED.** Neither Faraday mesh nor thermal lances appear in any source as a countermeasure against ghosts or apparitions. The sources' only thermal/light-adjacent mentions are investigative tools (EMF meters, SLS cameras) [7] and the folklore metal-protection note [1]. Do not spend them on this entity.\n\n**Recommended sequence:** salt_ring perimeter around the engineers → iron_filings lattice on thresholds and corners → sage_smoke purge through the catering sector, moving counterclockwise [2] → verify the EMF source is not building plant before committing the disruptor [5][8]. Note also that a sharp ambient temperature drop is a commonly reported sign of entity presence in ghost-hunting practice [7], so the -4C is corroborating, not diagnostic."
+      }
+    },
+    {
+      "t": 10.558,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "done",
+        "detail": "2 search(es), 8 source(s)",
+        "ms": 7329
+      }
+    },
+    {
+      "t": 10.56,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "running",
+        "detail": "Parasail is choosing and ordering components",
+        "ms": 0
+      }
+    },
+    {
+      "t": 11.238,
+      "msg": {
+        "type": "frame",
+        "title": "Containment Station — Incident spooky-2026-9912",
+        "theme": "crypt-dark"
+      }
+    },
+    {
+      "t": 11.568,
+      "msg": {
+        "type": "component",
+        "index": 0,
+        "component": {
+          "type": "ThreatBanner",
+          "why": "Critical level-5 apparition needs an immediate floor-wide order before anything else.",
+          "props": {
+            "severity": "critical",
+            "headline": "Level-5 Phantom active in catering sector; four engineers pinned behind coffee bar.",
+            "directive": "Seal catering, ring the engineers, purge the alcove — no one enters alone."
+          }
+        }
+      }
+    },
+    {
+      "t": 11.568,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "1 component(s) placed",
+        "ms": 1007
+      }
+    },
+    {
+      "t": 11.966,
+      "msg": {
+        "type": "component",
+        "index": 1,
+        "component": {
+          "type": "CivilianTracker",
+          "why": "Four pinned engineers are the priority; extraction order drives every other step.",
+          "props": {
+            "count": 4,
+            "location": "Behind the coffee bar, catering sector",
+            "condition": "pinned",
+            "priority": "immediate"
+          }
+        }
+      }
+    },
+    {
+      "t": 11.966,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "2 component(s) placed",
+        "ms": 1405
+      }
+    },
+    {
+      "t": 12.218,
+      "msg": {
+        "type": "component",
+        "index": 2,
+        "component": {
+          "type": "EMFGauge",
+          "why": "Incident reports 98 mG rising; operator must judge whether the field is entity or plant.",
+          "props": {
+            "value_mg": 98,
+            "threshold_mg": 50,
+            "trend": "rising",
+            "status": "danger"
+          }
+        }
+      }
+    },
+    {
+      "t": 12.218,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "3 component(s) placed",
+        "ms": 1657
+      }
+    },
+    {
+      "t": 12.323,
+      "msg": {
+        "type": "component",
+        "index": 3,
+        "component": {
+          "type": "ThermalReadout",
+          "why": "Incident reports -4C against room baseline; corroborates entity presence.",
+          "props": {
+            "temperature_c": -4,
+            "baseline_c": 18,
+            "status": "danger"
+          }
+        }
+      }
+    },
+    {
+      "t": 12.323,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "4 component(s) placed",
+        "ms": 1762
+      }
+    },
+    {
+      "t": 12.568,
+      "msg": {
+        "type": "component",
+        "index": 4,
+        "component": {
+          "type": "FloorPlan",
+          "why": "Operator needs the hot sector, seal order, and a legal safe route to the entrance.",
+          "props": {
+            "hot_sector": "catering",
+            "seal": [
+              "catering",
+              "network_closet"
+            ],
+            "safe_route": [
+              "catering",
+              "hack_floor_east",
+              "entrance"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "t": 12.568,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "5 component(s) placed",
+        "ms": 2007
+      }
+    },
+    {
+      "t": 12.744,
+      "msg": {
+        "type": "component",
+        "index": 5,
+        "component": {
+          "type": "SystemsBoard",
+          "why": "Network nodes degraded and security offline; doors and comms affect containment.",
+          "props": {
+            "systems": [
+              {
+                "name": "local network nodes",
+                "status": "degraded"
+              },
+              {
+                "name": "traditional security systems",
+                "status": "offline"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "t": 12.744,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "6 component(s) placed",
+        "ms": 2184
+      }
+    },
+    {
+      "t": 13.341,
+      "msg": {
+        "type": "component",
+        "index": 6,
+        "component": {
+          "type": "CountermeasurePicker",
+          "why": "Operator must pick one dispatch from the supported arsenal, ranked with grounding.",
+          "props": {
+            "target_entity": "level-5 Phantom",
+            "options": [
+              {
+                "id": "salt_ring",
+                "support": "strong",
+                "rationale": "Most consistently reported apotropaic; ring the engineers and coffee bar first.",
+                "source": 1
+              },
+              {
+                "id": "sage_smoke",
+                "support": "strong",
+                "rationale": "Sage smoke cleanse is the most consistently reported banishing method.",
+                "source": 2
+              },
+              {
+                "id": "iron_filings",
+                "support": "moderate",
+                "rationale": "Iron and metals reported protective; scatter as passive lattice behind salt.",
+                "source": 1
+              }
+            ],
+            "recommended": "salt_ring"
+          }
+        }
+      }
+    },
+    {
+      "t": 13.341,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "7 component(s) placed",
+        "ms": 2780
+      }
+    },
+    {
+      "t": 13.499,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "done",
+        "detail": "7 components: ThreatBanner, CivilianTracker, EMFGauge, ThermalReadout, FloorPlan, SystemsBoard, CountermeasurePicker (parasail-minimax-m31-flash)",
+        "ms": 2939
+      }
+    }
+  ]
+}

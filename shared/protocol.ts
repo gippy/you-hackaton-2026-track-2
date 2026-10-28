@@ -1,0 +1,117 @@
+// The WebSocket protocol and the manifest, shared by the server and the page.
+// The pipeline (Python) emits these shapes; pipeline/library.py builds the matching json_schema.
+
+export type Severity = 'low' | 'elevated' | 'critical' | 'catastrophic';
+export type Action = 'contain' | 'evacuate' | 'observe';
+export type Theme = 'crypt-dark' | 'ectoplasm' | 'blood-moon' | 'fog-bank';
+export type Support = 'strong' | 'moderate' | 'weak' | 'unproven';
+export type Level = 'nominal' | 'elevated' | 'danger';
+export type SystemStatus = 'online' | 'degraded' | 'offline';
+export type Condition = 'pinned' | 'trapped' | 'injured' | 'evacuating' | 'safe' | 'unknown';
+
+export interface Incident {
+    entity: string;
+    entity_class: 'spectral' | 'corporeal' | 'anomalous';
+    threat_level: number;
+    sector: string;
+    location_detail: string;
+    emf_mg: number | null;
+    emf_trend: 'rising' | 'steady' | 'falling' | 'unknown';
+    temperature_c: number | null;
+    civilians: { count: number; condition: Condition; location: string };
+    systems: { name: string; status: SystemStatus }[];
+    severity: Severity;
+    summary: string;
+}
+
+export interface Source {
+    n: number;
+    title: string;
+    url: string;
+    description: string;
+    snippet: string;
+    query: string;
+}
+
+interface Base<T extends string, P> {
+    type: T;
+    why: string;
+    props: P;
+}
+
+export type Component =
+    | Base<'ThreatBanner', { severity: Severity; headline: string; directive: string }>
+    | Base<'EMFGauge', { value_mg: number; threshold_mg: number; trend: 'rising' | 'steady' | 'falling'; status: Level }>
+    | Base<'ThermalReadout', { temperature_c: number; baseline_c: number; status: Level }>
+    | Base<'FloorPlan', { hot_sector: string; seal: string[]; safe_route: string[] }>
+    | Base<'CivilianTracker', { count: number; location: string; condition: Condition; priority: 'immediate' | 'high' | 'routine' }>
+    | Base<
+          'CountermeasurePicker',
+          {
+              target_entity: string;
+              options: { id: string; support: Support; rationale: string; source: number }[];
+              recommended: string;
+          }
+      >
+    | Base<'SystemsBoard', { systems: { name: string; status: SystemStatus }[] }>
+    | Base<'SourceLedger', { cited: number[] }>;
+
+export type ComponentType = Component['type'];
+
+export interface Manifest {
+    title: string;
+    theme: Theme;
+    components: Component[];
+    recommended_action: Action;
+    dispatch_rationale: string;
+}
+
+/** The flow's final state, as pipeline/flow.py HauntState dumps it. */
+export interface RunState {
+    incident_id: string;
+    severity_tier: string;
+    raw: string;
+    incident: Incident;
+    playbook: string;
+    sources: Source[];
+    research: string;
+    manifest: Manifest;
+    notes: string[];
+    models: string[];
+}
+
+export interface Library {
+    sectors: Record<string, string>;
+    layout: Record<string, [number, number, number, number]>;
+    arsenal: Record<string, string>;
+    playbooks: Record<string, { label: string; arsenal: string[]; lore_focus: string }>;
+    components: Record<ComponentType, string>;
+    actions: Action[];
+}
+
+export type StepId = 'ingest' | 'triage' | 'ground' | 'compose';
+export type StepState = 'running' | 'progress' | 'done' | 'failed';
+
+/** Events the pipeline worker writes, one per line. The server forwards them as they are. */
+export type FlowEvent =
+    | { type: 'step'; id: StepId; state: StepState; detail: string; ms: number }
+    | { type: 'incident'; incident: Incident; incident_id: string; severity_tier: string; raw: string }
+    | { type: 'route'; label: string; playbook: string; arsenal: { id: string; name: string }[] }
+    | { type: 'search'; query: string; hits: { n: number; title: string; url: string }[] }
+    | { type: 'sources'; sources: Source[]; research: string }
+    | { type: 'frame'; title?: string; theme?: Theme }
+    | { type: 'component'; index: number; component: Component };
+
+export type DispatchMode = 'dry-run' | 'live' | 'offline';
+
+export type ServerMessage =
+    | FlowEvent
+    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; library: Library; channel: string }
+    | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string }
+    | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
+    | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string }
+    | { type: 'error'; detail: string };
+
+export type ClientMessage =
+    | { type: 'compile'; raw: string }
+    | { type: 'dispatch'; action: Action; countermeasure: string | null; sealed: string[]; extracted: number; live: boolean };

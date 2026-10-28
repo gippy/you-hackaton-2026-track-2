@@ -1,0 +1,3 @@
+# esbuild ships its platform binary as an optional dependency; its install script only re-checks it.
+allowBuilds:
+  esbuild: false
