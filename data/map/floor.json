@@ -1,14 +1,13 @@
 {
  "name": "haunted-station-floor-schematic",
  "title": "AWS Builder Loft, level 2: schematic floor plan",
- "notice": "SCHEMATIC, NOT TO SCALE. Redrawn from a hand sketch made on site; zones are coarse, not rooms. Only the entrance on the building's SW side is verified from public sources. Not an architectural drawing, not for navigation.",
- "source": "Jarda's hand-drawn plan (Figma, on site, 2026-10-28): https://www.figma.com/design/hoMyQYoQfNspdNGmuqeijJ (page 1, 771 x 628 units, rescaled to 100 wide). Six site photos were used to name the zones.",
+ "notice": "SCHEMATIC, NOT TO SCALE. Redrawn from AWS's own stylised kiosk map of the Loft; our eight sectors are placed inside its six blocks, and apart from the entrance, the elevators and registration most of that placement is a guess. Not an architectural drawing, not for navigation.",
+ "source": "AWS's own kiosk map at the Loft (photos taken 2026-10-28), straightened from an angled photo. The entrance and the elevators are Jarda's marks on the kiosk photo; other notes are from him, on site. Earlier hand-drawn plan (Figma hoMyQYoQfNspdNGmuqeijJ) used only as a hint for doors and neighbours.",
  "space": {
   "width": 100,
-  "height": 81.45,
+  "height": 96.97,
   "y_axis": "down",
-  "orientation": "plan-up is about NE, plan-right SE, plan-down SW (the courtyard side), plan-left NW (the Market Street side). Inferred: the entrance on the SW face is verified, and the windows left of the entrance look onto a street. The tower is a square rotated about 45 degrees, so this plan is a rotated view, not north up.",
-  "plan_up_bearing_deg": 45
+  "orientation": "As AWS draws it on the kiosk, top of the screen up. AWS does not say how this lines up with the compass, so do not rotate it onto the area map."
  },
  "outline": [
   [
@@ -21,48 +20,302 @@
   ],
   [
    100.0,
-   81.45
+   96.97
   ],
   [
    0.0,
-   81.45
+   96.97
+  ]
+ ],
+ "open_middle": [
+  [
+   33.77,
+   25.0
+  ],
+  [
+   74.43,
+   25.0
+  ],
+  [
+   74.43,
+   40.16
+  ],
+  [
+   82.38,
+   40.16
+  ],
+  [
+   82.38,
+   47.13
+  ],
+  [
+   100.0,
+   47.13
+  ],
+  [
+   100.0,
+   73.77
+  ],
+  [
+   84.43,
+   73.77
+  ],
+  [
+   84.43,
+   79.75
+  ],
+  [
+   50.41,
+   79.75
+  ],
+  [
+   50.41,
+   73.36
+  ],
+  [
+   42.05,
+   73.36
+  ],
+  [
+   42.05,
+   60.66
+  ],
+  [
+   33.77,
+   60.66
   ]
  ],
  "fields": {
-  "position": "verified = public source | sketched = taken from the hand-drawn plan or photos | assumed = a guess",
+  "position": "verified = AWS's map or a public source | sketched = Jarda's on-site notes or sketch | assumed = a guess",
   "existence": "verified | invented: whether the sector exists at all (scenarios/research/venue.md)"
  },
+ "blocks": [
+  {
+   "id": "training_rooms",
+   "aws_name": "Training Rooms",
+   "polygon": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     25.41,
+     0.0
+    ],
+    [
+     25.41,
+     60.66
+    ],
+    [
+     0.0,
+     60.66
+    ]
+   ],
+   "sectors": [
+    "hack_floor_west",
+    "network_closet"
+   ],
+   "position": "verified",
+   "note": "Tall left column, purple on the kiosk. venue.md lists meeting rooms and sound-proof booths under hack_floor_west, so the two are matched."
+  },
+  {
+   "id": "lounge_area",
+   "aws_name": "Lounge",
+   "polygon": [
+    [
+     25.41,
+     0.0
+    ],
+    [
+     100.0,
+     0.0
+    ],
+    [
+     100.0,
+     47.13
+    ],
+    [
+     82.38,
+     47.13
+    ],
+    [
+     82.38,
+     25.0
+    ],
+    [
+     25.41,
+     25.0
+    ]
+   ],
+   "sectors": [
+    "entrance",
+    "lounge",
+    "catering_coffee_bar"
+   ],
+   "position": "verified",
+   "note": "Long top band with a drop on the right, purple on the kiosk. Jarda marked the entrance on its top edge, about halfway across. Split into the lounge (left), the entrance (middle) and the catering and coffee bar (right) on paper."
+  },
+  {
+   "id": "heroes_hub",
+   "aws_name": "AWS Heroes Hub",
+   "polygon": [
+    [
+     74.43,
+     25.0
+    ],
+    [
+     82.38,
+     25.0
+    ],
+    [
+     82.38,
+     40.16
+    ],
+    [
+     74.43,
+     40.16
+    ]
+   ],
+   "sectors": [],
+   "position": "verified",
+   "note": "Small dark-blue block on the inner edge of the Lounge band. The AWS Heroes panel and drinks fridge in photos 4 and 5 are in the eating area, so it sits beside the catering bar."
+  },
+  {
+   "id": "reception",
+   "aws_name": "Reception",
+   "polygon": [
+    [
+     25.41,
+     25.0
+    ],
+    [
+     33.77,
+     25.0
+    ],
+    [
+     33.77,
+     60.66
+    ],
+    [
+     42.05,
+     60.66
+    ],
+    [
+     42.05,
+     73.36
+    ],
+    [
+     50.41,
+     73.36
+    ],
+    [
+     50.41,
+     79.75
+    ],
+    [
+     25.41,
+     79.75
+    ]
+   ],
+   "sectors": [
+    "registration"
+   ],
+   "position": "verified",
+   "note": "Teal L-shaped hall with stepped corner, along the left of the open middle. Elevators at its top end, registration at its corner (Jarda, on site)."
+  },
+  {
+   "id": "co_working",
+   "aws_name": "Co-Working",
+   "polygon": [
+    [
+     0.0,
+     60.66
+    ],
+    [
+     25.41,
+     60.66
+    ],
+    [
+     25.41,
+     79.75
+    ],
+    [
+     84.43,
+     79.75
+    ],
+    [
+     84.43,
+     96.97
+    ],
+    [
+     0.0,
+     96.97
+    ]
+   ],
+   "sectors": [
+    "main_stage",
+    "hack_floor_east"
+   ],
+   "position": "verified",
+   "note": "Gold L along the bottom and the lower left, the long room with tables in photo 1."
+  },
+  {
+   "id": "merch_store",
+   "aws_name": "Merch Store",
+   "polygon": [
+    [
+     84.43,
+     73.77
+    ],
+    [
+     100.0,
+     73.77
+    ],
+    [
+     100.0,
+     96.97
+    ],
+    [
+     84.43,
+     96.97
+    ]
+   ],
+   "sectors": [],
+   "position": "verified",
+   "note": "Blue block at the bottom right, marked 'coming soon' on the kiosk. Treated as closed."
+  }
+ ],
  "zones": [
   {
    "slug": "entrance",
    "label": "Entrance",
+   "block": "lounge_area",
    "polygon": [
     [
-     29.05,
-     62.13
+     42.7,
+     0.0
     ],
     [
-     58.11,
-     62.13
+     59.1,
+     0.0
     ],
     [
-     58.11,
-     81.45
+     59.1,
+     25.0
     ],
     [
-     29.05,
-     81.45
+     42.7,
+     25.0
     ]
    ],
-   "position": "verified",
+   "position": "sketched",
    "existence": "verified",
-   "basis": "Courtyard Entrance on the building's SW side with stairs up (AICamp 2025 page, AWS startups page; may be dated). Drawn as the bottom-middle block labelled 'entrance' in Jarda's hand-drawn plan (Figma, on site, 2026-10-28) (node 1:30).",
+   "basis": "Jarda marked the entrance on AWS's kiosk map: an arrow into the top edge of the Lounge band, about halfway across. The Courtyard Entrance and its stairs are on the building's SW side (AICamp 2025 page, AWS startups page; may be dated). The width of the zone is a guess.",
    "spots": [
     "the stairs",
     "the glass doors",
     "the ID check at the security desk",
-    "the Market St sidewalk",
-    "the elevator"
+    "the Market St sidewalk"
    ],
    "area_anchor": "courtyard_stairs",
    "outside_anchors": [
@@ -76,91 +329,100 @@
     "subway_entrance"
    ],
    "label_at": [
-    43.58,
-    71.98
+    50.9,
+    19.67
    ],
    "touches": [
-    "registration",
-    "lounge"
+    "lounge",
+    "catering_coffee_bar"
    ]
   },
   {
    "slug": "registration",
    "label": "Registration",
+   "block": "reception",
    "polygon": [
     [
-     0.0,
-     62.13
+     25.41,
+     60.66
     ],
     [
-     29.05,
-     62.13
+     42.05,
+     60.66
     ],
     [
-     29.05,
-     81.45
+     42.05,
+     73.36
     ],
     [
-     0.0,
-     81.45
+     44.26,
+     73.36
+    ],
+    [
+     44.26,
+     79.75
+    ],
+    [
+     25.41,
+     79.75
     ]
    ],
-   "position": "assumed",
+   "position": "sketched",
    "existence": "verified",
-   "basis": "The plan draws two blocks labelled 'loby' (nodes 1:31, 1:33) either side of the entrance. The west one is taken as registration: the security guard's desk sits on the left inside the glass doors in photo 2, on the side with windows onto a street.",
+   "basis": "The stepped corner of Reception, next to the elevators at its right end. Jarda, on site: registration is at the corner of the hall.",
    "spots": [
-    "the security guard's desk",
     "the badge printer",
     "the organizers' table",
     "the blue cube installation",
     "the swag shop"
    ],
    "label_at": [
-    14.53,
-    77.82
+    32.79,
+    74.18
    ],
    "touches": [
-    "entrance",
-    "catering_coffee_bar"
+    "main_stage",
+    "hack_floor_east"
    ]
   },
   {
    "slug": "lounge",
    "label": "Lounge",
+   "block": "lounge_area",
    "polygon": [
     [
-     58.11,
-     62.13
+     25.41,
+     0.0
     ],
     [
-     78.99,
-     62.13
+     42.7,
+     0.0
     ],
     [
-     78.99,
-     81.45
+     42.7,
+     25.0
     ],
     [
-     58.11,
-     81.45
+     25.41,
+     25.0
     ]
    ],
-   "position": "assumed",
+   "position": "verified",
    "existence": "verified",
-   "basis": "The east 'loby' block (node 1:33). Taken as the lounge: white and pink seating on the right inside the doors in photo 2, and the curved LED world-map wall in photo 3.",
+   "basis": "The left part of AWS's Lounge block: seating and the curved world-map wall screen (photos 2 and 3). Where it stops and the entrance starts is a guess.",
    "spots": [
     "the tiered seating",
     "the curved world-map wall screen",
     "the tall windows"
    ],
    "label_at": [
-    68.48,
-    73.93
+    34.02,
+    6.97
    ],
    "touches": [
     "entrance",
     "hack_floor_west",
-    "hack_floor_east"
+    "network_closet"
    ]
   },
   {
@@ -169,27 +431,36 @@
     "catering"
    ],
    "label": "Catering and coffee bar",
+   "block": "lounge_area",
    "polygon": [
     [
-     0.0,
-     11.41
+     59.1,
+     0.0
     ],
     [
-     29.05,
-     11.41
+     100.0,
+     0.0
     ],
     [
-     29.05,
-     62.13
+     100.0,
+     47.13
     ],
     [
-     0.0,
-     62.13
+     82.38,
+     47.13
+    ],
+    [
+     82.38,
+     25.0
+    ],
+    [
+     59.1,
+     25.0
     ]
    ],
-   "position": "sketched",
+   "position": "assumed",
    "existence": "verified",
-   "basis": "The 'eating area' (nodes 1:26 and 1:37) in Jarda's hand-drawn plan (Figma, on site, 2026-10-28). Photos 4 and 5 show the catering counter, drinks fridge and blue-carpet tables.",
+   "basis": "The right part of AWS's Lounge block, next to the AWS Heroes Hub. Photos 4 and 5 show the catering counter, drinks fridge and Heroes panel in the eating area.",
    "spots": [
     "the espresso counter",
     "the dinner line",
@@ -197,37 +468,87 @@
     "the AWS Heroes drinks fridge"
    ],
    "label_at": [
-    14.53,
-    36.32
+    78.69,
+    12.3
    ],
    "touches": [
-    "registration"
+    "entrance"
+   ]
+  },
+  {
+   "slug": "hack_floor_west",
+   "label": "Hack floor west",
+   "block": "training_rooms",
+   "polygon": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     15.57,
+     0.0
+    ],
+    [
+     15.57,
+     9.02
+    ],
+    [
+     25.41,
+     9.02
+    ],
+    [
+     25.41,
+     60.66
+    ],
+    [
+     0.0,
+     60.66
+    ]
+   ],
+   "position": "assumed",
+   "existence": "invented",
+   "basis": "AWS's Training Rooms block. The east/west split of the hack floor is invented (venue.md).",
+   "spots": [
+    "team tables",
+    "meeting rooms",
+    "sound-proof booths",
+    "the magenta corridor"
+   ],
+   "label_at": [
+    12.7,
+    35.25
+   ],
+   "touches": [
+    "lounge",
+    "main_stage",
+    "network_closet"
    ]
   },
   {
    "slug": "main_stage",
    "label": "Main stage",
+   "block": "co_working",
    "polygon": [
     [
-     58.11,
-     0.0
+     0.0,
+     60.66
     ],
     [
-     100.0,
-     0.0
+     25.41,
+     60.66
     ],
     [
-     100.0,
-     20.75
+     25.41,
+     96.97
     ],
     [
-     58.11,
-     20.75
+     0.0,
+     96.97
     ]
    ],
    "position": "assumed",
    "existence": "verified",
-   "basis": "The plan has no separate hall: the 'coding zone' (nodes 1:16, 1:35) is one big room. Photo 1 shows ceiling projectors and a podium in it, so the stage is taken as the north end of that room. Its exact place is a guess.",
+   "basis": "The lower-left arm of AWS's Co-Working L, taken as the event hall (podium, projectors, rows of chairs). Its place within Co-Working is a guess.",
    "spots": [
     "the podium",
     "the screen",
@@ -236,211 +557,92 @@
     "the sheer curtains"
    ],
    "label_at": [
-    79.12,
-    15.3
+    12.7,
+    78.69
    ],
    "touches": [
+    "registration",
     "hack_floor_west",
-    "hack_floor_east"
-   ]
-  },
-  {
-   "slug": "hack_floor_west",
-   "label": "Hack floor west",
-   "polygon": [
-    [
-     58.11,
-     20.75
-    ],
-    [
-     78.99,
-     20.75
-    ],
-    [
-     78.99,
-     62.13
-    ],
-    [
-     58.11,
-     62.13
-    ]
-   ],
-   "position": "assumed",
-   "existence": "invented",
-   "basis": "West half of the 'coding zone'. The east/west split is invented (venue.md); the room itself is drawn.",
-   "spots": [
-    "team tables",
-    "meeting rooms",
-    "sound-proof booths",
-    "the magenta corridor"
-   ],
-   "label_at": [
-    68.48,
-    41.5
-   ],
-   "touches": [
-    "lounge",
-    "main_stage",
     "hack_floor_east"
    ]
   },
   {
    "slug": "hack_floor_east",
    "label": "Hack floor east",
+   "block": "co_working",
    "polygon": [
     [
-     78.99,
-     20.75
+     25.41,
+     79.75
     ],
     [
-     100.0,
-     20.75
+     84.43,
+     79.75
     ],
     [
-     100.0,
-     81.45
+     84.43,
+     96.97
     ],
     [
-     78.99,
-     81.45
+     25.41,
+     96.97
     ]
    ],
    "position": "assumed",
    "existence": "invented",
-   "basis": "East half of the 'coding zone', including its south-east corner block (node 1:35). Photo 1 shows windows along this side.",
+   "basis": "The long bottom arm of AWS's Co-Working L: the room with tables, a coffee counter and windows in photo 1. The split from the stage is a guess.",
    "spots": [
     "team tables",
     "charging carts",
     "the black-walled tech zone"
    ],
    "label_at": [
-    89.49,
-    50.58
+    54.92,
+    88.93
    ],
    "touches": [
-    "lounge",
-    "main_stage",
-    "hack_floor_west"
+    "registration",
+    "main_stage"
    ]
   },
   {
    "slug": "network_closet",
    "label": "Network closet",
+   "block": "training_rooms",
    "polygon": [
     [
-     36.84,
-     11.41
+     15.57,
+     0.0
     ],
     [
-     45.4,
-     11.41
+     25.41,
+     0.0
     ],
     [
-     45.4,
-     18.16
+     25.41,
+     9.02
     ],
     [
-     36.84,
-     18.16
+     15.57,
+     9.02
     ]
    ],
    "position": "assumed",
    "existence": "invented",
-   "basis": "Invented (venue.md). Put at the north end of the toilet block, off the hall, as a guess.",
+   "basis": "Invented (venue.md). Put in the top corner of Training Rooms as a guess.",
    "spots": [
     "the patch panel",
     "the switch",
     "the access-point controller"
    ],
    "label_at": [
-    41.12,
-    14.79
+    20.49,
+    4.51
    ],
-   "touches": []
-  }
- ],
- "areas": [
-  {
-   "id": "hall",
-   "label": "Hall",
-   "kind": "hall",
-   "polygon": [
-    [
-     0.0,
-     0.0
-    ],
-    [
-     58.11,
-     0.0
-    ],
-    [
-     58.11,
-     62.13
-    ],
-    [
-     29.05,
-     62.13
-    ],
-    [
-     29.05,
-     53.31
-    ],
-    [
-     45.4,
-     53.31
-    ],
-    [
-     45.4,
-     11.41
-    ],
-    [
-     0.0,
-     11.41
-    ]
-   ],
-   "position": "sketched",
-   "label_at": [
-    25.94,
-    5.71
-   ],
-   "basis": "The L-shaped 'Hall' (node 1:4) plus the stub 'hall' (node 1:15) in Jarda's hand-drawn plan (Figma, on site, 2026-10-28): it runs along the top, then down between the toilets and the coding zone to the entrance. The signage in photo 6 (partly legible) lists Restrooms, Reception, AWS Event Space, AWS User Group Commons, AWS Community Builder Base and a hack stage. The scenario's 'stage corridor' is taken to be this hall."
-  },
-  {
-   "id": "toilets",
-   "label": "Toilets",
-   "kind": "toilets",
-   "polygon": [
-    [
-     29.05,
-     11.41
-    ],
-    [
-     36.84,
-     11.41
-    ],
-    [
-     36.84,
-     18.16
-    ],
-    [
-     45.4,
-     18.16
-    ],
-    [
-     45.4,
-     53.31
-    ],
-    [
-     29.05,
-     53.31
-    ]
-   ],
-   "position": "sketched",
-   "label_at": [
-    37.22,
-    36.32
-   ],
-   "basis": "'toilets' (node 1:21) in Jarda's hand-drawn plan (Figma, on site, 2026-10-28). The network closet is carved out of its north end."
+   "touches": [
+    "lounge",
+    "hack_floor_west"
+   ]
   }
  ],
  "features": [
@@ -449,123 +651,111 @@
    "type": "stairs",
    "label": "Courtyard Entrance stairs",
    "at": [
-    32.17,
-    78.86
+    47.54,
+    4.92
    ],
    "zone": "entrance",
    "exit": true,
-   "position": "verified",
+   "position": "sketched",
    "area_anchor": "courtyard_stairs",
-   "basis": "West end of the building's SW side, next to the Chipotle and the fountain (AICamp 2025; OSM steps w941650785). Nightfall calls it the SW stairwell, landing 2. Where along the entrance block they land is a guess."
+   "basis": "The stairs up from the courtyard are verified (SW side of the building; OSM steps w941650785). They come in at the entrance Jarda marked on the top edge of the Lounge band."
   },
   {
    "id": "street_doors",
    "type": "door",
    "label": "Street doors",
    "at": [
-    43.58,
-    81.45
+    50.9,
+    0.0
    ],
    "zone": "entrance",
    "exit": true,
-   "position": "assumed",
-   "basis": "Glass doors at the foot of the stairs (photo 2 is taken from them), folded into the entrance block. Nightfall steps 19 and 22 hold the line here."
+   "position": "sketched",
+   "basis": "Glass doors at the foot of the stairs (photo 2 is taken from them), on the entrance arrow's edge. Nightfall steps 19 and 22 hold the line here."
   },
   {
    "id": "security_desk",
    "type": "desk",
    "label": "Security desk",
    "at": [
-    25.42,
-    71.08
+    55.33,
+    11.48
    ],
-   "zone": "registration",
+   "zone": "entrance",
    "exit": false,
    "position": "assumed",
-   "basis": "A guard sits at a desk on the left inside the glass doors (photo 2). Photo ID is checked first, then badges are issued at the Loft's registration desk (AWS Builder Loft page)."
+   "basis": "A guard at a desk just inside the glass doors, with a digital kiosk beside it (photo 2). Photo ID is checked first (AWS Builder Loft page)."
+  },
+  {
+   "id": "elevators",
+   "type": "elevator",
+   "label": "Elevators (from the 1st floor)",
+   "polygon": [
+    [
+     44.26,
+     73.36
+    ],
+    [
+     50.41,
+     73.36
+    ],
+    [
+     50.41,
+     79.75
+    ],
+    [
+     44.26,
+     79.75
+    ]
+   ],
+   "at": [
+    47.3,
+    76.56
+   ],
+   "zone": null,
+   "block": "reception",
+   "exit": false,
+   "position": "sketched",
+   "basis": "Jarda marked 'Elevator from 1st floor' on AWS's kiosk map: the right end of Reception's stepped corner. The lobby has none. The scenario's freight lift is read as one of these."
   },
   {
    "id": "registration_desk",
    "type": "desk",
    "label": "Registration desk",
    "at": [
-    11.67,
-    68.09
+    31.15,
+    68.03
    ],
    "zone": "registration",
    "exit": false,
-   "position": "assumed",
-   "basis": "Registration desk exists (AWS Builder Loft page); position assumed."
-  },
-  {
-   "id": "lobby_elevators",
-   "type": "elevator",
-   "label": "Lobby elevators",
-   "polygon": [
-    [
-     49.03,
-     65.24
-    ],
-    [
-     56.81,
-     65.24
-    ],
-    [
-     56.81,
-     73.28
-    ],
-    [
-     49.03,
-     73.28
-    ]
-   ],
-   "at": [
-    52.92,
-    69.26
-   ],
-   "zone": "entrance",
-   "exit": false,
-   "position": "assumed",
-   "basis": "Lobby elevators are named on the AWS startups event page. venue.md files 'the elevator' under the entrance sector. Position assumed."
-  },
-  {
-   "id": "hall_double_doors",
-   "type": "door",
-   "label": "Hall double doors",
-   "at": [
-    51.62,
-    62.13
-   ],
-   "zone": "entrance",
-   "exit": false,
-   "position": "assumed",
-   "basis": "Double doors with a signage panel behind them (photo 6) between the entrance and the hall. Assumed to be at this end of the hall."
+   "position": "sketched",
+   "basis": "Registration desk at the corner of the hall (Jarda, on site); the spot inside the corner is a guess."
   },
   {
    "id": "rear_stage_door",
    "type": "door",
    "label": "Rear stage door (R2)",
    "at": [
-    58.11,
-    5.97
+    25.41,
+    70.49
    ],
    "zone": "main_stage",
    "exit": true,
    "position": "assumed",
-   "basis": "Nightfall steps 20 and 21 name a rear door R2 next to the SW stairwell. Put on the stage room's west wall, opening onto the top hall."
+   "basis": "Nightfall steps 20 and 21 name a rear door R2 next to the SW stairwell. Put on the wall between the stage hall and the registration corner, so the way out runs registration, then across the open middle to the entrance."
   },
   {
    "id": "coding_zone_door",
    "type": "door",
-   "label": "Door to the coding zone",
+   "label": "Door to Training Rooms",
    "at": [
-    58.11,
-    41.5
+    25.41,
+    42.62
    ],
    "zone": "hack_floor_west",
    "exit": false,
    "position": "assumed",
-   "basis": "The hall runs alongside the coding zone (the plan's 'hall separating toilets and the coding zone'). A door is assumed halfway down."
+   "basis": "Door from Reception into the Training Rooms block. Assumed."
   },
   {
    "id": "stage",
@@ -573,25 +763,25 @@
    "label": "Stage",
    "polygon": [
     [
-     67.44,
-     1.82
+     3.28,
+     82.79
     ],
     [
-     95.98,
-     1.82
+     22.13,
+     82.79
     ],
     [
-     95.98,
-     10.12
+     22.13,
+     94.26
     ],
     [
-     67.44,
-     10.12
+     3.28,
+     94.26
     ]
    ],
    "at": [
-    81.71,
-    5.97
+    12.7,
+    88.52
    ],
    "zone": "main_stage",
    "exit": false,
@@ -603,192 +793,112 @@
    "type": "door",
    "label": "Lounge side door",
    "at": [
-    68.48,
-    62.13
+    25.41,
+    12.3
    ],
    "zone": "lounge",
    "exit": false,
    "position": "assumed",
-   "basis": "Nightfall step 12: the lounge side door opens to hack floor west. In the plan the west half of the coding zone is directly north of the lounge."
+   "basis": "Nightfall step 12: the lounge side door opens to hack floor west. The Lounge band meets Training Rooms along this wall."
   },
   {
    "id": "lounge_main_door",
    "type": "door",
    "label": "Lounge main door",
    "at": [
-    58.11,
-    71.08
+    29.51,
+    25.0
    ],
    "zone": "lounge",
    "exit": false,
    "position": "assumed",
-   "basis": "Nightfall step 9 hangs a garlic braid on the lounge's main door frame. Placed on the wall shared with the entrance block."
+   "basis": "Nightfall step 9 hangs a garlic braid on the lounge's main door frame. Placed where the Lounge band meets Reception."
   },
   {
    "id": "kitchen_door",
    "type": "door",
    "label": "Staff-only kitchen door",
    "at": [
-    14.53,
-    11.41
+    69.67,
+    25.0
    ],
    "zone": "catering_coffee_bar",
    "exit": false,
    "position": "assumed",
-   "basis": "Nightfall step 14: a staff-only kitchen door behind the catering counter. Placed on the wall shared with the top hall."
-  },
-  {
-   "id": "freight_lift",
-   "type": "elevator",
-   "label": "Freight lift",
-   "at": [
-    5.19,
-    5.71
-   ],
-   "zone": null,
-   "area": "hall",
-   "exit": false,
-   "position": "assumed",
-   "basis": "Nightfall step 2: crates arrive by freight lift to the 2nd floor. Placed at the west end of the top hall."
-  },
-  {
-   "id": "nw_glass",
-   "type": "window",
-   "label": "Windows (street side)",
-   "line": [
-    [
-     0.0,
-     14.27
-    ],
-    [
-     0.0,
-     80.42
-    ]
-   ],
-   "zone": null,
-   "zones": [
-    "catering_coffee_bar",
-    "registration"
-   ],
-   "exit": false,
-   "position": "assumed",
-   "basis": "Tall windows on the left of the entrance hall looking onto a street with trees and an old building (photos 2, 3 and 4). Sunset side in the Nightfall scenario.",
-   "at": [
-    0.0,
-    47.3
-   ]
-  },
-  {
-   "id": "se_glass",
-   "type": "window",
-   "label": "Windows (coding zone)",
-   "line": [
-    [
-     100.0,
-     3.11
-    ],
-    [
-     100.0,
-     80.42
-    ]
-   ],
-   "zone": null,
-   "zones": [
-    "main_stage",
-    "hack_floor_east"
-   ],
-   "exit": false,
-   "position": "assumed",
-   "basis": "Tall windows along the right wall of the coding zone, AWS logo on a pillar (photo 1).",
-   "at": [
-    100.0,
-    41.8
-   ]
+   "basis": "Nightfall step 14: a staff-only kitchen door behind the catering counter. Placed on the inner edge of the band."
   }
  ],
  "connections": [
   {
    "a": "entrance",
-   "b": "registration",
-   "via": null,
-   "note": "open lobby, inside the glass doors",
-   "position": "assumed"
-  },
-  {
-   "a": "entrance",
    "b": "lounge",
-   "via": "lounge_main_door",
+   "via": null,
+   "note": "one long band, split on paper",
    "position": "assumed"
   },
   {
    "a": "entrance",
-   "b": "hall",
-   "via": "hall_double_doors",
-   "position": "assumed"
-  },
-  {
-   "a": "registration",
    "b": "catering_coffee_bar",
    "via": null,
-   "note": "the west lobby opens onto the eating area",
+   "note": "one long band, split on paper",
    "position": "assumed"
   },
   {
-   "a": "hall",
-   "b": "catering_coffee_bar",
-   "via": "kitchen_door",
-   "note": "staff-only",
-   "position": "assumed"
-  },
-  {
-   "a": "hall",
-   "b": "toilets",
+   "a": "entrance",
+   "b": "reception",
    "via": null,
+   "note": "across the open middle",
    "position": "assumed"
   },
   {
-   "a": "hall",
-   "b": "network_closet",
-   "via": null,
-   "position": "assumed"
-  },
-  {
-   "a": "hall",
-   "b": "main_stage",
-   "via": "rear_stage_door",
-   "position": "assumed"
-  },
-  {
-   "a": "hall",
-   "b": "hack_floor_west",
-   "via": "coding_zone_door",
-   "position": "assumed"
-  },
-  {
-   "a": "main_stage",
-   "b": "hack_floor_west",
-   "via": null,
-   "note": "one big room, split only on paper",
-   "position": "assumed"
-  },
-  {
-   "a": "main_stage",
-   "b": "hack_floor_east",
-   "via": null,
-   "note": "one big room, split only on paper",
-   "position": "assumed"
-  },
-  {
-   "a": "hack_floor_west",
-   "b": "hack_floor_east",
-   "via": null,
-   "note": "one big room, split only on paper",
+   "a": "lounge",
+   "b": "reception",
+   "via": "lounge_main_door",
    "position": "assumed"
   },
   {
    "a": "lounge",
    "b": "hack_floor_west",
    "via": "lounge_side_door",
+   "position": "assumed"
+  },
+  {
+   "a": "reception",
+   "b": "registration",
+   "via": null,
+   "note": "registration is the corner of Reception, next to the elevators",
+   "position": "assumed"
+  },
+  {
+   "a": "reception",
+   "b": "hack_floor_west",
+   "via": "coding_zone_door",
+   "position": "assumed"
+  },
+  {
+   "a": "registration",
+   "b": "main_stage",
+   "via": "rear_stage_door",
+   "position": "assumed"
+  },
+  {
+   "a": "registration",
+   "b": "hack_floor_east",
+   "via": null,
+   "note": "open edge along the bottom",
+   "position": "assumed"
+  },
+  {
+   "a": "main_stage",
+   "b": "hack_floor_east",
+   "via": null,
+   "note": "one long room, split on paper",
+   "position": "assumed"
+  },
+  {
+   "a": "hack_floor_west",
+   "b": "network_closet",
+   "via": null,
    "position": "assumed"
   }
  ],

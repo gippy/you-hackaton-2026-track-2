@@ -242,6 +242,8 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .floor-svg { max-height: 420px; }
 .area-svg { max-height: 460px; }
 .floor .outline { fill: none; stroke: var(--dim); stroke-width: 0.5; }
+.floor .block { fill: rgba(255, 138, 31, 0.04); stroke: var(--dim); stroke-width: 0.4; }
+.floor .open-middle { fill: none; stroke: var(--dim); stroke-width: 0.3; stroke-dasharray: 1.2 1.2; }
 .floor .area { fill: none; stroke: var(--dim); stroke-width: 0.3; stroke-dasharray: 1 1; }
 .floor .sector { fill: rgba(255, 138, 31, 0.03); stroke: var(--amber); stroke-width: 0.35; cursor: pointer; transition: fill 0.2s steps(2); }
 .floor .sector:hover { fill: rgba(255, 138, 31, 0.14); }

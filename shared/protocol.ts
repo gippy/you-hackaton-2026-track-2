@@ -123,7 +123,11 @@ export interface Floor {
     space: { width: number; height: number };
     outline: [number, number][];
     zones: { slug: string; label: string; polygon: [number, number][]; label_at: [number, number] }[];
-    areas: { id: string; label: string; polygon: [number, number][]; label_at: [number, number] }[];
+    /** Older map data: corridor areas such as the hall. Newer data names AWS's blocks instead. */
+    areas?: { id: string; label: string; polygon: [number, number][]; label_at: [number, number] }[];
+    /** AWS's own blocks from the kiosk map, with the sectors inside each, and the empty middle of the C. */
+    blocks?: { id: string; aws_name: string; polygon: [number, number][]; sectors: string[] }[];
+    open_middle?: [number, number][];
     features: { id: string; type: string; label: string; at: [number, number]; polygon?: [number, number][]; line?: [number, number][]; zone: string | null; exit?: boolean }[];
     connections: { a: string; b: string; via: string | null }[];
 }

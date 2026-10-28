@@ -42,10 +42,21 @@ export function FloorPlan({ p, ctx }: { p: Props; ctx: Ctx }) {
 
 const points = (poly: Point[]) => poly.map(([x, y]) => `${x},${y}`).join(' ');
 
+const centroid = (poly: Point[]): Point => [poly.reduce((s, p) => s + p[0], 0) / poly.length, poly.reduce((s, p) => s + p[1], 0) / poly.length];
+
+/** Places a route can pass through that are not sectors: the hall (older data) or AWS's Reception block. */
+function corridors(floor: Floor): { id: string; label_at: Point }[] {
+    return [
+        ...(floor.areas ?? []).map((a) => ({ id: a.id, label_at: a.label_at })),
+        ...(floor.blocks ?? []).map((b) => ({ id: b.id, label_at: centroid(b.polygon) })),
+    ];
+}
+
 /** The route's drawn path: from sector to sector through the doors and corridors that connect them, then out an exit. */
 function routePath(floor: Floor, route: string[], slugOf: (id: string) => string): Point[] {
     const zone = (slug: string) => floor.zones.find((z) => z.slug === slug);
-    const node = (id: string) => zone(id)?.label_at ?? floor.areas.find((a) => a.id === id)?.label_at;
+    const halls = corridors(floor);
+    const node = (id: string) => zone(id)?.label_at ?? halls.find((a) => a.id === id)?.label_at;
     const door = (via: string | null) => floor.features.find((f) => f.id === via)?.at;
     const link = (a: string, b: string) => floor.connections.find((c) => (c.a === a && c.b === b) || (c.a === b && c.b === a));
     const out: Point[] = [];
@@ -60,7 +71,7 @@ function routePath(floor: Floor, route: string[], slugOf: (id: string) => string
                 if (d) out.push(d);
             } else {
                 // Through a corridor area, such as the hall.
-                const corridor = floor.areas.find((a) => link(prev, a.id) && link(a.id, slug));
+                const corridor = halls.find((a) => link(prev, a.id) && link(a.id, slug));
                 if (corridor) {
                     const d1 = door(link(prev, corridor.id)!.via);
                     const d2 = door(link(corridor.id, slug)!.via);
@@ -100,7 +111,23 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                     </pattern>
                 </defs>
                 <polygon points={points(floor.outline)} className="outline" />
-                {floor.areas.map((a) => (
+                {(floor.blocks ?? []).map((b) => {
+                    // AWS's name for the block, in its bottom-left corner, clear of the sector labels in the middle.
+                    const x = Math.min(...b.polygon.map((p) => p[0]));
+                    const y = Math.max(...b.polygon.filter((p) => p[0] === x).map((p) => p[1]));
+                    return (
+                        <g key={b.id}>
+                            <polygon points={points(b.polygon)} className="block">
+                                <title>{`${b.aws_name} (AWS's name)`}</title>
+                            </polygon>
+                            <text x={x + 1.2} y={y - 1.2} className="area-label">
+                                {b.aws_name}
+                            </text>
+                        </g>
+                    );
+                })}
+                {floor.open_middle && <polygon points={points(floor.open_middle)} className="open-middle" />}
+                {(floor.areas ?? []).map((a) => (
                     <g key={a.id}>
                         <polygon points={points(a.polygon)} className="area" />
                         <text x={a.label_at[0]} y={a.label_at[1]} className="area-label" textAnchor="middle">
