@@ -159,7 +159,8 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
                                        "condition": _enum(["pinned", "trapped", "injured", "evacuating", "safe", "unknown"]),
                                        "priority": _enum(["immediate", "high", "routine"])}),
         _component("CountermeasurePicker", {
-            "target_entity": {"type": "string"},
+            "target_entity": {"type": "string", "description": ("Who the countermeasures are aimed at, as the report names them "
+                                                                "(e.g. 'three werewolves'), under 6 words. Never a class like corporeal")},
             "options": {"type": "array", "items": _obj({
                 "id": _enum(arsenal),
                 "support": _enum(SUPPORT),
@@ -197,8 +198,9 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
     The schema already fixes the shape; this only removes repeats and out-of-range references,
     which a schema cannot express, and enforces three rules on the model's choices: a harmless report
     gets a calm station (observe, the all-clear sound, no alarm panels), a quiet one (far_from_sky)
-    gets observe and no countermeasure picker yet, and an ordinary EMF reading gets no gauge. It never
-    adds a component the model did not choose.
+    gets observe and no countermeasure picker yet, and an ordinary EMF reading gets no gauge. A
+    SystemsBoard lists the intake's systems, and goes when there are none. It never adds a component
+    the model did not choose.
     """
     notes: list[str] = []
     seen: set[str] = set()
@@ -233,9 +235,19 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
                     ids.add(opt["id"])
                     opt["source"] = opt.get("source") if 0 <= int(opt.get("source") or 0) <= source_count else 0
                     options.append(opt)
-            props["options"] = sorted(options, key=lambda o: SUPPORT.index(o["support"]) if o.get("support") in SUPPORT else 9)
-            if props.get("recommended") not in ids and options:
-                props["recommended"] = options[0]["id"]
+            ranked = sorted(options, key=lambda o: SUPPORT.index(o["support"]) if o.get("support") in SUPPORT else 9)
+            if props.get("recommended") not in ids and ranked:
+                props["recommended"] = ranked[0]["id"]
+            # The preselected option comes first, then the rest strongest first.
+            props["options"] = sorted(ranked, key=lambda o: o["id"] != props.get("recommended"))
+        if kind == "SystemsBoard":
+            if incident is not None:
+                # The board shows the intake's systems, so it never lists one the report does not name.
+                props["systems"] = [{"name": s["name"], "status": s["status"]} for s in incident.get("systems") or []
+                                    if s.get("name") and s["name"].lower() != "unknown"]
+            if not props.get("systems"):
+                notes.append("dropped a SystemsBoard with no systems")
+                continue
         if kind == "FloorPlan":
             props["seal"] = list(dict.fromkeys(sector_id(s) for s in props.get("seal") or [] if sector_id(s) in SECTORS))
             route = list(dict.fromkeys(sector_id(s) for s in props.get("safe_route") or [] if sector_id(s) in SECTORS))

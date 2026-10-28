@@ -314,8 +314,11 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .option { display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 1px solid var(--line); background: var(--bg); clip-path: var(--cut); }
 .option:has(input:checked) { border-color: var(--hi); box-shadow: inset 0 0 0 1px var(--hi); }
 .option input { margin-top: 3px; accent-color: var(--amber); }
-.option .name { font-weight: 600; color: var(--hi); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.option .name { flex: 1; font-weight: 600; color: var(--hi); display: flex; gap: 8px; align-items: center; }
+.option .tag { flex: none; align-self: flex-start; }
 .option .why-cm { padding-left: 26px; font-size: 13px; color: var(--muted); }
+.option .meter { display: flex; gap: 6px; align-items: center; margin-bottom: 2px; }
+.option .cite { white-space: nowrap; }
 .option .icon { width: 28px; height: 28px; mix-blend-mode: screen; } /* rendered icons have black backgrounds */
 .card.provisional { opacity: 0.85; }
 .card.provisional .order::before { content: '… '; }
@@ -324,12 +327,14 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .support i.on { background: var(--amber); border-color: var(--amber); }
 .tag { font: 14px/1 var(--display); text-transform: uppercase; padding: 2px 6px; border: 1px solid var(--hi); color: var(--hi); }
 
-.systems { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.systems li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 8px; border-bottom: 1px dashed var(--line); }
-.systems li b { font-weight: 600; text-transform: uppercase; }
-.systems .online { color: var(--amber); }
-.systems .degraded { color: var(--hi); }
-.systems .offline { color: var(--red); }
+.systems { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.systems li { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px solid var(--line); background: var(--bg); clip-path: var(--cut); }
+.systems li span { overflow-wrap: anywhere; }
+.systems li b { font: 22px/1 var(--display); text-transform: uppercase; }
+.systems .online b { color: var(--muted); }
+.systems .degraded b { color: var(--amber); }
+.systems .offline { border-color: var(--red); }
+.systems .offline b { color: var(--red); }
 
 .ledger ol { list-style: none; margin: 0; padding: 0; }
 .ledger-top { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px 16px; }

@@ -52,7 +52,10 @@ INCIDENT_SCHEMA = {
                 "location": {"type": "string"},
             },
         },
-        "systems": {"type": "array", "items": {
+        "systems": {"type": "array", "description": (
+            "Facility systems the report names (power, lights, doors, network, cameras, lifts), not countermeasures, "
+            "people, apps or readings. online when the report shows it working, degraded when it works badly, "
+            "offline when it is down or jammed"), "items": {
             "type": "object", "additionalProperties": False, "required": ["name", "status"],
             "properties": {"name": {"type": "string"},
                            "status": {"type": "string", "enum": ["online", "degraded", "offline"]}}}},
@@ -104,6 +107,8 @@ COMPOSE_SYSTEM = (
     + "\nFill props with values from the incident. Never invent sensor readings the incident does not report. "
     "Countermeasure options must come from the playbook arsenal and be justified by the numbered sources; "
     "set `source` to the source number that supports each one and `support` to how strongly it does. "
+    "Offer only what the lore ties to this entity: garlic_line, no_invitation and seed_scatter against vampires only, "
+    "and raise_blinds only before sunset, since daylight is the weapon. "
     "Keep every rationale and directive short: under 20 words. Pick the theme that fits the entity. "
     "The incident carries a verdict, people_in_reach and people_hurt; build the station from them, never from the feed "
     "tier. Choose recommended_action with this rubric: observe when the verdict is harmless, or when the threat is real "
