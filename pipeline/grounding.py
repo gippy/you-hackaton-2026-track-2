@@ -24,6 +24,7 @@ class YouError(RuntimeError):
 
 
 def you_key() -> str:
+    """The You.com API key from the environment."""
     key = (os.environ.get("YDC_API_KEY") or os.environ.get("YOU_API_KEY") or "").strip()
     if not key:
         raise YouError("YDC_API_KEY is empty. Get a key at https://you.com/platform and put it in .env")
@@ -33,19 +34,19 @@ def you_key() -> str:
 def search(query: str, count: int = 4) -> list[dict]:
     """Web results for a query: title, url, description and the best snippet."""
     t0 = time.monotonic()
+    entry = {"partner": "you.com", "action": "Search", "request": {"query": query, "count": count}}
     try:
-        hits = _search(query, count)
+        hits = _fetch_hits(query, count)
     except YouError as exc:
-        proof.record("partners", {"partner": "you.com", "action": "Search", "request": {"query": query, "count": count},
-                                  "error": str(exc), "latency_ms": int((time.monotonic() - t0) * 1000)})
+        proof.record("partners", {**entry, "error": str(exc), "latency_ms": int((time.monotonic() - t0) * 1000)})
         raise
-    proof.record("partners", {"partner": "you.com", "action": "Search", "request": {"query": query, "count": count},
-                              "response": {"results": [{"title": h["title"], "url": h["url"]} for h in hits]},
+    proof.record("partners", {**entry, "response": {"results": [{"title": h["title"], "url": h["url"]} for h in hits]},
                               "latency_ms": int((time.monotonic() - t0) * 1000)})
     return hits
 
 
-def _search(query: str, count: int) -> list[dict]:
+def _fetch_hits(query: str, count: int) -> list[dict]:
+    """One Search API call, retried twice on 429."""
     for attempt in range(3):
         try:
             res = httpx.post(SEARCH_URL, headers={"X-API-Key": you_key()},
@@ -84,6 +85,7 @@ class Ledger:
         return numbered
 
 
+# No docstring on this model: pydantic would add it to the tool schema the agent sees.
 class SearchInput(BaseModel):
     query: str = Field(..., description="A focused web search query, under 12 words")
 
