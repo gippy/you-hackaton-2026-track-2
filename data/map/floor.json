@@ -116,7 +116,12 @@
     "network_closet"
    ],
    "position": "verified",
-   "note": "Tall left column, purple on the kiosk. venue.md lists meeting rooms and sound-proof booths under hack_floor_west, so the two are matched."
+   "note": "Tall left column, purple on the kiosk. venue.md lists meeting rooms and sound-proof booths under hack_floor_west, so the two are matched.",
+   "label_at": [
+    12.7,
+    12.0
+   ],
+   "label_anchor": "middle"
   },
   {
    "id": "lounge_area",
@@ -153,7 +158,12 @@
     "catering_coffee_bar"
    ],
    "position": "verified",
-   "note": "Long top band with a drop on the right, purple on the kiosk. Jarda marked the entrance on its top edge, about halfway across. Split into the lounge (left), the entrance (middle) and the catering and coffee bar (right) on paper."
+   "note": "Long top band with a drop on the right, purple on the kiosk. Jarda marked the entrance on its top edge, about halfway across. Split into the lounge (left), the entrance (middle) and the catering and coffee bar (right) on paper.",
+   "label_at": [
+    91.2,
+    45.0
+   ],
+   "label_anchor": "middle"
   },
   {
    "id": "heroes_hub",
@@ -178,7 +188,13 @@
    ],
    "sectors": [],
    "position": "verified",
-   "note": "Small dark-blue block on the inner edge of the Lounge band. The AWS Heroes panel and drinks fridge in photos 4 and 5 are in the eating area, so it sits beside the catering bar."
+   "walkable": true,
+   "note": "Small dark-blue block on the inner edge of the Lounge band. The AWS Heroes panel and drinks fridge in photos 4 and 5 are in the eating area, so it sits beside the catering bar.",
+   "label_at": [
+    81.4,
+    44.0
+   ],
+   "label_anchor": "end"
   },
   {
    "id": "reception",
@@ -221,7 +237,12 @@
     "registration"
    ],
    "position": "verified",
-   "note": "Teal L-shaped hall with stepped corner, along the left of the open middle. Elevators at its top end, registration at its corner (Jarda, on site)."
+   "note": "Teal L-shaped hall with stepped corner, along the left of the open middle. Elevators at its top end, registration at its corner (Jarda, on site).",
+   "label_at": [
+    35.0,
+    50.0
+   ],
+   "label_anchor": "start"
   },
   {
    "id": "co_working",
@@ -257,7 +278,12 @@
     "hack_floor_east"
    ],
    "position": "verified",
-   "note": "Gold L along the bottom and the lower left, the long room with tables in photo 1."
+   "note": "Gold L along the bottom and the lower left, the long room with tables in photo 1.",
+   "label_at": [
+    70.0,
+    95.4
+   ],
+   "label_anchor": "middle"
   },
   {
    "id": "merch_store",
@@ -282,7 +308,13 @@
    ],
    "sectors": [],
    "position": "verified",
-   "note": "Blue block at the bottom right, marked 'coming soon' on the kiosk. Treated as closed."
+   "walkable": false,
+   "note": "Blue block at the bottom right, marked 'coming soon' on the kiosk. Treated as closed.",
+   "label_at": [
+    92.2,
+    94.0
+   ],
+   "label_anchor": "middle"
   }
  ],
  "zones": [
@@ -330,11 +362,15 @@
    ],
    "label_at": [
     50.9,
-    19.67
+    21.6
    ],
    "touches": [
     "lounge",
     "catering_coffee_bar"
+   ],
+   "route_at": [
+    50.7,
+    12.25
    ]
   },
   {
@@ -377,12 +413,16 @@
     "the swag shop"
    ],
    "label_at": [
-    32.79,
-    74.18
+    34.8,
+    77.6
    ],
    "touches": [
     "main_stage",
     "hack_floor_east"
+   ],
+   "route_at": [
+    34.16,
+    70.41
    ]
   },
   {
@@ -416,13 +456,17 @@
     "the tall windows"
    ],
    "label_at": [
-    34.02,
-    6.97
+    34.0,
+    5.8
    ],
    "touches": [
     "entrance",
     "hack_floor_west",
     "network_closet"
+   ],
+   "route_at": [
+    33.91,
+    12.25
    ]
   },
   {
@@ -468,11 +512,15 @@
     "the AWS Heroes drinks fridge"
    ],
    "label_at": [
-    78.69,
-    12.3
+    79.5,
+    21.6
    ],
    "touches": [
     "entrance"
+   ],
+   "route_at": [
+    84.1,
+    13.5
    ]
   },
   {
@@ -482,19 +530,11 @@
    "polygon": [
     [
      0.0,
-     0.0
-    ],
-    [
-     15.57,
-     0.0
-    ],
-    [
-     15.57,
-     9.02
+     6.97
     ],
     [
      25.41,
-     9.02
+     6.97
     ],
     [
      25.41,
@@ -516,12 +556,16 @@
    ],
    "label_at": [
     12.7,
-    35.25
+    42.0
    ],
    "touches": [
     "lounge",
     "main_stage",
     "network_closet"
+   ],
+   "route_at": [
+    12.5,
+    33.72
    ]
   },
   {
@@ -558,12 +602,16 @@
    ],
    "label_at": [
     12.7,
-    78.69
+    86.0
    ],
    "touches": [
     "registration",
     "hack_floor_west",
     "hack_floor_east"
+   ],
+   "route_at": [
+    12.7,
+    74.0
    ]
   },
   {
@@ -597,21 +645,25 @@
     "the black-walled tech zone"
    ],
    "label_at": [
-    54.92,
-    88.93
+    54.9,
+    84.0
    ],
    "touches": [
     "registration",
     "main_stage"
+   ],
+   "route_at": [
+    54.91,
+    88.25
    ]
   },
   {
    "slug": "network_closet",
-   "label": "Network closet",
+   "label": "Closet",
    "block": "training_rooms",
    "polygon": [
     [
-     15.57,
+     0.0,
      0.0
     ],
     [
@@ -620,28 +672,32 @@
     ],
     [
      25.41,
-     9.02
+     6.97
     ],
     [
-     15.57,
-     9.02
+     0.0,
+     6.97
     ]
    ],
    "position": "assumed",
    "existence": "invented",
-   "basis": "Invented (venue.md). Put in the top corner of Training Rooms as a guess.",
+   "basis": "Invented (venue.md). Put along the top of Training Rooms as a guess; a strip so its label fits.",
    "spots": [
     "the patch panel",
     "the switch",
     "the access-point controller"
    ],
    "label_at": [
-    20.49,
-    4.51
+    7.0,
+    5.0
    ],
    "touches": [
     "lounge",
     "hack_floor_west"
+   ],
+   "route_at": [
+    19.5,
+    3.5
    ]
   }
  ],
@@ -723,8 +779,8 @@
    "type": "desk",
    "label": "Registration desk",
    "at": [
-    31.15,
-    68.03
+    29.96,
+    66.81
    ],
    "zone": "registration",
    "exit": false,
@@ -758,30 +814,69 @@
    "basis": "Door from Reception into the Training Rooms block. Assumed."
   },
   {
+   "id": "training_door",
+   "type": "door",
+   "label": "Door between the stage hall and Training Rooms",
+   "at": [
+    12.7,
+    60.66
+   ],
+   "zone": "main_stage",
+   "exit": false,
+   "position": "assumed",
+   "basis": "The Co-Working L and Training Rooms share a wall along the left column on AWS's map. A door is assumed halfway along it; it gives a way round Registration."
+  },
+  {
+   "id": "co_working_door",
+   "type": "door",
+   "label": "Door from Registration into Co-Working",
+   "at": [
+    34.84,
+    79.75
+   ],
+   "zone": "registration",
+   "exit": false,
+   "position": "assumed",
+   "basis": "Registration's stepped corner sits on top of the Co-Working band. A door is assumed in the middle of their shared edge."
+  },
+  {
+   "id": "closet_door",
+   "type": "door",
+   "label": "Network closet door",
+   "at": [
+    12.7,
+    6.97
+   ],
+   "zone": "network_closet",
+   "exit": false,
+   "position": "assumed",
+   "basis": "The closet is reached from Training Rooms. Assumed."
+  },
+  {
    "id": "stage",
    "type": "stage",
    "label": "Stage",
    "polygon": [
     [
-     3.28,
-     82.79
+     4.1,
+     90.16
     ],
     [
-     22.13,
-     82.79
+     21.31,
+     90.16
     ],
     [
-     22.13,
-     94.26
+     21.31,
+     95.9
     ],
     [
-     3.28,
-     94.26
+     4.1,
+     95.9
     ]
    ],
    "at": [
     12.7,
-    88.52
+    93.03
    ],
    "zone": "main_stage",
    "exit": false,
@@ -844,10 +939,10 @@
    "position": "assumed"
   },
   {
-   "a": "entrance",
-   "b": "reception",
+   "a": "catering_coffee_bar",
+   "b": "heroes_hub",
    "via": null,
-   "note": "across the open middle",
+   "note": "the Heroes Hub opens off the catering bar",
    "position": "assumed"
   },
   {
@@ -884,8 +979,7 @@
   {
    "a": "registration",
    "b": "hack_floor_east",
-   "via": null,
-   "note": "open edge along the bottom",
+   "via": "co_working_door",
    "position": "assumed"
   },
   {
@@ -896,9 +990,15 @@
    "position": "assumed"
   },
   {
+   "a": "main_stage",
+   "b": "hack_floor_west",
+   "via": "training_door",
+   "position": "assumed"
+  },
+  {
    "a": "hack_floor_west",
    "b": "network_closet",
-   "via": null,
+   "via": "closet_door",
    "position": "assumed"
   }
  ],

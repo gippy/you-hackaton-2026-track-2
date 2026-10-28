@@ -5,8 +5,8 @@ Two files feed the map panel. Both are static and committed, so the station open
 | File | Size | What it is |
 |---|---|---|
 | `area.geojson` | 100 KB | The real blocks around the AWS Builder Loft from OpenStreetMap: 176 buildings, 43 streets, parks and plazas, transit entrances, the courtyard stairs and fountain, plus nine story anchors for outdoor incidents. |
-| `floor.json` | 16 KB | A coarse, not-to-scale schematic of the Loft on level 2: AWS's six blocks, our 8 sector polygons inside them, doors, stairs, elevators. Redrawn from AWS's own kiosk map and Jarda's on-site notes; not OSM. |
-| `preview-area.svg`, `preview-floor.svg` | 94 KB, 11 KB | Throwaway previews rendered from the two files above. Not for the app. |
+| `floor.json` | 18 KB | A coarse, not-to-scale schematic of the Loft on level 2: AWS's six blocks, our 8 sector polygons inside them, doors, stairs, elevators. Redrawn from AWS's own kiosk map and Jarda's on-site notes; not OSM. |
+| `preview-area.svg`, `preview-floor.svg` | 94 KB, 10 KB | Throwaway previews rendered from the two files above. Not for the app. |
 | `ATTRIBUTION.md` | | ODbL notice and the credit the page **must** show. |
 
 **The page must show "© OpenStreetMap contributors" wherever the area map is visible.** See `ATTRIBUTION.md`. Label the floor plan "Schematic, not to scale" on the page too; the repo is public and the plan is mostly guesswork.
@@ -84,10 +84,11 @@ An earlier version was drawn from Jarda's own hand sketch (Figma `hoMyQYoQfNspdN
 | `space` | `width` (100), `height`, `y_axis` "down", `orientation` note |
 | `outline` | Bounding rectangle of the whole map |
 | `open_middle` | The part of the C that AWS leaves empty. Not a sector. Open on the right |
-| `blocks[]` | AWS's six blocks: `id`, `aws_name` (show this), `polygon`, `sectors[]` (our sectors inside), `note`, `position` |
+| `blocks[]` | AWS's six blocks: `id`, `aws_name` (show this), `polygon`, `sectors[]` (our sectors inside), `note`, `position`, `label_at` and `label_anchor` (`start`, `middle` or `end`: where to draw the name, for the page's 2.4 unit label font; narrow blocks put it beside the block), `walkable` (false for the closed Merch Store) |
 | `zones[]` | One polygon per sector, each inside one block (`block`) except `entrance` |
 | `zones[].slug` | The sector slug from `scenarios/research/venue.md`. `catering_coffee_bar` also carries `aliases: ["catering"]`, because `shared/library.json` still calls it `catering` |
-| `zones[].label`, `label_at` | Display label and a point to draw it at |
+| `zones[].label`, `label_at` | Display label (the closet's is shortened to "Closet" so it fits) and where to draw it: text-anchor middle, baseline at `label_at`. Placed clear of borders, of other labels and of route markers, for the page's 3.4 unit label font |
+| `zones[].route_at` | Where a route to or from the zone starts and ends, and where to draw its marker. A roomy spot inside the zone; no label sits on it |
 | `zones[].position` | `verified` (AWS's map or a public source), `sketched` (Jarda's on-site notes or sketch) or `assumed` (a guess): how well is *where it sits* known? |
 | `zones[].existence` | `verified` or `invented`: does the sector exist at all? (`hack_floor_*` split and `network_closet` are invented in venue.md) |
 | `zones[].basis` | One or two sentences on the source or the guess |
@@ -100,7 +101,7 @@ An earlier version was drawn from Jarda's own hand sketch (Figma `hoMyQYoQfNspdN
 | `features[].zone` | Owning sector slug, or null. Then `block` names the AWS block (the elevators sit in `reception`) |
 | `features[].exit` | True for ways out of the building: the stairs, the street doors, the rear stage door |
 | `features[].position`, `basis` | As for zones. `basis` names the Nightfall step where one mentions the feature |
-| `connections[]` | Graph edges `a`, `b` (a sector slug or the block id `reception`), `via` (a feature id or null), `note`. Use them to draw routes: all are assumed |
+| `connections[]` | Which neighbours people can walk between: `a`, `b` (a sector slug or the block id `reception` or `heroes_hub`), `via` (a door feature id, or null when the whole shared edge is open), `note`. `web/src/route.ts` crosses a border only here. All are assumed |
 | `exits[]` | Ids of the features with `exit: true` |
 
 ### AWS blocks and our sectors
@@ -125,7 +126,7 @@ An earlier version was drawn from Jarda's own hand sketch (Figma `hoMyQYoQfNspdN
 | `hack_floor_west` | Hack floor west | training_rooms | assumed | invented | lounge, main_stage, network_closet |
 | `main_stage` | Main stage | co_working | assumed | verified | registration, hack_floor_west, hack_floor_east |
 | `hack_floor_east` | Hack floor east | co_working | assumed | invented | registration, main_stage |
-| `network_closet` | Network closet | training_rooms | assumed | invented | lounge, hack_floor_west |
+| `network_closet` | Closet | training_rooms | assumed | invented | lounge, hack_floor_west |
 
 ### Features
 
@@ -138,12 +139,15 @@ An earlier version was drawn from Jarda's own hand sketch (Figma `hoMyQYoQfNspdN
 | `registration_desk` | desk | Registration desk | registration |  | sketched |
 | `rear_stage_door` | door | Rear stage door (R2) | main_stage | yes | assumed |
 | `coding_zone_door` | door | Door to Training Rooms | hack_floor_west |  | assumed |
+| `training_door` | door | Door between the stage hall and Training Rooms | main_stage |  | assumed |
+| `co_working_door` | door | Door from Registration into Co-Working | registration |  | assumed |
+| `closet_door` | door | Network closet door | network_closet |  | assumed |
 | `stage` | stage | Stage | main_stage |  | assumed |
 | `lounge_side_door` | door | Lounge side door | lounge |  | assumed |
 | `lounge_main_door` | door | Lounge main door | lounge |  | assumed |
 | `kitchen_door` | door | Staff-only kitchen door | catering_coffee_bar |  | assumed |
 
-The walk-through: guests come up the **Courtyard Entrance stairs** and in through the glass doors on the top edge of AWS's **Lounge** band, where `entrance` sits in the middle with the guard's desk just inside. The `lounge` is on its left; `catering_coffee_bar` is on its right, beside the **AWS Heroes Hub**. Down the left of the open middle runs **Reception**, a teal hall. The **elevators** from the 1st floor arrive at the right end of its stepped corner, and `registration` is the corner beside them. To the left of Reception are **Training Rooms** (`hack_floor_west`, `network_closet`); below it is the gold **Co-Working** L (`main_stage` in the lower-left arm, `hack_floor_east` along the bottom). The **rear stage door R2** joins the stage hall to the registration corner, and the **lounge side door** joins `lounge` to `hack_floor_west`. The Merch Store is "coming soon" on the kiosk and is treated as closed. Evacuation in the Nightfall scenario runs through `entrance` and `registration`: out of R2, across the open middle, to the entrance.
+The walk-through: guests come up the **Courtyard Entrance stairs** and in through the glass doors on the top edge of AWS's **Lounge** band, where `entrance` sits in the middle with the guard's desk just inside. The `lounge` is on its left; `catering_coffee_bar` is on its right, beside the **AWS Heroes Hub**. Down the left of the open middle runs **Reception**, a teal hall: the lounge main door leads into its top, and its stepped corner at the bottom holds `registration` and, at the end, the **elevators** from the 1st floor. To the left of Reception are **Training Rooms** (`hack_floor_west`, with the `network_closet` strip along its top); below it is the gold **Co-Working** L (`main_stage` in the lower-left arm, `hack_floor_east` along the bottom). The **rear stage door R2** joins the stage hall to the registration corner; a second door joins it to Training Rooms, so there is a way round Registration. The **lounge side door** joins `lounge` to `hack_floor_west`. The open middle is not walkable, so the only way between the entrance and the rooms below is up and down the Reception strip. The Merch Store is "coming soon" on the kiosk and is treated as closed. Evacuation in the Nightfall scenario runs through `entrance` and `registration`: out of R2, up Reception, through the lounge main door and along the Lounge band to the entrance.
 
 ## Verified, sketched and assumed
 
@@ -164,10 +168,20 @@ The walk-through: guests come up the **Courtyard Entrance stairs** and in throug
 
 - **How wide the entrance zone is.** Jarda marked a point on the top edge; the zone is a vertical slice of the Lounge band around it, sized by eye.
 - **Which sector sits in which block.** Training Rooms = `hack_floor_west` (venue.md lists meeting rooms and sound-proof booths there); Co-Working = `main_stage` and `hack_floor_east`; the left of Lounge = `lounge`, the right of it = `catering_coffee_bar`. Where each stops, and where the stage sits inside Co-Working, are guesses. The east/west and stage splits are invented in venue.md.
-- The network closet (invented in venue.md), put in the top corner of Training Rooms.
-- The doors: the rear door R2, the lounge side door and main door, the staff-only kitchen door, the door into Training Rooms. Their story comes from the Nightfall scenario, not from any plan of the Loft. The scenario's freight lift is read as one of the elevators. The window walls and toilets of the earlier sketch are not drawn.
+- The network closet (invented in venue.md), put along the top of Training Rooms.
+- The doors: the rear door R2, the lounge side door and main door, the staff-only kitchen door, the door into Training Rooms, and three doors added so routes have somewhere to go: stage hall to Training Rooms, Registration to Co-Working, and Training Rooms to the closet. Their story comes from the Nightfall scenario, not from any plan of the Loft. The kitchen door opens onto the open middle, which is not walkable, so it joins nothing. The scenario's freight lift is read as one of the elevators. The window walls and toilets of the earlier sketch are not drawn.
 - The anchors `market_sidewalk` and `stevenson_street` on the area map.
 - No source gives the Loft's footprint; a 2018 article gives 10,000 sq ft. AWS's map is stylised and not to scale, and neither is this file.
+
+## Routes
+
+`web/src/route.ts` turns this file into realistic routes: `findRoute(floor, { from, to, avoid })` and `routeThrough(floor, slugs, { avoid, exit })`. It rasterizes the zones and blocks (minus `open_middle`) onto a half-unit grid, treats zone borders as walls that are crossable only at `connections`, and runs A* with a small cost near walls. The result is smoothed so it reads as a few segments, and it passes through the middle of each door. What it needs from this file:
+
+- every pair of zones people can walk between has a `connections` entry, with a door feature on their shared border (`via`), or `via: null` for an open border;
+- `route_at` on each zone for where routes start and end;
+- `walkable: false` on blocks nobody can enter.
+
+`web/src/route.test.ts` checks these rules against the real `floor.json`, so adding a zone without a connection to its neighbours fails the test.
 
 ## How the build session might use it
 
