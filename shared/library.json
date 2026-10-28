@@ -248,7 +248,16 @@
     "raise_blinds": "icon_window_blinds",
     "name_calling": "icon_name_badge",
     "seed_scatter": "icon_poppy_seeds",
-    "no_invitation": "icon_do_not_invite"
+    "no_invitation": "icon_do_not_invite",
+    "salt_ring": "icon_salt_ring",
+    "sage_smoke": "icon_sage_smoke",
+    "faraday_mesh": "icon_faraday_mesh",
+    "thermal_lances": "icon_thermal_lances",
+    "emf_disruptor": "icon_emf_disruptor",
+    "flare_line": "icon_flare_line",
+    "sound_cannon": "icon_sound_cannon",
+    "power_cut": "icon_power_cut",
+    "iron_filings": "icon_iron_filings"
   },
   "art_manifest": "art/nightfall/manifest.json",
   "floor_plan": "data/map/floor.json",

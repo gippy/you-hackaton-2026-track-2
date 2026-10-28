@@ -250,5 +250,77 @@
         "seed": 4701,
         "width": 256,
         "height": 256
+    },
+    "icon_sage_smoke": {
+        "file": "art/nightfall/icons/icon_sage_smoke.webp",
+        "kind": "icon",
+        "alt": "A tied bundle of sage leaves burning at the tip",
+        "prompt": "A cartoon icon of a tied bundle of dried sage leaves held upright, its tip smouldering with a small ember, one jagged ribbon of smoke curling up from the tip, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4703,
+        "width": 256,
+        "height": 256
+    },
+    "icon_faraday_mesh": {
+        "file": "art/nightfall/icons/icon_faraday_mesh.webp",
+        "kind": "icon",
+        "alt": "A sheet of wire mesh with small lightning bolts striking it",
+        "prompt": "A cartoon icon of a square sheet of metal wire mesh grid hanging straight down like a curtain, small jagged lightning bolts striking it and bouncing off the front, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4705,
+        "width": 256,
+        "height": 256
+    },
+    "icon_thermal_lances": {
+        "file": "art/nightfall/icons/icon_thermal_lances.webp",
+        "kind": "icon",
+        "alt": "Two crossed lances, one with a flame burning at its tip",
+        "prompt": "A cartoon icon of a long thin metal lance held diagonally, a fierce jet of jagged flame blasting from its tip, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4706,
+        "width": 256,
+        "height": 256
+    },
+    "icon_emf_disruptor": {
+        "file": "art/nightfall/icons/icon_emf_disruptor.webp",
+        "kind": "icon",
+        "alt": "A handheld device with an antenna giving off small pulses",
+        "prompt": "A cartoon icon of a chunky angular handheld electronic device centered on a pure black background, a small square screen on its face and a short stubby antenna on top, three jagged zigzag pulse arcs bursting out from the antenna tip, front view, bold readable silhouette filling most of the frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4714,
+        "width": 256,
+        "height": 256
+    },
+    "icon_flare_line": {
+        "file": "art/nightfall/icons/icon_flare_line.webp",
+        "kind": "icon",
+        "alt": "A lit flare burning with a burst of flame",
+        "prompt": "A cartoon icon of a single road flare stick standing upright, its top burning with a jagged starburst of bright flame and flying sparks, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4707,
+        "width": 256,
+        "height": 256
+    },
+    "icon_sound_cannon": {
+        "file": "art/nightfall/icons/icon_sound_cannon.webp",
+        "kind": "icon",
+        "alt": "A loudspeaker horn blasting out sound",
+        "prompt": "A cartoon icon of a large loudspeaker horn on a squat angular mount, side view, firing three thick angular sound wave arcs out of its wide mouth, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4708,
+        "width": 256,
+        "height": 256
+    },
+    "icon_power_cut": {
+        "file": "art/nightfall/icons/icon_power_cut.webp",
+        "kind": "icon",
+        "alt": "A wall switch with its lever pulled down beside a lightning bolt",
+        "prompt": "A cartoon icon of a big wall breaker switch with its lever pulled down to off, a jagged lightning bolt snapped in two beside it, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4709,
+        "width": 256,
+        "height": 256
+    },
+    "icon_iron_filings": {
+        "file": "art/nightfall/icons/icon_iron_filings.webp",
+        "kind": "icon",
+        "alt": "A horseshoe magnet with iron filings spraying from one pole",
+        "prompt": "A cartoon icon of a horseshoe magnet lying on its side centered on a pure black background, curved end on the left and the open end pointing right, its two pole tips capped in grey metal, a spray of many tiny dark needle-like iron filings standing on end and fanning out between the two poles, bold readable silhouette filling most of the frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4722,
+        "width": 256,
+        "height": 256
     }
 }
