@@ -119,7 +119,7 @@ function loadArt(): Record<string, ArtAsset> {
 }
 
 const python = process.env.PYTHON ?? join(ROOT, '.venv', 'bin', 'python');
-const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], livePage: args['live-page'], incidents, scenarios, art: loadArt(),
+const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], livePage: args['live-page'], incidents, scenarios, art: loadArt,
     floor: existsSync(join(MAP, 'floor.json')) ? (JSON.parse(readFileSync(join(MAP, 'floor.json'), 'utf8')) as Floor) : null,
     skyWarnings: (['scenario', 'live', 'off'].includes(args['sky-warnings']) ? args['sky-warnings'] : 'scenario') as 'scenario' | 'live' | 'off',
     liveSkyWarnings: args['live-sky-warnings'],

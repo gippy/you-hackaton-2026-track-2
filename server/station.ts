@@ -39,7 +39,8 @@ export interface StationOptions {
     liveSkyWarnings: boolean;
     incidents: FixtureIncident[];
     scenarios: Scenario[];
-    art: Record<string, ArtAsset>;
+    /** Read for every new connection, so re-rendered art shows up without a restart. */
+    art: () => Record<string, ArtAsset>;
     floor: Floor | null;
 }
 
@@ -81,7 +82,7 @@ export class Station {
             channel: channelId(),
             incidents: this.opts.incidents,
             scenarios: this.opts.scenarios,
-            art: this.opts.art,
+            art: this.opts.art(),
             floor: this.opts.floor,
         };
     }
