@@ -8,6 +8,7 @@ The screenshots come from live runs on 2026-10-28 at 1440x900, cropped to the pa
 - A harmless report loses CountermeasurePicker, CivilianTracker and FloorPlan.
 - A quiet step, where nobody is hurt and the next sky event is hours away, loses CountermeasurePicker.
 - An EMF reading at or below 5 mG loses its EMFGauge.
+- A ThermalReadout at its normal temperature is dropped, unless it is the calm panel of a harmless report.
 - Repeated panels are dropped, and so is an EntityCard with an unknown image.
 
 ## Model components
@@ -75,8 +76,8 @@ _Placeholder: the FloorPlan is getting realistic routes. The screenshots of both
 
 ![ThermalReadout, step 21](components/thermal-readout.webp)
 
-- **Shows:** the reported temperature against the room's baseline, as two bars and the difference between them.
-- **When:** only when the report gives a temperature. The prompt tells the model never to invent sensor readings.
+- **Shows:** the reported temperature against its normal, as two bars and the difference between them. The normal is the room temperature the report states for an air reading, 37 °C for a body or fever reading and 33 °C for skin. When the report states no room temperature, the panel shows the reading alone. In a wide row the two bars sit side by side.
+- **When:** only when the report gives a temperature. The prompt tells the model never to invent sensor readings. A reading at its normal is dropped, except as the calm panel of a harmless report.
 - **Powered by:** Parasail, from the intake's temperature.
 - **Operator:** read only.
 - **Accessibility:** both temperatures are text beside the bars.
@@ -85,8 +86,8 @@ _Placeholder: the FloorPlan is getting realistic routes. The screenshots of both
 
 ![EMFGauge, phantom incident](components/emf-gauge.webp)
 
-- **Shows:** a dial with the reading in milligauss, the danger threshold and the trend.
-- **When:** only when the reading is above normal or rising. `clean_manifest` drops a gauge at 5 mG or less.
+- **Shows:** a dial with the reading in milligauss, the danger threshold and the trend. The scale fits the reading, in steps of 10 mG up to 50 and of 50 above.
+- **When:** only when the reading is above normal or rising. `clean_manifest` drops a gauge at 5 mG or less, and sets the status to danger when the reading is above the threshold.
 - **Powered by:** Parasail, from the intake's EMF reading.
 - **Operator:** read only.
 - **Accessibility:** the dial has a label with the reading and the threshold, and the reading is also shown as text.
@@ -95,7 +96,7 @@ _Placeholder: the FloorPlan is getting realistic routes. The screenshots of both
 
 ![SourceLedger, step 21](components/source-ledger.webp)
 
-- **Shows:** the five sources the plan leans on most, by title and domain, marked "relied on". The rest, with their snippets, open on click.
+- **Shows:** five sources by title and domain, the ones the plan relies on first and marked "relied on". The rest, with their snippets, open on click. A source is relied on when a countermeasure or the sky clock cites it. `clean_manifest` sets that list, whatever the model marked.
 - **When:** the prompt asks for it in every station.
 - **Powered by:** You.com Search. The CrewAI Lore Researcher runs the searches, and each hit becomes a numbered source that the other panels cite.
 - **Operator:** open a source in a new tab, or expand the full list.

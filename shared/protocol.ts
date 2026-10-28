@@ -50,7 +50,7 @@ interface Base<T extends string, P> {
 export type Component =
     | Base<'ThreatBanner', { severity: Severity; directive: string }>
     | Base<'EMFGauge', { value_mg: number; threshold_mg: number; trend: 'rising' | 'steady' | 'falling'; status: Level }>
-    | Base<'ThermalReadout', { temperature_c: number; baseline_c: number; status: Level }>
+    | Base<'ThermalReadout', { temperature_c: number; baseline_c: number | null; status: Level }>
     | Base<'FloorPlan', { hot_sector: string; seal: string[]; safe_route: string[]; scene?: string; view?: 'floor' | 'area'; anchor?: string }>
     | Base<'CivilianTracker', { count: number; location: string; condition: Condition; priority: 'immediate' | 'high' | 'routine' }>
     | Base<

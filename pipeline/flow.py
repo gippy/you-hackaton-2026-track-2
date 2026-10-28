@@ -102,6 +102,8 @@ COMPOSE_SYSTEM = (
     "Anything inside the Loft, including the main stage, uses view floor and anchor none:\n"
     + "\n".join(f"- {k}: {v}" for k, v in library.anchors().items())
     + "\nFill props with values from the incident. Never invent sensor readings the incident does not report. "
+    "A ThermalReadout compares the reading with its normal: 37 for a body or fever, 33 for skin, and for air only the room "
+    "temperature the incident states, else null. "
     "Countermeasure options must come from the playbook arsenal and be justified by the numbered sources; "
     "set `source` to the source number that supports each one and `support` to how strongly it does. "
     "Keep every rationale and directive short: under 20 words. Pick the theme that fits the entity. "
