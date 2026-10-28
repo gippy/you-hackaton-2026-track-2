@@ -251,7 +251,10 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .status-nominal { color: var(--amber); }
 .needle { transform-origin: 100px 100px; animation: sweep 1.1s cubic-bezier(.3,1.5,.5,1) both; }
 
-.thermo { max-width: 640px; display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; align-items: center; }
+/* The reading and its normal stack in a narrow card and sit side by side in a wide one. */
+.thermo { display: grid; grid-template-columns: repeat(auto-fit, minmax(max(300px, calc(50% - 16px)), 1fr)); gap: 8px 32px; align-items: center; }
+.thermo-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; }
+.thermo .delta { grid-column: 1 / -1; }
 .bar { height: 10px; background: var(--bg); border: 1px solid var(--dim); position: relative; overflow: hidden; }
 .bar span { position: absolute; inset: 0 auto 0 0; background: repeating-linear-gradient(90deg, var(--amber) 0 6px, transparent 6px 8px); }
 

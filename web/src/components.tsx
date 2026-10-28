@@ -196,7 +196,10 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
 }
 
 function Gauge(p: Props<'EMFGauge'>) {
-    const max = Math.max(100, Math.ceil(Math.max(p.value_mg * 1.3, p.threshold_mg * 2) / 50) * 50);
+    // The scale fits the reading and the threshold: steps of 10 up to 50 mG, then steps of 50.
+    const top = Math.max(p.value_mg * 1.3, p.threshold_mg * 2, 10);
+    const step = top > 50 ? 50 : 10;
+    const max = Math.ceil(top / step) * step;
     const pt = (f: number, r = 80) => [100 - r * Math.cos(Math.PI * f), 100 - r * Math.sin(Math.PI * f)];
     const arc = (a: number, b: number, color: string) => {
         const [x1, y1] = pt(a);
@@ -234,22 +237,29 @@ function Gauge(p: Props<'EMFGauge'>) {
     );
 }
 
+/** The reading against its normal (room, body or skin). The normal is null when the report states none. */
 function Thermal(p: Props<'ThermalReadout'>) {
-    const delta = p.temperature_c - p.baseline_c;
+    const normal = typeof p.baseline_c === 'number' ? p.baseline_c : null;
+    const delta = normal === null ? null : p.temperature_c - normal;
     const pct = (t: number) => Math.max(0, Math.min(100, ((t + 20) / 60) * 100));
     return (
         <div className="thermo">
-            <div className="bar">
-                <span style={{ width: `${pct(p.temperature_c)}%` }} />
+            <div className="thermo-row">
+                <div className="bar">
+                    <span style={{ width: `${pct(p.temperature_c)}%` }} />
+                </div>
+                <b className={`status-${p.status}`}>{p.temperature_c} °C</b>
             </div>
-            <b className={`status-${p.status}`}>{p.temperature_c} °C</b>
-            <div className="bar">
-                <span style={{ width: `${pct(p.baseline_c)}%`, opacity: 0.45 }} />
-            </div>
-            <span className="muted">baseline {p.baseline_c} °C</span>
-            <div className="muted small">
-                {delta > 0 ? '+' : ''}
-                {delta.toFixed(1)} °C against the room
+            {normal !== null && (
+                <div className="thermo-row">
+                    <div className="bar">
+                        <span style={{ width: `${pct(normal)}%`, opacity: 0.45 }} />
+                    </div>
+                    <span className="muted">normal {normal} °C</span>
+                </div>
+            )}
+            <div className="muted small delta">
+                {delta === null ? 'The report gives no normal to compare with' : `${delta > 0 ? '+' : ''}${delta.toFixed(1)} °C against normal`}
             </div>
         </div>
     );

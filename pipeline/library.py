@@ -148,8 +148,12 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
         _component("EMFGauge", {"value_mg": {"type": "number"}, "threshold_mg": {"type": "number"},
                                 "trend": _enum(["rising", "steady", "falling"]),
                                 "status": _enum(["nominal", "elevated", "danger"])}),
-        _component("ThermalReadout", {"temperature_c": {"type": "number"}, "baseline_c": {"type": "number"},
-                                      "status": _enum(["nominal", "elevated", "danger"])}),
+        _component("ThermalReadout", {
+            "temperature_c": {"type": "number", "description": "The temperature the report gives"},
+            "baseline_c": {"type": ["number", "null"],
+                           "description": ("The normal for what was measured: the room temperature the report states for an air reading, "
+                                           "37 for a body or fever reading, 33 for skin. null when the report states no room temperature")},
+            "status": _enum(["nominal", "elevated", "danger"])}),
         _component("FloorPlan", {
             "hot_sector": _enum(SECTORS),
             "seal": {"type": "array", "items": _enum(SECTORS), "description": "Distinct sectors to lock down"},
@@ -201,11 +205,14 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
     """Keep what the page can render. Returns the manifest and notes on anything dropped.
 
     The schema already fixes the shape; this only removes repeats and out-of-range references,
-    which a schema cannot express, and enforces three rules on the model's choices: a harmless report
-    gets a calm station (observe, the all-clear sound, no alarm panels), a quiet one (far_from_sky)
-    gets observe and no countermeasure picker yet, and an ordinary EMF reading gets no gauge. A
-    SystemsBoard lists the intake's systems, and goes when there are none. It never adds a component
-    the model did not choose.
+    which a schema cannot express, and enforces these rules on the model's choices:
+    - a harmless report gets a calm station (observe, the all-clear sound, no alarm panels)
+    - a quiet one (far_from_sky) gets observe and no countermeasure picker yet
+    - an ordinary EMF reading gets no gauge, and one above its threshold is danger
+    - a thermal reading at its normal gets no panel, except as the calm panel of a harmless report
+    - a SystemsBoard lists the intake's systems, and goes when there are none
+    - the ledger's relied-on sources are the ones the other panels cite
+    It never adds a component the model did not choose.
     """
     notes: list[str] = []
     seen: set[str] = set()
@@ -225,6 +232,9 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
         if kind == "EMFGauge" and float((comp.get("props") or {}).get("value_mg") or 0) <= EMF_NORMAL_MG:
             notes.append("dropped an EMFGauge showing an ordinary reading")
             continue
+        if kind == "ThermalReadout" and not calm and _flat((comp.get("props") or {})):
+            notes.append("dropped a ThermalReadout showing its normal temperature")
+            continue
         if kind in seen:
             notes.append(f"dropped a repeated {kind}")
             continue
@@ -233,6 +243,10 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
         if kind == "ThreatBanner" and calm and props.get("severity") != "low":
             notes.append("the intake judged the report harmless: a low ThreatBanner")
             props["severity"] = "low"
+        if kind == "EMFGauge" and float(props.get("value_mg") or 0) > float(props.get("threshold_mg") or 0) and props.get("status") != "danger":
+            # A reading past the gauge's own danger line is danger, whatever status the model gave.
+            notes.append("the EMF reading is above its threshold: danger")
+            props["status"] = "danger"
         if kind == "CountermeasurePicker":
             _clean_picker(props, arsenal, source_count)
         if kind == "SystemsBoard":
@@ -257,9 +271,15 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
             # A time or a countdown in the warning goes stale as the clock runs; the page then uses the library's order.
             notes.append("dropped a sky warning that states times instead of an order")
             props["warning"] = ""
-        if kind in ("SourceLedger", "SkyClock"):
+        if kind == "SkyClock":
             props["cited"] = sorted({n for n in props.get("cited") or [] if 1 <= n <= source_count})
         components.append({"type": kind, "why": comp.get("why", ""), "props": props})
+    # The ledger marks as relied on only the sources the countermeasures and the sky clock cite.
+    relied = sorted({o["source"] for c in components if c["type"] == "CountermeasurePicker" for o in c["props"]["options"] if o.get("source")}
+                    | {n for c in components if c["type"] == "SkyClock" for n in c["props"]["cited"]})
+    for c in components:
+        if c["type"] == "SourceLedger":
+            c["props"]["cited"] = relied
     out = {
         "title": raw.get("title") or "Haunted command station",
         "theme": raw.get("theme") if raw.get("theme") in THEMES else THEMES[0],
@@ -273,6 +293,12 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
     elif quiet and raw.get("recommended_action") != "observe":
         notes.append("nobody is hurt and the next sky event is hours away: observe")
     return out, notes
+
+
+def _flat(thermal: dict) -> bool:
+    """A thermal reading within half a degree of its normal."""
+    base = thermal.get("baseline_c")
+    return isinstance(base, (int, float)) and abs(float(thermal.get("temperature_c") or 0) - base) < 0.5
 
 
 def _clean_picker(props: dict, arsenal: list[str], source_count: int) -> None:
