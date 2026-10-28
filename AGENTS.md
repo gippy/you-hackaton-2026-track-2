@@ -25,7 +25,7 @@ The contract between all three sits in `shared/`: `protocol.ts` (messages and pa
 | `art/station/` | Every scenario's art (WebP) and its `manifest.json` | `art/station/manifest.json` |
 | `data/map/` | Floor plan and the OpenStreetMap area | `data/map/README.md` |
 | `snapshots/` | Committed saved runs that offline mode can replay | |
-| `proof/` | Ledgers of every partner call, written by `pnpm proof` | `proof/README.md` |
+| `proof/` | Ledgers of every partner call, appended as calls happen; `pnpm proof` writes the summary | `proof/README.md` |
 | `scripts/` | Art, sound and proof tools, plus the partner preflight | `scripts/art.ts` |
 | `docs/` | Component guide, deploy notes, a judges' explainer | `docs/README.md` |
 | `scenarios/` | Venue research and lore notes used while writing the scenarios | |
