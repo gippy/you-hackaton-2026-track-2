@@ -229,6 +229,7 @@ class HauntState(BaseModel):
     notes: list[str] = []
     models: list[str] = []
     sky: dict = {}  # scenario steps only: server/sky.ts output, with minutes_to each event at the step's clock
+    moves: dict = {}  # what the operator did on the step before, when the page sent it on (shared/protocol.ts OperatorMoves)
 
 
 class HauntFlow(Flow[HauntState]):
@@ -355,6 +356,22 @@ class HauntFlow(Flow[HauntState]):
                 f"{clock}Minutes to each event (negative once passed): {minutes}. "
                 "Use SkyClock when the time of day changes the threat, and cite the sky sources in it.")
 
+    def _moves_facts(self) -> str:
+        """What the operator did on the step before, for this station to build on. Empty when the page sent nothing."""
+        moves = self.state.moves
+        if not moves:
+            return ""
+        pick = library.ARSENAL.get(moves.get("countermeasure") or "")
+        sealed = [library.SECTORS.get(s, s) for s in moves.get("sealed") or []]
+        parts = [f"picked {pick}" if pick else "picked no countermeasure",
+                 f"sealed {', '.join(sealed)}" if sealed else "sealed nothing"]
+        if moves.get("people") is not None:
+            parts.append(f"got {moves.get('people_out', 0)} of {moves['people']} people out")
+        return (f"\n\nWhat the operator did at the previous step ({moves.get('time') or 'earlier'}): {'; '.join(parts)}. "
+                "Build on it: keep those sectors sealed in the FloorPlan unless this report shows they no longer need to be, "
+                "say in the ThreatBanner directive whether the picked countermeasure still fits, and count only the people "
+                "still inside.")
+
     @listen(ground)
     def compose(self):
         self.step("compose", "running", "Parasail is choosing and ordering components")
@@ -365,6 +382,7 @@ class HauntFlow(Flow[HauntState]):
             f"Playbook: {book['label']}. Arsenal ids: {', '.join(book['arsenal'])}.\n\n"
             f"Numbered sources from You.com:\n{sources}\n\nLore Researcher notes:\n{self.state.research or 'none'}"
             + self._sky_facts()
+            + self._moves_facts()
         )
         has_sky = bool(self.state.sky)
         # Decided before streaming, because recommended_action is the last field the model writes.
