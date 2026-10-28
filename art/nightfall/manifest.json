@@ -71,6 +71,15 @@
         "width": 1024,
         "height": 1024
     },
+    "entity_dry_ice_fog": {
+        "file": "art/nightfall/entity_dry_ice_fog.webp",
+        "kind": "entity",
+        "alt": "A smiling volunteer in thick gloves holding a bucket of dry ice, white fog rolling across the floor: a prop, not a phantom",
+        "prompt": "A smiling event volunteer in a plain t-shirt and thick insulated gloves holding a metal bucket of dry ice, thick white fog spilling over the rim and rolling low across the floor around the feet. Three-quarter full body view, slightly low camera angle, flat even composition with lots of empty black space around the figure. Warm amber light from the front, the fog drawn as flat pale amber shapes with hard edges. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4605,
+        "width": 1024,
+        "height": 1024
+    },
     "sector_entrance": {
         "file": "art/nightfall/sector_entrance.webp",
         "kind": "sector",
