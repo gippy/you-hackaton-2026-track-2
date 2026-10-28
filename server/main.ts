@@ -9,7 +9,7 @@
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { createServer } from 'node:http';
+import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { extname, join, normalize, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 
@@ -23,6 +23,11 @@ const ROOT = resolve(import.meta.dirname, '..');
 const DIST = join(ROOT, 'web', 'dist');
 const FIXTURES = join(ROOT, 'fixtures');
 const OFFICIAL = 'haunted-dashboard.json';
+const ART = join(ROOT, 'art', 'nightfall'); // the only part of art/ the page may load
+const MAP = join(ROOT, 'data', 'map');
+const SPEECH = join(ROOT, 'out', 'speech');
+// The demo opens on Nightfall step 20, a real threat with a decision to make (step 1 is a costume).
+const DEMO_INCIDENT = 'sim-nightfall-20';
 const TYPES: Record<string, string> = {
     '.html': 'text/html; charset=utf-8',
     '.js': 'text/javascript',
@@ -32,8 +37,6 @@ const TYPES: Record<string, string> = {
     '.mp3': 'audio/mpeg',
     '.webp': 'image/webp',
 };
-const ART = join(ROOT, 'art', 'nightfall'); // the only part of art/ the page may load
-const MAP = join(ROOT, 'data', 'map');
 
 const { values: args } = parseArgs({
     options: {
@@ -48,25 +51,13 @@ const { values: args } = parseArgs({
 
 if (existsSync(join(ROOT, '.env'))) process.loadEnvFile(join(ROOT, '.env'));
 
-/** The One CLI refuses Node older than 22.23.4, 24.22.1 or 26.12.1, so say so at start, not at dispatch time. */
-function checkNode(): void {
-    const [major, minor] = process.versions.node.split('.').map(Number);
-    const ok = (major === 22 && minor >= 23) || (major === 24 && minor >= 22) || major >= 26;
-    if (!ok) console.warn(`warning: Node ${process.version}; the One CLI needs 22.23.4+, 24.22.1+ or 26.12.1+, so calling an expert will fail`);
-}
+// --- fixtures, art and the map ----------------------------------------------------------
 
-function openBrowser(url: string): void {
-    const cmd = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'explorer' : 'xdg-open';
-    execFile(cmd, [url], () => {});
-}
+const readJson = <T>(path: string): T => JSON.parse(readFileSync(path, 'utf8'));
 
-if (!existsSync(join(DIST, 'index.html'))) {
-    console.error('The page is not built yet. Run `pnpm start` (it builds first) or `pnpm build`.');
-    process.exit(1);
-}
-
+/** The incidents in a fixture file. Scenario steps also carry their scenario, step and clock time. */
 function readTicks(path: string, scenario?: string): FixtureIncident[] {
-    return (JSON.parse(readFileSync(path, 'utf8')).ticks as FixtureIncident[]).map((tick) => ({
+    return readJson<{ ticks: FixtureIncident[] }>(path).ticks.map((tick) => ({
         incident_id: tick.incident_id,
         severity_tier: tick.severity_tier,
         raw_incident_stream: tick.raw_incident_stream,
@@ -94,33 +85,29 @@ function loadScenarios(): Scenario[] {
         }));
 }
 
-const incidents = loadIncidents();
-const scenarios = loadScenarios();
-const known = [...scenarios.flatMap((s) => s.steps), ...incidents];
-// The demo opens on Nightfall step 20, a real threat with a decision to make (step 1 is a costume);
-// --incident picks any other.
-const DEMO_INCIDENT = 'sim-nightfall-20';
-const firstIncident = args.incident ?? (known.some((i) => i.incident_id === DEMO_INCIDENT) ? DEMO_INCIDENT : known[0].incident_id);
-if (!known.some((i) => i.incident_id === firstIncident)) {
-    console.error(`No incident with id ${firstIncident}. Known ids: ${known.map((i) => i.incident_id).join(', ')}`);
-    process.exit(1);
-}
-
 /** The art library's entries the page needs: file, kind, alt text and a content hash. Empty when there is no art. */
 function loadArt(): Record<string, ArtAsset> {
     const path = join(ART, 'manifest.json');
     if (!existsSync(path)) return {};
-    const entries = Object.entries(JSON.parse(readFileSync(path, 'utf8')) as Record<string, ArtAsset>);
     const version = (file: string) => (existsSync(join(ROOT, file)) ? createHash('sha1').update(readFileSync(join(ROOT, file))).digest('hex').slice(0, 8) : undefined);
-    return Object.fromEntries(entries.map(([id, a]) => [id, { file: a.file, kind: a.kind, alt: a.alt, v: version(a.file) }]));
+    return Object.fromEntries(Object.entries(readJson<Record<string, ArtAsset>>(path)).map(([id, a]) => [id, { file: a.file, kind: a.kind, alt: a.alt, v: version(a.file) }]));
 }
 
-const python = process.env.PYTHON ?? join(ROOT, '.venv', 'bin', 'python');
-const station = new Station({ root: ROOT, python, offline: args.offline, incidents, scenarios, art: loadArt,
-    floor: existsSync(join(MAP, 'floor.json')) ? (JSON.parse(readFileSync(join(MAP, 'floor.json'), 'utf8')) as Floor) : null,
-});
+// --- HTTP -------------------------------------------------------------------------------
 
-const server = createServer((req, res) => {
+function sendFile(res: ServerResponse, file: string, type: string, cache: string): void {
+    res.writeHead(200, { 'content-type': type, 'cache-control': cache });
+    res.end(readFileSync(file));
+}
+
+/**
+ * - /manifest.json: the current run's state
+ * - /speech/<hash>.mp3: a spoken call from out/speech/
+ * - /data/map/area.geojson: the venue's map
+ * - /art/nightfall/...: the art the page shows
+ * - everything else: the built page in web/dist/
+ */
+function handle(req: IncomingMessage, res: ServerResponse): void {
     const path = (req.url ?? '/').split('?')[0];
     if (path === '/manifest.json') {
         res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
@@ -128,32 +115,65 @@ const server = createServer((req, res) => {
         return;
     }
     const speech = path.match(/^\/speech\/([^/]+)$/)?.[1];
-    if (speech && SPEECH_FILE.test(speech) && existsSync(join(ROOT, 'out', 'speech', speech))) {
-        res.writeHead(200, { 'content-type': 'audio/mpeg', 'cache-control': 'max-age=31536000, immutable' });
-        res.end(readFileSync(join(ROOT, 'out', 'speech', speech)));
-        return;
+    if (speech && SPEECH_FILE.test(speech) && existsSync(join(SPEECH, speech))) {
+        return sendFile(res, join(SPEECH, speech), 'audio/mpeg', 'max-age=31536000, immutable');
     }
     if (path === '/data/map/area.geojson' && existsSync(join(MAP, 'area.geojson'))) {
-        res.writeHead(200, { 'content-type': 'application/geo+json', 'cache-control': 'max-age=3600' });
-        res.end(readFileSync(join(MAP, 'area.geojson')));
-        return;
+        return sendFile(res, join(MAP, 'area.geojson'), 'application/geo+json', 'max-age=3600');
     }
     if (path.startsWith('/art/nightfall/')) {
         const art = normalize(join(ROOT, decodeURIComponent(path)));
-        if (art.startsWith(`${ART}/`) && existsSync(art) && TYPES[extname(art)] && extname(art) !== '.json') {
-            res.writeHead(200, { 'content-type': TYPES[extname(art)], 'cache-control': 'max-age=3600' });
-            res.end(readFileSync(art));
-            return;
-        }
+        const type = TYPES[extname(art)];
+        if (art.startsWith(`${ART}/`) && existsSync(art) && type && extname(art) !== '.json') return sendFile(res, art, type, 'max-age=3600');
     }
     const file = normalize(join(DIST, path === '/' ? 'index.html' : path));
-    if (!file.startsWith(DIST) || !existsSync(file) || !TYPES[extname(file)]) {
+    const type = TYPES[extname(file)];
+    if (!file.startsWith(`${DIST}/`) || !existsSync(file) || !type) {
         res.writeHead(404, { 'content-type': 'text/plain' }).end('not found');
         return;
     }
-    res.writeHead(200, { 'content-type': TYPES[extname(file)], 'cache-control': 'no-store' });
-    res.end(readFileSync(file));
+    sendFile(res, file, type, 'no-store');
+}
+
+// --- start ------------------------------------------------------------------------------
+
+/** The One CLI refuses Node older than 22.23.4, 24.22.1 or 26.12.1, so say so at start, not at dispatch time. */
+function checkNode(): void {
+    const [major, minor] = process.versions.node.split('.').map(Number);
+    const ok = (major === 22 && minor >= 23) || (major === 24 && minor >= 22) || major >= 26;
+    if (!ok) console.warn(`warning: Node ${process.version}; the One CLI needs 22.23.4+, 24.22.1+ or 26.12.1+, so calling an expert will fail`);
+}
+
+function openBrowser(url: string): void {
+    const cmd = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'explorer' : 'xdg-open';
+    execFile(cmd, [url], () => {});
+}
+
+if (!existsSync(join(DIST, 'index.html'))) {
+    console.error('The page is not built yet. Run `pnpm start` (it builds first) or `pnpm build`.');
+    process.exit(1);
+}
+
+const incidents = loadIncidents();
+const scenarios = loadScenarios();
+const known = [...scenarios.flatMap((s) => s.steps), ...incidents];
+const firstIncident = args.incident ?? (known.some((i) => i.incident_id === DEMO_INCIDENT) ? DEMO_INCIDENT : known[0].incident_id);
+if (!known.some((i) => i.incident_id === firstIncident)) {
+    console.error(`No incident with id ${firstIncident}. Known ids: ${known.map((i) => i.incident_id).join(', ')}`);
+    process.exit(1);
+}
+
+const station = new Station({
+    root: ROOT,
+    python: process.env.PYTHON ?? join(ROOT, '.venv', 'bin', 'python'),
+    offline: args.offline,
+    incidents,
+    scenarios,
+    art: loadArt,
+    floor: existsSync(join(MAP, 'floor.json')) ? readJson<Floor>(join(MAP, 'floor.json')) : null,
 });
+
+const server = createServer(handle);
 // Registered before the WebSocket server's own listener, which would rethrow the error.
 server.on('error', (err: NodeJS.ErrnoException) => {
     console.error(err.code === 'EADDRINUSE' ? `Port ${args.port} is in use. Pick another: pnpm start --port 8667` : err.message);
@@ -164,7 +184,8 @@ station.attach(new WebSocketServer({ server, path: '/ws', maxPayload: 1 << 20 })
 const url = `http://${args.host}:${args.port}`;
 server.listen(Number(args.port), args.host, () => {
     const mode = args.offline ? 'OFFLINE (replaying the last saved run)' : 'live';
-    console.log(`Haunted Command Station on ${url}  mode: ${mode}  paging: ${args.offline ? 'off (offline)' : station.pager.enabled ? 'on (PagerDuty)' : 'off (PAGING=off)'}`);
+    const paging = args.offline ? 'off (offline)' : station.pager.enabled ? 'on (PagerDuty)' : 'off (PAGING=off)';
+    console.log(`Haunted Command Station on ${url}  mode: ${mode}  paging: ${paging}`);
     if (!args.offline) checkNode();
     if (!args['no-browser']) openBrowser(url);
     station.compileIncident(firstIncident);
