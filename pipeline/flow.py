@@ -358,6 +358,11 @@ class HauntFlow(Flow[HauntState]):
             + self._sky_facts()
         )
         has_sky = bool(self.state.sky)
+        # Decided before streaming, because recommended_action is the last field the model writes.
+        lead = library.far_from_sky(self.state.incident, self.state.sky)
+        if lead:
+            user += (f"\n\nNobody is hurt and the next sky event is {lead} minutes away: recommend observe, "
+                     "leave out the CountermeasurePicker, and say what to watch for until then.")
         system = COMPOSE_SYSTEM.replace(
             "{components}", "\n".join(f"- {k}: {v}" for k, v in library.components_for(has_sky).items()))
         parser, sent, frame = ComponentStream(), [], {}
@@ -375,7 +380,7 @@ class HauntFlow(Flow[HauntState]):
                 self._emit({"type": "frame", "sound_cue": cue})
             for comp in parser.feed(text):
                 cleaned, _ = library.clean_manifest({"components": sent + [comp]}, book["arsenal"], len(self.state.sources),
-                                                    self.state.incident)
+                                                    self.state.incident, quiet=bool(lead))
                 if len(cleaned["components"]) > len(sent):
                     sent.append(comp)
                     self._emit({"type": "component", "index": len(sent) - 1, "component": cleaned["components"][-1]})
@@ -383,7 +388,8 @@ class HauntFlow(Flow[HauntState]):
 
         raw, model = chat_json(library.manifest_schema(book["arsenal"], len(self.state.sources), has_sky), "manifest",
                                system, user, on_text)
-        manifest, notes = library.clean_manifest(raw, book["arsenal"], len(self.state.sources), self.state.incident)
+        manifest, notes = library.clean_manifest(raw, book["arsenal"], len(self.state.sources), self.state.incident,
+                                                 quiet=bool(lead))
         if not manifest["components"]:
             raise FlowFailed("the model returned a manifest with no usable components")
         self.state.manifest = manifest

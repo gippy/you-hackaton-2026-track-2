@@ -55,6 +55,23 @@ def is_harmless(incident: dict | None) -> bool:
     return bool(incident) and incident.get("verdict") == "harmless" and not incident.get("deliberate_act")
 
 
+# Minutes to the next sky event beyond which an unhurt crowd is watched, not contained yet. On the
+# Nightfall replay any lead from 66 to 144 gave the same result (eval/fixes.md, fix 1); 60 broke step 9.
+QUIET_LEAD_MIN = 100
+
+
+def far_from_sky(incident: dict | None, sky: dict | None) -> int | None:
+    """Minutes to the next sky event when nobody is hurt and it is over QUIET_LEAD_MIN away, else None.
+
+    Pasted incidents carry no sky, and a night with every event passed has nothing upcoming, so the
+    rule never applies to them.
+    """
+    upcoming = [m for m in ((sky or {}).get("minutes_to") or {}).values() if isinstance(m, (int, float)) and m > 0]
+    if not incident or not upcoming or incident.get("people_hurt"):
+        return None
+    return min(upcoming) if min(upcoming) > QUIET_LEAD_MIN else None
+
+
 def opening_cue(cue: str | None, harmless: bool) -> str:
     """The station's opening sound: all_clear for a harmless report and only then, else the model's pick."""
     if harmless:
@@ -184,13 +201,15 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
     })
 
 
-def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: dict | None = None) -> tuple[dict, list[str]]:
+def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: dict | None = None,
+                   quiet: bool = False) -> tuple[dict, list[str]]:
     """Keep what the page can render. Returns the manifest and notes on anything dropped.
 
     The schema already fixes the shape; this only removes repeats and out-of-range references,
-    which a schema cannot express, and enforces two rules on the model's choices: a harmless report
-    gets a calm station (observe, the all-clear sound, no alarm panels), and an ordinary EMF reading
-    gets no gauge. It never adds a component the model did not choose.
+    which a schema cannot express, and enforces three rules on the model's choices: a harmless report
+    gets a calm station (observe, the all-clear sound, no alarm panels), a quiet one (far_from_sky)
+    gets observe and no countermeasure picker yet, and an ordinary EMF reading gets no gauge. It never
+    adds a component the model did not choose.
     """
     notes: list[str] = []
     seen: set[str] = set()
@@ -203,6 +222,9 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
             continue
         if calm and kind in ("CountermeasurePicker", "CivilianTracker", "FloorPlan"):
             notes.append(f"dropped {kind}: the intake judged the report harmless")
+            continue
+        if quiet and kind == "CountermeasurePicker":
+            notes.append("dropped CountermeasurePicker: nobody is hurt and the next sky event is hours away")
             continue
         if kind == "EMFGauge" and float((comp.get("props") or {}).get("value_mg") or 0) <= EMF_NORMAL_MG:
             notes.append("dropped an EMFGauge showing an ordinary reading")
@@ -247,9 +269,11 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
         "theme": raw.get("theme") if raw.get("theme") in THEMES else THEMES[0],
         "sound_cue": opening_cue(raw.get("sound_cue"), calm),
         "components": components,
-        "recommended_action": "observe" if calm else raw.get("recommended_action") if raw.get("recommended_action") in ACTIONS else "contain",
+        "recommended_action": "observe" if calm or quiet else raw.get("recommended_action") if raw.get("recommended_action") in ACTIONS else "contain",
         "dispatch_rationale": raw.get("dispatch_rationale") or "",
     }
     if calm and (raw.get("recommended_action") != "observe" or raw.get("sound_cue") != "all_clear"):
         notes.append("the intake judged the report harmless: observe and the all-clear sound")
+    elif quiet and raw.get("recommended_action") != "observe":
+        notes.append("nobody is hurt and the next sky event is hours away: observe")
     return out, notes
