@@ -2,7 +2,7 @@
     "actorSpecification": 1,
     "name": "haunted-command-station",
     "title": "Haunted Command Station",
-    "description": "Track 2, The Haunted Dashboard: a raw incident report in, a model-composed command station out, live over a WebSocket. Dry-run dispatch only.",
+    "description": "Track 2, The Haunted Dashboard: a raw incident report in, a model-composed command station out, live over a WebSocket, with a Call expert button that pages through PagerDuty.",
     "version": "0.1",
     "buildTag": "latest",
     "dockerfile": "../Dockerfile",

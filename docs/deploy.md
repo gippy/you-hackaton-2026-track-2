@@ -1,6 +1,6 @@
 # Deploying the station as an Apify Standby Actor
 
-The station runs as a private Standby Actor named `haunted-command-station` on the `jaroslavhejlek` account. The page, the `/ws` stream and the art and sound files are served from one port by `server/main.ts`. The Actor starts it in dry-run mode: no `--live-dispatch`, no `--live-page`, no `--live-sky-warnings`, so the dispatch button can never post to Discord or page a phone, whoever has the link.
+The station runs as a private Standby Actor named `haunted-command-station` on the `jaroslavhejlek` account. The page, the `/ws` stream and the art and sound files are served from one port by `server/main.ts`. The "Call expert" buttons page through PagerDuty for real, so anyone with the link can page the on-call phone: at most once a minute per expert, and PagerDuty keeps one open incident per step and expert. Set the environment variable `PAGING=off` on the Actor to switch paging off.
 
 ## What is in the box
 
@@ -142,4 +142,4 @@ Then open http://127.0.0.1:8689/ and stop the command with Ctrl+C.
 - **The run dies 5 minutes after the last viewer leaves.** An open WebSocket keeps it alive. Keep one tab open while judging. After that it is a cold start again, and saved runs under `out/` are gone with the container.
 - **Every cold start runs one pipeline.** The server builds Nightfall step 21 as it starts, which spends one set of Parasail and You.com calls.
 - **The page needs the token in the URL.** The platform strips it before the request reaches the server, and no cookie is set, so the server cannot add it for the page.
-- **Dry run only.** To post for real, run the station locally with `--live-dispatch`. Do not add it to the `Dockerfile`.
+- **Paging is real.** A "Call expert" click opens a PagerDuty incident on service `P1KQZ39`. `PAGING=off` in the Actor's environment turns it off without a rebuild.

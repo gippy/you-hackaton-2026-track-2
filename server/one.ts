@@ -107,7 +107,8 @@ export function findAction(platform: string, query: string, method: string, path
 
 /** The connection key for a platform: ONE_<PLATFORM>_CONNECTION_KEY, else its only operational connection. */
 export function connection(platform: string): Promise<string> {
-    const fromEnv = process.env[`ONE_${platform.toUpperCase()}_CONNECTION_KEY`]?.trim();
+    const envName = `ONE_${platform.toUpperCase().replace(/-/g, '_')}_CONNECTION_KEY`; // pager-duty: ONE_PAGER_DUTY_…
+    const fromEnv = process.env[envName]?.trim();
     if (fromEnv) return Promise.resolve(fromEnv);
     if (!connections.has(platform)) {
         const found = one(['list', '--search', platform, '--limit', '100']).then((listing) => {
@@ -115,7 +116,7 @@ export function connection(platform: string): Promise<string> {
             if (rows.length === 1) return rows[0].key as string;
             throw new OneError(
                 rows.length
-                    ? `${rows.length} ${platform} connections; set ONE_${platform.toUpperCase()}_CONNECTION_KEY in .env`
+                    ? `${rows.length} ${platform} connections; set ${envName} in .env`
                     : `${platform} is not connected. Run: one add ${platform}`,
             );
         });

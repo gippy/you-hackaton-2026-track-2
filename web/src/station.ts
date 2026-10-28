@@ -1,7 +1,7 @@
 // The page's state: everything the server has streamed for the current run, plus the operator's choices.
 // Every server message goes through `reduce`, so a late joiner that gets the history replayed ends up
 // in the same state as a page that watched the run live.
-import type { Action, ArtAsset, Component, DispatchMode, FixtureIncident, Floor, Incident, Library, PageInfo, Scenario, Sky, SkyWarning, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
+import type { ArtAsset, Component, FixtureIncident, Floor, Incident, Library, PageInfo, Scenario, Sky, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
 export interface Step {
     state?: StepState;
@@ -10,7 +10,6 @@ export interface Step {
 }
 
 export interface Operator {
-    action: Action;
     countermeasure: string | null;
     sealed: string[];
     extracted: number[]; // indexes of people marked extracted
@@ -19,10 +18,7 @@ export interface Operator {
 export interface State {
     connected: boolean;
     mode: 'live' | 'offline' | null;
-    liveDispatch: boolean;
-    livePage: boolean;
     pages: PageInfo[];
-    skyWarnings: SkyWarning[];
     library: Library | null;
     incidents: FixtureIncident[];
     scenarios: Scenario[];
@@ -33,6 +29,8 @@ export interface State {
     steps: Partial<Record<StepId, Step>>;
     queries: string[];
     incident: { incident: Incident; incident_id: string; severity_tier: string; raw: string } | null;
+    /** The playbook the code routed the incident to (corporeal, spectral or anomalous): it picks the expert to call. */
+    playbook: string | null;
     sources: Source[];
     sky: Sky | null;
     title: string;
@@ -40,8 +38,6 @@ export interface State {
     components: Component[];
     manifest: Manifest | null;
     operator: Operator;
-    dispatch: { mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string; paging?: string } | null;
-    dispatching: boolean;
     /** Set when another viewer of this shared station started the run on screen. */
     notice: string | null;
 }
@@ -49,21 +45,16 @@ export interface State {
 export type Event =
     | { type: 'server'; msg: ServerMessage; foreign?: boolean }
     | { type: 'connected'; value: boolean }
-    | { type: 'action'; value: Action }
     | { type: 'countermeasure'; id: string }
     | { type: 'toggle-seal'; sector: string }
-    | { type: 'toggle-person'; index: number }
-    | { type: 'dispatching' };
+    | { type: 'toggle-person'; index: number };
 
-const OPERATOR: Operator = { action: 'contain', countermeasure: null, sealed: [], extracted: [] };
+const OPERATOR: Operator = { countermeasure: null, sealed: [], extracted: [] };
 
 export const initial: State = {
     connected: false,
     mode: null,
-    liveDispatch: false,
-    livePage: false,
     pages: [],
-    skyWarnings: [],
     library: null,
     incidents: [],
     scenarios: [],
@@ -74,6 +65,7 @@ export const initial: State = {
     steps: {},
     queries: [],
     incident: null,
+    playbook: null,
     sources: [],
     sky: null,
     title: 'Haunted Command Station',
@@ -81,8 +73,6 @@ export const initial: State = {
     components: [],
     manifest: null,
     operator: OPERATOR,
-    dispatch: null,
-    dispatching: false,
     notice: null,
 };
 
@@ -129,16 +119,13 @@ function runLabel(state: State, id: string): string {
 function server(state: State, msg: ServerMessage, foreign = false): State {
     switch (msg.type) {
         case 'hello':
-            return { ...state, mode: msg.mode, liveDispatch: msg.live_dispatch, livePage: msg.live_page, library: msg.library, incidents: msg.incidents, scenarios: msg.scenarios, art: msg.art, floor: msg.floor };
+            return { ...state, mode: msg.mode, library: msg.library, incidents: msg.incidents, scenarios: msg.scenarios, art: msg.art, floor: msg.floor };
         case 'run_begin':
             return {
                 ...initial,
                 connected: state.connected,
                 mode: state.mode,
-                liveDispatch: state.liveDispatch,
-                livePage: state.livePage,
                 pages: state.pages,
-                skyWarnings: state.skyWarnings,
                 library: state.library,
                 incidents: state.incidents,
                 scenarios: state.scenarios,
@@ -153,7 +140,7 @@ function server(state: State, msg: ServerMessage, foreign = false): State {
         case 'incident':
             return { ...state, incident: msg };
         case 'route':
-            return { ...state, steps: { ...state.steps, triage: { state: 'done', detail: `${msg.playbook}: ${msg.arsenal.length} countermeasures in the arsenal` } } };
+            return { ...state, playbook: msg.label, steps: { ...state.steps, triage: { state: 'done', detail: `${msg.playbook}: ${msg.arsenal.length} countermeasures in the arsenal` } } };
         case 'search':
             return { ...state, queries: [...state.queries, `${msg.query} → ${msg.hits.length} hits`] };
         case 'sources':
@@ -169,18 +156,14 @@ function server(state: State, msg: ServerMessage, foreign = false): State {
         }
         case 'run_end': {
             const manifest = { ...msg.manifest, components: (msg.manifest.components ?? []).map(withDefaults) };
-            const operator = manifest.components.reduce(adopt, { ...state.operator, action: manifest.recommended_action });
+            const operator = manifest.components.reduce(adopt, state.operator);
             const notes = msg.notes?.length && msg.source === 'live' ? { text: `Pipeline notes: ${msg.notes.join('; ')}`, kind: 'info' as const } : state.banner;
             return { ...state, manifest, components: manifest.components, title: manifest.title ? cleanTitle(manifest.title) : state.title, theme: manifest.theme, operator, banner: notes };
         }
-        case 'dispatch':
-            return { ...state, dispatch: msg, dispatching: false };
         case 'pages':
             return { ...state, pages: msg.pages };
-        case 'sky_warnings':
-            return { ...state, skyWarnings: msg.warnings };
         case 'error':
-            return { ...state, banner: { text: msg.detail, kind: 'error' }, dispatching: false };
+            return { ...state, banner: { text: msg.detail, kind: 'error' } };
         case 'speech':
         case 'synced':
             return state; // handled outside the page state: by the SoundBoard, and by App's own-request tracking
@@ -193,15 +176,11 @@ export function reduce(state: State, event: Event): State {
             return server(state, event.msg, event.foreign);
         case 'connected':
             return { ...state, connected: event.value };
-        case 'action':
-            return { ...state, operator: { ...state.operator, action: event.value } };
         case 'countermeasure':
             return { ...state, operator: { ...state.operator, countermeasure: event.id } };
         case 'toggle-seal':
             return { ...state, operator: { ...state.operator, sealed: toggle(state.operator.sealed, event.sector) } };
         case 'toggle-person':
             return { ...state, operator: { ...state.operator, extracted: toggle(state.operator.extracted, event.index) } };
-        case 'dispatching':
-            return { ...state, dispatching: true };
     }
 }

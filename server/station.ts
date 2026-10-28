@@ -1,9 +1,10 @@
 // The station: runs the pipeline worker, streams its events to every page over the WebSocket,
-// saves each good run, replays the last one when offline or when a live run fails, and dispatches.
+// saves each good run, replays the last one when offline or when a live run fails, and calls experts.
 //
 // A page that connects mid-run gets the messages so far, then the rest live, each exactly once:
 // Node runs this on one thread, so the replay and the subscription happen in the same tick.
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createInterface } from 'node:readline';
@@ -11,12 +12,9 @@ import { createInterface } from 'node:readline';
 import type { WebSocket, WebSocketServer } from 'ws';
 
 import library from '../shared/library.json' with { type: 'json' };
-import type { ArtAsset, ClientMessage, FixtureIncident, Floor, FlowEvent, Library, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
-import { alertText, channelId, send } from './dispatch.ts';
-import { OneError } from './one.ts';
-import { Pager } from './pager.ts';
+import type { ArtAsset, ClientMessage, Expert, FixtureIncident, Floor, FlowEvent, Library, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
+import { Pager, type PageRequest } from './pager.ts';
 import { skyFor, today } from './sky.ts';
-import { SkyWarnings } from './skywarn.ts';
 import { speak } from './speech.ts';
 
 const REPLAY_GAP_MS = 350; // longest pause between replayed messages
@@ -33,10 +31,6 @@ export interface StationOptions {
     root: string;
     python: string;
     offline: boolean;
-    liveDispatch: boolean;
-    livePage: boolean;
-    skyWarnings: 'scenario' | 'live' | 'off';
-    liveSkyWarnings: boolean;
     incidents: FixtureIncident[];
     scenarios: Scenario[];
     /** Read for every new connection, so re-rendered art shows up without a restart. */
@@ -57,31 +51,19 @@ export class Station {
     private busy = false;
     private readonly opts: StationOptions;
     private readonly outDir: string;
-    private readonly pager: Pager;
-    private readonly warnings: SkyWarnings;
+    readonly pager: Pager;
 
     constructor(opts: StationOptions) {
         this.opts = opts;
         this.outDir = join(opts.root, 'out');
         this.pager = new Pager((pages) => this.broadcastOnly({ type: 'pages', pages }));
-        const warnMode = opts.offline ? 'offline' : opts.liveSkyWarnings ? 'live' : 'dry-run';
-        this.warnings = new SkyWarnings(warnMode, (warnings) => this.broadcastOnly({ type: 'sky_warnings', warnings }));
-        if (opts.skyWarnings === 'live' && !opts.offline) {
-            // Real time: recompute the sky each minute (cached after the first fetch) and move the countdowns.
-            const tick = async () => void this.warnings.tick(await skyFor(today(), '', this.outDir, false), new Date(), this.run?.state.manifest);
-            void tick();
-            setInterval(tick, 60_000).unref();
-        }
     }
 
     private hello(): ServerMessage {
         return {
             type: 'hello',
             mode: this.opts.offline ? 'offline' : 'live',
-            live_dispatch: this.opts.liveDispatch && !this.opts.offline,
-            live_page: this.opts.livePage && !this.opts.offline,
             library: library as unknown as Library,
-            channel: channelId(),
             incidents: this.opts.incidents,
             scenarios: this.opts.scenarios,
             art: this.opts.art(),
@@ -91,7 +73,7 @@ export class Station {
 
     attach(wss: WebSocketServer): void {
         wss.on('connection', (ws) => {
-            const status: ServerMessage[] = [{ type: 'pages', pages: this.pager.list() }, { type: 'sky_warnings', warnings: this.warnings.list() }, { type: 'synced' }];
+            const status: ServerMessage[] = [{ type: 'pages', pages: this.pager.list() }, { type: 'synced' }];
             for (const msg of [this.hello(), ...this.history, ...status]) ws.send(JSON.stringify(msg));
             this.clients.add(ws);
             ws.on('close', () => this.clients.delete(ws));
@@ -104,7 +86,7 @@ export class Station {
                 }
                 if (msg.type === 'compile' && msg.incident_id) void this.compileIncident(String(msg.incident_id));
                 else if (msg.type === 'compile') void this.compile(String(msg.raw ?? '').slice(0, 4000), '', '');
-                else if (msg.type === 'dispatch') void this.dispatch(ws, msg);
+                else if (msg.type === 'call_expert') this.callExpert(ws, msg);
                 else if (msg.type === 'resolve_page') {
                     const page = this.pager.list().find((p) => p.key === msg.key);
                     if (page) void this.pager.resolve(page);
@@ -172,8 +154,6 @@ export class Station {
             this.save(this.run);
             this.emit({ type: 'run_end', manifest: state.manifest, notes: state.notes, models: state.models, saved_at, source: 'live' });
             console.log(`Station built: ${state.manifest.components.map((c) => c.type).join(', ')}`);
-            // A scenario step moves the scenario clock, and with it the sky warnings' countdowns.
-            if (sky?.clock_at && this.opts.skyWarnings === 'scenario') void this.warnings.tick(sky, new Date(sky.clock_at), state.manifest);
             // The model says watch, not act: the station stands down, so open pages are resolved.
             if (state.manifest.recommended_action === 'observe') void this.pager.resolveAll();
         } finally {
@@ -273,61 +253,70 @@ export class Station {
         this.emit({ type: 'run_end', manifest: state.manifest, notes: state.notes, models: state.models, saved_at: saved.saved_at, source: 'snapshot' });
     }
 
-    // --- dispatch -------------------------------------------------------------------------
+    // --- calling an expert ----------------------------------------------------------------
 
-    private async dispatch(ws: WebSocket, msg: Extract<ClientMessage, { type: 'dispatch' }>): Promise<void> {
-        if (!this.run) {
-            ws.send(JSON.stringify({ type: 'error', detail: 'Nothing to dispatch yet.' } satisfies ServerMessage));
-            return;
-        }
-        const action = library.actions.includes(msg.action) ? msg.action : 'contain';
-        const mode = this.opts.offline ? 'offline' : msg.live && this.opts.liveDispatch ? 'live' : 'dry-run';
-        const text = alertText(this.run.state, {
-            action,
-            countermeasure: typeof msg.countermeasure === 'string' ? msg.countermeasure : null,
-            sealed: Array.isArray(msg.sealed) ? msg.sealed.map(String) : [],
-            extracted: Number(msg.extracted) || 0,
-        });
-        // Offline, the page plays its committed effects and skips the speech quietly.
-        if (mode !== 'offline') void this.speakDispatch(text);
-        const paging = mode === 'offline' ? 'Offline: no page.' : this.pageIfCritical(this.run.state, action, text, Boolean(msg.live_page));
-        let result: ServerMessage;
+    /** Page the vampire hunter or the ghostbuster about the station on screen, and say so aloud. */
+    private callExpert(ws: WebSocket, msg: Extract<ClientMessage, { type: 'call_expert' }>): void {
+        const tell = (detail: string) => ws.send(JSON.stringify({ type: 'error', detail } satisfies ServerMessage));
+        const expert = msg.expert in library.experts ? msg.expert : null;
+        if (!expert) return;
+        if (this.opts.offline) return tell('Offline: no expert can be paged.');
+        if (!this.run || this.busy) return tell('Wait for the station to finish building before calling an expert.');
+        const wait = this.pager.cooldown(expert);
+        if (wait) return tell(`The ${library.experts[expert].label.toLowerCase()} was just paged. Wait ${wait} s before paging again.`);
+        const countermeasure = typeof msg.countermeasure === 'string' && msg.countermeasure in library.arsenal ? msg.countermeasure : null;
+        void this.pager.open(pageRequest(this.run.state, expert, countermeasure));
+        void this.speakCall(expert);
+    }
+
+    /** Voice the call in the background; the page plays the expert's sting, then the line. A failure is only logged. */
+    private async speakCall(expert: Expert): Promise<void> {
+        const { spoken, sting } = library.experts[expert];
         try {
-            result = { type: 'dispatch', text, paging, ...(await send(text, mode)) };
+            const file = await speak(spoken, join(this.outDir, 'speech'));
+            this.broadcastOnly({ type: 'speech', url: `speech/${file}`, cue: sting });
         } catch (err) {
-            const detail = err instanceof OneError ? err.message : String(err);
-            result = { type: 'dispatch', mode, text, paging, error: detail.slice(0, 800) };
-        }
-        console.log(`\nDispatch (${result.mode}) to #loft-incident:\n${JSON.stringify(result, null, 2)}\n`);
-        this.broadcastOnly(result);
-    }
-
-    /** Page the on-call for a dispatch the model marked critical. Returns what the page shows about it. */
-    private pageIfCritical(state: RunState, action: string, text: string, livePage: boolean): string {
-        const banner = state.manifest.components.find((c) => c.type === 'ThreatBanner');
-        const critical = ['critical', 'catastrophic'].includes(banner?.type === 'ThreatBanner' ? banner.props.severity : state.incident.severity);
-        if (action === 'observe' || !critical) return 'No page: the model did not mark this critical.';
-        const live = livePage && this.opts.livePage;
-        const sector = (library.sectors as Record<string, string>)[state.incident.sector] ?? state.incident.sector;
-        void this.pager.open(
-            {
-                key: state.incident_id || `pasted-${Date.now()}`,
-                title: `[SIMULATED] ${state.incident.entity} in ${sector}: ${action}`.slice(0, 250),
-                details: `${text}\n\nSimulated incident from the Haunted Command Station (hackathon demo). Nothing here is real.`,
-                urgency: action === 'evacuate' ? 'high' : 'low',
-            },
-            live,
-        );
-        return live ? 'Paging the on-call through PagerDuty.' : 'Page prepared as a dry run (PagerDuty not called).';
-    }
-
-    /** Voice the alert in the background; the page plays it when it is ready. A failure is only logged. */
-    private async speakDispatch(text: string): Promise<void> {
-        try {
-            const file = await speak(text, join(this.outDir, 'speech'));
-            this.broadcastOnly({ type: 'speech', url: `speech/${file}` });
-        } catch (err) {
-            console.warn(`Spoken dispatch skipped: ${(err as Error).message}`);
+            console.warn(`Spoken call skipped: ${(err as Error).message}`);
         }
     }
+}
+
+const short = (text: string, limit: number) => {
+    const flat = (text || '').split(/\s+/).join(' ').trim();
+    return flat.length <= limit ? flat : `${flat.slice(0, limit - 1).trimEnd()}…`;
+};
+
+/** The PagerDuty incident for a call: the station's headline as the title, and what the expert needs to know. */
+export function pageRequest(state: RunState, expert: Expert, countermeasure: string | null): PageRequest {
+    const { incident: inc, manifest } = state;
+    const sectors = library.sectors as Record<string, string>;
+    const arsenal = library.arsenal as Record<string, string>;
+    const sector = sectors[inc.sector] ?? inc.sector;
+    const people = inc.people_in_reach ?? inc.civilians?.count ?? 0;
+    // The same headline as the page's: what, where, when and who.
+    const headline = [inc.entity.replace(/\s*\([^)]*\)/g, ''), sector, state.sky?.clock, `${people} people`].filter(Boolean).join(' · ');
+    const banner = manifest.components.find((c) => c.type === 'ThreatBanner');
+    const severity = banner?.type === 'ThreatBanner' ? banner.props.severity : inc.severity;
+    const critical = ['critical', 'catastrophic'].includes(severity) || manifest.recommended_action === 'evacuate';
+    const option = manifest.components.flatMap((c) => (c.type === 'CountermeasurePicker' ? c.props.options : [])).find((o) => o.id === countermeasure);
+    const optionSource = option && state.sources.find((s) => s.n === option.source);
+    const directive = banner?.type === 'ThreatBanner' ? banner.props.directive : '';
+    const details = [
+        'Simulated incident from the Haunted Command Station, a hackathon demo. Nothing here is real.',
+        `Incident: ${state.incident_id || 'pasted report'}, ${inc.entity} (threat ${inc.threat_level}/5, ${severity}).`,
+        `Sector: ${sector}.`,
+        `People at risk: ${people}${inc.people_hurt ? `, ${inc.people_hurt} hurt` : ''}.`,
+        `Recommended: ${manifest.recommended_action}.${directive ? ` ${short(directive, 300)}` : ''}`,
+        countermeasure ? `Countermeasure: ${arsenal[countermeasure]}${optionSource ? ` (${optionSource.url})` : ''}.` : 'Countermeasure: none picked.',
+        'Sources:',
+        ...state.sources.slice(0, 3).map((s) => `- ${short(s.title, 90)}: ${s.url}`),
+    ].join('\n');
+    const id = state.incident_id || `pasted-${createHash('sha256').update(state.raw).digest('hex').slice(0, 8)}`;
+    return {
+        expert,
+        incident_id: id,
+        title: `[SIMULATED] ${library.experts[expert].label} needed: ${headline}`.slice(0, 250),
+        details: details.slice(0, 4000),
+        urgency: critical ? 'high' : 'low',
+    };
 }

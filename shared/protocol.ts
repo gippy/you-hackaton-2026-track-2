@@ -147,7 +147,13 @@ export interface Library {
     playbooks: Record<string, { label: string; arsenal: string[]; lore_focus: string }>;
     components: Record<ComponentType, string>;
     actions: Action[];
+    /** What to do as each sky event nears, for SkyClock's countdown when the model gave no warning of its own. */
+    sky_advice: Partial<Record<SkyEvent['id'], string>>;
+    /** The two experts the station can page: who handles which playbooks, what the voice says, which sting plays. */
+    experts: Record<Expert, { label: string; playbooks: string[]; spoken: string; sting: string }>;
 }
+
+export type Expert = 'vampire_hunter' | 'ghostbuster';
 
 /** One incident from fixtures/*.json. Simulated ones carry `source: "simulated"`. */
 export interface FixtureIncident {
@@ -182,52 +188,40 @@ export type FlowEvent =
     | { type: 'component'; index: number; component: Component }
     | { type: 'sky'; sky: Sky };
 
-export type DispatchMode = 'dry-run' | 'live' | 'offline';
-
-/** A countdown message for one sky event, posted once and then edited in place. */
-export interface SkyWarning {
-    event: SkyEvent['id'];
-    text: string;
-    minutes: number;
-    mode: DispatchMode;
-    edits: number;
-    message_id?: string;
-    updated_at: string;
-    request?: unknown;
-    error?: string;
-}
-
-/** A PagerDuty page, opened for a critical dispatch and followed until it is resolved. */
+/**
+ * A PagerDuty page for an expert, opened by a "Call expert" click and followed until it is resolved.
+ * `key` is the incident_key, `<incident_id>:<expert>`. `off` means the server has paging switched off.
+ */
 export interface PageInfo {
     key: string;
+    expert: Expert;
+    incident_id: string;
     title: string;
     urgency: 'high' | 'low';
-    mode: 'dry-run' | 'live';
-    status: 'sending' | 'dry-run' | 'triggered' | 'acknowledged' | 'resolved' | 'failed';
+    status: 'sending' | 'triggered' | 'acknowledged' | 'resolved' | 'failed' | 'off';
     opened_at: string;
     acknowledged_by: string[];
     id?: string;
     number?: number;
     url?: string;
-    request?: unknown;
     error?: string;
 }
 
 export type ServerMessage =
     | FlowEvent
-    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; live_page: boolean; library: Library; channel: string; incidents: FixtureIncident[]; scenarios: Scenario[]; art: Record<string, ArtAsset>; floor: Floor | null }
+    | { type: 'hello'; mode: 'live' | 'offline'; library: Library; incidents: FixtureIncident[]; scenarios: Scenario[]; art: Record<string, ArtAsset>; floor: Floor | null }
     /** `requested` is the incident a viewer asked for; a snapshot replay may show another one. */
     | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string; requested?: string }
     /** Sent after the replay to a viewer that just connected: what follows is live. */
     | { type: 'synced' }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
-    | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string; paging?: string }
     | { type: 'pages'; pages: PageInfo[] }
-    | { type: 'sky_warnings'; warnings: SkyWarning[] }
-    | { type: 'speech'; url: string }
+    /** A spoken line to play after the `cue` sound, such as "Calling the vampire hunter". */
+    | { type: 'speech'; url: string; cue?: string }
     | { type: 'error'; detail: string };
 
 export type ClientMessage =
     | { type: 'compile'; raw?: string; incident_id?: string }
-    | { type: 'dispatch'; action: Action; countermeasure: string | null; sealed: string[]; extracted: number; live: boolean; live_page: boolean }
+    /** Page an expert about the station on screen, with the countermeasure the operator picked. */
+    | { type: 'call_expert'; expert: Expert; countermeasure: string | null }
     | { type: 'resolve_page'; key: string };

@@ -1,12 +1,9 @@
 // Haunted Command Station: a raw incident report in, an operable command station out.
 //
 //     pnpm start                     build the page, then build the station from the fixture, live
-//     pnpm start --offline           no network or keys: replay the last saved run
-//     pnpm start --live-dispatch     let the page's dispatch button really post to #loft-incident
-//     pnpm start --live-page         let a critical dispatch really page the on-call through PagerDuty
-//     pnpm start --sky-warnings live  count sky warnings down in real time (default: the scenario's clock; off turns them off)
-//     pnpm start --live-sky-warnings really post the sky warnings to #loft-incident, and edit them as they count down
-//     pnpm start --incident <id>     start from another incident in fixtures/ (default: Nightfall's first step)
+//     pnpm start --offline           no network or keys: replay the last saved run (and no expert can be paged)
+//     pnpm start --incident <id>     start from another incident in fixtures/ (default: Nightfall step 20)
+//     PAGING=off pnpm start          the "Call expert" buttons page nobody (for tests and the eval)
 //
 // Serves the Vite build of web/ and the /ws stream on one port (default http://127.0.0.1:8666).
 import { execFile } from 'node:child_process';
@@ -40,10 +37,6 @@ const MAP = join(ROOT, 'data', 'map');
 const { values: args } = parseArgs({
     options: {
         offline: { type: 'boolean', default: false },
-        'live-dispatch': { type: 'boolean', default: false },
-        'live-page': { type: 'boolean', default: false },
-        'sky-warnings': { type: 'string', default: 'scenario' },
-        'live-sky-warnings': { type: 'boolean', default: false },
         incident: { type: 'string' },
         // Apify Standby sets ACTOR_WEB_SERVER_PORT; the server then listens on every interface.
         host: { type: 'string', default: process.env.HOST ?? (process.env.ACTOR_WEB_SERVER_PORT ? '0.0.0.0' : '127.0.0.1') },
@@ -58,7 +51,7 @@ if (existsSync(join(ROOT, '.env'))) process.loadEnvFile(join(ROOT, '.env'));
 function checkNode(): void {
     const [major, minor] = process.versions.node.split('.').map(Number);
     const ok = (major === 22 && minor >= 23) || (major === 24 && minor >= 22) || major >= 26;
-    if (!ok) console.warn(`warning: Node ${process.version}; the One CLI needs 22.23.4+, 24.22.1+ or 26.12.1+, so dispatch will fail`);
+    if (!ok) console.warn(`warning: Node ${process.version}; the One CLI needs 22.23.4+, 24.22.1+ or 26.12.1+, so calling an expert will fail`);
 }
 
 function openBrowser(url: string): void {
@@ -121,10 +114,8 @@ function loadArt(): Record<string, ArtAsset> {
 }
 
 const python = process.env.PYTHON ?? join(ROOT, '.venv', 'bin', 'python');
-const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], livePage: args['live-page'], incidents, scenarios, art: loadArt,
+const station = new Station({ root: ROOT, python, offline: args.offline, incidents, scenarios, art: loadArt,
     floor: existsSync(join(MAP, 'floor.json')) ? (JSON.parse(readFileSync(join(MAP, 'floor.json'), 'utf8')) as Floor) : null,
-    skyWarnings: (['scenario', 'live', 'off'].includes(args['sky-warnings']) ? args['sky-warnings'] : 'scenario') as 'scenario' | 'live' | 'off',
-    liveSkyWarnings: args['live-sky-warnings'],
 });
 
 const server = createServer((req, res) => {
@@ -171,7 +162,7 @@ station.attach(new WebSocketServer({ server, path: '/ws', maxPayload: 1 << 20 })
 const url = `http://${args.host}:${args.port}`;
 server.listen(Number(args.port), args.host, () => {
     const mode = args.offline ? 'OFFLINE (replaying the last saved run)' : 'live';
-    console.log(`Haunted Command Station on ${url}  mode: ${mode}  dispatch: ${args['live-dispatch'] ? 'LIVE' : 'dry run'}`);
+    console.log(`Haunted Command Station on ${url}  mode: ${mode}  paging: ${args.offline ? 'off (offline)' : station.pager.enabled ? 'on (PagerDuty)' : 'off (PAGING=off)'}`);
     if (!args.offline) checkNode();
     if (!args['no-browser']) openBrowser(url);
     station.compileIncident(firstIncident);

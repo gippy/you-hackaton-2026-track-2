@@ -2,7 +2,7 @@
 // it never writes markup. Model and web text is rendered as React text, and only http(s) links render.
 import { Component as ReactComponent, type ReactNode, useEffect, useState } from 'react';
 
-import type { Action, ArtAsset, Component, ComponentType, Floor, Incident, Library, Sky, SkyWarning, Source } from '../../shared/protocol.ts';
+import type { Action, ArtAsset, Component, ComponentType, Floor, Incident, Library, Sky, SkyEvent, Source } from '../../shared/protocol.ts';
 import { FloorPlan } from './floorplan.tsx';
 import type { Event, Operator } from './station.ts';
 import { artUrl } from './url.ts';
@@ -15,7 +15,6 @@ export interface Ctx {
     /** Numbers of the sources the plan relies on: cited by the ledger, a countermeasure or the sky clock. */
     cited: Set<number>;
     sky: Sky | null;
-    skyWarnings: SkyWarning[];
     /** The intake's incident, the step's clock ("19:33", or empty) and the model's recommended action. */
     incident: Incident | null;
     clock: string;
@@ -77,15 +76,15 @@ export class PanelBoundary extends ReactComponent<{ name: string; children: Reac
     }
 }
 
-/**
- * Sky warnings still ahead of `reference`, with their minutes recomputed: a warning keeps the minutes
- * from when it was posted, and stepping through the scenario moves the clock past it.
- */
-export function upcomingWarnings(warnings: SkyWarning[], sky: Sky | null, reference: number): SkyWarning[] {
-    return warnings.flatMap((w) => {
-        const event = sky?.events.find((e) => e.id === w.event);
-        const minutes = event ? Math.round((Date.parse(event.at) - reference) / 60000) : w.minutes;
-        return minutes < -1 ? [] : [{ ...w, minutes, text: w.text.replace(/, (?:in \d+ min|now)/, '') }];
+const LEAD_MINUTES = 30; // a sky event gets a warning this long before it
+const AFTER_MINUTES = 10; // and keeps saying "now" this long after
+
+/** The sky events from half an hour ahead of `reference` to just past it, each with what to do as it nears. */
+function skyWarnings(sky: Sky, reference: number, advice: Library['sky_advice']): { event: SkyEvent; minutes: number; todo: string }[] {
+    return sky.events.flatMap((event) => {
+        const minutes = Math.round((Date.parse(event.at) - reference) / 60000);
+        if (!event.at || minutes > LEAD_MINUTES || minutes < -AFTER_MINUTES) return [];
+        return [{ event, minutes, todo: advice?.[event.id] ?? '' }];
     });
 }
 
@@ -301,9 +300,9 @@ const LEVELS = { strong: 4, moderate: 3, weak: 2, unproven: 1 };
 function Picker({ p, ctx }: { p: Props<'CountermeasurePicker'>; ctx: Ctx }) {
     return (
         <div>
-            <div className="muted small spaced">Target: {p.target_entity}. Pick one to dispatch.</div>
+            <div className="muted small spaced">Target: {p.target_entity}. Pick one for the expert.</div>
             <fieldset className="options">
-                <legend className="sr-only">Countermeasure to dispatch</legend>
+                <legend className="sr-only">Countermeasure for the expert</legend>
                 {p.options.map((o) => {
                     const src = ctx.sources.find((s) => s.n === o.source);
                     const icon = ctx.art[ctx.library.arsenal_icons[o.id]];
@@ -383,7 +382,7 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
     }, [mode]);
     if (!sky) return <p className="muted">No sky data for this run.</p>;
     const reference = mode === 'scenario' && sky.clock_at ? Date.parse(sky.clock_at) : now;
-    const warnings = upcomingWarnings(ctx.skyWarnings, sky, reference);
+    const warnings = skyWarnings(sky, reference, ctx.library.sky_advice);
     const cited = p.cited.map((n) => ctx.sources.find((s) => s.n === n)).filter((s): s is Source => Boolean(s));
     const hero = ctx.art.hero_moonrise;
     return (
@@ -425,11 +424,11 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
             {warnings.length > 0 && (
                 <ul className="sky-warnings">
                     {warnings.map((w) => (
-                        <li key={w.event}>
+                        <li key={w.event.id}>
                             <span className={`pill ${w.minutes <= 10 ? 'page-triggered' : 'muted'}`}>{w.minutes > 0 ? `T-${w.minutes}` : 'now'}</span>
-                            <span>{w.text.replace(/^\[[^\]]+\] SIMULATED sky warning · /, '')}</span>
-                            <span className="muted small">
-                                Discord {w.mode === 'live' ? 'post' : w.mode}, edited {w.edits}×
+                            <span>
+                                {w.event.label} at {w.event.local}
+                                {w.todo && ` · ${w.todo}`}
                             </span>
                         </li>
                     ))}

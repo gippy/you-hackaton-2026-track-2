@@ -226,6 +226,20 @@
     "full_dark": "badge check at every door, nobody takes the SW stair alone",
     "moonrise": "clear the main stage, netting and barricade foam at the ready"
   },
+  "experts": {
+    "vampire_hunter": {
+      "label": "Vampire hunter",
+      "playbooks": ["corporeal"],
+      "spoken": "Calling the vampire hunter. This is a drill.",
+      "sting": "sting_vampire"
+    },
+    "ghostbuster": {
+      "label": "Ghostbuster",
+      "playbooks": ["spectral", "anomalous"],
+      "spoken": "Calling the ghostbuster. This is a drill.",
+      "sting": "sting_ghost"
+    }
+  },
   "arsenal_icons": {
     "silver_netting": "icon_silver_netting",
     "uv_floodlights": "icon_uv_lamp",

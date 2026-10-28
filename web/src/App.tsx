@@ -1,8 +1,8 @@
-import { type FormEvent, type KeyboardEvent, useEffect, useReducer, useRef, useState } from 'react';
+import { type KeyboardEvent, useEffect, useReducer, useRef, useState } from 'react';
 
-import type { Action, ClientMessage, ServerMessage, StepId } from '../../shared/protocol.ts';
+import type { ClientMessage, Expert, PageInfo, ServerMessage, StepId } from '../../shared/protocol.ts';
 import type { Incident } from '../../shared/protocol.ts';
-import { Card, IncidentHead, Link, PanelBoundary, upcomingWarnings, type Ctx } from './components.tsx';
+import { Card, IncidentHead, Link, PanelBoundary, type Ctx } from './components.tsx';
 import { FloorPlan } from './floorplan.tsx';
 import { layout } from './layout.ts';
 import { artUrl, withToken } from './url.ts';
@@ -48,6 +48,27 @@ function Provisional({ incident, ctx, stage }: { incident: Incident; ctx: Ctx; s
     );
 }
 
+const EXPERTS: Expert[] = ['vampire_hunter', 'ghostbuster'];
+const OPEN: PageInfo['status'][] = ['sending', 'triggered', 'acknowledged'];
+
+/** A page's status by its expert's button: "Paging…", "Triggered #12", "Acknowledged by Jaroslav", "Resolved". */
+function pageStatus(page: PageInfo): string {
+    switch (page.status) {
+        case 'sending':
+            return 'Paging…';
+        case 'triggered':
+            return `Triggered${page.number ? ` #${page.number}` : ''}`;
+        case 'acknowledged':
+            return page.acknowledged_by.length ? `Acknowledged by ${page.acknowledged_by.map((name) => name.split(' ')[0]).join(', ')}` : 'Acknowledged';
+        case 'resolved':
+            return 'Resolved';
+        case 'failed':
+            return 'Paging failed';
+        case 'off':
+            return 'Not sent: paging is off';
+    }
+}
+
 /** A feed tier as words: CRITICAL_HAUNT reads "critical haunt". */
 const tier = (raw: string) => raw.replace(/_/g, ' ').toLowerCase();
 
@@ -83,8 +104,6 @@ export function App() {
         setSoundOn(on);
     };
     const [raw, setRaw] = useState('');
-    const [live, setLive] = useState(false);
-    const [livePage, setLivePage] = useState(false);
     // Several viewers share one station. This tab steps from the step it last asked for, not from
     // whatever run another viewer started, and it can tell its own runs from theirs.
     const [cursor, setCursor] = useState<string | null>(null);
@@ -143,13 +162,10 @@ export function App() {
     }
     const clock = state.scenarios.flatMap((s) => s.steps).find((step) => step.incident_id === incident?.incident_id)?.time ?? '';
     const ctx: Ctx | null = library && {
-        library, art: state.art, floor: state.floor, sources: state.sources, cited, sky: state.sky, skyWarnings: state.skyWarnings,
+        library, art: state.art, floor: state.floor, sources: state.sources, cited, sky: state.sky,
         incident: incident?.incident ?? null, clock, action: state.manifest?.recommended_action ?? null, operator, send,
     };
-    const hasSkyClock = state.components.some((c) => c?.type === 'SkyClock');
-    const skyWarnings = upcomingWarnings(state.skyWarnings, state.sky, state.sky?.clock_at ? Date.parse(state.sky.clock_at) : Date.now());
     const sourceLabel = !state.connected ? 'disconnected' : state.source === 'snapshot' ? 'saved run' : state.source === 'live' ? 'live run' : state.mode ?? 'connecting';
-    const armed = live && state.liveDispatch;
     // Where the station on screen sits in a scenario, when it is one of its steps.
     const scenario = state.scenarios.find((s) => s.steps.some((step) => step.incident_id === incident?.incident_id)) ?? state.scenarios[0];
     const current = scenario?.steps.find((step) => step.incident_id === incident?.incident_id);
@@ -164,9 +180,13 @@ export function App() {
     // The step list shows five steps around the one on screen, or all of them on request.
     const at = Math.max(0, scenario?.steps.indexOf(current ?? mine ?? scenario.steps[0]) ?? 0);
     const visibleSteps = !scenario ? [] : allSteps ? scenario.steps : scenario.steps.slice(Math.max(0, Math.min(at - 2, scenario.steps.length - 5)), Math.max(0, Math.min(at - 2, scenario.steps.length - 5)) + 5);
-    // A harmless report: the model recommends watching, so the page does not push a dispatch.
-    const calm = state.manifest?.recommended_action === 'observe';
-    const pageArmed = livePage && state.livePage;
+    // The expert the code-mapped playbook points to is the primary button; a harmless report needs neither.
+    const harmless = incident?.incident.verdict === 'harmless';
+    const recommended = harmless || !library || !state.playbook ? null : EXPERTS.find((x) => library.experts[x].playbooks.includes(state.playbook!)) ?? null;
+    const offline = state.mode === 'offline';
+    const canCall = Boolean(state.manifest) && !running && !offline;
+    // This step's page for an expert (a pasted report's id is made on the server, so match any pasted one).
+    const pageFor = (expert: Expert) => state.pages.find((p) => p.expert === expert && (incident?.incident_id ? p.incident_id === incident.incident_id : p.incident_id.startsWith('pasted-')));
 
     // The timeline is one Tab stop: the arrow keys move between its steps.
     const roving = (e: KeyboardEvent<HTMLOListElement>) => {
@@ -178,15 +198,12 @@ export function App() {
         next.focus();
     };
 
-    const dispatch = (e: FormEvent) => {
-        e.preventDefault();
-        if (!state.manifest || state.dispatching) return; // aria-disabled, so the button keeps focus
-        if (armed && !confirm('Post this containment alert to the real #loft-incident channel?')) return;
-        if (pageArmed && !confirm('If the model marked this critical, really page the on-call through PagerDuty?')) return;
-        // The click is the interaction browsers wait for: with sound off it allows only this dispatch's spoken reply.
+    const callExpert = (expert: Expert) => {
+        const open = pageFor(expert);
+        if (!canCall || (open && OPEN.includes(open.status))) return; // aria-disabled, so the button keeps focus
+        // The click is the interaction browsers wait for: with sound off it allows only this call's sting and voice.
         if (!soundOn) sound.current.voiceOnce = true;
-        send({ type: 'dispatching' });
-        post({ type: 'dispatch', action: operator.action, countermeasure: operator.countermeasure, sealed: operator.sealed, extracted: operator.extracted.length, live: armed, live_page: pageArmed });
+        post({ type: 'call_expert', expert, countermeasure: operator.countermeasure });
     };
 
     return (
@@ -256,50 +273,48 @@ export function App() {
                             }}
                         />
                     </div>
-                    <form className="group dispatch" aria-label="Dispatch a containment alert" onSubmit={dispatch}>
-                        <select aria-label="Action" value={operator.action} onChange={(e) => send({ type: 'action', value: e.target.value as Action })}>
-                            <option value="contain">Contain</option>
-                            <option value="evacuate">Evacuate</option>
-                            <option value="observe">Observe</option>
-                        </select>
-                        <button type="submit" className={calm ? 'ghost' : ''} aria-disabled={!state.manifest || state.dispatching}>
-                            {state.dispatching ? 'Dispatching…' : calm ? 'Dispatch anyway' : 'Dispatch to #loft-incident'}
-                        </button>
-                        <span className="modes">
-                            {/* What a dispatch will do: a status, not a button. With the server's permission it pairs with its switch. */}
-                            {state.liveDispatch ? (
-                                <label className="mode" title="Untick to rehearse: One returns the exact request and nothing is posted.">
-                                    <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} />
-                                    Discord: <b className={armed ? 'armed' : ''}>{armed ? 'live post' : 'dry run'}</b>
-                                </label>
-                            ) : (
-                                <span className="mode" title="Nothing is posted: One returns the exact request. To post for real, start the server with --live-dispatch, then tick Live post.">
-                                    Discord: <b>{state.mode === 'offline' ? 'offline' : 'dry run'}</b>
-                                </span>
-                            )}
-                            {state.livePage ? (
-                                <label className="mode" title="Untick to rehearse: a critical dispatch prepares the page without sending it.">
-                                    <input type="checkbox" checked={livePage} onChange={(e) => setLivePage(e.target.checked)} />
-                                    Paging: <b className={pageArmed ? 'armed' : ''}>{pageArmed ? 'live' : 'dry run'}</b>
-                                </label>
-                            ) : (
-                                <span className="mode" title="A critical dispatch prepares the PagerDuty page without sending it. To page for real, start the server with --live-page, then tick Live page.">
-                                    Paging: <b>{state.mode === 'offline' ? 'offline' : 'dry run'}</b>
-                                </span>
-                            )}
-                            <span className="cm">{calm ? 'No dispatch needed' : operator.countermeasure ? (library?.arsenal[operator.countermeasure] ?? operator.countermeasure) : 'No countermeasure'}</span>
+                    <div className="group experts" role="group" aria-labelledby="experts-label">
+                        <span id="experts-label" className="experts-label">
+                            Call expert
                         </span>
-                        <span className="dispatch-result" role="status">
-                            {state.dispatch && !state.dispatching && (
-                                <>
-                                    {state.dispatch.error
-                                        ? 'Dispatch failed'
-                                        : { 'dry-run': 'Dry run done, nothing posted', live: 'Posted to #loft-incident', offline: 'Offline: One not called' }[state.dispatch.mode]}{' '}
-                                    · <a href="#dispatch-log">details</a>
-                                </>
-                            )}
+                        {library &&
+                            EXPERTS.map((expert) => {
+                                const page = pageFor(expert);
+                                const open = page && OPEN.includes(page.status);
+                                return (
+                                    <span key={expert} className="expert">
+                                        <button
+                                            type="button"
+                                            className={expert === recommended ? '' : 'ghost'}
+                                            aria-disabled={!canCall || open}
+                                            title={offline ? 'Offline: no expert can be paged' : `Pages ${library.experts[expert].label.toLowerCase()} on call through PagerDuty`}
+                                            onClick={() => callExpert(expert)}
+                                        >
+                                            {library.experts[expert].label}
+                                        </button>
+                                        {page && (
+                                            <span className={`page-status page-${page.status}`} title={page.error}>
+                                                {pageStatus(page)}
+                                            </span>
+                                        )}
+                                        {open && page.id && (
+                                            <button type="button" className="link" onClick={() => post({ type: 'resolve_page', key: page.key })}>
+                                                Resolve
+                                            </button>
+                                        )}
+                                    </span>
+                                );
+                            })}
+                        <span className="cm">
+                            {offline
+                                ? 'Offline: no expert can be paged'
+                                : harmless
+                                  ? 'No expert needed'
+                                  : operator.countermeasure
+                                    ? (library?.arsenal[operator.countermeasure] ?? operator.countermeasure)
+                                    : 'No countermeasure picked'}
                         </span>
-                    </form>
+                    </div>
                 </div>
             </header>
 
@@ -321,7 +336,10 @@ export function App() {
                         : state.manifest && incident
                           ? `Station ready: ${state.components.filter(Boolean).length} panels. ${incident.incident.entity} in ${library?.sectors[incident.incident.sector] ?? incident.incident.sector}. Recommended: ${state.manifest.recommended_action}.`
                           : ''}
-                    {state.dispatch && !state.dispatching ? ` Dispatch ${state.dispatch.mode}${state.dispatch.error ? ' failed' : ' done'}.` : ''}
+                    {EXPERTS.map((expert) => pageFor(expert))
+                        .filter(Boolean)
+                        .map((page) => ` ${library?.experts[page!.expert].label}: ${pageStatus(page!)}.`)
+                        .join('')}
                 </div>
                 <aside className="rail">
                     {scenario && (
@@ -473,80 +491,28 @@ export function App() {
                             </div>
                         )}
                     </div>
-                    {state.dispatch && (
-                        <section className="panel dispatch-log" id="dispatch-log">
-                            <h2>
-                                Dispatch <em className="partner">One → Discord</em>
-                            </h2>
-                            <pre>{state.dispatch.text}</pre>
-                            {state.dispatch.paging && <p className="muted small">{state.dispatch.paging}</p>}
-                            <details>
-                                <summary>
-                                    {state.dispatch.error
-                                        ? `${state.dispatch.mode === 'live' ? 'Live post' : 'Dry run'} failed`
-                                        : { 'dry-run': 'Dry run: the exact request One would send (nothing was posted)', live: 'Posted to Discord through One', offline: 'Offline: One was not called' }[state.dispatch.mode]}
-                                </summary>
-                                <pre>{JSON.stringify(state.dispatch.error ? { error: state.dispatch.error } : (state.dispatch.request ?? state.dispatch.response), null, 2)}</pre>
-                            </details>
-                        </section>
-                    )}
-                    {skyWarnings.length > 0 && !hasSkyClock && (
-                        <section className="panel pages">
-                            <h2>
-                                Sky warnings <em className="partner">One → Discord, edited in place</em>
-                            </h2>
-                            <ul>
-                                {skyWarnings.map((w) => (
-                                    <li key={w.event}>
-                                        <div className="page-head">
-                                            <span className={`pill ${w.minutes <= 10 ? 'page-triggered' : 'muted'}`}>{w.minutes > 0 ? `T-${w.minutes} min` : 'now'}</span>
-                                            <span>{w.text}</span>
-                                        </div>
-                                        <p className="muted small">
-                                            {w.mode === 'live' ? `Posted as message ${w.message_id ?? '?'}` : w.mode === 'dry-run' ? 'Dry run' : 'Offline'}, edited {w.edits} time{w.edits === 1 ? '' : 's'}
-                                        </p>
-                                        {w.error && <p className="status-danger small">{w.error}</p>}
-                                        {w.request !== undefined && (
-                                            <details>
-                                                <summary>{w.edits ? 'The edit request One would send' : 'The post request One would send'}</summary>
-                                                <pre>{JSON.stringify(w.request, null, 2)}</pre>
-                                            </details>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                        </section>
-                    )}
                     {state.pages.length > 0 && (
                         <section className="panel pages">
                             <h2>
-                                Paging <em className="partner">One → PagerDuty</em>
+                                Expert calls <em className="partner">One → PagerDuty</em>
                             </h2>
                             <ul>
                                 {state.pages.map((page) => (
                                     <li key={page.key}>
                                         <div className="page-head">
-                                            <span className={`pill page-${page.status}`}>
-                                                {page.status === 'acknowledged' && page.acknowledged_by.length ? `acknowledged by ${page.acknowledged_by.join(', ')}` : page.status}
-                                            </span>
+                                            <span className={`pill page-${page.status}`}>{pageStatus(page)}</span>
                                             <b>{page.title}</b>
                                             <span className="muted small">
-                                                {page.urgency} urgency · {page.mode === 'live' ? 'live' : 'dry run'} · {page.key}
+                                                {page.urgency} urgency · {page.key}
                                             </span>
                                             {page.url && <Link url={page.url}>#{page.number ?? 'incident'}</Link>}
-                                            {page.status !== 'resolved' && page.status !== 'failed' && page.status !== 'sending' && (
+                                            {OPEN.includes(page.status) && page.id && (
                                                 <button type="button" className="ghost" onClick={() => post({ type: 'resolve_page', key: page.key })}>
                                                     Resolve
                                                 </button>
                                             )}
                                         </div>
                                         {page.error && <p className="status-danger small">{page.error}</p>}
-                                        {page.request !== undefined && (
-                                            <details>
-                                                <summary>{page.mode === 'dry-run' ? 'Dry run: the exact request One would send' : 'Request'}</summary>
-                                                <pre>{JSON.stringify(page.request, null, 2)}</pre>
-                                            </details>
-                                        )}
                                     </li>
                                 ))}
                             </ul>

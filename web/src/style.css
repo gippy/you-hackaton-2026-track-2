@@ -75,29 +75,24 @@ a:hover { color: var(--amber); }
 .pill.sev-critical, .pill.sev-catastrophic { color: var(--bg); background: var(--red); border-color: var(--red); animation: throb 1.6s infinite; }
 .pill.live { color: var(--hi); border-color: var(--hi); }
 .pill.snapshot { color: var(--spook); border-color: var(--spook); }
-.pill.armed { color: var(--bg); background: var(--red); border-color: var(--red); }
 
-.dispatch { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.dispatch label { color: var(--muted); font-size: 13px; display: flex; gap: 6px; align-items: center; }
-/* Two rows sized to the wider one: the action and the button, then what a dispatch will do. */
-.controls .dispatch { display: grid; grid-template-columns: auto auto; justify-items: end; align-items: center; gap: 4px 8px; }
+/* Call expert: a label, each expert's button with its page's status beside it, then the picked countermeasure. */
+.experts { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px 14px; max-width: 680px; }
+.experts-label { font: 16px/1 var(--display); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.expert { display: inline-flex; align-items: center; gap: 8px; }
+.page-status { font-size: 13px; color: var(--hi); }
+.page-status.page-triggered { color: var(--red); }
+.page-status.page-failed, .page-status.page-off { color: var(--muted); }
+.experts .cm { flex-basis: 100%; text-align: right; font-size: 13px; color: var(--hi); }
 .state { font: 16px/1 var(--display); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .state::before { content: '● '; }
 .state.live { color: var(--hi); }
 .state.snapshot { color: var(--spook); }
-.modes { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 2px 14px; font-size: 13px; color: var(--muted); }
-.modes .mode { display: inline-flex; align-items: center; gap: 5px; cursor: help; }
-.modes label.mode { cursor: pointer; }
-.modes b { color: var(--text); font-weight: 600; }
-.modes b.armed { color: var(--red); }
-.modes .cm { color: var(--hi); }
-.dispatch-result { grid-column: 1 / -1; font-size: 13px; color: var(--hi); min-height: 1.2em; }
 .seal-label { margin-top: 10px; }
 .seal-list { flex-wrap: wrap; margin-top: 4px; }
 .seal-list button { font-size: 14px; padding: 3px 8px; }
 fieldset.options { border: 0; margin: 0; padding: 0; min-width: 0; }
 .option label { display: flex; gap: 10px; align-items: center; cursor: pointer; }
-.dispatch .cm b { color: var(--hi); font-weight: 600; }
 
 select, textarea, button, input { font: inherit; color: var(--text); }
 select, textarea { background: var(--bg); border: 1px solid var(--dim); padding: 5px 8px; outline: none; }
@@ -138,8 +133,9 @@ button[aria-disabled='true'] { opacity: 0.4; cursor: not-allowed; }
     .components > .card { grid-column: 1 / -1 !important; grid-row: auto !important; }
     .controls { justify-content: flex-start; }
     .controls .group + .group { padding-left: 0; border-left: 0; }
-    .modes { justify-content: flex-start; }
-    .topbar { padding: 10px 16px; position: static; } /* on a phone the dispatch form would cover a third of the screen */
+    .experts { justify-content: flex-start; }
+    .experts .cm { text-align: left; }
+    .topbar { padding: 10px 16px; position: static; } /* on a phone the expert buttons would cover a third of the screen */
     .stepper { flex: 1 1 100%; justify-content: space-between; min-width: 0; }
     .stepper span { white-space: normal; text-align: center; }
     .sigil { display: none; }
@@ -278,6 +274,8 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .floor .window { fill: none; stroke: var(--spook); stroke-width: 0.6; stroke-dasharray: 1.5 0.8; opacity: 0.8; }
 .floor .route { fill: none; stroke: var(--hi); stroke-width: 0.9; stroke-dasharray: 2.5 2; animation: march 1s linear infinite; }
 .floor .route-start { fill: var(--hi); }
+.floor .route.blocked { stroke: var(--red); }
+.floor .route-exit { fill: var(--bg); stroke: var(--hi); stroke-width: 0.8; }
 
 .area-svg .ground { fill: var(--bg); }
 .osm.park { fill: none; stroke: var(--dim); stroke-width: 0.6; stroke-dasharray: 2 2; }
@@ -384,18 +382,13 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .scene .crt-img { width: 170px; flex: none; }
 .scene img { aspect-ratio: 16 / 10; object-fit: cover; }
 
-/* --- dispatch, paging, sky warnings -------------------------------------------------------- */
+/* --- expert calls -------------------------------------------------------------------------- */
 .pages ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .page-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
 .pill.page-triggered { color: var(--bg); background: var(--red); border-color: var(--red); animation: throb 1.6s infinite; }
 .pill.page-acknowledged { color: var(--hi); border-color: var(--hi); }
 .pill.page-resolved { color: var(--muted); border-color: var(--dim); }
 .pill.page-failed { color: var(--red); border-color: var(--red); }
-.dispatch-log pre, .pages pre {
-    white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg); border: 1px solid var(--line);
-    padding: 10px; font: 13px/1.5 var(--font); margin: 0 0 10px; max-height: 360px; overflow: auto;
-}
-.dispatch-log summary, .pages summary { cursor: pointer; color: var(--muted); margin-bottom: 6px; }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg); }

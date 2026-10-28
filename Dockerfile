@@ -3,8 +3,8 @@
 # Haunted Command Station as an Apify Standby Actor.
 #
 # The image holds no keys. PARASAIL_API_KEY, YDC_API_KEY and ONE_SECRET come from the environment
-# (Apify secrets on the platform, `docker run -e` locally). It never starts with --live-dispatch,
-# --live-page or --live-sky-warnings, so the dispatch button only ever does a dry run.
+# (Apify secrets on the platform, `docker run -e` locally). The "Call expert" buttons page through
+# PagerDuty for real; set PAGING=off on the Actor to switch that off.
 #
 # Four stages: the page build, the production node_modules, the pipeline's Python venv, and the runtime
 # that copies only what the station reads. Nothing outside these COPY lines reaches the image.
