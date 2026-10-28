@@ -11,7 +11,7 @@ import { createInterface } from 'node:readline';
 import type { WebSocket, WebSocketServer } from 'ws';
 
 import library from '../shared/library.json' with { type: 'json' };
-import type { ClientMessage, FixtureIncident, FlowEvent, Library, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
+import type { ArtAsset, ClientMessage, FixtureIncident, FlowEvent, Library, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
 import { alertText, channelId, send } from './dispatch.ts';
 import { OneError } from './one.ts';
 import { Pager } from './pager.ts';
@@ -38,6 +38,7 @@ export interface StationOptions {
     liveSkyWarnings: boolean;
     incidents: FixtureIncident[];
     scenarios: Scenario[];
+    art: Record<string, ArtAsset>;
 }
 
 type WorkerLine = FlowEvent | { type: 'result'; state: RunState } | { type: 'fatal'; detail: string };
@@ -78,6 +79,7 @@ export class Station {
             channel: channelId(),
             incidents: this.opts.incidents,
             scenarios: this.opts.scenarios,
+            art: this.opts.art,
         };
     }
 

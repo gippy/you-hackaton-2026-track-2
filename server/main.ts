@@ -17,7 +17,7 @@ import { parseArgs } from 'node:util';
 
 import { WebSocketServer } from 'ws';
 
-import type { FixtureIncident, Scenario } from '../shared/protocol.ts';
+import type { ArtAsset, FixtureIncident, Scenario } from '../shared/protocol.ts';
 import { SPEECH_FILE } from './speech.ts';
 import { Station } from './station.ts';
 
@@ -32,7 +32,9 @@ const TYPES: Record<string, string> = {
     '.svg': 'image/svg+xml',
     '.json': 'application/json',
     '.mp3': 'audio/mpeg',
+    '.webp': 'image/webp',
 };
+const ART = join(ROOT, 'art', 'nightfall'); // the only part of art/ the page may load
 
 const { values: args } = parseArgs({
     options: {
@@ -106,8 +108,16 @@ if (!known.some((i) => i.incident_id === firstIncident)) {
     process.exit(1);
 }
 
+/** The art library's entries the page needs: file, kind and alt text. Empty when there is no art. */
+function loadArt(): Record<string, ArtAsset> {
+    const path = join(ART, 'manifest.json');
+    if (!existsSync(path)) return {};
+    const entries = Object.entries(JSON.parse(readFileSync(path, 'utf8')) as Record<string, ArtAsset>);
+    return Object.fromEntries(entries.map(([id, a]) => [id, { file: a.file, kind: a.kind, alt: a.alt }]));
+}
+
 const python = process.env.PYTHON ?? join(ROOT, '.venv', 'bin', 'python');
-const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], livePage: args['live-page'], incidents, scenarios,
+const station = new Station({ root: ROOT, python, offline: args.offline, liveDispatch: args['live-dispatch'], livePage: args['live-page'], incidents, scenarios, art: loadArt(),
     skyWarnings: (['scenario', 'live', 'off'].includes(args['sky-warnings']) ? args['sky-warnings'] : 'scenario') as 'scenario' | 'live' | 'off',
     liveSkyWarnings: args['live-sky-warnings'],
 });
@@ -124,6 +134,14 @@ const server = createServer((req, res) => {
         res.writeHead(200, { 'content-type': 'audio/mpeg', 'cache-control': 'max-age=31536000, immutable' });
         res.end(readFileSync(join(ROOT, 'out', 'speech', speech)));
         return;
+    }
+    if (path.startsWith('/art/nightfall/')) {
+        const art = normalize(join(ROOT, decodeURIComponent(path)));
+        if (art.startsWith(`${ART}/`) && existsSync(art) && TYPES[extname(art)] && extname(art) !== '.json') {
+            res.writeHead(200, { 'content-type': TYPES[extname(art)], 'cache-control': 'max-age=3600' });
+            res.end(readFileSync(art));
+            return;
+        }
     }
     const file = normalize(join(DIST, path === '/' ? 'index.html' : path));
     if (!file.startsWith(DIST) || !existsSync(file) || !TYPES[extname(file)]) {

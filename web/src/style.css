@@ -196,6 +196,16 @@ button.ghost { background: transparent; color: var(--accent); border: 1px solid 
 .sky-event.passed { opacity: 0.55; }
 .moon-tile { align-items: center; justify-content: center; text-align: center; }
 .moon { width: 40px; height: 40px; }
+.entity { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.entity img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); }
+.pill.verdict-real { color: #fff; background: var(--danger); border-color: var(--danger); }
+.pill.verdict-look-alike { color: var(--ok); border-color: var(--ok); }
+.pill.verdict-unconfirmed { color: var(--warn); border-color: var(--warn); }
+.scene { margin: 10px 0 0; display: flex; gap: 10px; align-items: center; }
+.scene img { width: 160px; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
+.option .icon { width: 22px; height: 22px; }
+.sky { background-size: cover; background-position: right center; border-radius: 8px; padding: 4px; }
+.empty.hero { background-size: cover; background-position: center; min-height: 260px; display: flex; align-items: end; justify-content: center; color: var(--text); text-shadow: 0 1px 8px #000; }
 .ledger { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
 .ledger p { margin: 2px 0 0; color: var(--muted); }
 

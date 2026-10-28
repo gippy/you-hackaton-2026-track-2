@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useReducer, useRef, useState } from 'react';
 
 import type { Action, ClientMessage, ServerMessage, StepId } from '../../shared/protocol.ts';
 import { Card, domain, Link, type Ctx } from './components.tsx';
+import { artUrl } from './url.ts';
 import { SoundBoard } from './audio.ts';
 import { initial, reduce } from './station.ts';
 
@@ -84,7 +85,7 @@ export function App() {
 
     const post = (msg: ClientMessage) => ws.current?.readyState === WebSocket.OPEN && ws.current.send(JSON.stringify(msg));
     const { incident, library, operator } = state;
-    const ctx: Ctx | null = library && { library, sources: state.sources, sky: state.sky, operator, send };
+    const ctx: Ctx | null = library && { library, art: state.art, sources: state.sources, sky: state.sky, operator, send };
     const cited = new Set<number>();
     for (const c of state.components) {
         if (c?.type === 'SourceLedger') c.props.cited.forEach((n) => cited.add(n));
@@ -340,7 +341,7 @@ export function App() {
                         {ctx && state.components.length ? (
                             state.components.map((c, i) => c && <Card key={`${i}-${c.type}`} index={i} component={c} ctx={ctx} />)
                         ) : (
-                            <div className="empty">
+                            <div className="empty hero" style={state.art.hero_station_night ? { backgroundImage: `url(${artUrl(state.art.hero_station_night.file)})` } : undefined}>
                                 {!incident ? 'Reading the incident…' : !state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…'}
                             </div>
                         )}

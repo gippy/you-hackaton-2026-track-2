@@ -65,7 +65,8 @@ EXTRACT_SYSTEM = (
     "Turn a raw incident report into a structured incident. Use only what the report says; use null or 'unknown' "
     "for anything it does not state. Map the location to the closest loft sector:\n"
     + "\n".join(f"- {k}: {v}" for k, v in library.SECTORS.items())
-    + "\nentity_class: spectral for ghosts, phantoms, apparitions and poltergeists; corporeal for physical monsters; "
+    + "\nentity_class: spectral for ghosts, phantoms, apparitions, banshees and poltergeists; corporeal for physical monsters "
+    "with a body, such as vampires, werewolves, wolves, zombies and mummies; "
     "anomalous for cursed technology, rifts or anything else. " + UNTRUSTED
 )
 
@@ -74,6 +75,8 @@ COMPOSE_SYSTEM = (
     "Compose it from this fixed component library, choosing only the components this incident needs, "
     "most urgent first, each at most once (4 to 7 components for a real incident):\n"
     + "{components}"
+    + "\nImages you may show, by id (EntityCard image, FloorPlan scene). A costume or prop gets its look-alike image:\n"
+    + library.art_listing()
     + "\nFloor plan adjacency (a safe_route may only step between neighbours, and must end at entrance):\n"
     + "\n".join(f"- {k}: {', '.join(v)}" for k, v in library.adjacency().items())
     + "\nFill props with values from the incident. Never invent sensor readings the incident does not report. "

@@ -43,7 +43,7 @@ export type Component =
     | Base<'ThreatBanner', { severity: Severity; headline: string; directive: string }>
     | Base<'EMFGauge', { value_mg: number; threshold_mg: number; trend: 'rising' | 'steady' | 'falling'; status: Level }>
     | Base<'ThermalReadout', { temperature_c: number; baseline_c: number; status: Level }>
-    | Base<'FloorPlan', { hot_sector: string; seal: string[]; safe_route: string[] }>
+    | Base<'FloorPlan', { hot_sector: string; seal: string[]; safe_route: string[]; scene?: string }>
     | Base<'CivilianTracker', { count: number; location: string; condition: Condition; priority: 'immediate' | 'high' | 'routine' }>
     | Base<
           'CountermeasurePicker',
@@ -55,7 +55,8 @@ export type Component =
       >
     | Base<'SystemsBoard', { systems: { name: string; status: SystemStatus }[] }>
     | Base<'SourceLedger', { cited: number[] }>
-    | Base<'SkyClock', { focus: SkyEvent['id']; warning: string; cited: number[] }>;
+    | Base<'SkyClock', { focus: SkyEvent['id']; warning: string; cited: number[] }>
+    | Base<'EntityCard', { image: string; verdict: 'real' | 'look-alike' | 'unconfirmed'; caption: string }>;
 
 export type ComponentType = Component['type'];
 
@@ -109,10 +110,18 @@ export interface RunState {
     sky?: Sky;
 }
 
+/** One image from art/nightfall/manifest.json. `file` is relative to the repo root. */
+export interface ArtAsset {
+    file: string;
+    kind: 'entity' | 'sector' | 'hero' | 'icon';
+    alt: string;
+}
+
 export interface Library {
     sectors: Record<string, string>;
     layout: Record<string, [number, number, number, number]>;
     arsenal: Record<string, string>;
+    arsenal_icons: Record<string, string>;
     playbooks: Record<string, { label: string; arsenal: string[]; lore_focus: string }>;
     components: Record<ComponentType, string>;
     actions: Action[];
@@ -184,7 +193,7 @@ export interface PageInfo {
 
 export type ServerMessage =
     | FlowEvent
-    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; live_page: boolean; library: Library; channel: string; incidents: FixtureIncident[]; scenarios: Scenario[] }
+    | { type: 'hello'; mode: 'live' | 'offline'; live_dispatch: boolean; live_page: boolean; library: Library; channel: string; incidents: FixtureIncident[]; scenarios: Scenario[]; art: Record<string, ArtAsset> }
     | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
     | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string; paging?: string }

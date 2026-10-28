@@ -23,3 +23,7 @@ MVP_PROMPT.md
 node_modules/
 web/dist/
 *.tsbuildinfo
+
+# Raw renders: only the WebP files and icons in art/nightfall are committed
+art/raw/
+art/*.png

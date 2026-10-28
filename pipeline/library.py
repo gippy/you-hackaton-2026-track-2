@@ -61,10 +61,22 @@ def _component(name: str, props: dict) -> dict:
 
 SKY_EVENTS = ["sunset", "civil_dusk", "full_dark", "moonrise"]
 
+# The art library (art/nightfall/manifest.json): the model may pick entity and sector images by id.
+_ART_PATH = Path(__file__).resolve().parent.parent / _LIB["art_manifest"]
+ART: dict[str, dict] = json.loads(_ART_PATH.read_text()) if _ART_PATH.exists() else {}
+ENTITY_IMAGES = {k: v["alt"] for k, v in ART.items() if v.get("kind") == "entity"}
+SCENE_IMAGES = {k: v["alt"] for k, v in ART.items() if v.get("kind") == "sector"}
+
 
 def components_for(sky: bool) -> dict[str, str]:
-    """The components a run may use: SkyClock only when the run has a sky (a scenario step)."""
-    return {k: v for k, v in COMPONENTS.items() if sky or k != "SkyClock"}
+    """The components a run may use: SkyClock only with a sky (a scenario step), EntityCard only with art."""
+    return {k: v for k, v in COMPONENTS.items() if (sky or k != "SkyClock") and (ENTITY_IMAGES or k != "EntityCard")}
+
+
+def art_listing() -> str:
+    """The images the model may choose from, for the compose prompt."""
+    lines = [f"- {k}: {alt}" for k, alt in {**ENTITY_IMAGES, **SCENE_IMAGES}.items()]
+    return "\n".join(lines) or "- none"
 
 
 def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) -> dict:
@@ -83,7 +95,9 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
             "hot_sector": _enum(SECTORS),
             "seal": {"type": "array", "items": _enum(SECTORS), "description": "Distinct sectors to lock down"},
             "safe_route": {"type": "array", "items": _enum(SECTORS),
-                           "description": "Adjacent sectors from where the people are to the entrance, in order"}}),
+                           "description": "Adjacent sectors from where the people are to the entrance, in order"},
+            **({"scene": {**_enum([*SCENE_IMAGES, "none"]), "description": "A sector image to show beside the plan, or none"}}
+               if SCENE_IMAGES else {})}),
         _component("CivilianTracker", {"count": {"type": "integer"}, "location": {"type": "string"},
                                        "condition": _enum(["pinned", "trapped", "injured", "evacuating", "safe", "unknown"]),
                                        "priority": _enum(["immediate", "high", "routine"])}),
@@ -98,6 +112,11 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
             "name": {"type": "string"}, "status": _enum(["online", "degraded", "offline"])})}}),
         _component("SourceLedger", {"cited": {"type": "array", "items": source_ref}}),
     ]
+    if ENTITY_IMAGES:
+        variants.append(_component("EntityCard", {
+            "image": {**_enum(ENTITY_IMAGES), "description": "The entity image that matches the report"},
+            "verdict": {**_enum(["real", "look-alike", "unconfirmed"]), "description": "look-alike for a costume or prop"},
+            "caption": {"type": "string", "description": "What the commander is looking at, under 15 words"}}))
     if sky:
         variants.append(_component("SkyClock", {
             "focus": {**_enum(SKY_EVENTS), "description": "The sky event that matters most for this incident"},
@@ -150,6 +169,11 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int) -> tuple[di
                 notes.append("dropped a safe route that walks through walls")
                 route = []
             props["safe_route"] = route
+            if props.get("scene") not in SCENE_IMAGES:
+                props["scene"] = "none"
+        if kind == "EntityCard" and props.get("image") not in ENTITY_IMAGES:
+            notes.append("dropped an EntityCard with an unknown image")
+            continue
         if kind in ("SourceLedger", "SkyClock"):
             props["cited"] = sorted({n for n in props.get("cited") or [] if 1 <= n <= source_count})
         components.append({"type": kind, "why": comp.get("why", ""), "props": props})

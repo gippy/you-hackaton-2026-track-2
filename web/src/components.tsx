@@ -2,11 +2,13 @@
 // it never writes markup. Model and web text is rendered as React text, and only http(s) links render.
 import { type ReactNode, useEffect, useState } from 'react';
 
-import type { Component, ComponentType, Library, Sky, Source } from '../../shared/protocol.ts';
+import type { ArtAsset, Component, ComponentType, Library, Sky, Source } from '../../shared/protocol.ts';
 import type { Event, Operator } from './station.ts';
+import { artUrl } from './url.ts';
 
 export interface Ctx {
     library: Library;
+    art: Record<string, ArtAsset>;
     sources: Source[];
     sky: Sky | null;
     operator: Operator;
@@ -25,6 +27,7 @@ export const TITLES: Record<ComponentType, string> = {
     SystemsBoard: 'Facility systems',
     SourceLedger: 'Grounding',
     SkyClock: 'Sky clock',
+    EntityCard: 'Entity',
 };
 
 const WIDE = new Set<ComponentType>(['ThreatBanner', 'FloorPlan', 'CountermeasurePicker', 'SkyClock']);
@@ -102,6 +105,17 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
             );
         case 'SkyClock':
             return <SkyClock p={c.props} ctx={ctx} />;
+        case 'EntityCard': {
+            const asset = ctx.art[c.props.image];
+            return (
+                <figure className="entity">
+                    {asset && <img src={artUrl(asset.file)} alt={asset.alt} loading="lazy" />}
+                    <figcaption>
+                        <span className={`pill verdict-${c.props.verdict}`}>{c.props.verdict}</span> {c.props.caption}
+                    </figcaption>
+                </figure>
+            );
+        }
         case 'SourceLedger': {
             const cited = c.props.cited.length ? c.props.cited : ctx.sources.map((s) => s.n);
             return (
@@ -249,6 +263,12 @@ function FloorPlan({ p, ctx }: { p: Props<'FloorPlan'>; ctx: Ctx }) {
                 </span>
             </div>
             <div className="muted small">{sealed.length ? `Sealed: ${sealed.map((id) => sectors[id] ?? id).join(', ')}` : 'No sectors sealed.'}</div>
+            {p.scene && ctx.art[p.scene] && (
+                <figure className="scene">
+                    <img src={artUrl(ctx.art[p.scene].file)} alt={ctx.art[p.scene].alt} loading="lazy" />
+                    <figcaption className="muted small">{ctx.art[p.scene].alt}</figcaption>
+                </figure>
+            )}
         </div>
     );
 }
@@ -314,6 +334,9 @@ function Picker({ p, ctx }: { p: Props<'CountermeasurePicker'>; ctx: Ctx }) {
                                 onChange={() => ctx.send({ type: 'countermeasure', id: o.id })}
                             />
                             <div className="name">
+                                {ctx.art[ctx.library.arsenal_icons[o.id]] && (
+                                    <img className="icon" src={artUrl(ctx.art[ctx.library.arsenal_icons[o.id]].file)} alt="" aria-hidden="true" />
+                                )}
                                 {ctx.library.arsenal[o.id] ?? o.id}
                                 <span className="support" title={`${o.support} support in the sources`}>
                                     {[1, 2, 3, 4].map((n) => (
@@ -378,8 +401,9 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
     if (!sky) return <p className="muted">No sky data for this run.</p>;
     const reference = mode === 'scenario' && sky.clock_at ? Date.parse(sky.clock_at) : now;
     const cited = p.cited.map((n) => ctx.sources.find((s) => s.n === n)).filter((s): s is Source => Boolean(s));
+    const hero = ctx.art.hero_moonrise;
     return (
-        <div className="sky">
+        <div className="sky" style={hero ? { backgroundImage: `linear-gradient(90deg, var(--panel) 35%, transparent), url(${artUrl(hero.file)})` } : undefined}>
             <div className="sky-head">
                 <span className="warning">{p.warning}</span>
                 <span className="seg" role="group" aria-label="Count down from">

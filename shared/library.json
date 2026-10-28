@@ -74,7 +74,12 @@
     "barricade_foam": "Rapid barricade foam",
     "flare_line": "Magnesium flare line",
     "sound_cannon": "Infrasound cannon",
-    "power_cut": "Sector power cut"
+    "power_cut": "Sector power cut",
+    "garlic_line": "Garlic line at the threshold",
+    "no_invitation": "Do not invite: revoke invitations",
+    "seed_scatter": "Poppy seed scatter",
+    "name_calling": "Call by badge name",
+    "raise_blinds": "Raise the blinds"
   },
   "playbooks": {
     "spectral": {
@@ -98,7 +103,12 @@
         "flare_line",
         "uv_floodlights",
         "sound_cannon",
-        "power_cut"
+        "power_cut",
+        "garlic_line",
+        "no_invitation",
+        "seed_scatter",
+        "name_calling",
+        "raise_blinds"
       ],
       "lore_focus": "folklore weaknesses of physical monsters and crowd-safety barricading"
     },
@@ -123,7 +133,8 @@
     "CountermeasurePicker": "Ranked countermeasures from the playbook arsenal, each tied to a grounding source. The operator picks one to dispatch.",
     "SystemsBoard": "Status of facility systems the incident mentions (network, security, power, doors).",
     "SourceLedger": "The You.com sources the station is grounded in, with the ones the plan leans on marked.",
-    "SkyClock": "Countdown to sunset, civil dusk, full dark and moonrise, with the moon's phase. Only for scenario steps, when the time of day changes the threat."
+    "SkyClock": "Countdown to sunset, civil dusk, full dark and moonrise, with the moon's phase. Only for scenario steps, when the time of day changes the threat.",
+    "EntityCard": "A picture of the entity, or of the harmless look-alike it turned out to be, with a verdict. Only when an image in the art library matches what the report describes."
   },
   "actions": [
     "contain",
@@ -264,5 +275,16 @@
     "civil_dusk": "house lights up on both hack floors, staff the side doors",
     "full_dark": "badge check at every door, nobody takes the SW stair alone",
     "moonrise": "clear the main stage, netting and barricade foam at the ready"
-  }
+  },
+  "arsenal_icons": {
+    "silver_netting": "icon_silver_netting",
+    "uv_floodlights": "icon_uv_lamp",
+    "barricade_foam": "icon_barricade_foam",
+    "garlic_line": "icon_garlic",
+    "raise_blinds": "icon_window_blinds",
+    "name_calling": "icon_name_badge",
+    "seed_scatter": "icon_poppy_seeds",
+    "no_invitation": "icon_do_not_invite"
+  },
+  "art_manifest": "art/nightfall/manifest.json"
 }

@@ -1,0 +1,207 @@
+{
+    "entity_vampire": {
+        "file": "art/nightfall/entity_vampire.webp",
+        "kind": "entity",
+        "alt": "A pale vampire in a long dark coat and a lanyard, standing among attendees at an evening tech mixer",
+        "prompt": "A pale elegant vampire figure in a long dark coat stands chest-up among blurred event attendees wearing lanyards and holding laptops at an evening mixer, face turned away into shadow. One warm amber lamp glows behind, a faint cold violet rim light edges the figure's shoulders and collar. Shallow depth of field, simple dark surroundings, muted charcoal and plum tones with amber accents, cinematic digital illustration, near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1101,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_werewolf": {
+        "file": "art/nightfall/entity_werewolf.webp",
+        "kind": "entity",
+        "alt": "A werewolf caught mid-transformation in a torn hoodie, lit by the moon through a tall window",
+        "prompt": "A werewolf mid-transformation, seen from the front at chest height, standing in a dim empty hall. He wears a torn gray hooded sweatshirt with the hood pushed back, but his face is clearly a wolf's: a long fur-covered snout, pointed ears, bared pale teeth, glowing amber eyes, thick gray fur spreading across his neck and forearms. Both clawed hands are raised toward the camera. Cold moonlight pours through a tall narrow window behind him, rim-lighting the fur and casting long shadows. Muted grays and bone white against deep violet shadows, small amber highlights in the eyes and claws, a faint red accent in the torn fabric. Near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1302,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_wolf_pack": {
+        "file": "art/nightfall/entity_wolf_pack.webp",
+        "kind": "entity",
+        "alt": "Three wolves with glowing amber eyes among empty white chairs in a dark hall",
+        "prompt": "A pack of three wolves prowling in a low crouch between rows of empty white folding chairs in a dark event hall, their glowing amber eyes catching the light, muzzles in shadow and faces turned away. Low camera angle from floor level, cold pale moonlight raking in from one side, deep violet haze, small amber and red glints on the floor. Near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1103,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_costume_vampire": {
+        "file": "art/nightfall/entity_costume_vampire.webp",
+        "kind": "entity",
+        "alt": "A smiling guest in a shiny Dracula cape and a name badge: a costume, not a vampire",
+        "prompt": "A man in a cheap Halloween Dracula costume stands in a plain dim room, shiny satin cape with a tall stiff collar, slicked-back hair, friendly smile, blank white name badge on a lanyard. Waist-up composition, camera slightly below eye level, three-quarter turn with face partly in shadow. Warm amber light from one side, violet rim light, near-black purple background, small red accent glints, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1104,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_costume_wolf_team": {
+        "file": "art/nightfall/entity_costume_wolf_team.webp",
+        "kind": "entity",
+        "alt": "A team of hackers in wolf-ear headbands laughing around a laptop table: costumes, not wolves",
+        "prompt": "Four figures in fluffy grey wolf-ear headbands sit around a plain round table with open laptops, seen from behind so faces are turned away in shadow, one figure mid-laugh with shoulders shaking. A single warm desk lamp casts amber light across the tabletop while violet glow spills from the laptops. Cozy costume party mood, clearly playful plush ears, no monsters. Near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1105,
+        "width": 1024,
+        "height": 1024
+    },
+    "sector_entrance": {
+        "file": "art/nightfall/sector_entrance.webp",
+        "kind": "sector",
+        "alt": "The building entrance at night: glass doors, a security desk inside and wide steps up",
+        "prompt": "A glass-walled building entrance at night, seen from the street at a slight low angle. Double glass doors stand closed at the top of a wide empty concrete staircase, and a dim security desk silhouette sits inside behind the glass. Cold white streetlight pours down the steps, pooling on the pavement, while faint violet light flickers in the upper windows. Colors are cold blue-grey with violet undertones and one small amber lamp above the doors. Cinematic digital illustration, near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood.",
+        "seed": 1111,
+        "width": 1024,
+        "height": 1024
+    },
+    "sector_registration": {
+        "file": "art/nightfall/sector_registration.webp",
+        "kind": "sector",
+        "alt": "The registration desk at night with a badge printer and stacks of lanyards",
+        "prompt": "A lone registration lobby desk stands in a quiet empty venue hall at night, a compact badge printer resting on top beside neat stacks of blank lanyards and a folding organizers' table. The desk is angled three-quarter view from a low eye-level camera, wide framing with plenty of dark negative space around it. Soft downlights from the ceiling pool gently on the tabletop and carpet, leaving the edges in shadow. Muted violet and deep purple tones with small amber and red indicator lights on the printer. Near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1112,
+        "width": 1024,
+        "height": 1024
+    },
+    "sector_main_stage": {
+        "file": "art/nightfall/sector_main_stage.webp",
+        "kind": "sector",
+        "alt": "The main stage hall at night: a blank projector screen, a low stage and rows of white chairs",
+        "prompt": "An empty event hall at night seen from the back of the room, with a low stage holding a large blank white projector screen as the clear subject. Rows of white folding chairs lead toward it, sheer curtains hang along the side walls, and a small glass AV booth sits dimly at the rear. House lights are lowered to a faint amber wash. Deep violet and indigo shadows fill the space, with a soft violet glow off the screen and small red indicator lights near the booth. Wide symmetrical composition, cinematic digital illustration, near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1113,
+        "width": 1024,
+        "height": 1024
+    },
+    "sector_hack_floor_east": {
+        "file": "art/nightfall/sector_hack_floor_east.webp",
+        "kind": "sector",
+        "alt": "The east hack floor at night: long tables of glowing laptops and empty chairs",
+        "prompt": "A lone open-plan hacking floor at night, seen from a low three-quarter angle down a long row of team tables crowded with open laptops and rolling charging carts, black walls receding into darkness, every chair empty and pushed back. The nearest laptop screen casts a cold cyan wash across the tabletop while distant screens flicker violet. Amber cable lights and a single red indicator lamp punctuate the gloom, dust drifting in the beams. Cinematic digital illustration, near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood.",
+        "seed": 1114,
+        "width": 1024,
+        "height": 1024
+    },
+    "sector_hack_floor_west": {
+        "file": "art/nightfall/sector_hack_floor_west.webp",
+        "kind": "sector",
+        "alt": "The west hack floor at night: phone booths, a glass meeting room and a magenta-lit corridor",
+        "prompt": "A deserted open-plan office floor at night, viewed from a low wide angle down a corridor. A row of three sound-proof phone booths with glass doors stands along the right wall, one door ajar, and an open laptop glows faintly on a long table in the foreground. Magenta corridor light spills across the floor, glass-walled meeting rooms recede into darkness behind. No people, no text, no logos. Near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1115,
+        "width": 1024,
+        "height": 1024
+    },
+    "sector_catering_coffee_bar": {
+        "file": "art/nightfall/sector_catering_coffee_bar.webp",
+        "kind": "sector",
+        "alt": "The coffee bar at night: a steaming espresso machine under warm hanging lamps",
+        "prompt": "A polished chrome espresso machine on a small cafe counter, three-quarter view, centered against a plain tiled back wall with a service pass opening to a dim prep room. Warm amber pendant light pools on the counter, steam drifting from stacked white cups. Empty of people, no signage, no lettering. Near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1116,
+        "width": 1024,
+        "height": 1024
+    },
+    "sector_lounge": {
+        "file": "art/nightfall/sector_lounge.webp",
+        "kind": "sector",
+        "alt": "The lounge at night: tiered black seating, a glowing wall map and lowered blinds",
+        "prompt": "An empty tiered lounge at night, with rows of black upholstered seats angled toward a huge wall screen glowing with an abstract constellation of scattered dots suggesting a world map, and tall windows with blinds half lowered revealing faint moon-blue sky. The camera sits low and centered down the aisle, symmetrical and still, wide angle, the room empty of people. Deep violet and indigo lighting, cool blue rim light from the windows, small amber accent lamps and a faint red glow near the floor. Near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1117,
+        "width": 1024,
+        "height": 1024
+    },
+    "sector_network_closet": {
+        "file": "art/nightfall/sector_network_closet.webp",
+        "kind": "sector",
+        "alt": "The network closet: an open rack with a patch panel and blinking switch lights",
+        "prompt": "A cramped network closet at night, seen straight on. An open equipment rack stands center frame, its patch panel bristling with tangled cables, a small switch blinking green and amber indicator lights, while a plain breaker panel hangs on the bare wall beside it. One dim bulb overhead throws a weak cone of light. A faint violet haze pools in the corners. Cinematic digital illustration, near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1118,
+        "width": 1024,
+        "height": 1024
+    },
+    "hero_moonrise": {
+        "file": "art/nightfall/hero_moonrise.webp",
+        "kind": "hero",
+        "alt": "A huge pale moon rising over a city skyline at dusk",
+        "prompt": "A huge pale full moon dominates the sky, rising above a generic skyline of simple silhouetted towers at dusk. The composition is a wide cinematic frame with the moon centered high and the blocky rooftops low along the bottom edge, seen from a rooftop vantage. A last amber band glows on the horizon, fading upward into deep violet and indigo. The mood is calm and ominous, the city windows dim and unlit. Near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1121,
+        "width": 1536,
+        "height": 864
+    },
+    "hero_station_night": {
+        "file": "art/nightfall/hero_station_night.webp",
+        "kind": "hero",
+        "alt": "The command station at night: an arc of glowing monitors and a moon in the window",
+        "prompt": "An empty nighttime control room with a curved arc of glowing violet monitors as the single clear subject, seen in a wide cinematic frame from a low centered angle. Amber indicator lamps dot the console, and a tall narrow window behind the screens shows a rising moon over faint rooftops. Operator chairs sit unoccupied in shadow, backs turned. Deep near-black purple background, violet glow with small amber and red accents, retro-futurist paranormal control room mood, cinematic digital illustration.",
+        "seed": 1122,
+        "width": 1536,
+        "height": 864
+    },
+    "icon_garlic": {
+        "file": "art/nightfall/icons/icon_garlic.svg",
+        "kind": "icon",
+        "alt": "A garlic bulb",
+        "prompt": "a garlic bulb with a pointed top and three curved clove lines, with two small sparkle marks",
+        "seed": null
+    },
+    "icon_silver_netting": {
+        "file": "art/nightfall/icons/icon_silver_netting.svg",
+        "kind": "icon",
+        "alt": "A net with a diamond mesh",
+        "prompt": "a net: a rounded square of diamond mesh drawn as crossing diagonal lines, with a small knot at each corner",
+        "seed": null
+    },
+    "icon_uv_lamp": {
+        "file": "art/nightfall/icons/icon_uv_lamp.svg",
+        "kind": "icon",
+        "alt": "A lamp casting a beam of light",
+        "prompt": "a UV and sunlight lamp: a rounded rectangular lamp head tilted down to the left on a short stand with a flat base, and five straight amber beams radiating from the front of the head",
+        "seed": null
+    },
+    "icon_barricade_foam": {
+        "file": "art/nightfall/icons/icon_barricade_foam.svg",
+        "kind": "icon",
+        "alt": "A foam canister spraying foam",
+        "prompt": "a spray can of expanding foam: a tall canister with a nozzle, and three soft round foam blobs stacked beside it",
+        "seed": null
+    },
+    "icon_window_blinds": {
+        "file": "art/nightfall/icons/icon_window_blinds.svg",
+        "kind": "icon",
+        "alt": "A window with the blinds lowered",
+        "prompt": "a window with horizontal blinds half lowered: a square frame, five slats at the top, a pull cord with a small weight at the bottom",
+        "seed": null
+    },
+    "icon_name_badge": {
+        "file": "art/nightfall/icons/icon_name_badge.svg",
+        "kind": "icon",
+        "alt": "A name badge on a lanyard",
+        "prompt": "a name badge on a lanyard: a rounded rectangle badge with a circle for a photo, two plain lines, and a V-shaped lanyard strap above",
+        "seed": null
+    },
+    "icon_poppy_seeds": {
+        "file": "art/nightfall/icons/icon_poppy_seeds.svg",
+        "kind": "icon",
+        "alt": "A small heap of poppy seeds",
+        "prompt": "a small heap of poppy seeds: a low mound of about twelve small dots, with a few single dots scattered around it",
+        "seed": null
+    },
+    "icon_do_not_invite": {
+        "file": "art/nightfall/icons/icon_do_not_invite.svg",
+        "kind": "icon",
+        "alt": "A door with a prohibition sign",
+        "prompt": "a \"do not invite\" door sign: a door with a round knob, with a circle and a diagonal slash drawn over it in red",
+        "seed": null
+    },
+    "icon_moon_phase": {
+        "file": "art/nightfall/icons/icon_moon_phase.svg",
+        "kind": "icon",
+        "alt": "A waning gibbous moon",
+        "prompt": "a waning gibbous moon: one large circle outline, with its right three quarters filled lavender and its left quarter left dark, a curved line between the two parts, and two small amber four-point stars in the corners",
+        "seed": null
+    },
+    "icon_howl": {
+        "file": "art/nightfall/icons/icon_howl.svg",
+        "kind": "icon",
+        "alt": "A howl as sound waves",
+        "prompt": "a howl: three curved sound-wave arcs growing outward from a small crescent moon, left to right",
+        "seed": null
+    }
+}
