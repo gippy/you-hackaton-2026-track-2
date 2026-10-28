@@ -216,7 +216,7 @@ export type ServerMessage =
     | FlowEvent
     | { type: 'hello'; mode: 'live' | 'offline'; library: Library; incidents: FixtureIncident[]; scenarios: Scenario[]; art: Record<string, ArtAsset>; floor: Floor | null }
     /** `requested` is the incident a viewer asked for; a snapshot replay may show another one. */
-    | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string; requested?: string; moves?: OperatorMoves }
+    | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string; requested?: string; moves?: OperatorMoves; remembered?: number }
     /** Sent after the replay to a viewer that just connected: what follows is live. */
     | { type: 'synced' }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
@@ -224,6 +224,16 @@ export type ServerMessage =
     /** A spoken line to play after the `cue` sound, such as "Calling the vampire hunter". */
     | { type: 'speech'; url: string; cue?: string }
     | { type: 'error'; detail: string };
+
+/** What an earlier step of a scenario found, from its saved run, for a later step's intake to read. */
+export interface Finding {
+    time: string;
+    sector: string;
+    entity: string;
+    entity_class: Incident['entity_class'];
+    verdict: Incident['verdict'] | null;
+    summary: string;
+}
 
 /** What the operator did on a scenario step, sent with the next step so its station can build on it. */
 export interface OperatorMoves {

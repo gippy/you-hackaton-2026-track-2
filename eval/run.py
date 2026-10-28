@@ -181,12 +181,14 @@ def run_worker(cmd: list[str], payload: dict, env: dict, log, timeout: float) ->
 
 
 def run_step(tick: dict, timeout: float, sky: dict | None = None, variant: str | None = None, label: str | None = None,
-             snapshot: Path | None = None) -> dict:
+             snapshot: Path | None = None, earlier: list[dict] | None = None) -> dict:
     """Run the pipeline worker on one incident. Never raises: a failure is a row with ok=False."""
     step = tick["step"]
     payload = {"raw": tick["raw_incident_stream"], "incident_id": tick["incident_id"], "severity_tier": tick["severity_tier"]}
     if sky:
         payload["sky"] = sky  # what server/station.ts adds for a scenario step
+    if earlier:
+        payload["earlier"] = earlier  # what earlier steps found, as server/station.ts sends from its saved runs
     python = os.environ.get("PYTHON") or str(ROOT / ".venv" / "bin" / "python")
     cmd = [python, str(EVAL / "worker.py"), variant] if variant else [python, "-m", "pipeline"]
     # The pipeline tags its proof-ledger lines with PROOF_CONTEXT, so eval runs can be told from demo runs.
@@ -784,6 +786,7 @@ def run_pass(args, ticks: list[dict], keys: dict[str, dict], scen_path: Path, re
     """Run the selected steps and write results after each one. Returns every row by step, run or kept."""
     wanted = parse_steps(args.steps, len(ticks))
     todo = [t for t in ticks if t["step"] in wanted]
+    times = {t["step"]: t.get("time", "") for t in ticks}
     keep: dict[int, dict] = {}
     if args.resume:
         # A row is kept only if it succeeded on the pipeline that is on disk now.
@@ -797,8 +800,20 @@ def run_pass(args, ticks: list[dict], keys: dict[str, dict], scen_path: Path, re
     skies = None if args.no_sky else load_skies(scen_path)
     lock = threading.Lock()
 
+    def earlier_findings(t: dict) -> list[dict]:
+        """What this pass's earlier steps found, oldest first, the way the server sends it. Needs one worker to be complete."""
+        out = []
+        for step in sorted(s for s in rows_by_step if s < t["step"]):
+            found = ((rows_by_step[step].get("state") or {}).get("incident")) or {}
+            if found:
+                out.append({"time": times.get(step, ""), "sector": found.get("sector", ""), "entity": found.get("entity", ""),
+                            "entity_class": found.get("entity_class"), "verdict": found.get("verdict"), "summary": found.get("summary", "")})
+        return out
+
     def job(t: dict) -> None:
-        row = run_step(t, args.timeout, (skies or {}).get(t["incident_id"]), args.variant, args.label, snapshot)
+        with lock:
+            earlier = earlier_findings(t)
+        row = run_step(t, args.timeout, (skies or {}).get(t["incident_id"]), args.variant, args.label, snapshot, earlier)
         row["score"] = score(row, keys[t["incident_id"]])
         with lock:
             rows_by_step[t["step"]] = row

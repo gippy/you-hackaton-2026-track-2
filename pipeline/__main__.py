@@ -35,7 +35,7 @@ def main() -> int:
 
     job = json.loads(sys.stdin.read() or "{}")
     inputs = {key: str(job.get(key, "")) for key in ("raw", "incident_id", "severity_tier")}
-    inputs.update(sky=job.get("sky") or {}, moves=job.get("moves") or {})
+    inputs.update(sky=job.get("sky") or {}, moves=job.get("moves") or {}, earlier=job.get("earlier") or [])
     flow = HauntFlow().bind(emit)
     proof.CONTEXT.update(incident_id=inputs["incident_id"], run_id=flow.state.id)
     proof.listen_to_crewai()

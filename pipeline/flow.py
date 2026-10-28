@@ -101,6 +101,9 @@ NOT_HARMLESS = [
     ("creature_countered", "something is held back or repelled by a countermeasure, so the harmless verdict became unclear"),
 ]
 
+# How many earlier steps of a scenario the intake reads, most recent last.
+EARLIER_STEPS = 6
+
 COMPOSE_SYSTEM = (
     "You design the live command station a containment commander operates during a paranormal incident. "
     "Compose it from this fixed component library, choosing only the components this incident needs, "
@@ -200,6 +203,7 @@ class HauntState(BaseModel):
     models: list[str] = []
     sky: dict = {}  # scenario steps only: server/sky.ts output, with minutes_to each event at the step's clock
     moves: dict = {}  # what the operator did on the step before, when the page sent it on (shared/protocol.ts OperatorMoves)
+    earlier: list[dict] = []  # what earlier steps of this scenario found, oldest first (shared/protocol.ts Finding)
 
 
 class HauntFlow(Flow[HauntState]):
@@ -226,7 +230,8 @@ class HauntFlow(Flow[HauntState]):
     @start()
     def ingest(self):
         self.step("ingest", "running", "Parasail is structuring the raw report")
-        user = f"Severity tier from the feed: {self.state.severity_tier or 'none'}\nRaw incident report:\n{self.state.raw}"
+        user = (f"Severity tier from the feed: {self.state.severity_tier or 'none'}\nRaw incident report:\n{self.state.raw}"
+                + self._earlier_facts())
         # Temperature 0: the intake decides whether this is a threat, and the same report should get the same answer.
         incident, model = chat_json(INCIDENT_SCHEMA, "incident", EXTRACT_SYSTEM, user, temperature=0)
         for field, note in NOT_HARMLESS:
@@ -381,6 +386,18 @@ class HauntFlow(Flow[HauntState]):
             user += (f"\n\nNobody is hurt and the next sky event is {lead} minutes away: recommend observe, "
                      "leave out the CountermeasurePicker, and say what to watch for until then.")
         return user
+
+    def _earlier_facts(self) -> str:
+        """What earlier steps of this scenario established, for a report that refers back to them. Empty otherwise."""
+        lines = [f"- {f.get('time') or '?'}, {library.SECTORS.get(f.get('sector'), f.get('sector') or '?')}: "
+                 f"{f.get('entity') or 'unknown'} ({f.get('entity_class') or '?'}, {f.get('verdict') or '?'}). {f.get('summary') or ''}".rstrip()
+                 for f in self.state.earlier[-EARLIER_STEPS:]]
+        if not lines:
+            return ""
+        return ("\n\nWhat earlier reports in this scenario established, oldest first:\n" + "\n".join(lines) +
+                "\nUse it to name what this report refers back to (\"the figures\", \"they\") and to pick its entity_class. "
+                "Judge this report's threat from its own evidence, but a creature the earlier reports confirmed is never "
+                "an ordinary explanation.")
 
     def _sky_facts(self) -> str:
         """The sky's times and the scenario clock, for a scenario step. Empty for a pasted report."""

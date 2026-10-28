@@ -11,7 +11,7 @@ import { createInterface } from 'node:readline';
 import type { RawData, WebSocket, WebSocketServer } from 'ws';
 
 import library from '../shared/library.json' with { type: 'json' };
-import type { ArtAsset, ClientMessage, Expert, FixtureIncident, Floor, FlowEvent, Library, OperatorMoves, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
+import type { ArtAsset, ClientMessage, Expert, Finding, FixtureIncident, Floor, FlowEvent, Library, OperatorMoves, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
 import { Pager, pageRequest } from './pager.ts';
 import { skyFor } from './sky.ts';
 import { speak } from './speech.ts';
@@ -121,14 +121,32 @@ export class Station {
     /** Build the station for a fixture incident, by id. Does nothing when no fixture has that id. */
     compileIncident(incidentId: string, moves?: OperatorMoves): void {
         const incident = [...this.opts.scenarios.flatMap((s) => s.steps), ...this.opts.incidents].find((i) => i.incident_id === incidentId);
-        if (incident) void this.compile(incident, moves);
+        if (incident) void this.compile(incident, moves, this.earlier(incident));
+    }
+
+    /**
+     * What this station's saved runs of the scenario's earlier steps found, oldest first. Later reports often
+     * refer back ("the figures"), so the intake reads these. A step never run here adds nothing.
+     */
+    private earlier(step: FixtureIncident): Finding[] {
+        const scenario = this.opts.scenarios.find((s) => s.id === step.scenario);
+        if (!scenario || !step.step) return [];
+        return scenario.steps
+            .filter((s) => s.step! < step.step!)
+            .flatMap((s) => {
+                const saved = this.loadOwn(s.incident_id);
+                const found = saved?.state.incident;
+                if (!found) return [];
+                const { sector, entity, entity_class, verdict, summary } = found;
+                return [{ time: s.time ?? '', sector, entity, entity_class, verdict: verdict ?? null, summary }];
+            });
     }
 
     /**
      * Run the pipeline on a report, one run at a time. Offline, replay a saved run instead.
      * `moves` are what the operator did on the step before, for the station to build on.
      */
-    private async compile(report: Report, moves?: OperatorMoves): Promise<void> {
+    private async compile(report: Report, moves?: OperatorMoves, earlier: Finding[] = []): Promise<void> {
         if (!report.raw_incident_stream.trim()) return;
         if (this.busy) {
             this.broadcast({ type: 'error', detail: 'A run is already in progress.' });
@@ -137,7 +155,7 @@ export class Station {
         this.busy = true;
         try {
             if (this.opts.offline) await this.replay('Offline mode: the pipeline is off, so this is a saved run.', report.incident_id);
-            else await this.runLive(report, moves);
+            else await this.runLive(report, moves, earlier);
         } finally {
             this.busy = false;
         }
@@ -147,9 +165,9 @@ export class Station {
      * A live run: stream the worker's events, then save the result. When the worker fails, replay a saved run.
      * A step of a scenario with a sky gets the sky at its clock time.
      */
-    private async runLive({ raw_incident_stream: raw, incident_id: incidentId, severity_tier, time, scenario }: Report, moves?: OperatorMoves): Promise<void> {
+    private async runLive({ raw_incident_stream: raw, incident_id: incidentId, severity_tier, time, scenario }: Report, moves?: OperatorMoves, earlier: Finding[] = []): Promise<void> {
         this.history = [];
-        this.emit({ type: 'run_begin', incident_id: incidentId, source: 'live', requested: incidentId, moves });
+        this.emit({ type: 'run_begin', incident_id: incidentId, source: 'live', requested: incidentId, moves, remembered: earlier.length });
         const events: SavedRun['events'] = [];
         const t0 = Date.now();
         const record = (msg: FlowEvent) => {
@@ -161,7 +179,7 @@ export class Station {
         if (sky) record({ type: 'sky', sky });
         let state: RunState;
         try {
-            state = await this.runWorker({ raw, incident_id: incidentId, severity_tier, sky, moves }, record);
+            state = await this.runWorker({ raw, incident_id: incidentId, severity_tier, sky, moves, earlier }, record);
         } catch (err) {
             const detail = (err as Error).message;
             console.error(`Pipeline failed: ${detail}`);
@@ -237,6 +255,19 @@ export class Station {
      * - the last good run
      * - the newest snapshot committed with the repo
      */
+    /** This incident's own saved run, from out/runs/ or snapshots/, or null. */
+    private loadOwn(incidentId: string): SavedRun | null {
+        if (!SAFE_ID.test(incidentId)) return null;
+        for (const path of [join(this.outDir, 'runs', `${incidentId}.json`), join(this.opts.root, 'snapshots', `${incidentId}.json`)]) {
+            try {
+                return JSON.parse(readFileSync(path, 'utf8')) as SavedRun;
+            } catch {
+                continue;
+            }
+        }
+        return null;
+    }
+
     private loadSaved(incidentId: string): SavedRun | null {
         const snapshots = join(this.opts.root, 'snapshots');
         const committed = existsSync(snapshots)

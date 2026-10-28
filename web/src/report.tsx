@@ -127,6 +127,11 @@ export function ReportPanel({
                 <h2 id="report-title">Incident report</h2>
                 <span className="muted small">{heading}</span>
             </div>
+            {state.remembered > 0 && (
+                <p className="moves small">
+                    Reading this report with what the {state.remembered} earlier {state.remembered === 1 ? 'step' : 'steps'} of this scenario found.
+                </p>
+            )}
             {state.moves && library && (
                 <p className="moves small">
                     Building on your moves at {state.moves.time}:{' '}

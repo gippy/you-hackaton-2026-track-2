@@ -41,6 +41,8 @@ export interface State {
     operator: Operator;
     /** What the operator did on the step before, when this run builds on it. */
     moves: OperatorMoves | null;
+    /** How many earlier steps of this scenario the run's intake read (its memory). */
+    remembered: number;
     /** Set when another viewer of this shared station started the run on screen. */
     notice: string | null;
 }
@@ -78,6 +80,7 @@ export const initial: State = {
     manifest: null,
     operator: OPERATOR,
     moves: null,
+    remembered: 0,
     notice: null,
 };
 
@@ -141,6 +144,7 @@ function applyServerMessage(state: State, msg: ServerMessage, foreign = false): 
                 source: msg.source,
                 // A run that builds on the operator's moves keeps their seals on the map.
                 moves: msg.moves ?? null,
+                remembered: msg.remembered ?? 0,
                 operator: msg.moves ? { ...OPERATOR, sealed: msg.moves.sealed } : OPERATOR,
                 banner: msg.detail ? { text: msg.detail, kind: 'info' } : null,
                 notice: foreign ? `Another viewer of this station started ${runLabel(state, msg.requested ?? msg.incident_id)}.` : null,
