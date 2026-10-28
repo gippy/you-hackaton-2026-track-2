@@ -13,6 +13,7 @@ export interface Operator {
     countermeasure: string | null;
     sealed: string[];
     extracted: number[]; // indexes of people marked extracted
+    map: 'floor' | 'area' | null; // the FloorPlan's view: the model's, until the operator switches it
 }
 
 export interface State {
@@ -47,9 +48,10 @@ export type Event =
     | { type: 'connected'; value: boolean }
     | { type: 'countermeasure'; id: string }
     | { type: 'toggle-seal'; sector: string }
-    | { type: 'toggle-person'; index: number };
+    | { type: 'toggle-person'; index: number }
+    | { type: 'map-view'; view: 'floor' | 'area' };
 
-const OPERATOR: Operator = { countermeasure: null, sealed: [], extracted: [] };
+const OPERATOR: Operator = { countermeasure: null, sealed: [], extracted: [], map: null };
 
 export const initial: State = {
     connected: false,
@@ -100,10 +102,12 @@ function withDefaults(c: Component): Component {
     return { ...c, why: c.why ?? '', props: p } as Component;
 }
 
-/** The operator's starting point is the model's: its recommended countermeasure and its sealed sectors. */
+/** The operator's starting point is the model's: its recommended countermeasure, its sealed sectors and its map view. */
 function adopt(operator: Operator, comp: Component): Operator {
     if (comp.type === 'CountermeasurePicker' && !operator.countermeasure) return { ...operator, countermeasure: comp.props.recommended };
-    if (comp.type === 'FloorPlan' && !operator.sealed.length) return { ...operator, sealed: comp.props.seal };
+    if (comp.type === 'FloorPlan') {
+        return { ...operator, sealed: operator.sealed.length ? operator.sealed : comp.props.seal, map: operator.map ?? (comp.props.view === 'area' ? 'area' : 'floor') };
+    }
     return operator;
 }
 
@@ -182,5 +186,7 @@ export function reduce(state: State, event: Event): State {
             return { ...state, operator: { ...state.operator, sealed: toggle(state.operator.sealed, event.sector) } };
         case 'toggle-person':
             return { ...state, operator: { ...state.operator, extracted: toggle(state.operator.extracted, event.index) } };
+        case 'map-view':
+            return { ...state, operator: { ...state.operator, map: event.view } };
     }
 }

@@ -13,8 +13,12 @@ type Point = [number, number];
 
 const CLOSE_M = 150; // the area view shows 150 metres around the tower
 
+/** The view on screen: the operator's choice, else the model's. The card's title follows it. */
+export const mapView = (p: Props, ctx: Ctx): 'floor' | 'area' => ctx.operator.map ?? (p.view === 'area' ? 'area' : 'floor');
+
 export function FloorPlan({ p, ctx }: { p: Props; ctx: Ctx }) {
-    const [view, setView] = useState<'floor' | 'area'>(p.view === 'area' ? 'area' : 'floor');
+    const view = mapView(p, ctx);
+    const setView = (v: 'floor' | 'area') => ctx.send({ type: 'map-view', view: v });
     const scene = p.scene && ctx.art[p.scene];
     return (
         <div className="floor">

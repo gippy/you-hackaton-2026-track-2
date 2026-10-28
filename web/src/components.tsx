@@ -3,7 +3,7 @@
 import { Component as ReactComponent, type ReactNode, useEffect, useState } from 'react';
 
 import type { Action, ArtAsset, Component, ComponentType, Floor, Incident, Library, Sky, SkyEvent, Source } from '../../shared/protocol.ts';
-import { FloorPlan } from './floorplan.tsx';
+import { FloorPlan, mapView } from './floorplan.tsx';
 import type { Event, Operator } from './station.ts';
 import { artUrl } from './url.ts';
 
@@ -138,7 +138,7 @@ export function Card({ index, component, ctx, span, tall }: { index: number; com
         <article className={`card ${extra}`} style={{ gridColumn: `span ${span}`, gridRow: tall ? 'span 2' : undefined }}>
             {/* The incident headline is the panel's own title, so its frame header is for screen readers only. */}
             <header title={component.why} className={component.type === 'ThreatBanner' ? 'sr-only' : undefined}>
-                <h3>{TITLES[component.type] ?? component.type}</h3>
+                <h3>{component.type === 'FloorPlan' && mapView(component.props, ctx) === 'area' ? 'Around the tower' : TITLES[component.type]}</h3>
                 <span className="order" title={component.type}>
                     #{index + 1}
                 </span>

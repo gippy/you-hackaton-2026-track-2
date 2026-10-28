@@ -87,21 +87,9 @@ def sector_spots(sector: str) -> list[str]:
     return []
 
 
-def adjacency() -> dict[str, list[str]]:
-    """Sectors a person can walk between, from data/map/floor.json's connections: through a door, or
-    through one corridor area such as the hall. Slugs are the station's (catering_coffee_bar is catering)."""
-    links: dict[str, set[str]] = {}
-    for c in FLOOR.get("connections", []):
-        a, b = sector_id(c["a"]), sector_id(c["b"])
-        links.setdefault(a, set()).add(b)
-        links.setdefault(b, set()).add(a)
-    out: dict[str, list[str]] = {}
-    for sector in SECTORS:
-        near = set()
-        for n in links.get(sector, ()):
-            near |= {n} if n in SECTORS else {m for m in links.get(n, ()) if m in SECTORS}  # n is a corridor
-        out[sector] = sorted(near - {sector})
-    return out
+def exit_sectors() -> set[str]:
+    """Sectors with a way out of the building (data/map/floor.json's exits), in the station's slugs."""
+    return {sector_id(f["zone"]) for f in FLOOR.get("features", []) if f.get("exit") and f.get("zone")}
 
 
 def anchors() -> dict[str, str]:
@@ -161,7 +149,8 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
             "hot_sector": _enum(SECTORS),
             "seal": {"type": "array", "items": _enum(SECTORS), "description": "Distinct sectors to lock down"},
             "safe_route": {"type": "array", "items": _enum(SECTORS),
-                           "description": "Adjacent sectors from where the people are to the entrance, in order"},
+                           "description": ("Where the people are now, then only the sectors the route must pass through, "
+                                           "ending at entrance. The page walks the path between them and goes round sealed sectors")},
             "view": {**_enum(["floor", "area"]), "description": "area only when the incident is outside the building; floor for anything inside the Loft"},
             "anchor": {**_enum([*anchors(), "none"]), "description": "The outdoor spot of an incident outside the Loft, else none"},
             **({"scene": {**_enum([*SCENE_IMAGES, "none"]), "description": "A sector image to show beside the plan, or none"}}
@@ -250,10 +239,14 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
         if kind == "FloorPlan":
             props["seal"] = list(dict.fromkeys(sector_id(s) for s in props.get("seal") or [] if sector_id(s) in SECTORS))
             route = list(dict.fromkeys(sector_id(s) for s in props.get("safe_route") or [] if sector_id(s) in SECTORS))
-            adj = adjacency()
-            if any(b not in adj[a] for a, b in zip(route, route[1:])):
-                notes.append("dropped a safe route that walks through walls")
-                route = []
+            if not route and sector_id(props.get("hot_sector")) in SECTORS:
+                # No route given: the people are where the threat is, and the page walks them to a way out.
+                notes.append("no safe route given: one starts at the hot sector")
+                route = [sector_id(props["hot_sector"])]
+            if route and route[-1] not in exit_sectors():
+                # The page walks out of the last sector's exit, so a route that stops inside the building goes on to the entrance.
+                notes.append("a safe route that stopped inside the building now ends at the entrance")
+                route.append("entrance")
             props["safe_route"] = route
             if props.get("scene") not in SCENE_IMAGES:
                 props["scene"] = "none"

@@ -95,9 +95,9 @@ COMPOSE_SYSTEM = (
     + "{components}"
     + "\nImages you may show, by id (EntityCard image, FloorPlan scene). A costume or prop gets its look-alike image:\n"
     + library.art_listing()
-    + "\nFloor plan adjacency (a safe_route may only step between neighbours, and must end at entrance):\n"
-    + "\n".join(f"- {k}: {', '.join(v) or 'none'}" for k, v in library.adjacency().items())
-    + "\nOutdoor spots around the tower. Only when the report puts the incident outside the building (a sidewalk, "
+    + "\nA FloorPlan's safe_route starts where the people are and ends at entrance; list a sector in between only "
+    "when the route must pass it. The page draws the walkable path.\n"
+    + "Outdoor spots around the tower. Only when the report puts the incident outside the building (a sidewalk, "
     "the plaza, the street), set FloorPlan view to area, anchor to the spot and hot_sector to entrance. "
     "Anything inside the Loft, including the main stage, uses view floor and anchor none:\n"
     + "\n".join(f"- {k}: {v}" for k, v in library.anchors().items())
