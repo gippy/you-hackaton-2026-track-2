@@ -79,8 +79,18 @@ a:hover { color: var(--amber); }
 
 .dispatch { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .dispatch label { color: var(--muted); font-size: 12px; display: flex; gap: 6px; align-items: center; }
-.dispatch { justify-content: flex-end; }
-.dispatch .cm { font-size: 12px; color: var(--muted); flex-basis: 100%; text-align: right; }
+/* Two rows sized to the wider one: the action and the button, then what a dispatch will do. */
+.controls .dispatch { display: grid; grid-template-columns: auto auto; justify-items: end; align-items: center; gap: 4px 8px; }
+.state { font: 16px/1 var(--display); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.state::before { content: '● '; }
+.state.live { color: var(--hi); }
+.state.snapshot { color: var(--spook); }
+.modes { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 2px 14px; font-size: 12px; color: var(--muted); }
+.modes .mode { display: inline-flex; align-items: center; gap: 5px; cursor: help; }
+.modes label.mode { cursor: pointer; }
+.modes b { color: var(--text); font-weight: 600; }
+.modes b.armed { color: var(--red); }
+.modes .cm { color: var(--hi); }
 .dispatch .cm b { color: var(--hi); font-weight: 600; }
 
 select, textarea, button, input { font: inherit; color: var(--text); }
@@ -113,7 +123,8 @@ button.ghost:hover:not(:disabled) { background: rgba(255, 138, 31, 0.12); }
     .components > .card { grid-column: 1 / -1 !important; grid-row: auto !important; }
     .controls { justify-content: flex-start; }
     .controls .group + .group { padding-left: 0; border-left: 0; }
-    .dispatch .cm { text-align: left; }
+    .modes { justify-content: flex-start; }
+    .incident-head .headline { font-size: 30px; }
     .topbar { padding: 10px 16px; position: static; } /* on a phone the dispatch form would cover a third of the screen */
     h1 { font-size: 22px; }
 }
@@ -130,20 +141,26 @@ button.ghost:hover:not(:disabled) { background: rgba(255, 138, 31, 0.12); }
 }
 
 .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.steps li { display: grid; grid-template-columns: 12px 1fr auto; gap: 10px; align-items: start; }
+.steps li { display: flex; align-items: center; gap: 10px; }
+.steps li time { margin-left: auto; }
 .steps b { color: var(--amber); font-weight: 600; }
 .steps p { margin: 2px 0 0; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
 .steps time { font-size: 12px; color: var(--muted); }
-.dot { width: 9px; height: 9px; margin-top: 5px; background: var(--dim); }
+.dot { width: 9px; height: 9px; flex: none; background: var(--dim); }
 .steps li.running .dot, .steps li.progress .dot { background: var(--amber); animation: throb 1s infinite; }
 .steps li.done .dot { background: var(--hi); }
 .steps li.failed .dot { background: var(--red); }
 .queries { list-style: none; margin: 12px 0 0; padding: 0; font-size: 12px; color: var(--muted); }
 .queries li::before { content: '$ '; color: var(--amber); }
 
-.raw { margin: 0 0 10px; padding: 8px 10px; border-left: 2px solid var(--amber); background: var(--bg); font-size: 12px; color: var(--muted); }
-.facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 0; font-size: 12px; }
-.facts dt { color: var(--muted); text-transform: uppercase; }
+.raw.clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; padding-bottom: 0; margin-bottom: 8px; } /* no bottom padding, or a fourth line shows in it */
+button.link { background: none; clip-path: none; padding: 0; color: var(--muted); font: 12px var(--font); text-transform: none; letter-spacing: 0; text-decoration: underline dotted; }
+button.link:hover:not(:disabled) { background: none; color: var(--amber); }
+.more { margin-top: 10px; }
+.more summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+.raw { margin: 0 0 4px; padding: 8px 10px; border-left: 2px solid var(--amber); background: var(--bg); font-size: 12px; color: var(--muted); }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 12px 0 0; font-size: 14px; align-items: baseline; }
+.facts dt { color: var(--muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.06em; }
 .facts dd { margin: 0; overflow-wrap: anywhere; }
 
 .sources { margin: 0; padding-left: 24px; font-size: 12px; display: flex; flex-direction: column; gap: 6px; }
@@ -172,7 +189,8 @@ button.ghost:hover:not(:disabled) { background: rgba(255, 138, 31, 0.12); }
 
 /* --- the station ------------------------------------------------------------------------- */
 .stage { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
-.stage-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 1px dashed var(--dim); padding-bottom: 6px; }
+.stage-head { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; border-bottom: 1px dashed var(--dim); padding-bottom: 6px; }
+.stage-head button.link { margin-left: auto; }
 .stage-head h2 { margin: 0; }
 .components { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-auto-flow: row dense; gap: 14px; align-items: stretch; }
 .components > .card { display: flex; flex-direction: column; }
@@ -185,13 +203,26 @@ button.ghost:hover:not(:disabled) { background: rgba(255, 138, 31, 0.12); }
 .card header h3 { font-size: 20px; text-transform: uppercase; white-space: nowrap; }
 .card .order { font-size: 11px; color: var(--muted); }
 .card .why { margin: 6px 0 12px; color: var(--muted); font-size: 12px; }
+/* The model's reason for each panel and the panel's type: hidden until "Show reasoning", and on hover as a tooltip. */
+.components:not(.reasoning) .card .why, .components:not(.reasoning) .card .order { display: none; }
 .card .why::before { content: '// '; color: var(--dim); }
 
 /* A critical threat gets a red frame and nothing else; low and elevated keep the normal frame. */
 .threat { background: var(--red); }
-.threat .headline { font: 26px/1.1 var(--display); color: var(--hi); margin: 2px 0 6px; text-transform: uppercase; }
-.threat .directive { font-size: 14px; }
-.threat .directive::before { content: '>> '; color: var(--red); }
+/* The incident headline: the largest type on the page, with the verdict and the action beside it. */
+.incident-head .headline-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; }
+.incident-head .headline { font: 42px/1.05 var(--display); color: var(--hi); text-transform: uppercase; flex: 1 1 420px; }
+.incident-head .directive { margin: 8px 0 0; font-size: 16px; }
+.incident-head .directive::before { content: '>> '; color: var(--amber); }
+.chips { display: flex; gap: 8px; }
+.chip { font: 22px/1 var(--display); text-transform: uppercase; letter-spacing: 0.06em; padding: 5px 12px 3px; border: 1px solid var(--dim); color: var(--muted); }
+.chip.verdict-real_threat { background: var(--red); border-color: var(--red); color: var(--bg); }
+.chip.verdict-unclear { border-color: var(--hi); color: var(--hi); }
+.chip.verdict-harmless { border-color: var(--spook); color: var(--spook); }
+.chip.action-evacuate { background: var(--red); border-color: var(--red); color: var(--bg); }
+.chip.action-contain { background: var(--amber); border-color: var(--amber); color: var(--bg); }
+.chip.action-observe { border-color: var(--muted); color: var(--text); }
+.chip.action-pending { border-style: dashed; }
 .threat.sev-low, .threat.sev-elevated { background: var(--line); }
 
 .gauge svg { width: 100%; max-width: 300px; height: auto; display: block; margin: 0 auto; }
@@ -253,8 +284,8 @@ button.ghost:hover:not(:disabled) { background: rgba(255, 138, 31, 0.12); }
 .people { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
 .person { width: 32px; height: 32px; border: 1px solid var(--red); background: rgba(255, 59, 31, 0.12); color: var(--hi); font: 18px var(--display); cursor: pointer; padding: 0; clip-path: none; }
 .person.safe { border-color: var(--hi); background: rgba(255, 194, 102, 0.12); }
-.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 12px; }
-.kv dt { color: var(--muted); text-transform: uppercase; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 14px; align-items: baseline; }
+.kv dt { color: var(--muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.06em; }
 .kv dd { margin: 0; }
 
 .options { display: flex; flex-direction: column; gap: 8px; }
@@ -297,7 +328,7 @@ button.ghost:hover:not(:disabled) { background: rgba(255, 138, 31, 0.12); }
 /* --- sky clock ---------------------------------------------------------------------------- */
 .sky { display: flex; flex-direction: column; gap: 10px; background-size: cover; background-position: right center; padding: 6px; }
 .sky-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
-.sky-head .warning { font: 22px/1.1 var(--display); color: var(--hi); text-transform: uppercase; }
+.sky-head .warning { font: 17px/1.2 var(--display); color: var(--hi); text-transform: uppercase; }
 .seg { display: inline-flex; border: 1px solid var(--amber); }
 .seg button { background: transparent; color: var(--amber); clip-path: none; padding: 4px 10px; font-size: 16px; }
 .seg button.on { background: var(--amber); color: var(--bg); }

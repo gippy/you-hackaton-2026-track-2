@@ -1,8 +1,8 @@
 // One renderer per component in the library. The model picks which ones appear and in what order;
 // it never writes markup. Model and web text is rendered as React text, and only http(s) links render.
-import { type ReactNode, useEffect, useState } from 'react';
+import { Component as ReactComponent, type ReactNode, useEffect, useState } from 'react';
 
-import type { ArtAsset, Component, ComponentType, Floor, Library, Sky, SkyWarning, Source } from '../../shared/protocol.ts';
+import type { Action, ArtAsset, Component, ComponentType, Floor, Incident, Library, Sky, SkyWarning, Source } from '../../shared/protocol.ts';
 import { FloorPlan } from './floorplan.tsx';
 import type { Event, Operator } from './station.ts';
 import { artUrl } from './url.ts';
@@ -16,6 +16,10 @@ export interface Ctx {
     cited: Set<number>;
     sky: Sky | null;
     skyWarnings: SkyWarning[];
+    /** The intake's incident, the step's clock ("19:33", or empty) and the model's recommended action. */
+    incident: Incident | null;
+    clock: string;
+    action: Action | null;
     operator: Operator;
     send: (event: Event) => void;
 }
@@ -23,7 +27,7 @@ export interface Ctx {
 type Props<T extends ComponentType> = Extract<Component, { type: T }>['props'];
 
 export const TITLES: Record<ComponentType, string> = {
-    ThreatBanner: 'Threat',
+    ThreatBanner: 'Incident',
     EMFGauge: 'EMF field',
     ThermalReadout: 'Thermal',
     FloorPlan: 'Loft floor plan',
@@ -59,20 +63,64 @@ export function Link({ url, children }: { url: string; children?: ReactNode }) {
     return <span>{children ?? url}</span>;
 }
 
+/** One panel failing to render shows a small notice instead of blanking the whole station. */
+class PanelBoundary extends ReactComponent<{ name: string; children: ReactNode }, { failed: boolean }> {
+    state = { failed: false };
+    static getDerivedStateFromError() {
+        return { failed: true };
+    }
+    componentDidCatch(error: unknown) {
+        console.error(`The ${this.props.name} panel failed to render`, error);
+    }
+    render() {
+        return this.state.failed ? <p className="muted">Panel unavailable.</p> : this.props.children;
+    }
+}
+
+const VERDICT = { real_threat: 'Real', harmless: 'Harmless', unclear: 'Unclear' } as const;
+
+/**
+ * The incident at a glance: what, where, when and who is at risk on one line, the intake's verdict and
+ * the recommended action as chips, and one sentence of what to do. Built from the intake's own fields.
+ */
+export function IncidentHead({ incident, ctx, action, directive }: { incident: Incident; ctx: Ctx; action: Action | null; directive: string }) {
+    const people = incident.people_in_reach ?? incident.civilians?.count;
+    const parts = [
+        incident.entity,
+        ctx.library.sectors[incident.sector] ?? incident.sector,
+        ctx.clock,
+        people === undefined ? '' : people > 0 ? `${people} people` : 'no one in reach',
+    ];
+    return (
+        <div className="incident-head">
+            <div className="headline-row">
+                <div className="headline">{parts.filter(Boolean).join(' · ')}</div>
+                <div className="chips">
+                    {incident.verdict && <span className={`chip verdict-${incident.verdict}`}>{VERDICT[incident.verdict]}</span>}
+                    <span className={`chip action-${action ?? 'pending'}`}>{action ?? 'deciding…'}</span>
+                </div>
+            </div>
+            {directive && <p className="directive">{directive}</p>}
+        </div>
+    );
+}
+
 /** One component as a terminal window. `span` and `tall` come from layout.ts, never from the model. */
 export function Card({ index, component, ctx, span, tall }: { index: number; component: Component; ctx: Ctx; span: number; tall: boolean }) {
     const extra =
-        component.type === 'ThreatBanner' ? `threat sev-${component.props.severity}` : component.type === 'FloorPlan' ? 'floor' : component.type === 'EMFGauge' ? 'gauge' : '';
+        component.type === 'ThreatBanner' ? `threat sev-${component.props?.severity}` : component.type === 'FloorPlan' ? 'floor' : component.type === 'EMFGauge' ? 'gauge' : '';
     return (
         <article className={`card ${extra}`} style={{ gridColumn: `span ${span}`, gridRow: tall ? 'span 2' : undefined }}>
-            <header>
+            <header title={component.why}>
                 <h3>{TITLES[component.type] ?? component.type}</h3>
                 <span className="order">
                     #{index + 1} {component.type}
                 </span>
             </header>
             {component.why && <p className="why">{component.why}</p>}
-            <Body component={component} ctx={ctx} />
+            <PanelBoundary name={component.type}>
+                <Body component={component} ctx={ctx} />
+            </PanelBoundary>
         </article>
     );
 }
@@ -80,10 +128,12 @@ export function Card({ index, component, ctx, span, tall }: { index: number; com
 function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
     switch (c.type) {
         case 'ThreatBanner':
-            return (
-                <div>
+            return ctx.incident ? (
+                <IncidentHead incident={ctx.incident} ctx={ctx} action={ctx.action} directive={c.props.directive} />
+            ) : (
+                <div className="incident-head">
                     <div className="headline">{c.props.headline}</div>
-                    <div className="directive">{c.props.directive}</div>
+                    <p className="directive">{c.props.directive}</p>
                 </div>
             );
         case 'EMFGauge':

@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useReducer, useRef, useState } from 'react';
 
 import type { Action, ClientMessage, ServerMessage, StepId } from '../../shared/protocol.ts';
 import type { Incident } from '../../shared/protocol.ts';
-import { Card, domain, Link, type Ctx } from './components.tsx';
+import { Card, IncidentHead, Link, type Ctx } from './components.tsx';
 import { FloorPlan } from './floorplan.tsx';
 import { layout } from './layout.ts';
 import { artUrl, withToken } from './url.ts';
@@ -32,11 +32,10 @@ function Provisional({ incident, ctx, stage }: { incident: Incident; ctx: Ctx; s
         <>
             <article className={`card threat sev-${incident.severity} provisional`} style={{ gridColumn: 'span 12' }}>
                 <header>
-                    <h3>Provisional</h3>
+                    <h3>Incident</h3>
                     <span className="order">intake only · {stage}</span>
                 </header>
-                <div className="headline">{incident.summary}</div>
-                <div className="directive">{directive}</div>
+                <IncidentHead incident={incident} ctx={ctx} action={null} directive={directive} />
             </article>
             <article className="card provisional" style={{ gridColumn: 'span 12' }}>
                 <header>
@@ -49,8 +48,26 @@ function Provisional({ incident, ctx, stage }: { incident: Incident; ctx: Ctx; s
     );
 }
 
-/** A timeline label: the report without its leading "ALERT 18:15" or "GUEST REPORT 11:20," prefix. */
-const stepLabel = (raw: string) => raw.replace(/^[A-Z ]+\d{1,2}:\d{2},?\s*/, '').slice(0, 60);
+/** A timeline label: the report's first clause, without its "ALERT 18:15" prefix, cut at a word and never mid-word. */
+function stepLabel(raw: string): string {
+    const clause = raw.replace(/^[A-Z ]+\d{1,2}:\d{2},?\s*/, '').split(/[.,;]/)[0];
+    let out = '';
+    for (const word of clause.split(/\s+/)) {
+        if (`${out} ${word}`.trim().length > 30) break;
+        out = `${out} ${word}`.trim();
+    }
+    // A label that was cut short should not end on a filler word ("breaker panel in the").
+    return out.replace(/(\s+(a|an|the|in|of|to|at|on|for|and|with|from|by))+$/i, '');
+}
+
+const VERDICT_WORD = { real_threat: 'Real threat', harmless: 'Harmless', unclear: 'Unclear' } as const;
+
+/** "2 offline · 1 online": the systems an incident names, counted by status. */
+function systemsSummary(systems: { status: string }[] = []): string {
+    const counts = new Map<string, number>();
+    for (const s of systems) counts.set(s.status, (counts.get(s.status) ?? 0) + 1);
+    return [...counts].map(([status, n]) => `${n} ${status}`).join(' · ') || '—';
+}
 
 export function App() {
     const [state, send] = useReducer(reduce, initial);
@@ -68,6 +85,9 @@ export function App() {
     // Several viewers share one station. This tab steps from the step it last asked for, not from
     // whatever run another viewer started, and it can tell its own runs from theirs.
     const [cursor, setCursor] = useState<string | null>(null);
+    const [reasoning, setReasoning] = useState(false); // the model's "why" for each panel, on demand
+    const [allSteps, setAllSteps] = useState(false);
+    const [fullLog, setFullLog] = useState(false);
     const requested = useRef<string | null>(null);
     const synced = useRef(false);
 
@@ -115,10 +135,14 @@ export function App() {
     const { incident, library, operator } = state;
     const cited = new Set<number>();
     for (const c of state.components) {
-        if (c?.type === 'SourceLedger' || c?.type === 'SkyClock') c.props.cited.forEach((n) => cited.add(n));
-        if (c?.type === 'CountermeasurePicker') c.props.options.forEach((o) => o.source && cited.add(o.source));
+        if (c?.type === 'SourceLedger' || c?.type === 'SkyClock') (c.props.cited ?? []).forEach((n) => cited.add(n));
+        if (c?.type === 'CountermeasurePicker') (c.props.options ?? []).forEach((o) => o.source && cited.add(o.source));
     }
-    const ctx: Ctx | null = library && { library, art: state.art, floor: state.floor, sources: state.sources, cited, sky: state.sky, skyWarnings: state.skyWarnings, operator, send };
+    const clock = state.scenarios.flatMap((s) => s.steps).find((step) => step.incident_id === incident?.incident_id)?.time ?? '';
+    const ctx: Ctx | null = library && {
+        library, art: state.art, floor: state.floor, sources: state.sources, cited, sky: state.sky, skyWarnings: state.skyWarnings,
+        incident: incident?.incident ?? null, clock, action: state.manifest?.recommended_action ?? null, operator, send,
+    };
     const hasSkyClock = state.components.some((c) => c?.type === 'SkyClock');
     const sourceLabel = !state.connected ? 'disconnected' : state.source === 'snapshot' ? 'saved run' : state.source === 'live' ? 'live run' : state.mode ?? 'connecting';
     const armed = live && state.liveDispatch;
@@ -133,6 +157,9 @@ export function App() {
     };
     // This tab's own place in the scenario: the step it last asked for, else the step on screen.
     const mine = scenario?.steps.find((step) => step.incident_id === cursor) ?? current;
+    // The step list shows five steps around the one on screen, or all of them on request.
+    const at = Math.max(0, scenario?.steps.indexOf(current ?? mine ?? scenario.steps[0]) ?? 0);
+    const visibleSteps = !scenario ? [] : allSteps ? scenario.steps : scenario.steps.slice(Math.max(0, Math.min(at - 2, scenario.steps.length - 5)), Math.max(0, Math.min(at - 2, scenario.steps.length - 5)) + 5);
     // A harmless report: the model recommends watching, so the page does not push a dispatch.
     const calm = state.manifest?.recommended_action === 'observe';
     const pageArmed = livePage && state.livePage;
@@ -157,18 +184,16 @@ export function App() {
                         <h1>{state.title}</h1>
                         <div className="sub">
                             {current
-                                ? `${scenario?.title} · step ${current.step} of ${scenario?.steps.length} · ${current.time} · ${current.severity_tier}`
+                                ? `${scenario?.title} · step ${current.step}/${scenario?.steps.length} · ${current.time}`
                                 : incident
-                                  ? `${incident.incident_id || 'pasted incident'} · ${incident.severity_tier || `threat ${incident.incident.threat_level}/5`}`
+                                  ? incident.incident_id || 'pasted incident'
                                   : 'waiting for an incident'}
-                            {incident && <span className={`pill sev-${incident.incident.severity}`}>{incident.incident.severity}</span>}
                         </div>
                     </div>
                 </div>
                 <div className="controls">
                     <div className="group" aria-label="Station status">
-                        <span className={`pill ${state.source === 'snapshot' || state.mode === 'offline' ? 'snapshot' : state.connected ? 'live' : 'muted'}`}>{sourceLabel}</span>
-                        <span className={`pill ${armed ? 'armed' : 'muted'}`}>{state.mode === 'offline' ? 'offline' : armed ? 'live post' : 'dry run'}</span>
+                        <span className={`state ${state.source === 'snapshot' || state.mode === 'offline' ? 'snapshot' : state.connected ? 'live' : 'muted'}`}>{sourceLabel}</span>
                     </div>
                     <div className="group" aria-label="Sound">
                         <button type="button" className="ghost" aria-pressed={soundOn} onClick={() => enableSound(!soundOn)}>
@@ -194,21 +219,32 @@ export function App() {
                             <option value="evacuate">Evacuate</option>
                             <option value="observe">Observe</option>
                         </select>
-                        {state.liveDispatch && (
-                            <label className="live-toggle">
-                                <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} /> Live post
-                            </label>
-                        )}
-                        {state.livePage && (
-                            <label className="live-toggle">
-                                <input type="checkbox" checked={livePage} onChange={(e) => setLivePage(e.target.checked)} /> Live page
-                            </label>
-                        )}
                         <button type="submit" className={calm ? 'ghost' : ''} disabled={!state.manifest || state.dispatching}>
                             {state.dispatching ? 'Dispatching…' : calm ? 'Dispatch anyway' : 'Dispatch to #loft-incident'}
                         </button>
-                        <span className="cm">
-                            {calm ? 'Model: observe, no dispatch needed' : `Countermeasure: ${operator.countermeasure ? (library?.arsenal[operator.countermeasure] ?? operator.countermeasure) : 'none picked'}`}
+                        <span className="modes">
+                            {/* What a dispatch will do: a status, not a button. With the server's permission it pairs with its switch. */}
+                            {state.liveDispatch ? (
+                                <label className="mode" title="Untick to rehearse: One returns the exact request and nothing is posted.">
+                                    <input type="checkbox" checked={live} onChange={(e) => setLive(e.target.checked)} />
+                                    Discord: <b className={armed ? 'armed' : ''}>{armed ? 'live post' : 'dry run'}</b>
+                                </label>
+                            ) : (
+                                <span className="mode" title="Nothing is posted: One returns the exact request. To post for real, start the server with --live-dispatch, then tick Live post.">
+                                    Discord: <b>{state.mode === 'offline' ? 'offline' : 'dry run'}</b>
+                                </span>
+                            )}
+                            {state.livePage ? (
+                                <label className="mode" title="Untick to rehearse: a critical dispatch prepares the page without sending it.">
+                                    <input type="checkbox" checked={livePage} onChange={(e) => setLivePage(e.target.checked)} />
+                                    Paging: <b className={pageArmed ? 'armed' : ''}>{pageArmed ? 'live' : 'dry run'}</b>
+                                </label>
+                            ) : (
+                                <span className="mode" title="A critical dispatch prepares the PagerDuty page without sending it. To page for real, start the server with --live-page, then tick Live page.">
+                                    Paging: <b>{state.mode === 'offline' ? 'offline' : 'dry run'}</b>
+                                </span>
+                            )}
+                            <span className="cm">{calm ? 'No dispatch needed' : operator.countermeasure ? (library?.arsenal[operator.countermeasure] ?? operator.countermeasure) : 'No countermeasure'}</span>
                         </span>
                     </form>
                 </div>
@@ -249,7 +285,7 @@ export function App() {
                                 </button>
                             </div>
                             <ol className="timeline">
-                                {scenario.steps.map((step) => (
+                                {visibleSteps.map((step) => (
                                     <li key={step.incident_id}>
                                         <button
                                             type="button"
@@ -263,6 +299,9 @@ export function App() {
                                     </li>
                                 ))}
                             </ol>
+                            <button type="button" className="link" onClick={() => setAllSteps(!allSteps)}>
+                                {allSteps ? 'Show fewer' : `Show all ${scenario.steps.length}`}
+                            </button>
                         </section>
                     )}
                     <section className="panel">
@@ -271,57 +310,59 @@ export function App() {
                             {STEPS.map((s) => {
                                 const step = state.steps[s.id];
                                 return (
-                                    <li key={s.id} className={step?.state ?? ''}>
+                                    <li key={s.id} className={step?.state ?? ''} title={step?.detail}>
                                         <span className="dot" />
-                                        <div>
-                                            <b>{s.label}</b> <em className="partner">{s.partner}</em>
-                                            <p>{step?.detail}</p>
-                                        </div>
+                                        <b>{s.label}</b>
+                                        <em className="partner">{s.partner}</em>
                                         <time>{step?.ms ? `${(step.ms / 1000).toFixed(1)}s` : ''}</time>
                                     </li>
                                 );
                             })}
                         </ol>
-                        <ul className="queries">
-                            {state.queries.map((q, i) => (
-                                <li key={i}>{q}</li>
-                            ))}
-                        </ul>
+                        <details className="more">
+                            <summary>Details</summary>
+                            <ul className="queries">
+                                {STEPS.map((s) => state.steps[s.id]?.detail && <li key={s.id}>{`${s.label}: ${state.steps[s.id]!.detail}`}</li>)}
+                                {state.queries.map((q, i) => (
+                                    <li key={i}>{q}</li>
+                                ))}
+                            </ul>
+                        </details>
                     </section>
 
                     <section className="panel">
-                        <h2>Incident</h2>
-                        <blockquote className="raw">{incident?.raw ?? 'The raw report appears here.'}</blockquote>
+                        <h2>Report</h2>
+                        <blockquote className={`raw ${fullLog ? '' : 'clamp'}`}>{incident?.raw ?? 'The raw report appears here.'}</blockquote>
+                        {incident && (
+                            <button type="button" className="link" onClick={() => setFullLog(!fullLog)}>
+                                {fullLog ? 'Show less' : 'Show full log'}
+                            </button>
+                        )}
                         {incident && library && (
                             <dl className="facts">
+                                <dt>Verdict</dt>
+                                <dd>{incident.incident.verdict ? VERDICT_WORD[incident.incident.verdict] : '—'}</dd>
                                 <dt>Entity</dt>
-                                <dd>
-                                    {incident.incident.entity} ({incident.incident.entity_class})
-                                </dd>
+                                <dd>{incident.incident.entity}</dd>
                                 <dt>Sector</dt>
-                                <dd>
-                                    {library.sectors[incident.incident.sector]}: {incident.incident.location_detail}
-                                </dd>
-                                <dt>EMF</dt>
-                                <dd>{incident.incident.emf_mg === null ? 'not reported' : `${incident.incident.emf_mg} mG, ${incident.incident.emf_trend}`}</dd>
-                                <dt>Temp</dt>
-                                <dd>{incident.incident.temperature_c === null ? 'not reported' : `${incident.incident.temperature_c} °C`}</dd>
+                                <dd>{library.sectors[incident.incident.sector] ?? incident.incident.sector}</dd>
                                 <dt>People</dt>
                                 <dd>
-                                    {incident.incident.civilians.count} {incident.incident.civilians.condition}, {incident.incident.civilians.location}
+                                    {incident.incident.people_in_reach ?? incident.incident.civilians?.count ?? '—'}
+                                    {incident.incident.people_hurt ? ` · ${incident.incident.people_hurt} hurt` : ''}
                                 </dd>
-                                {incident.incident.verdict && (
+                                <dt>EMF</dt>
+                                <dd>{incident.incident.emf_mg == null ? '—' : `${incident.incident.emf_mg} mG`}</dd>
+                                <dt>Temp</dt>
+                                <dd>{incident.incident.temperature_c == null ? '—' : `${incident.incident.temperature_c} °C`}</dd>
+                                <dt>Systems</dt>
+                                <dd>{systemsSummary(incident.incident.systems)}</dd>
+                                {incident.severity_tier && (
                                     <>
-                                        <dt>Verdict</dt>
-                                        <dd>
-                                            {incident.incident.verdict.replace('_', ' ')}
-                                            {incident.incident.verdict === 'harmless' && incident.incident.ordinary_explanation ? `: ${incident.incident.ordinary_explanation}` : ''}
-                                            {incident.incident.people_hurt ? ` · ${incident.incident.people_hurt} hurt` : ''}
-                                        </dd>
+                                        <dt>Feed tier</dt>
+                                        <dd>{incident.severity_tier}</dd>
                                     </>
                                 )}
-                                <dt>Systems</dt>
-                                <dd>{incident.incident.systems.map((s) => `${s.name}: ${s.status}`).join('; ') || 'none reported'}</dd>
                             </dl>
                         )}
                     </section>
@@ -368,12 +409,13 @@ export function App() {
 
                 <section className="stage">
                     <div className="stage-head">
-                        <h2>
-                            Station <span className="muted">{state.components.length ? `· ${state.components.filter(Boolean).length} components` : ''}</span>
-                        </h2>
+                        <h2>Station</h2>
                         <span className="muted small">Components chosen and ordered by the model</span>
+                        <button type="button" className="link" aria-pressed={reasoning} onClick={() => setReasoning(!reasoning)}>
+                            {reasoning ? 'Hide reasoning' : 'Show reasoning'}
+                        </button>
                     </div>
-                    <div className="components">
+                    <div className={`components ${reasoning ? 'reasoning' : ''}`}>
                         {ctx && state.components.length ? (
                             layout(state.components).map((p) => <Card key={`${p.index}-${p.component.type}`} index={p.index} component={p.component} ctx={ctx} span={p.span} tall={p.tall} />)
                         ) : ctx && incident ? (

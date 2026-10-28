@@ -88,6 +88,24 @@ export const initial: State = {
 
 const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
 
+/**
+ * A component with every list and text prop present. Saved runs from older versions, or a model that
+ * skipped a field, would otherwise hand a panel `undefined` where it expects an array.
+ */
+function withDefaults(c: Component): Component {
+    const p: any = { ...(c.props ?? {}) };
+    const lists: Partial<Record<Component['type'], string[]>> = {
+        SourceLedger: ['cited'],
+        SkyClock: ['cited'],
+        CountermeasurePicker: ['options'],
+        SystemsBoard: ['systems'],
+        FloorPlan: ['seal', 'safe_route'],
+    };
+    for (const key of lists[c.type] ?? []) if (!Array.isArray(p[key])) p[key] = [];
+    if (c.type === 'CountermeasurePicker') p.options = p.options.filter((o: any) => o && typeof o.id === 'string');
+    return { ...c, why: c.why ?? '', props: p } as Component;
+}
+
 /** The operator's starting point is the model's: its recommended countermeasure and its sealed sectors. */
 function adopt(operator: Operator, comp: Component): Operator {
     if (comp.type === 'CountermeasurePicker' && !operator.countermeasure) return { ...operator, countermeasure: comp.props.recommended };
@@ -142,13 +160,14 @@ function server(state: State, msg: ServerMessage, foreign = false): State {
             return { ...state, title: msg.title ?? state.title, theme: msg.theme ?? state.theme };
         case 'component': {
             const components = [...state.components];
-            components[msg.index] = msg.component;
-            return { ...state, components, operator: adopt(state.operator, msg.component) };
+            components[msg.index] = withDefaults(msg.component);
+            return { ...state, components, operator: adopt(state.operator, components[msg.index]) };
         }
         case 'run_end': {
-            const operator = msg.manifest.components.reduce(adopt, { ...state.operator, action: msg.manifest.recommended_action });
-            const notes = msg.notes.length && msg.source === 'live' ? { text: `Pipeline notes: ${msg.notes.join('; ')}`, kind: 'info' as const } : state.banner;
-            return { ...state, manifest: msg.manifest, components: msg.manifest.components, title: msg.manifest.title, theme: msg.manifest.theme, operator, banner: notes };
+            const manifest = { ...msg.manifest, components: (msg.manifest.components ?? []).map(withDefaults) };
+            const operator = manifest.components.reduce(adopt, { ...state.operator, action: manifest.recommended_action });
+            const notes = msg.notes?.length && msg.source === 'live' ? { text: `Pipeline notes: ${msg.notes.join('; ')}`, kind: 'info' as const } : state.banner;
+            return { ...state, manifest, components: manifest.components, title: manifest.title, theme: manifest.theme, operator, banner: notes };
         }
         case 'dispatch':
             return { ...state, dispatch: msg, dispatching: false };
