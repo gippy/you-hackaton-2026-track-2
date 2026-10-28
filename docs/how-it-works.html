@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Haunted Dashboard Field Manual</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: a visual walkthrough. Each mechanism is one framed figure with a one-line caption; charts are drawn to scale; the code map is a grid of folders. */
+:root {
+  --bg: #f4f3f0;
+  --surface: #ffffff;
+  --ink: #1e1a15;
+  --muted: #5b5248;
+  --line: #cfc7bb;
+  --accent: #b4450a;
+  --accent-ink: #ffffff;
+  --code-bg: #eeebe5;
+  --mark: #b4450a;
+  --mark-muted: #8c8276;
+  --on-mark: #ffffff;
+  --on-muted: #1e1a15;
+  --display: "Chakra Petch", "IBM Plex Mono", ui-monospace, monospace;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c0a08; --surface: #15110d; --ink: #ece3d6; --muted: #a99a8a; --line: #4a3d31;
+    --accent: #ff8a1f; --accent-ink: #160d05; --code-bg: #1c1611;
+    --mark: #e06e14; --mark-muted: #857565; --on-mark: #160d05; --on-muted: #160d05;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c0a08; --surface: #15110d; --ink: #ece3d6; --muted: #a99a8a; --line: #4a3d31;
+  --accent: #ff8a1f; --accent-ink: #160d05; --code-bg: #1c1611;
+  --mark: #e06e14; --mark-muted: #857565; --on-mark: #160d05; --on-muted: #160d05;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; border-radius: 0; }
+body {
+  background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1000px; margin: 0 auto; padding-block: 32px 64px; display: grid; gap: 48px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(34px, 5vw, 54px); text-transform: uppercase; letter-spacing: 0.02em; }
+h2 { font-size: clamp(22px, 2.6vw, 28px); text-transform: uppercase; letter-spacing: 0.03em; }
+h3 { font-size: 17px; letter-spacing: 0.02em; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+code, pre { font-family: var(--mono); }
+code { font-size: 0.9em; background: var(--code-bg); padding: 1px 5px; }
+pre { margin: 0; background: var(--code-bg); border-left: 3px solid var(--accent); padding: 14px 16px; overflow-x: auto; font-size: 13.5px; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.sec { display: grid; gap: 16px; }
+.sec-head { display: grid; gap: 8px; max-width: 70ch; }
+
+header.top { display: grid; gap: 16px; }
+.top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lead { font-size: 18px; max-width: 60ch; }
+.theme-btn { font: 600 13px/1 var(--mono); color: var(--ink); background: var(--surface); border: 1px solid var(--line); padding: 9px 12px; cursor: pointer; }
+.theme-btn:hover { border-color: var(--accent); }
+
+/* The four partners at a glance */
+.partners { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.p-card {
+  background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 6px; align-content: start;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+.p-card h3 { color: var(--accent); }
+.p-card p { font-size: 14.5px; }
+.p-card .fig-ref { font: 12px/1.3 var(--mono); color: var(--muted); }
+
+/* Figures */
+figure { margin: 0; background: var(--surface); border: 1px solid var(--line); display: grid; }
+.fig-body { overflow-x: auto; padding: 16px; }
+.fig-body svg { display: block; width: 100%; min-width: 640px; height: auto; color: var(--ink); font-family: var(--mono); }
+figcaption { border-top: 1px solid var(--line); padding: 10px 16px; font-size: 14.5px; color: var(--muted); }
+figcaption b { color: var(--ink); font-weight: 600; }
+.chart svg { min-width: 560px; }
+
+/* SVG parts, styled from the page so both themes work */
+.n { fill: var(--surface); stroke: currentColor; stroke-width: 1.5; }
+.n-hl { fill: var(--surface); stroke: var(--accent); stroke-width: 2.5; }
+.n-soft { fill: var(--code-bg); stroke: var(--line); stroke-width: 1; }
+.e { stroke: currentColor; stroke-width: 1.5; fill: none; }
+.e-hl { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+.e-dash { stroke: currentColor; stroke-width: 1.2; fill: none; stroke-dasharray: 4 4; }
+.life { stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 3 5; }
+.t { fill: currentColor; font-size: 13px; }
+.t-b { fill: currentColor; font-size: 14px; font-weight: 600; }
+.t-s { fill: var(--muted); font-size: 11.5px; }
+.t-a { fill: var(--accent); font-size: 12px; font-weight: 600; }
+.t-on { fill: var(--on-mark); font-size: 12.5px; font-weight: 600; }
+.t-onm { fill: var(--on-muted); font-size: 12.5px; font-weight: 600; }
+.ah { fill: currentColor; }
+.ah-hl { fill: var(--accent); }
+.bar { fill: var(--mark); }
+.bar-m { fill: var(--mark-muted); }
+.axis { stroke: var(--line); stroke-width: 1; }
+
+/* Code map */
+.codemap { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.folder { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.folder h3 { font-family: var(--mono); font-size: 15px; color: var(--accent); }
+.folder dl { margin: 0; display: grid; gap: 8px; }
+.folder dt { font: 600 13px/1.3 var(--mono); overflow-wrap: anywhere; }
+.folder dd { margin: 0; font-size: 14px; color: var(--muted); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; }
+.two > * { min-width: 0; }
+
+footer { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 18px; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="top-row">
+      <span class="eyebrow">Hack with YOU · Track 2 · Nightfall scenario</span>
+      <button class="theme-btn" id="theme-toggle" type="button">Light / dark</button>
+    </div>
+    <h1>Haunted Dashboard Field Manual</h1>
+    <p class="lead">A messy incident log goes in. A command station comes out, built panel by panel by a model, grounded in cited sources, with a button that pages a real expert.</p>
+  </header>
+
+  <section class="partners" aria-label="The four partners">
+    <div class="p-card"><h3>CrewAI</h3><p>Runs the pipeline as a Flow, with a research agent inside.</p><span class="fig-ref">Figures 2 and 3</span></div>
+    <div class="p-card"><h3>You.com</h3><p>Finds the web sources every station is built on.</p><span class="fig-ref">Figure 3</span></div>
+    <div class="p-card"><h3>Parasail</h3><p>Every model call: the facts, the agent and the layout.</p><span class="fig-ref">Figures 2 and 4</span></div>
+    <div class="p-card"><h3>One</h3><p>Real actions: pages an expert, speaks the alert.</p><span class="fig-ref">Figure 5</span></div>
+  </section>
+
+  <section class="sec" aria-labelledby="f1">
+    <div class="sec-head"><span class="eyebrow">Figure 1</span><h2 id="f1">The system</h2></div>
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 900 330" role="img" aria-label="The station page talks to a Node server over a WebSocket. The server runs one Python CrewAI Flow process per incident, which calls Parasail and You.com. The server calls One, which reaches PagerDuty and ElevenLabs.">
+          <defs>
+            <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <rect class="n" x="10" y="120" width="170" height="84"/>
+          <text class="t-b" x="95" y="152" text-anchor="middle">Station page</text>
+          <text class="t" x="95" y="172" text-anchor="middle">React</text>
+          <text class="t-s" x="95" y="190" text-anchor="middle">web/src</text>
+
+          <rect class="n" x="260" y="120" width="170" height="84"/>
+          <text class="t-b" x="345" y="152" text-anchor="middle">Server</text>
+          <text class="t" x="345" y="172" text-anchor="middle">Node, TypeScript</text>
+          <text class="t-s" x="345" y="190" text-anchor="middle">server/station.ts</text>
+
+          <rect class="n-hl" x="490" y="10" width="180" height="94"/>
+          <text class="t-b" x="580" y="44" text-anchor="middle">CrewAI Flow</text>
+          <text class="t" x="580" y="64" text-anchor="middle">Python 3.13</text>
+          <text class="t-s" x="580" y="84" text-anchor="middle">one process per incident</text>
+
+          <rect class="n-hl" x="490" y="226" width="180" height="94"/>
+          <text class="t-b" x="580" y="260" text-anchor="middle">One CLI</text>
+          <text class="t" x="580" y="280" text-anchor="middle">managed auth</text>
+          <text class="t-s" x="580" y="300" text-anchor="middle">server/one.ts</text>
+
+          <rect class="n" x="780" y="10" width="110" height="40"/><text class="t-b" x="835" y="35" text-anchor="middle">Parasail</text>
+          <rect class="n" x="780" y="64" width="110" height="40"/><text class="t-b" x="835" y="89" text-anchor="middle">You.com</text>
+          <rect class="n" x="780" y="226" width="110" height="40"/><text class="t-b" x="835" y="251" text-anchor="middle">PagerDuty</text>
+          <rect class="n" x="780" y="280" width="110" height="40"/><text class="t-b" x="835" y="305" text-anchor="middle">ElevenLabs</text>
+
+          <line class="e" x1="180" y1="146" x2="258" y2="146" marker-end="url(#a1)"/>
+          <text class="t-s" x="219" y="138" text-anchor="middle">run, call</text>
+          <line class="e" x1="260" y1="178" x2="182" y2="178" marker-end="url(#a1)"/>
+          <text class="t-s" x="219" y="197" text-anchor="middle">WebSocket</text>
+
+          <polyline class="e" points="430,140 450,140 450,40 488,40" marker-end="url(#a1)"/>
+          <text class="t-s" x="444" y="100" text-anchor="end">incident (stdin)</text>
+          <polyline class="e" points="490,80 470,80 470,160 432,160" marker-end="url(#a1)"/>
+          <text class="t-s" x="478" y="128">JSON lines (stdout)</text>
+          <polyline class="e" points="430,190 450,190 450,270 488,270" marker-end="url(#a1)"/>
+          <text class="t-s" x="444" y="236" text-anchor="end">execute action</text>
+
+          <line class="e" x1="670" y1="30" x2="778" y2="30" marker-end="url(#a1)"/>
+          <text class="t-s" x="724" y="22" text-anchor="middle">model calls</text>
+          <line class="e" x1="670" y1="84" x2="778" y2="84" marker-end="url(#a1)"/>
+          <text class="t-s" x="724" y="76" text-anchor="middle">search</text>
+          <line class="e" x1="670" y1="246" x2="778" y2="246" marker-end="url(#a1)"/>
+          <text class="t-s" x="724" y="238" text-anchor="middle">incidents</text>
+          <line class="e" x1="670" y1="300" x2="778" y2="300" marker-end="url(#a1)"/>
+          <text class="t-s" x="724" y="292" text-anchor="middle">speech</text>
+        </svg>
+      </div>
+      <figcaption><b>Two sides.</b> The thinking happens in the CrewAI process (top). The doing happens through One (bottom). The page only ever talks to the server.</figcaption>
+    </figure>
+  </section>
+
+  <section class="sec" aria-labelledby="f2">
+    <div class="sec-head"><span class="eyebrow">Figure 2 · CrewAI</span><h2 id="f2">The Flow</h2></div>
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 900 250" role="img" aria-label="The CrewAI Flow: ingest runs first, a router called triage picks one of three playbooks in code, the branches join with or_, then ground runs the research agent and compose streams the layout. Nightfall's vampires and werewolves take the corporeal branch.">
+          <defs>
+            <marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="b2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-hl" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <rect class="n" x="10" y="90" width="150" height="72"/>
+          <text class="t-b" x="85" y="116" text-anchor="middle">ingest</text>
+          <text class="t-s" x="85" y="134" text-anchor="middle">@start()</text>
+          <text class="t-a" x="85" y="152" text-anchor="middle">Parasail</text>
+
+          <rect class="n" x="195" y="90" width="150" height="72"/>
+          <text class="t-b" x="270" y="116" text-anchor="middle">triage</text>
+          <text class="t-s" x="270" y="134" text-anchor="middle">@router(ingest)</text>
+          <text class="t-a" x="270" y="152" text-anchor="middle">code</text>
+
+          <rect class="n" x="385" y="20" width="140" height="46"/>
+          <text class="t" x="455" y="40" text-anchor="middle">spectral</text>
+          <text class="t-s" x="455" y="57" text-anchor="middle">@listen</text>
+          <rect class="n-hl" x="385" y="103" width="140" height="46"/>
+          <text class="t" x="455" y="123" text-anchor="middle">corporeal</text>
+          <text class="t-s" x="455" y="140" text-anchor="middle">@listen</text>
+          <rect class="n" x="385" y="186" width="140" height="46"/>
+          <text class="t" x="455" y="206" text-anchor="middle">anomalous</text>
+          <text class="t-s" x="455" y="223" text-anchor="middle">@listen</text>
+
+          <circle class="n" cx="580" cy="126" r="16"/>
+          <text class="t-s" x="580" y="130" text-anchor="middle">or_</text>
+
+          <rect class="n-hl" x="620" y="90" width="130" height="72"/>
+          <text class="t-b" x="685" y="116" text-anchor="middle">ground</text>
+          <text class="t-s" x="685" y="134" text-anchor="middle">@listen(or_)</text>
+          <text class="t-a" x="685" y="152" text-anchor="middle">agent + You.com</text>
+
+          <rect class="n" x="770" y="90" width="120" height="72"/>
+          <text class="t-b" x="830" y="116" text-anchor="middle">compose</text>
+          <text class="t-s" x="830" y="134" text-anchor="middle">@listen(ground)</text>
+          <text class="t-a" x="830" y="152" text-anchor="middle">Parasail stream</text>
+
+          <line class="e" x1="160" y1="126" x2="193" y2="126" marker-end="url(#b1)"/>
+          <polyline class="e" points="345,126 365,126 365,43 383,43" marker-end="url(#b1)"/>
+          <line class="e-hl" x1="345" y1="126" x2="383" y2="126" marker-end="url(#b2)"/>
+          <polyline class="e" points="365,126 365,209 383,209" marker-end="url(#b1)"/>
+          <polyline class="e" points="525,43 545,43 545,118 562,121"/>
+          <line class="e-hl" x1="525" y1="126" x2="562" y2="126" marker-end="url(#b2)"/>
+          <polyline class="e" points="525,209 545,209 545,134 562,131"/>
+          <line class="e" x1="596" y1="126" x2="618" y2="126" marker-end="url(#b1)"/>
+          <line class="e" x1="750" y1="126" x2="768" y2="126" marker-end="url(#b1)"/>
+          <text class="t-a" x="455" y="170" text-anchor="middle">vampires, werewolves</text>
+        </svg>
+      </div>
+      <figcaption><b>Decisions are code, judgment is the agent.</b> The router picks the playbook from the named creature, so a vampire always gets the corporeal arsenal. Only <code>ground</code> uses an autonomous agent. <code>pipeline/flow.py</code></figcaption>
+    </figure>
+  </section>
+
+  <section class="sec" aria-labelledby="f3">
+    <div class="sec-head"><span class="eyebrow">Figure 3 · CrewAI agent + You.com</span><h2 id="f3">The Lore Researcher</h2></div>
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 900 250" role="img" aria-label="The Lore Researcher agent, thinking on Parasail, sends queries to its you_search tool. The tool calls the You.com Search API and numbers each hit in a source ledger. The agent reads the numbered hits and writes cited notes, which go to compose.">
+          <defs>
+            <marker id="c1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <rect class="n-hl" x="10" y="70" width="200" height="92"/>
+          <text class="t-b" x="110" y="98" text-anchor="middle">Lore Researcher</text>
+          <text class="t" x="110" y="118" text-anchor="middle">CrewAI Agent</text>
+          <text class="t-a" x="110" y="136" text-anchor="middle">thinks on Parasail</text>
+          <text class="t-s" x="110" y="153" text-anchor="middle">max_iter 4</text>
+
+          <rect class="n" x="300" y="20" width="180" height="60"/>
+          <text class="t-b" x="390" y="45" text-anchor="middle">you_search</text>
+          <text class="t-s" x="390" y="64" text-anchor="middle">CrewAI BaseTool</text>
+
+          <rect class="n" x="600" y="20" width="180" height="60"/>
+          <text class="t-b" x="690" y="45" text-anchor="middle">You.com Search</text>
+          <text class="t-s" x="690" y="64" text-anchor="middle">POST /v1/search</text>
+
+          <rect class="n-soft" x="300" y="150" width="180" height="60"/>
+          <text class="t-b" x="390" y="175" text-anchor="middle">Source ledger</text>
+          <text class="t" x="390" y="196" text-anchor="middle">[1] [2] [3] … [n]</text>
+
+          <rect class="n" x="600" y="150" width="180" height="60"/>
+          <text class="t-b" x="690" y="175" text-anchor="middle">Cited notes</text>
+          <text class="t-s" x="690" y="196" text-anchor="middle">every claim ends in [n]</text>
+
+          <polyline class="e" points="210,96 250,96 250,50 298,50" marker-end="url(#c1)"/>
+          <text class="t-s" x="258" y="40">query</text>
+          <line class="e" x1="480" y1="42" x2="598" y2="42" marker-end="url(#c1)"/>
+          <text class="t-s" x="539" y="34" text-anchor="middle">query, count 4</text>
+          <line class="e" x1="600" y1="62" x2="482" y2="62" marker-end="url(#c1)"/>
+          <text class="t-s" x="539" y="78" text-anchor="middle">web hits</text>
+          <line class="e" x1="390" y1="80" x2="390" y2="148" marker-end="url(#c1)"/>
+          <text class="t-s" x="398" y="118">numbers each hit once</text>
+          <polyline class="e" points="300,180 255,180 255,140 212,140" marker-end="url(#c1)"/>
+          <text class="t-s" x="232" y="198" text-anchor="middle">numbered hits</text>
+          <polyline class="e" points="110,162 110,228 690,228 690,212" marker-end="url(#c1)"/>
+          <text class="t-s" x="400" y="244" text-anchor="middle">writes 4 to 6 cited bullets</text>
+          <line class="e" x1="780" y1="180" x2="888" y2="180" marker-end="url(#c1)"/>
+          <text class="t-s" x="834" y="172" text-anchor="middle">to compose</text>
+        </svg>
+      </div>
+      <figcaption><b>Grounded every time.</b> The agent picks its own queries. If it ever answers without searching, the Flow runs two searches itself. Every source keeps its number, so the page can link each claim. <code>pipeline/grounding.py</code></figcaption>
+    </figure>
+  </section>
+
+  <section class="sec" aria-labelledby="f4">
+    <div class="sec-head"><span class="eyebrow">Figure 4 · Parasail</span><h2 id="f4">Panels stream out of one JSON</h2></div>
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 900 270" role="img" aria-label="Parasail streams one JSON manifest under a strict schema. Each panel object is sent the moment it closes, after a code check, over the WebSocket. The page places it by type: the threat banner across all 12 columns, the floor plan across 8 with the entity card in the other 4.">
+          <defs>
+            <marker id="d1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <text class="t-s" x="10" y="14">Parasail, strict json_schema, streamed token by token</text>
+          <rect class="n-soft" x="10" y="22" width="880" height="44"/>
+          <text class="t" x="22" y="49">{"components": [</text>
+          <rect class="n" x="205" y="30" width="190" height="28"/><text class="t" x="300" y="49" text-anchor="middle">{ThreatBanner …}</text>
+          <rect class="n" x="405" y="30" width="190" height="28"/><text class="t" x="500" y="49" text-anchor="middle">{FloorPlan …}</text>
+          <rect class="n" x="605" y="30" width="190" height="28"/><text class="t" x="700" y="49" text-anchor="middle">{EntityCard …}</text>
+          <text class="t" x="810" y="49">… ]}</text>
+
+          <line class="e" x1="300" y1="58" x2="300" y2="96" marker-end="url(#d1)"/>
+          <line class="e" x1="500" y1="58" x2="500" y2="96" marker-end="url(#d1)"/>
+          <line class="e" x1="700" y1="58" x2="700" y2="96" marker-end="url(#d1)"/>
+          <text class="t-s" x="308" y="82">object closes</text>
+
+          <rect class="n-hl" x="200" y="98" width="600" height="32"/>
+          <text class="t" x="500" y="119" text-anchor="middle">clean_manifest: each panel checked in code</text>
+
+          <line class="e" x1="500" y1="130" x2="500" y2="158" marker-end="url(#d1)"/>
+          <text class="t-s" x="510" y="149">WebSocket, one panel at a time</text>
+
+          <rect class="n-soft" x="200" y="160" width="600" height="100"/>
+          <rect class="n" x="208" y="166" width="584" height="24"/>
+          <text class="t" x="500" y="183" text-anchor="middle">1 · ThreatBanner · 12 columns</text>
+          <rect class="n" x="208" y="196" width="386" height="58"/>
+          <text class="t" x="401" y="230" text-anchor="middle">2 · FloorPlan · 8 columns</text>
+          <rect class="n" x="600" y="196" width="192" height="58"/>
+          <text class="t" x="696" y="230" text-anchor="middle">3 · EntityCard · 4</text>
+        </svg>
+      </div>
+      <figcaption><b>The model decides what and in which order. The page decides where.</b> A panel appears while the model is still writing the next one. A harmless verdict is forced to "observe" in code, whatever the model wrote. <code>flow.py · compose</code>, <code>web/src/layout.ts</code></figcaption>
+    </figure>
+  </section>
+
+  <section class="sec" aria-labelledby="f5">
+    <div class="sec-head"><span class="eyebrow">Figure 5 · One</span><h2 id="f5">Call an expert</h2></div>
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 900 340" role="img" aria-label="An operator clicks Call vampire hunter. The server checks the cooldown and the step-and-expert key, then asks the One CLI to create a PagerDuty incident marked simulated. PagerDuty pages the expert's phone. The expert acknowledges. The server polls the incident every 15 seconds and shows Acknowledged on the page.">
+          <defs>
+            <marker id="s1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="s2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-hl" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <rect class="n" x="20" y="10" width="120" height="34"/><text class="t-b" x="80" y="32" text-anchor="middle">Operator</text>
+          <rect class="n" x="210" y="10" width="120" height="34"/><text class="t-b" x="270" y="32" text-anchor="middle">Server</text>
+          <rect class="n" x="400" y="10" width="120" height="34"/><text class="t-b" x="460" y="32" text-anchor="middle">One CLI</text>
+          <rect class="n" x="590" y="10" width="120" height="34"/><text class="t-b" x="650" y="32" text-anchor="middle">PagerDuty</text>
+          <rect class="n" x="770" y="10" width="120" height="34"/><text class="t-b" x="830" y="32" text-anchor="middle">Expert</text>
+          <line class="life" x1="80" y1="44" x2="80" y2="330"/>
+          <line class="life" x1="270" y1="44" x2="270" y2="330"/>
+          <line class="life" x1="460" y1="44" x2="460" y2="330"/>
+          <line class="life" x1="650" y1="44" x2="650" y2="330"/>
+          <line class="life" x1="830" y1="44" x2="830" y2="330"/>
+
+          <line class="e-hl" x1="80" y1="70" x2="268" y2="70" marker-end="url(#s2)"/>
+          <text class="t-a" x="175" y="62" text-anchor="middle">Call vampire hunter</text>
+
+          <rect class="n-soft" x="278" y="84" width="170" height="26"/>
+          <text class="t-s" x="363" y="101" text-anchor="middle">cooldown 60 s · key step:expert</text>
+
+          <line class="e" x1="270" y1="130" x2="458" y2="130" marker-end="url(#s1)"/>
+          <text class="t-s" x="365" y="122" text-anchor="middle">execute Create an Incident</text>
+          <line class="e" x1="460" y1="158" x2="648" y2="158" marker-end="url(#s1)"/>
+          <text class="t-s" x="555" y="150" text-anchor="middle">POST /incidents [SIMULATED]</text>
+          <line class="e" x1="650" y1="186" x2="828" y2="186" marker-end="url(#s1)"/>
+          <text class="t-s" x="740" y="178" text-anchor="middle">phone buzzes</text>
+          <line class="e" x1="830" y1="214" x2="652" y2="214" marker-end="url(#s1)"/>
+          <text class="t-s" x="740" y="206" text-anchor="middle">Acknowledge</text>
+          <line class="e-dash" x1="270" y1="246" x2="648" y2="246" marker-end="url(#s1)"/>
+          <text class="t-s" x="460" y="238" text-anchor="middle">Get an Incident, every 15 s (through One)</text>
+          <line class="e-dash" x1="650" y1="274" x2="272" y2="274" marker-end="url(#s1)"/>
+          <text class="t-s" x="460" y="290" text-anchor="middle">status: acknowledged</text>
+          <line class="e-hl" x1="270" y1="314" x2="82" y2="314" marker-end="url(#s2)"/>
+          <text class="t-a" x="175" y="306" text-anchor="middle">Acknowledged by Jaroslav</text>
+        </svg>
+      </div>
+      <figcaption><b>A real page, safely.</b> Ghostbuster works the same way for spectral threats. One key per step and expert means a second click can't page twice. One also speaks "Calling the vampire hunter" through ElevenLabs. <code>server/pager.ts</code>, <code>server/speech.ts</code></figcaption>
+    </figure>
+  </section>
+
+  <section class="sec" aria-labelledby="numbers">
+    <div class="sec-head"><span class="eyebrow">Measured</span><h2 id="numbers">By the numbers</h2></div>
+    <figure class="chart">
+      <div class="fig-body">
+        <svg viewBox="0 0 900 120" role="img" aria-label="Mean phase times for one step: ingest 2.3 seconds, ground 7.7 seconds, compose 3.3 seconds, 13.3 seconds in all.">
+          <text class="t" x="110" y="58" text-anchor="end">one step</text>
+          <rect class="bar-m" x="120" y="40" width="111.5" height="28"><title>ingest: 2.3 s</title></rect>
+          <text class="t-onm" x="175.75" y="58" text-anchor="middle">ingest 2.3 s</text>
+          <rect class="bar-m" x="233.5" y="40" width="377.8" height="28"><title>ground: 7.7 s</title></rect>
+          <text class="t-onm" x="422.4" y="58" text-anchor="middle">ground 7.7 s · agent + You.com</text>
+          <rect class="bar" x="613.3" y="40" width="160.8" height="28"><title>compose: 3.3 s</title></rect>
+          <text class="t-on" x="693.7" y="58" text-anchor="middle">compose 3.3 s</text>
+          <line class="axis" x1="120" y1="78" x2="860" y2="78"/>
+          <line class="axis" x1="120" y1="78" x2="120" y2="84"/><text class="t-s" x="120" y="98" text-anchor="middle">0 s</text>
+          <line class="axis" x1="366.7" y1="78" x2="366.7" y2="84"/><text class="t-s" x="366.7" y="98" text-anchor="middle">5 s</text>
+          <line class="axis" x1="613.3" y1="78" x2="613.3" y2="84"/><text class="t-s" x="613.3" y="98" text-anchor="middle">10 s</text>
+          <line class="axis" x1="860" y1="78" x2="860" y2="84"/><text class="t-s" x="860" y="98" text-anchor="middle">15 s</text>
+          <text class="t-a" x="693.7" y="30" text-anchor="middle">panels stream here</text>
+        </svg>
+      </div>
+      <figcaption><b>Where a step's time goes.</b> Mean phase times over the 24 eval steps. Grounding is the slowest part. The page shows a provisional banner from the intake while it runs.</figcaption>
+    </figure>
+
+    <div class="two">
+      <figure class="chart">
+        <div class="fig-body">
+          <svg viewBox="0 0 560 230" role="img" aria-label="Parasail calls by purpose: CrewAI agent 191, extract the incident 95, compose the station 95, write art prompts 39, draw SVG icons 29.">
+            <line class="axis" x1="200" y1="14" x2="200" y2="210"/>
+            <text class="t" x="192" y="34" text-anchor="end">CrewAI agent</text>
+            <rect class="bar" x="200" y="20" width="286.5" height="20"><title>CrewAI agent: 191 calls</title></rect>
+            <text class="t" x="494" y="35">191</text>
+            <text class="t" x="192" y="74" text-anchor="end">extract incident</text>
+            <rect class="bar" x="200" y="60" width="142.5" height="20"><title>Extract the incident: 95 calls</title></rect>
+            <text class="t" x="350" y="75">95</text>
+            <text class="t" x="192" y="114" text-anchor="end">compose station</text>
+            <rect class="bar" x="200" y="100" width="142.5" height="20"><title>Compose the station: 95 calls</title></rect>
+            <text class="t" x="350" y="115">95</text>
+            <text class="t" x="192" y="154" text-anchor="end">art prompts</text>
+            <rect class="bar-m" x="200" y="140" width="58.5" height="20"><title>Write art prompts: 39 calls</title></rect>
+            <text class="t" x="266" y="155">39</text>
+            <text class="t" x="192" y="194" text-anchor="end">SVG icons (retired)</text>
+            <rect class="bar-m" x="200" y="180" width="43.5" height="20"><title>Draw SVG icons: 29 calls</title></rect>
+            <text class="t" x="251" y="195">29</text>
+          </svg>
+        </div>
+        <figcaption><b>449 Parasail calls,</b> about 966,000 tokens, zero failures. Counted from the proof ledger at 13:56.</figcaption>
+      </figure>
+      <figure class="chart">
+        <div class="fig-body">
+          <svg viewBox="0 0 560 230" role="img" aria-label="Eval score out of 144 on the 24 Nightfall steps: baseline 114, after fixes pass A 126.7, pass B 127.5.">
+            <line class="axis" x1="150" y1="14" x2="150" y2="170"/>
+            <line class="e-dash" x1="510" y1="14" x2="510" y2="170"/>
+            <text class="t-s" x="510" y="186" text-anchor="middle">144 max</text>
+            <text class="t" x="142" y="44" text-anchor="end">baseline</text>
+            <rect class="bar-m" x="150" y="28" width="285" height="24"><title>Baseline: 114 of 144</title></rect>
+            <text class="t" x="443" y="45">114</text>
+            <text class="t" x="142" y="94" text-anchor="end">fixed, pass A</text>
+            <rect class="bar" x="150" y="78" width="316.8" height="24"><title>After fixes, pass A: 126.7 of 144</title></rect>
+            <text class="t" x="474" y="95">126.7</text>
+            <text class="t" x="142" y="144" text-anchor="end">fixed, pass B</text>
+            <rect class="bar" x="150" y="128" width="318.8" height="24"><title>After fixes, pass B: 127.5 of 144</title></rect>
+            <text class="t" x="476" y="145">127.5</text>
+            <text class="t-s" x="150" y="214">0</text>
+          </svg>
+        </div>
+        <figcaption><b>Eval: 114 to 127 of 144.</b> 24 Nightfall steps scored against an answer key: action, dispatch, sector, panels. <code>eval/report.md</code></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="code">
+    <div class="sec-head"><span class="eyebrow">For judges and reviewers</span><h2 id="code">Code map</h2></div>
+    <div class="codemap">
+      <div class="folder"><h3>pipeline/</h3><dl>
+        <dt>flow.py</dt><dd>The CrewAI Flow, prompts and schemas</dd>
+        <dt>library.py</dt><dd>Playbooks and the panel checks</dd>
+        <dt>grounding.py</dt><dd>You.com search and the agent's tool</dd>
+        <dt>parasail.py</dt><dd>Model client and CrewAI LLM</dd>
+      </dl></div>
+      <div class="folder"><h3>server/</h3><dl>
+        <dt>station.ts</dt><dd>Runs the Flow, streams to every viewer</dd>
+        <dt>one.ts</dt><dd>One CLI: find, execute, log</dd>
+        <dt>pager.ts · speech.ts</dt><dd>PagerDuty call, ElevenLabs voice</dd>
+        <dt>sky.ts</dt><dd>Sunset and moonrise, offline and live</dd>
+      </dl></div>
+      <div class="folder"><h3>web/src/</h3><dl>
+        <dt>App.tsx · layout.ts</dt><dd>The station and its 12-column grid</dd>
+        <dt>components.tsx</dt><dd>Every panel the model can pick</dd>
+        <dt>floorplan.tsx · route.ts</dt><dd>Floor and area maps, safe routes</dd>
+      </dl></div>
+      <div class="folder"><h3>shared · data · proof</h3><dl>
+        <dt>shared/library.json</dt><dd>Panels, sectors, playbooks, icons</dd>
+        <dt>fixtures/nightfall/</dt><dd>24 steps and the eval's answer key</dd>
+        <dt>proof/</dt><dd>Every partner call, keys redacted</dd>
+      </dl></div>
+    </div>
+    <div class="two">
+<pre><code># run the station: http://127.0.0.1:8666
+pnpm install
+uv venv --python 3.13 .venv
+uv pip install -r requirements.txt
+pnpm start             # add --offline to replay</code></pre>
+<pre><code># check it
+pnpm check                         # types, build
+node --test web/src/route.test.ts  # 14 of 14
+PAGING=off .venv/bin/python eval/run.py</code></pre>
+    </div>
+  </section>
+
+  <footer>Every incident here is simulated, and every PagerDuty title starts with <code>[SIMULATED]</code>. Also in the build: art rendered locally with Z-Image Turbo from Parasail-written prompts, maps from OpenStreetMap, sky times from suncalc and wttr.in, and hosting on Apify Standby.</footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var key = 'field-manual-theme';
+  try { var saved = localStorage.getItem(key); if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved); } catch (e) {}
+  function current() {
+    var set = root.getAttribute('data-theme');
+    if (set) return set;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  var btn = document.getElementById('theme-toggle');
+  function label() { btn.textContent = current() === 'dark' ? 'Switch to light' : 'Switch to dark'; }
+  label();
+  btn.addEventListener('click', function () {
+    var next = current() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem(key, next); } catch (e) {}
+    label();
+  });
+})();
+</script>
+
+</html>

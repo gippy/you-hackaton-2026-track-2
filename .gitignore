@@ -15,6 +15,7 @@ reference/
 # Personal prep notes
 PREP.md
 MVP_PROMPT.md
+HANDOVER.md
 
 # Third-party agent skills, copied locally for Claude Code
 .claude/

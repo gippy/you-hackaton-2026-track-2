@@ -1,6 +1,6 @@
 # Parasail model tests, 2026-10-28
 
-Before building, we tested the event's Parasail models on what the station needs: tool calls, streaming, schema-locked JSON, embeddings and SVG drawing. These results decided which model does what. The scripts in this folder rerun every test: `.venv/bin/python proof/exploration/<script>.py .env`.
+Before building, I tested the event's Parasail models on what the station needs: tool calls, streaming, schema-locked JSON, embeddings and SVG drawing. These results decided which model does what. The scripts in this folder rerun every test: `.venv/bin/python proof/exploration/<script>.py .env`.
 
 ## Tool calling (`parasail_models.py`)
 
@@ -35,9 +35,9 @@ Every model got the same prompt: a banshee icon in the station's palette, `viewB
 | `parasail-deepseek-v41-flash` | Never closed the SVG |
 | `parasail-glm-53` | Returned nothing after 51.5 seconds |
 
-## What we chose
+## What I chose
 
 - `parasail-minimax-m31-flash` runs the agents and draws the icons, because it was the fastest at tool calls and valid at strict JSON and SVG.
 - `parasail-deepseek-v41-flash` is the fallback.
 - `parasail-glm-53` is kept for steps that need longer reasoning, with a generous token budget and never with `json_schema`.
-- `parasail-bge-m3` handles embeddings.
+- `parasail-bge-m3` works for embeddings (1024 dimensions), but the station doesn't use embeddings yet.
