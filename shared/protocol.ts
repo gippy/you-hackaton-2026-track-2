@@ -20,6 +20,13 @@ export interface Incident {
     temperature_c: number | null;
     civilians: { count: number; condition: Condition; location: string };
     systems: { name: string; status: SystemStatus }[];
+    /** The intake's judgment, made before severity. Runs saved before these fields existed have none. */
+    evidence_of_threat?: string;
+    ordinary_explanation?: string | null;
+    deliberate_act?: boolean;
+    verdict?: 'real_threat' | 'harmless' | 'unclear';
+    people_in_reach?: number;
+    people_hurt?: number;
     severity: Severity;
     summary: string;
 }

@@ -35,6 +35,41 @@ def sector_id(name: str) -> str:
     return SECTOR_ALIASES.get(name, name)
 
 
+ENTITY_CLASSES: dict[str, list[str]] = _LIB["entity_classes"]  # playbook -> words that name its creatures
+EMF_NORMAL_MG: float = _LIB["emf_normal_mg"]  # at or below this, an EMF reading is ordinary background
+
+
+def entity_class(incident: dict) -> str:
+    """The playbook for an incident: named creatures decide (a vampire is corporeal), else the model's own class."""
+    for text in (incident.get("entity", ""), incident.get("summary", "")):
+        low = text.lower()
+        for label, words in ENTITY_CLASSES.items():
+            if any(w in low for w in words):
+                return label
+    label = incident.get("entity_class")
+    return label if label in PLAYBOOKS else "anomalous"
+
+
+def is_harmless(incident: dict | None) -> bool:
+    """The intake judged the report harmless, and nobody in it acted deliberately."""
+    return bool(incident) and incident.get("verdict") == "harmless" and not incident.get("deliberate_act")
+
+
+def opening_cue(cue: str | None, harmless: bool) -> str:
+    """The station's opening sound: all_clear for a harmless report and only then, else the model's pick."""
+    if harmless:
+        return "all_clear"
+    return cue if cue in CUES and cue != "all_clear" else "alert_chime"
+
+
+def sector_spots(sector: str) -> list[str]:
+    """Landmarks inside a sector, from data/map/floor.json, for the intake's sector choice."""
+    for zone in FLOOR.get("zones", []):
+        if sector_id(zone["slug"]) == sector:
+            return zone.get("spots", [])
+    return []
+
+
 def adjacency() -> dict[str, list[str]]:
     """Sectors a person can walk between, from data/map/floor.json's connections: through a door, or
     through one corridor area such as the hall. Slugs are the station's (catering_coffee_bar is catering)."""
@@ -149,19 +184,28 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
     })
 
 
-def clean_manifest(raw: dict, arsenal: list[str], source_count: int) -> tuple[dict, list[str]]:
+def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: dict | None = None) -> tuple[dict, list[str]]:
     """Keep what the page can render. Returns the manifest and notes on anything dropped.
 
     The schema already fixes the shape; this only removes repeats and out-of-range references,
-    which a schema cannot express. It never adds a component the model did not choose.
+    which a schema cannot express, and enforces two rules on the model's choices: a harmless report
+    gets a calm station (observe, the all-clear sound, no alarm panels), and an ordinary EMF reading
+    gets no gauge. It never adds a component the model did not choose.
     """
     notes: list[str] = []
     seen: set[str] = set()
     components = []
+    calm = is_harmless(incident)
     for comp in raw.get("components") or []:
         kind = comp.get("type")
         if kind not in COMPONENTS:
             notes.append(f"dropped unknown component {kind!r}")
+            continue
+        if calm and kind in ("CountermeasurePicker", "CivilianTracker", "FloorPlan"):
+            notes.append(f"dropped {kind}: the intake judged the report harmless")
+            continue
+        if kind == "EMFGauge" and float((comp.get("props") or {}).get("value_mg") or 0) <= EMF_NORMAL_MG:
+            notes.append("dropped an EMFGauge showing an ordinary reading")
             continue
         if kind in seen:
             notes.append(f"dropped a repeated {kind}")
@@ -201,9 +245,11 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int) -> tuple[di
     out = {
         "title": raw.get("title") or "Haunted command station",
         "theme": raw.get("theme") if raw.get("theme") in THEMES else THEMES[0],
-        "sound_cue": raw.get("sound_cue") if raw.get("sound_cue") in CUES else "alert_chime",
+        "sound_cue": opening_cue(raw.get("sound_cue"), calm),
         "components": components,
-        "recommended_action": raw.get("recommended_action") if raw.get("recommended_action") in ACTIONS else "contain",
+        "recommended_action": "observe" if calm else raw.get("recommended_action") if raw.get("recommended_action") in ACTIONS else "contain",
         "dispatch_rationale": raw.get("dispatch_rationale") or "",
     }
+    if calm and (raw.get("recommended_action") != "observe" or raw.get("sound_cue") != "all_clear"):
+        notes.append("the intake judged the report harmless: observe and the all-clear sound")
     return out, notes

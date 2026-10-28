@@ -25,8 +25,9 @@ SECRET_RES = [
 ]
 SECRET_ENV = ("PARASAIL_API_KEY", "YDC_API_KEY", "YOU_API_KEY", "ONE_SECRET")
 
-# Who this process is working for, added to every line: incident_id and run_id.
-CONTEXT: dict = {}
+# Who this process is working for, added to every line: incident_id and run_id, and "context" when
+# PROOF_CONTEXT is set (the eval harness sets it to "eval", so demo and eval runs can be told apart).
+CONTEXT: dict = {"context": os.environ.get("PROOF_CONTEXT", "").strip()}
 _lock = threading.Lock()
 
 

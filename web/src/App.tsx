@@ -1,7 +1,9 @@
 import { type FormEvent, useEffect, useReducer, useRef, useState } from 'react';
 
 import type { Action, ClientMessage, ServerMessage, StepId } from '../../shared/protocol.ts';
+import type { Incident } from '../../shared/protocol.ts';
 import { Card, domain, Link, type Ctx } from './components.tsx';
+import { FloorPlan } from './floorplan.tsx';
 import { artUrl, withToken } from './url.ts';
 import { SoundBoard } from './audio.ts';
 import { initial, reduce } from './station.ts';
@@ -12,6 +14,39 @@ const STEPS: { id: StepId; label: string; partner: string }[] = [
     { id: 'ground', label: 'Ground', partner: 'CrewAI agent · You.com' },
     { id: 'compose', label: 'Compose', partner: 'Parasail stream' },
 ];
+
+/**
+ * What the page knows two seconds in, from the intake alone, while the station is still being grounded and
+ * composed: the intake's verdict as a banner and the hot sector on the floor plan. The model's components
+ * replace it as they arrive.
+ */
+function Provisional({ incident, ctx, stage }: { incident: Incident; ctx: Ctx; stage: string }) {
+    const directive =
+        incident.verdict === 'harmless'
+            ? `Likely harmless: ${incident.ordinary_explanation ?? 'an ordinary explanation'}`
+            : incident.verdict === 'real_threat'
+              ? `Threat at intake: ${incident.evidence_of_threat ?? incident.summary}`
+              : 'Unclear at intake. Grounding before anyone acts.';
+    return (
+        <>
+            <article className={`card wide threat sev-${incident.severity} provisional`}>
+                <header>
+                    <h3>Provisional</h3>
+                    <span className="order">intake only · {stage}</span>
+                </header>
+                <div className="headline">{incident.summary}</div>
+                <div className="directive">{directive}</div>
+            </article>
+            <article className="card wide provisional">
+                <header>
+                    <h3>Hot sector</h3>
+                    <span className="order">intake only</span>
+                </header>
+                <FloorPlan p={{ hot_sector: incident.sector, seal: [], safe_route: [], view: 'floor' }} ctx={ctx} />
+            </article>
+        </>
+    );
+}
 
 /** A timeline label: the report without its leading "ALERT 18:15" or "GUEST REPORT 11:20," prefix. */
 const stepLabel = (raw: string) => raw.replace(/^[A-Z ]+\d{1,2}:\d{2},?\s*/, '').slice(0, 60);
@@ -244,6 +279,16 @@ export function App() {
                                 <dd>
                                     {incident.incident.civilians.count} {incident.incident.civilians.condition}, {incident.incident.civilians.location}
                                 </dd>
+                                {incident.incident.verdict && (
+                                    <>
+                                        <dt>Verdict</dt>
+                                        <dd>
+                                            {incident.incident.verdict.replace('_', ' ')}
+                                            {incident.incident.verdict === 'harmless' && incident.incident.ordinary_explanation ? `: ${incident.incident.ordinary_explanation}` : ''}
+                                            {incident.incident.people_hurt ? ` · ${incident.incident.people_hurt} hurt` : ''}
+                                        </dd>
+                                    </>
+                                )}
                                 <dt>Systems</dt>
                                 <dd>{incident.incident.systems.map((s) => `${s.name}: ${s.status}`).join('; ') || 'none reported'}</dd>
                             </dl>
@@ -316,6 +361,8 @@ export function App() {
                     <div className="components">
                         {ctx && state.components.length ? (
                             state.components.map((c, i) => c && <Card key={`${i}-${c.type}`} index={i} component={c} ctx={ctx} />)
+                        ) : ctx && incident ? (
+                            <Provisional incident={incident.incident} ctx={ctx} stage={!state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…'} />
                         ) : (
                             <div className="empty hero crt-bg" style={state.art.hero_station_night ? { backgroundImage: `url(${artUrl(state.art.hero_station_night.file)})` } : undefined}>
                                 {!incident ? 'Reading the incident…' : !state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…'}

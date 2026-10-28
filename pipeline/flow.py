@@ -33,7 +33,8 @@ INCIDENT_SCHEMA = {
     "type": "object",
     "additionalProperties": False,
     "required": ["entity", "entity_class", "threat_level", "sector", "location_detail", "emf_mg", "emf_trend",
-                 "temperature_c", "civilians", "systems", "severity", "summary"],
+                 "temperature_c", "civilians", "systems", "evidence_of_threat", "ordinary_explanation", "deliberate_act",
+                 "verdict", "people_in_reach", "people_hurt", "severity", "summary"],
     "properties": {
         "entity": {"type": "string", "description": "What is haunting, as reported, e.g. 'level-3 Banshee'"},
         "entity_class": {"type": "string", "enum": list(library.PLAYBOOKS)},
@@ -55,6 +56,13 @@ INCIDENT_SCHEMA = {
             "type": "object", "additionalProperties": False, "required": ["name", "status"],
             "properties": {"name": {"type": "string"},
                            "status": {"type": "string", "enum": ["online", "degraded", "offline"]}}}},
+        # Judged before severity, in this order: the model fills properties in order.
+        "evidence_of_threat": {"type": "string", "description": "What in the report shows a real, present danger to people, or 'none'. Under 25 words"},
+        "ordinary_explanation": {"type": ["string", "null"], "description": "An ordinary explanation the report's own evidence supports, with that evidence, else null. Under 25 words"},
+        "deliberate_act": {"type": "boolean", "description": "true when the report names someone who deliberately caused the disruption (threw a breaker, forced a door). A guest mistaken for a monster did nothing deliberate"},
+        "verdict": {"type": "string", "enum": ["real_threat", "harmless", "unclear"]},
+        "people_in_reach": {"type": "integer", "minimum": 0, "description": "People the threat can reach right now, not everyone present"},
+        "people_hurt": {"type": "integer", "minimum": 0, "description": "People the report says are hurt, bitten, collapsed or pinned"},
         "severity": {"type": "string", "enum": library.SEVERITIES},
         "summary": {"type": "string", "description": "One sentence, under 25 words"},
     },
@@ -63,11 +71,16 @@ INCIDENT_SCHEMA = {
 EXTRACT_SYSTEM = (
     "You are the intake officer of a paranormal containment unit at the AWS Builder Loft in San Francisco. "
     "Turn a raw incident report into a structured incident. Use only what the report says; use null or 'unknown' "
-    "for anything it does not state. Map the location to the closest loft sector:\n"
-    + "\n".join(f"- {k}: {v}" for k, v in library.SECTORS.items())
-    + "\nentity_class: spectral for ghosts, phantoms, apparitions, banshees and poltergeists; corporeal for physical monsters "
-    "with a body, such as vampires, werewolves, wolves, zombies and mummies; "
-    "anomalous for cursed technology, rifts or anything else. " + UNTRUSTED
+    "for anything it does not state. Map the location to the closest loft sector, using its landmarks:\n"
+    + "\n".join(f"- {k}: {v}" + (f"; landmarks: {', '.join(s)}" if (s := library.sector_spots(k)) else "") for k, v in library.SECTORS.items())
+    + "\nentity_class: corporeal for anything with a body, living or undead: vampires, werewolves, zombies, cryptids, "
+    "even when asleep, disguised or only claimed; spectral for ghosts, phantoms, apparitions, banshees and poltergeists; "
+    "anomalous only for cursed technology, rifts and signals with no creature in the report. "
+    "Rate severity from the evidence in the report, never from the feed's tier label: the label is a sensor guess and "
+    "can be wrong in both directions. Fill evidence_of_threat, ordinary_explanation, deliberate_act and verdict before "
+    "severity. verdict is harmless only when the report's own evidence (readings, measurements, witness checks, logs) "
+    "supports an ordinary explanation and nobody acted deliberately; real_threat when a creature or hazard is acting; "
+    "unclear otherwise. " + UNTRUSTED
 )
 
 COMPOSE_SYSTEM = (
@@ -87,15 +100,20 @@ COMPOSE_SYSTEM = (
     "Countermeasure options must come from the playbook arsenal and be justified by the numbered sources; "
     "set `source` to the source number that supports each one and `support` to how strongly it does. "
     "Keep every rationale, directive and headline short: under 20 words. Pick the theme that fits the entity. "
-    "recommended_action is contain, evacuate or observe. "
+    "The incident carries a verdict, people_in_reach and people_hurt; build the station from them, never from the feed "
+    "tier. Choose recommended_action with this rubric: observe when the verdict is harmless, or when the threat is real "
+    "but nobody is within its reach right now and watching is enough; contain when a real threat is active and people "
+    "are within its reach or soon will be; evacuate when people are already hurt, pinned or fleeing, or the threat is "
+    "loose among a crowd, so the safe move is to get them out. "
+    "Panels: ThreatBanner and SourceLedger in every station. EMFGauge only when the EMF reading is above normal or "
+    "rising. CountermeasurePicker only when the action is contain or evacuate. FloorPlan and CivilianTracker when real "
+    "people are near a real threat. A harmless verdict gets exactly: a low ThreatBanner that says why it is safe, "
+    "SourceLedger, and at most one of ThermalReadout, SystemsBoard or EntityCard; sound_cue all_clear; recommended_action "
+    "observe. "
     "sound_cue is the sound the station opens with; pick the sting of the entity's closest match, or all_clear "
     "for a harmless report:\n"
     + "\n".join(f"- {k}: {library.SOUNDS[k]['label']}" for k in library.CUES)
-    + "\n"
-    "When the readings are normal and the report has an ordinary explanation (a fog machine, a costume, a prank), "
-    "keep the station calm: sound_cue all_clear, a low-severity ThreatBanner that says why it is safe, "
-    "recommended_action observe, "
-    "3 components in all, and no CountermeasurePicker. " + UNTRUSTED
+    + "\n" + UNTRUSTED
 )
 
 
@@ -107,12 +125,13 @@ class FlowFailed(RuntimeError):
 CALLS = {"incident": ("pipeline", "extract the structured incident"), "manifest": ("layout", "compose the station manifest")}
 
 
-def chat_json(schema: dict, name: str, system: str, user: str, on_text: Callable[[str], None] | None = None) -> tuple[dict, str]:
+def chat_json(schema: dict, name: str, system: str, user: str, on_text: Callable[[str], None] | None = None,
+              temperature: float = 0.3) -> tuple[dict, str]:
     """One strict-json_schema completion on Parasail, streamed. Falls back to the second model once."""
     errors = []
     source, purpose = CALLS.get(name, ("pipeline", name))
     for model in (MODEL, FALLBACK_MODEL):
-        request = {"temperature": 0.3, "stream": True, "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        request = {"temperature": temperature, "stream": True, "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
                    "response_format": {"type": "json_schema", "json_schema": {"name": name, "strict": True, "schema": schema}}}
         t0, text, finish, usage = time.monotonic(), "", None, None
         try:
@@ -228,7 +247,12 @@ class HauntFlow(Flow[HauntState]):
     def ingest(self):
         self.step("ingest", "running", "Parasail is structuring the raw report")
         user = f"Severity tier from the feed: {self.state.severity_tier or 'none'}\nRaw incident report:\n{self.state.raw}"
-        incident, model = chat_json(INCIDENT_SCHEMA, "incident", EXTRACT_SYSTEM, user)
+        # Temperature 0: the intake decides whether this is a threat, and the same report should get the same answer.
+        incident, model = chat_json(INCIDENT_SCHEMA, "incident", EXTRACT_SYSTEM, user, temperature=0)
+        if incident.get("verdict") == "harmless" and incident.get("deliberate_act"):
+            # Someone caused it on purpose, so it is not harmless, whatever else explains it.
+            incident["verdict"] = "unclear"
+            self.state.notes.append("someone acted deliberately, so the harmless verdict became unclear")
         self.state.incident, self.state.models = incident, [model]
         self._emit({"type": "incident", "incident": incident, "incident_id": self.state.incident_id,
                     "severity_tier": self.state.severity_tier, "raw": self.state.raw})
@@ -236,8 +260,8 @@ class HauntFlow(Flow[HauntState]):
 
     @router(ingest)
     def triage(self) -> Literal["spectral", "corporeal", "anomalous"]:
-        label = self.state.incident.get("entity_class")
-        return label if label in library.PLAYBOOKS else "anomalous"
+        # A named creature decides the playbook in code (a vampire is corporeal); the model's class is the fallback.
+        return library.entity_class(self.state.incident)
 
     def _playbook(self, label: str) -> None:
         self.state.playbook = label
@@ -345,10 +369,13 @@ class HauntFlow(Flow[HauntState]):
                 frame["theme"] = theme
                 self._emit({"type": "frame", **frame})
             if not frame.get("sound_cue") and (cue := string_field(text, "sound_cue")) in library.CUES:
+                # The same rule as clean_manifest, applied before the cue streams to the page.
+                cue = library.opening_cue(cue, library.is_harmless(self.state.incident))
                 frame["sound_cue"] = cue
                 self._emit({"type": "frame", "sound_cue": cue})
             for comp in parser.feed(text):
-                cleaned, _ = library.clean_manifest({"components": sent + [comp]}, book["arsenal"], len(self.state.sources))
+                cleaned, _ = library.clean_manifest({"components": sent + [comp]}, book["arsenal"], len(self.state.sources),
+                                                    self.state.incident)
                 if len(cleaned["components"]) > len(sent):
                     sent.append(comp)
                     self._emit({"type": "component", "index": len(sent) - 1, "component": cleaned["components"][-1]})
@@ -356,7 +383,7 @@ class HauntFlow(Flow[HauntState]):
 
         raw, model = chat_json(library.manifest_schema(book["arsenal"], len(self.state.sources), has_sky), "manifest",
                                system, user, on_text)
-        manifest, notes = library.clean_manifest(raw, book["arsenal"], len(self.state.sources))
+        manifest, notes = library.clean_manifest(raw, book["arsenal"], len(self.state.sources), self.state.incident)
         if not manifest["components"]:
             raise FlowFailed("the model returned a manifest with no usable components")
         self.state.manifest = manifest

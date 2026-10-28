@@ -238,5 +238,41 @@
   },
   "art_manifest": "art/nightfall/manifest.json",
   "floor_plan": "data/map/floor.json",
-  "area_map": "data/map/area.geojson"
+  "area_map": "data/map/area.geojson",
+  "entity_classes": {
+    "corporeal": [
+      "vampire",
+      "werewolf",
+      "wolf",
+      "zombie",
+      "mummy",
+      "wendigo",
+      "ghoul",
+      "cryptid",
+      "undead",
+      "revenant"
+    ],
+    "spectral": [
+      "ghost",
+      "phantom",
+      "apparition",
+      "spectre",
+      "specter",
+      "poltergeist",
+      "banshee",
+      "haunting",
+      "spirit",
+      "wraith"
+    ],
+    "anomalous": [
+      "gremlin",
+      "will-o",
+      "wisp",
+      "hex",
+      "witch",
+      "curse",
+      "rift"
+    ]
+  },
+  "emf_normal_mg": 5
 }
