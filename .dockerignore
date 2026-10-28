@@ -1,0 +1,36 @@
+# Keys and local credentials: never in the build context, so never in an image layer.
+.env
+.env.*
+**/.env
+**/.env.*
+.onerc
+**/.onerc
+*.pem
+*.key
+
+# Local environments and build output
+.venv
+**/node_modules
+**/__pycache__
+web/dist
+out
+*.tsbuildinfo
+
+# Local-only: cloned docs, raw renders, test harness, notes, other sessions' work
+reference
+art/raw
+art/*.png
+art/prompts.jsonl
+eval
+scenarios
+proof
+smoke_test.py
+PREP.md
+MVP_PROMPT.md
+.claude
+.git
+.gitignore
+.DS_Store
+mcp-stderr.log
+docs
+README.md

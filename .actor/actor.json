@@ -1,0 +1,17 @@
+{
+    "actorSpecification": 1,
+    "name": "haunted-command-station",
+    "title": "Haunted Command Station",
+    "description": "Track 2, The Haunted Dashboard: a raw incident report in, a model-composed command station out, live over a WebSocket. Dry-run dispatch only.",
+    "version": "0.1",
+    "buildTag": "latest",
+    "dockerfile": "../Dockerfile",
+    "dockerContextDir": "..",
+    "usesStandbyMode": true,
+    "minMemoryMbytes": 1024,
+    "environmentVariables": {
+        "PARASAIL_API_KEY": "@parasailApiKey",
+        "YDC_API_KEY": "@ydcApiKey",
+        "ONE_SECRET": "@oneSecret"
+    }
+}
