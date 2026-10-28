@@ -1,8 +1,8 @@
 import { useEffect, useReducer, useRef, useState } from 'react';
 
-import type { ClientMessage, Expert, PageInfo, ServerMessage, StepId } from '../../shared/protocol.ts';
+import type { ClientMessage, Expert, OperatorMoves, PageInfo, ServerMessage, StepId } from '../../shared/protocol.ts';
 import type { Incident } from '../../shared/protocol.ts';
-import { Card, IncidentHead, Link, PanelBoundary, type Ctx } from './components.tsx';
+import { Card, IncidentHead, Link, PanelBoundary, squares, type Ctx } from './components.tsx';
 import { FloorPlan } from './floorplan.tsx';
 import { layout } from './layout.ts';
 import { artUrl, withToken } from './url.ts';
@@ -173,10 +173,27 @@ export function App() {
     const scenario = state.scenarios.find((s) => s.steps.some((step) => step.incident_id === incident?.incident_id)) ?? state.scenarios[0];
     const current = scenario?.steps.find((step) => step.incident_id === incident?.incident_id);
     const running = Boolean(state.source) && !state.manifest;
+    // What the operator did on the scenario step on screen: sent on with the next step, so its station builds on it.
+    const movesHere = (): OperatorMoves | undefined => {
+        if (!current || !state.manifest) return undefined;
+        const tracker = state.components.find((c) => c?.type === 'CivilianTracker');
+        const count = tracker?.type === 'CivilianTracker' ? tracker.props.count : null;
+        return {
+            step: current.incident_id,
+            time: current.time ?? '',
+            countermeasure: operator.countermeasure,
+            sealed: operator.sealed,
+            people_out: count === null ? 0 : squares(count, operator.extracted).people,
+            people: count,
+        };
+    };
     const compileId = (id: string) => {
         setCursor(id);
         requested.current = id;
-        post({ type: 'compile', incident_id: id });
+        // Only a step later in the same scenario builds on the moves; going back or elsewhere starts clean.
+        const target = scenario?.steps.find((step) => step.incident_id === id);
+        const moves = target && current && target.step! > current.step! ? movesHere() : undefined;
+        post({ type: 'compile', incident_id: id, moves });
     };
     // This tab's own place in the scenario: the step it last asked for, else the step on screen.
     const mine = scenario?.steps.find((step) => step.incident_id === cursor) ?? current;
@@ -416,6 +433,18 @@ export function App() {
                                 )}
                             </span>
                         </div>
+                        {state.moves && library && (
+                            <p className="moves small">
+                                Building on your moves at {state.moves.time}:{' '}
+                                {[
+                                    state.moves.countermeasure ? (library.arsenal[state.moves.countermeasure] ?? state.moves.countermeasure) : 'no countermeasure picked',
+                                    state.moves.sealed.length ? `sealed ${state.moves.sealed.map((id) => library.sectors[id] ?? id).join(', ')}` : 'nothing sealed',
+                                    state.moves.people !== null ? `${state.moves.people_out} of ${state.moves.people} people out` : '',
+                                ]
+                                    .filter(Boolean)
+                                    .join(' · ')}
+                            </p>
+                        )}
                         {/* Controls stay focusable while a run streams (aria-disabled), so stepping by keyboard is one key per step. */}
                         <div className="report-nav">
                             {scenario && pickedStep && !composing ? (

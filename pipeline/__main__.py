@@ -2,7 +2,8 @@
 
     echo '{"raw": "...", "incident_id": "", "severity_tier": ""}' | .venv/bin/python -m pipeline
 
-Reads one incident as JSON on stdin and writes one JSON event per line on stdout: the
+Reads one incident as JSON on stdin (a scenario step also carries `sky`, and `moves` once the
+operator has acted) and writes one JSON event per line on stdout: the
 flow's progress events, then {"type": "result", "state": {...}} or {"type": "fatal", "detail": ...}.
 CrewAI prints its own panels to stdout, so the real stdout is kept for events and
 everything else is sent to stderr.
@@ -32,14 +33,14 @@ def main() -> int:
     from . import proof
     from .flow import HauntFlow
 
-    incident = json.loads(sys.stdin.read() or "{}")
+    job = json.loads(sys.stdin.read() or "{}")
+    inputs = {key: str(job.get(key, "")) for key in ("raw", "incident_id", "severity_tier")}
+    inputs.update(sky=job.get("sky") or {}, moves=job.get("moves") or {})
     flow = HauntFlow().bind(emit)
-    proof.CONTEXT.update(incident_id=str(incident.get("incident_id", "")), run_id=flow.state.id)
+    proof.CONTEXT.update(incident_id=inputs["incident_id"], run_id=flow.state.id)
     proof.listen_to_crewai()
     try:
-        flow.kickoff(inputs={"raw": str(incident.get("raw", "")), "incident_id": str(incident.get("incident_id", "")),
-                             "severity_tier": str(incident.get("severity_tier", "")),
-                             "sky": incident.get("sky") or {}})
+        flow.kickoff(inputs=inputs)
     except Exception as exc:  # noqa: BLE001 - the server falls back to the saved run on any failure
         proof.flush_crewai()
         emit({"type": "fatal", "detail": str(exc)[:500]})

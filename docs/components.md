@@ -9,6 +9,7 @@ The screenshots come from live runs on 2026-10-28 at 1440x900, cropped to the pa
 - A quiet step, where nobody is hurt and the next sky event is hours away, loses CountermeasurePicker.
 - An EMF reading at or below 5 mG loses its EMFGauge.
 - A ThermalReadout at its normal temperature is dropped, unless it is the calm panel of a harmless report.
+- A SystemsBoard lists the intake's systems, and goes when there are none.
 - Repeated panels are dropped, and so is an EntityCard with an unknown image.
 
 ## Model components
@@ -56,8 +57,8 @@ _Placeholder: the FloorPlan is getting realistic routes. The screenshots of both
 
 ![CountermeasurePicker, step 21](components/countermeasure-picker.webp)
 
-- **Shows:** options from the playbook's arsenal, strongest support first. Each has a rationale, a support meter and the numbered source behind it. The model's choice is marked Recommended and selected.
-- **When:** only when the action is contain or evacuate. `clean_manifest` keeps only arsenal options and valid source numbers, and drops the panel on harmless and quiet steps.
+- **Shows:** options from the playbook's arsenal. The model's choice comes first, marked Recommended and selected, then the rest strongest support first. Each has a three-bar support meter with its word, a rationale and the numbered source behind it (the source title shows on hover). The target line is hidden when the model only names a class or says unknown.
+- **When:** only when the action is contain or evacuate. The prompt keeps vampire countermeasures (garlic, invitations, seeds) for vampires and raising the blinds for daylight. `clean_manifest` keeps only arsenal options and valid source numbers, and drops the panel on harmless and quiet steps.
 - **Powered by:** Parasail picks and explains the options, and each one cites a You.com source. The icons come from the art manifest.
 - **Operator:** pick a different option than the model's.
 - **Accessibility:** a radio group with a hidden legend, so arrow keys move between options.
@@ -66,8 +67,8 @@ _Placeholder: the FloorPlan is getting realistic routes. The screenshots of both
 
 ![SystemsBoard, step 21](components/systems-board.webp)
 
-- **Shows:** the facility systems the report mentions, each online, degraded or offline.
-- **When:** when the report mentions systems such as the network, security, power or doors.
+- **Shows:** the facility systems the report mentions, as tiles with a large status word: offline first in red, then degraded in amber, then online in a muted tone.
+- **When:** when the report mentions systems such as the network, security, power or doors. `clean_manifest` replaces the model's list with the intake's, so the board never shows a system the report does not name, and drops an empty board.
 - **Powered by:** Parasail, from the intake's list of systems.
 - **Operator:** read only.
 - **Accessibility:** each status is a word as well as a color.
