@@ -44,6 +44,78 @@
         "width": 1024,
         "height": 1024
     },
+    "entity_zombie": {
+        "file": "art/nightfall/entity_zombie.webp",
+        "kind": "entity",
+        "alt": "A grey-faced zombie in a torn office shirt and tie lurching forward under a street lamp, clawed hands reaching out",
+        "prompt": "A shambling cartoon zombie in a torn office shirt and a loose tie, seen from the chest up, both arms reaching forward, grey sunken face, slack open jaw, blank staring eyes, ragged torn sleeves. Medium close-up, slightly low angle, the zombie centered and lurching toward the viewer. A single orange street lamp behind him casts a hard-edged amber silhouette. Colors limited to black, amber, orange and small blood-red accents at the mouth and torn cuffs. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4602,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_phantom": {
+        "file": "art/nightfall/entity_phantom.webp",
+        "kind": "entity",
+        "alt": "The glowing ghost of a barista in an apron, with hollow black eyes and windblown hair, standing behind a dark coffee bar",
+        "prompt": "The ghost of a gaunt barista woman with a sharp hollow-cheeked human face, wild windblown hair and a long apron, seen from the waist up, floating behind a coffee bar counter, pale see-through body showing the dark wall behind her, her lower body breaking into jagged wisps of smoke, blank glowing eyes. Medium close-up, slightly low angle, the ghost centered and facing the viewer. Cold amber light from below, hard-edged shadow shapes. Colors limited to black, amber, orange and small blood-red accents at the eyes. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4611,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_costume_bedsheet_ghost": {
+        "file": "art/nightfall/entity_costume_bedsheet_ghost.webp",
+        "kind": "entity",
+        "alt": "A guest under a white bedsheet ghost costume, sneakers showing, holding a coffee cup in fog-machine mist on a stair landing: a costume, not a phantom",
+        "prompt": "A cheerful party guest wearing a cheap white bedsheet ghost costume with two round cut-out eye holes, sneakers showing below the hem, holding a paper coffee cup, standing on a plain stair landing while low fog from a small fog machine drifts around the feet. Three-quarter full body view, slightly low camera angle, flat even composition with lots of empty black space around the figure. Warm amber light from the front reads the sheet folds as bright orange highlights against deep shadow shapes. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4603,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_dry_ice_fog": {
+        "file": "art/nightfall/entity_dry_ice_fog.webp",
+        "kind": "entity",
+        "alt": "A smiling volunteer in thick gloves holding a bucket of dry ice, white fog rolling across the floor: a prop, not a phantom",
+        "prompt": "A smiling event volunteer in a plain t-shirt and thick insulated gloves holding a metal bucket of dry ice, thick white fog spilling over the rim and rolling low across the floor around the feet. Three-quarter full body view, slightly low camera angle, flat even composition with lots of empty black space around the figure. Warm amber light from the front, the fog drawn as flat pale amber shapes with hard edges. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4605,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_costume_zombie": {
+        "file": "art/nightfall/entity_costume_zombie.webp",
+        "kind": "entity",
+        "alt": "A grinning young woman in smudged grey face paint and a torn hoodie, waving with a coffee cup and a name badge: a costume, not a zombie",
+        "prompt": "A cheerful young woman with a messy ponytail and an ordinary human face, grinning with healthy pink cheeks under smudged grey face paint that stops at her hairline, dressed as a zombie for Halloween in a hoodie with fake torn sleeves, a name tag on a lanyard, holding a paper coffee cup and waving, standing centered on a plain dark backdrop. Three-quarter full body view, slightly low camera angle, lots of empty black space around the figure. Warm amber light from the front, hard-edged shadow shapes. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4614,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_limping_staff": {
+        "file": "art/nightfall/entity_limping_staff.webp",
+        "kind": "entity",
+        "alt": "A wincing staff member with a lanyard and clipboard limping on a bandaged foot: an injury, not a zombie",
+        "prompt": "A tired event staff member in a plain polo shirt and a lanyard, limping forward with one ankle wrapped in a bandage, holding a clipboard, flushed sweaty face, mouth open mid-sentence, standing centered on a plain dark backdrop. Three-quarter full body view, slightly low camera angle, flat even composition with lots of empty black space around the figure. Warm amber light from the front, hard-edged shadow shapes. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4606,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_demo_crowd": {
+        "file": "art/nightfall/entity_demo_crowd.webp",
+        "kind": "entity",
+        "alt": "A crowd of hackers in hoodies seen from behind, cheering with raised fists toward a glowing demo screen: a happy crowd, not a horde",
+        "prompt": "A crowd of cartoon hackers in plain hoodies cheering, stomping and raising fists toward a stage with a big blank glowing screen, seen from behind and slightly above. Simple empty hall, no other detail. Wide shot. Warm amber light from the screen, hard-edged shadows on the floor, small blood-red accents on a few lanyards. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4607,
+        "width": 1024,
+        "height": 1024
+    },
+    "entity_stage_subwoofer": {
+        "file": "art/nightfall/entity_stage_subwoofer.webp",
+        "kind": "entity",
+        "alt": "A big stage speaker blasting a cone of low sound across a bare stage: an infrasound sweep, not a phantom",
+        "prompt": "A big black stage subwoofer speaker cabinet standing alone on a bare stage floor, front view, its large round cone pushing out thick angular rings of sound waves, a faint grey wisp of shape in the waves. Medium shot, slightly low angle, the cabinet centered. Warm amber stage light from above, hard-edged shadows. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only.",
+        "seed": 4608,
+        "width": 1024,
+        "height": 1024
+    },
     "sector_entrance": {
         "file": "art/nightfall/sector_entrance.webp",
         "kind": "sector",
@@ -221,6 +293,87 @@
         "alt": "A wolf howling at the sky with sound waves around its head",
         "prompt": "A stylized wolf head in profile facing left, muzzle raised upward in a howl, three curved sound-wave arcs sweeping out from its open mouth. Centered single subject on a pure black field, front view, bold readable silhouette filling the frame. Flat orange and amber fills with hard-edged black shadow shapes, one small blood-red accent in the eye. Cartoon comic-book illustration, cel shaded, thick bold black outlines, flat orange and amber fills with hard-edged shadow shapes, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
         "seed": 4210,
+        "width": 256,
+        "height": 256
+    },
+    "icon_salt_ring": {
+        "file": "art/nightfall/icons/icon_salt_ring.webp",
+        "kind": "icon",
+        "alt": "A closed ring of salt crystals on the floor",
+        "prompt": "A cartoon icon of a closed ring of coarse salt crystals seen from slightly above, sharp angular crystal chunks piled in a perfect circle, empty black floor inside the ring, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 256,
+        "height": 256
+    },
+    "icon_sage_smoke": {
+        "file": "art/nightfall/icons/icon_sage_smoke.webp",
+        "kind": "icon",
+        "alt": "A tied bundle of sage leaves burning at the tip",
+        "prompt": "A cartoon icon of a tied bundle of dried sage leaves held upright, its tip smouldering with a small ember, one jagged ribbon of smoke curling up from the tip, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4703,
+        "width": 256,
+        "height": 256
+    },
+    "icon_faraday_mesh": {
+        "file": "art/nightfall/icons/icon_faraday_mesh.webp",
+        "kind": "icon",
+        "alt": "A sheet of wire mesh with small lightning bolts striking it",
+        "prompt": "A cartoon icon of a square sheet of metal wire mesh grid hanging straight down like a curtain, small jagged lightning bolts striking it and bouncing off the front, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4705,
+        "width": 256,
+        "height": 256
+    },
+    "icon_thermal_lances": {
+        "file": "art/nightfall/icons/icon_thermal_lances.webp",
+        "kind": "icon",
+        "alt": "Two crossed lances, one with a flame burning at its tip",
+        "prompt": "A cartoon icon of a long thin metal lance held diagonally, a fierce jet of jagged flame blasting from its tip, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4706,
+        "width": 256,
+        "height": 256
+    },
+    "icon_emf_disruptor": {
+        "file": "art/nightfall/icons/icon_emf_disruptor.webp",
+        "kind": "icon",
+        "alt": "A handheld device with an antenna giving off small pulses",
+        "prompt": "A cartoon icon of a chunky angular handheld electronic device centered on a pure black background, a small square screen on its face and a short stubby antenna on top, three jagged zigzag pulse arcs bursting out from the antenna tip, front view, bold readable silhouette filling most of the frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4714,
+        "width": 256,
+        "height": 256
+    },
+    "icon_flare_line": {
+        "file": "art/nightfall/icons/icon_flare_line.webp",
+        "kind": "icon",
+        "alt": "A lit flare burning with a burst of flame",
+        "prompt": "A cartoon icon of a single road flare stick standing upright, its top burning with a jagged starburst of bright flame and flying sparks, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4707,
+        "width": 256,
+        "height": 256
+    },
+    "icon_sound_cannon": {
+        "file": "art/nightfall/icons/icon_sound_cannon.webp",
+        "kind": "icon",
+        "alt": "A loudspeaker horn blasting out sound",
+        "prompt": "A cartoon icon of a large loudspeaker horn on a squat angular mount, side view, firing three thick angular sound wave arcs out of its wide mouth, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4708,
+        "width": 256,
+        "height": 256
+    },
+    "icon_power_cut": {
+        "file": "art/nightfall/icons/icon_power_cut.webp",
+        "kind": "icon",
+        "alt": "A wall switch with its lever pulled down beside a lightning bolt",
+        "prompt": "A cartoon icon of a big wall breaker switch with its lever pulled down to off, a jagged lightning bolt snapped in two beside it, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4709,
+        "width": 256,
+        "height": 256
+    },
+    "icon_iron_filings": {
+        "file": "art/nightfall/icons/icon_iron_filings.webp",
+        "kind": "icon",
+        "alt": "A horseshoe magnet with iron filings spraying from one pole",
+        "prompt": "A cartoon icon of a horseshoe magnet lying on its side centered on a pure black background, curved end on the left and the open end pointing right, its two pole tips capped in grey metal, a spray of many tiny dark needle-like iron filings standing on end and fanning out between the two poles, bold readable silhouette filling most of the frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4722,
         "width": 256,
         "height": 256
     }
