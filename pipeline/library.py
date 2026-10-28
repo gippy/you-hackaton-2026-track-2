@@ -4,6 +4,11 @@ The model never writes markup. It picks components from COMPONENTS, fills their
 props and orders them; Parasail's strict `json_schema` response format makes
 anything outside this library impossible to emit. The page has one renderer per
 component type and nothing else.
+
+    data             shared/library.json, the floor and area maps, and the art manifest
+    incident rules   the playbook, harmless and quiet checks, and the opening sound
+    manifest_schema  the strict json_schema for one run's manifest
+    clean_manifest   the code rules that keep, drop or fix the model's components
 """
 from __future__ import annotations
 
@@ -13,9 +18,21 @@ from pathlib import Path
 # One library for the pipeline, the server and the page: shared/library.json.
 _ROOT = Path(__file__).resolve().parent.parent
 _LIB = json.loads((_ROOT / "shared" / "library.json").read_text())
+
+
+def _load_optional(key: str) -> dict:
+    """The JSON file library.json names under `key`, or {} when it is missing."""
+    path = _ROOT / _LIB[key]
+    return json.loads(path.read_text()) if path.exists() else {}
+
+
 # The Loft's floor (a schematic) and the blocks around it (OpenStreetMap), from data/map/.
-FLOOR: dict = json.loads((_ROOT / _LIB["floor_plan"]).read_text()) if (_ROOT / _LIB["floor_plan"]).exists() else {}
-AREA: dict = json.loads((_ROOT / _LIB["area_map"]).read_text()) if (_ROOT / _LIB["area_map"]).exists() else {}
+FLOOR: dict = _load_optional("floor_plan")
+AREA: dict = _load_optional("area_map")
+# The art library (art/nightfall/manifest.json): the model may pick entity and sector images by id.
+ART: dict[str, dict] = _load_optional("art_manifest")
+ENTITY_IMAGES = {k: v["alt"] for k, v in ART.items() if v.get("kind") == "entity"}
+SCENE_IMAGES = {k: v["alt"] for k, v in ART.items() if v.get("kind") == "sector"}
 
 SECTORS: dict[str, str] = _LIB["sectors"]               # loft sectors the floor plan draws
 SECTOR_ALIASES: dict[str, str] = _LIB["sector_aliases"]  # other names for a sector, e.g. the official fixture's catering_coffee_bar
@@ -28,15 +45,16 @@ THEMES: list[str] = _LIB["themes"]
 SUPPORT: list[str] = _LIB["support"]                    # how well the sources back a countermeasure
 SOUNDS: dict[str, dict] = _LIB["sounds"]                # generated once by `pnpm sfx`, played by the page
 CUES: list[str] = [k for k, v in SOUNDS.items() if v["kind"] in ("cue", "sting")]  # the sounds a manifest may open with
+ENTITY_CLASSES: dict[str, list[str]] = _LIB["entity_classes"]  # playbook -> words that name its creatures
+EMF_NORMAL_MG: float = _LIB["emf_normal_mg"]  # at or below this, an EMF reading is ordinary background
+SKY_EVENTS = ["sunset", "civil_dusk", "full_dark", "moonrise"]  # what a SkyClock can focus on
+# Minutes to the next sky event beyond which an unhurt crowd is watched, not contained yet.
+QUIET_LEAD_MIN = 100
 
 
 def sector_id(name: str) -> str:
     """A sector slug from any of its names: catering_coffee_bar becomes catering."""
     return SECTOR_ALIASES.get(name, name)
-
-
-ENTITY_CLASSES: dict[str, list[str]] = _LIB["entity_classes"]  # playbook -> words that name its creatures
-EMF_NORMAL_MG: float = _LIB["emf_normal_mg"]  # at or below this, an EMF reading is ordinary background
 
 
 def entity_class(incident: dict) -> str:
@@ -53,11 +71,6 @@ def entity_class(incident: dict) -> str:
 def is_harmless(incident: dict | None) -> bool:
     """The intake judged the report harmless, and nobody in it acted deliberately."""
     return bool(incident) and incident.get("verdict") == "harmless" and not incident.get("deliberate_act")
-
-
-# Minutes to the next sky event beyond which an unhurt crowd is watched, not contained yet. On the
-# Nightfall replay any lead from 66 to 144 gave the same result (eval/fixes.md, fix 1); 60 broke step 9.
-QUIET_LEAD_MIN = 100
 
 
 def far_from_sky(incident: dict | None, sky: dict | None) -> int | None:
@@ -112,15 +125,6 @@ def _component(name: str, props: dict) -> dict:
         "why": {"type": "string", "description": "One sentence: why the commander needs this panel for this incident"},
         "props": _obj(props),
     })
-
-
-SKY_EVENTS = ["sunset", "civil_dusk", "full_dark", "moonrise"]
-
-# The art library (art/nightfall/manifest.json): the model may pick entity and sector images by id.
-_ART_PATH = _ROOT / _LIB["art_manifest"]
-ART: dict[str, dict] = json.loads(_ART_PATH.read_text()) if _ART_PATH.exists() else {}
-ENTITY_IMAGES = {k: v["alt"] for k, v in ART.items() if v.get("kind") == "entity"}
-SCENE_IMAGES = {k: v["alt"] for k, v in ART.items() if v.get("kind") == "sector"}
 
 
 def components_for(sky: bool) -> dict[str, str]:
@@ -227,33 +231,9 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
             notes.append("the intake judged the report harmless: a low ThreatBanner")
             props["severity"] = "low"
         if kind == "CountermeasurePicker":
-            options, ids = [], set()
-            for opt in props.get("options") or []:
-                if opt.get("id") in arsenal and opt["id"] not in ids:
-                    ids.add(opt["id"])
-                    opt["source"] = opt.get("source") if 0 <= int(opt.get("source") or 0) <= source_count else 0
-                    options.append(opt)
-            props["options"] = sorted(options, key=lambda o: SUPPORT.index(o["support"]) if o.get("support") in SUPPORT else 9)
-            if props.get("recommended") not in ids and options:
-                props["recommended"] = options[0]["id"]
+            _clean_picker(props, arsenal, source_count)
         if kind == "FloorPlan":
-            props["seal"] = list(dict.fromkeys(sector_id(s) for s in props.get("seal") or [] if sector_id(s) in SECTORS))
-            route = list(dict.fromkeys(sector_id(s) for s in props.get("safe_route") or [] if sector_id(s) in SECTORS))
-            if not route and sector_id(props.get("hot_sector")) in SECTORS:
-                # No route given: the people are where the threat is, and the page walks them to a way out.
-                notes.append("no safe route given: one starts at the hot sector")
-                route = [sector_id(props["hot_sector"])]
-            if route and route[-1] not in exit_sectors():
-                # The page walks out of the last sector's exit, so a route that stops inside the building goes on to the entrance.
-                notes.append("a safe route that stopped inside the building now ends at the entrance")
-                route.append("entrance")
-            props["safe_route"] = route
-            if props.get("scene") not in SCENE_IMAGES:
-                props["scene"] = "none"
-            if props.get("anchor") not in anchors():
-                props["anchor"] = "none"
-            if props.get("view") not in ("floor", "area"):
-                props["view"] = "area" if props["anchor"] != "none" else "floor"
+            _clean_floor_plan(props, notes)
         reach = (incident or {}).get("people_in_reach") or 0
         if kind == "CivilianTracker" and reach and (props.get("count") or 0) > reach:
             # The headline counts the people the threat can reach; the tracker never shows more than that.
@@ -282,3 +262,37 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
     elif quiet and raw.get("recommended_action") != "observe":
         notes.append("nobody is hurt and the next sky event is hours away: observe")
     return out, notes
+
+
+def _clean_picker(props: dict, arsenal: list[str], source_count: int) -> None:
+    """Keep each arsenal option once, with a source in range, best supported first, and recommend a kept option."""
+    options, ids = [], set()
+    for opt in props.get("options") or []:
+        if opt.get("id") in arsenal and opt["id"] not in ids:
+            ids.add(opt["id"])
+            opt["source"] = opt.get("source") if 0 <= int(opt.get("source") or 0) <= source_count else 0
+            options.append(opt)
+    props["options"] = sorted(options, key=lambda o: SUPPORT.index(o["support"]) if o.get("support") in SUPPORT else 9)
+    if props.get("recommended") not in ids and options:
+        props["recommended"] = options[0]["id"]
+
+
+def _clean_floor_plan(props: dict, notes: list[str]) -> None:
+    """Known sectors only, a safe route that ends at a way out, and a known scene, anchor and view."""
+    props["seal"] = list(dict.fromkeys(sector_id(s) for s in props.get("seal") or [] if sector_id(s) in SECTORS))
+    route = list(dict.fromkeys(sector_id(s) for s in props.get("safe_route") or [] if sector_id(s) in SECTORS))
+    if not route and sector_id(props.get("hot_sector")) in SECTORS:
+        # No route given: the people are where the threat is, and the page walks them to a way out.
+        notes.append("no safe route given: one starts at the hot sector")
+        route = [sector_id(props["hot_sector"])]
+    if route and route[-1] not in exit_sectors():
+        # The page walks out of the last sector's exit, so a route that stops inside the building goes on to the entrance.
+        notes.append("a safe route that stopped inside the building now ends at the entrance")
+        route.append("entrance")
+    props["safe_route"] = route
+    if props.get("scene") not in SCENE_IMAGES:
+        props["scene"] = "none"
+    if props.get("anchor") not in anchors():
+        props["anchor"] = "none"
+    if props.get("view") not in ("floor", "area"):
+        props["view"] = "area" if props["anchor"] != "none" else "floor"
