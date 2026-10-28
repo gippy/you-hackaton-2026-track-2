@@ -10,12 +10,19 @@
   --warn: #ffb547;
   --ok: #4ade80;
   --glow: rgba(179, 136, 255, 0.25);
+  --on-accent: #120c1a;
   --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SF Mono", Menlo, monospace;
 }
 body[data-theme="ectoplasm"] { --bg: #07110b; --panel: #0e1c14; --panel-2: #13261b; --line: #1f3a2a; --accent: #6dff9e; --glow: rgba(109, 255, 158, 0.22); --muted: #8fb09c; }
 body[data-theme="blood-moon"] { --bg: #120607; --panel: #1e0b0d; --panel-2: #2a1013; --line: #45181d; --accent: #ff6b6b; --glow: rgba(255, 107, 107, 0.25); --muted: #c09094; }
 body[data-theme="fog-bank"] { --bg: #0b0e12; --panel: #141a21; --panel-2: #1b232c; --line: #2a3542; --accent: #8ecae6; --glow: rgba(142, 202, 230, 0.22); --muted: #93a3b3; }
+
+/* Light mode keeps each theme's hue on a light page. */
+:root[data-mode="light"] body { --bg: #f7f5fa; --panel: #ffffff; --panel-2: #f2eef7; --line: #ddd5e8; --text: #1d1726; --muted: #645a75; --on-accent: #ffffff; --accent: #6d3fd9; --glow: rgba(109, 63, 217, 0.12); --danger: #d6284b; --warn: #b26a00; --ok: #16803c; }
+:root[data-mode="light"] body[data-theme="ectoplasm"] { --accent: #15803d; --glow: rgba(21, 128, 61, 0.12); }
+:root[data-mode="light"] body[data-theme="blood-moon"] { --accent: #c81e3a; --glow: rgba(200, 30, 58, 0.12); }
+:root[data-mode="light"] body[data-theme="fog-bank"] { --accent: #24739a; --glow: rgba(36, 115, 154, 0.12); }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -62,7 +69,7 @@ a { color: var(--accent); }
 select, textarea, button { font: inherit; color: var(--text); }
 select, textarea { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
 button {
-  background: var(--accent); color: #120c1a; border: 0; border-radius: 6px; padding: 7px 14px; font-weight: 700; cursor: pointer;
+  background: var(--accent); color: var(--on-accent); border: 0; border-radius: 6px; padding: 7px 14px; font-weight: 700; cursor: pointer;
 }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 button.ghost { background: transparent; color: var(--accent); border: 1px solid var(--line); font-weight: 600; padding: 3px 9px; }

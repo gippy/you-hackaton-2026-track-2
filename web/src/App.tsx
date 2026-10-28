@@ -27,6 +27,29 @@ const SAMPLES: [string, string][] = [
     ],
 ];
 
+/** Light or dark: starts from the system setting (applied in index.html before paint), a click remembers the other. */
+function ModeToggle() {
+    const [mode, setMode] = useState(document.documentElement.dataset.mode === 'light' ? 'light' : 'dark');
+    const next = mode === 'light' ? 'dark' : 'light';
+    return (
+        <button
+            type="button"
+            className="ghost"
+            onClick={() => {
+                document.documentElement.dataset.mode = next;
+                try {
+                    localStorage.setItem('hcs-mode', next);
+                } catch {
+                    /* private window: the choice lasts until reload */
+                }
+                setMode(next);
+            }}
+        >
+            {next === 'light' ? 'Light mode' : 'Dark mode'}
+        </button>
+    );
+}
+
 export function App() {
     const [state, send] = useReducer(reduce, initial);
     const ws = useRef<WebSocket | null>(null);
@@ -94,6 +117,7 @@ export function App() {
                 <div className="status">
                     {incident && <span className={`pill sev-${incident.incident.severity}`}>{incident.incident.severity}</span>}
                     <span className={`pill ${state.source === 'snapshot' || state.mode === 'offline' ? 'snapshot' : state.connected ? 'live' : 'muted'}`}>{sourceLabel}</span>
+                    <ModeToggle />
                 </div>
                 <form className="dispatch" aria-label="Dispatch a containment alert" onSubmit={dispatch}>
                     <label>
