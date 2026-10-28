@@ -859,7 +859,9 @@ def main() -> int:
     meta = {"variant": args.variant, "label": args.label, "generated": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "hash": hashes[-1], "hashes": hashes, "disk_changed": None if args.variant or disk_now in hashes else disk_now,
             "sky": all(r.get("sky") for r in rows), "scenario": rel(scen_path), "key": rel(key_path)}
-    base = load_scored(BASELINE, keys) if (args.variant or args.label) else None
+    # The baseline is a Nightfall run, so another scenario's report has no baseline column.
+    baseline_ids = {r["incident_id"] for r in read_rows(BASELINE)} if (args.variant or args.label) else set()
+    base = load_scored(BASELINE, keys) if baseline_ids and baseline_ids <= keys.keys() else None
     report.write_text(render(rows, keys, meta, base))
     s = summarize(rows, keys)
     print(f"\n{s['points']:g}/{s['points_max']:g} points, {s['failed']} failed; wrote {results.name} and {report.name}")

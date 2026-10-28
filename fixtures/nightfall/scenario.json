@@ -1,5 +1,7 @@
 {
   "scenario": "nightfall",
+  "title": "Nightfall",
+  "sky": true,
   "ticks": [
     {
       "incident_id": "sim-nightfall-01",
