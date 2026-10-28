@@ -44,7 +44,13 @@ export interface Source {
 interface Base<T extends string, P> {
     type: T;
     why: string;
-    props: P;
+    props: P & PanelLook;
+}
+
+/** How much room a panel asks for and its title for this incident, chosen by the model. Older saved runs have neither. */
+export interface PanelLook {
+    size?: 'hero' | 'standard' | 'compact';
+    title?: string;
 }
 
 export type Component =

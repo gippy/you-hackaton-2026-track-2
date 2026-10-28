@@ -50,6 +50,7 @@ EMF_NORMAL_MG: float = _LIB["emf_normal_mg"]  # at or below this, an EMF reading
 SKY_EVENTS = ["sunset", "civil_dusk", "full_dark", "moonrise"]  # what a SkyClock can focus on
 MARKER_KINDS = ["threat", "people", "countermeasure", "hazard"]  # what a note on the floor plan is about
 MAX_MARKERS = 4
+SIZES = ["hero", "standard", "compact"]  # how much room a panel asks for; layout.ts sets the widths
 # Minutes to the next sky event beyond which an unhurt crowd is watched, not contained yet.
 QUIET_LEAD_MIN = 100
 
@@ -126,7 +127,11 @@ def _component(name: str, props: dict) -> dict:
     return _obj({
         "type": _enum([name]),
         "why": {"type": "string", "description": "One sentence: why the commander needs this panel for this incident"},
-        "props": _obj(props),
+        "props": _obj({
+            **props,
+            "size": {**_enum(SIZES), "description": "hero for the panel this incident turns on, compact for a supporting one, else standard"},
+            "title": {"type": "string", "description": "The panel's title for this incident, at most 5 words, e.g. 'Who's still in the hall'"},
+        }),
     })
 
 
@@ -280,6 +285,13 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int, incident: d
             props["warning"] = ""
         if kind == "SkyClock":
             props["cited"] = sorted({n for n in props.get("cited") or [] if 1 <= n <= source_count})
+        props["size"] = props.get("size") if props.get("size") in SIZES else "standard"
+        title = " ".join(str(props.get("title") or "").split())
+        if len(title.split()) > 6 or len(title) > 32:
+            # A cut title reads as a broken phrase, so the page shows the panel's own name instead.
+            notes.append(f"dropped a {kind} title over 6 words or 32 characters")
+            title = ""
+        props["title"] = title
         components.append({"type": kind, "why": comp.get("why", ""), "props": props})
     # The ledger marks as relied on only the sources the countermeasures and the sky clock cite.
     relied = sorted({o["source"] for c in components if c["type"] == "CountermeasurePicker" for o in c["props"]["options"] if o.get("source")}

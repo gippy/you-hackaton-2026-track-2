@@ -1,16 +1,20 @@
 // Where each component sits on the 12-column station grid. The model decides which components
-// appear and in what order; the page decides how wide each type is, so the station is always laid
-// out the same way and leaves no gaps.
+// appear, in what order and how much room each asks for (its `size`); the page decides how wide
+// each type is within those bounds, so the station leaves no gaps.
 //
 //   ThreatBanner                 full width, first
 //   FloorPlan                    8 columns, with the CountermeasurePicker beside it (the operator's
-//                                one decision stays near the top), or else up to two small panels
+//                                one decision stays near the top), or else up to two small panels;
+//                                a hero floor plan without a picker takes the full row instead
 //   SkyClock                     full width, after that row
 //   CivilianTracker,
 //   CountermeasurePicker         6 columns
 //   EntityCard, SystemsBoard,
 //   ThermalReadout, EMFGauge     4 columns
 //   SourceLedger                 full width, last
+//
+// In the rows after that, a hero panel takes 8 columns and a compact one 4. The EntityCard stays
+// at 4, since its square portrait sets the row's height.
 //
 // Everything else fills rows of 12 in the model's order; a row that cannot take the next panel is
 // widened so it has no gap. A row of two with the EntityCard keeps the portrait at 4 and gives the
@@ -39,7 +43,8 @@ export function layout(components: (Component | undefined)[]): Placed[] {
     const floor = rest.find((x) => x.component.type === 'FloorPlan');
     if (floor) {
         const picker = rest.find((x) => x.component.type === 'CountermeasurePicker');
-        const beside = picker ? [picker] : rest.filter((x) => SMALL.includes(x.component.type)).slice(0, 2);
+        const hero = floor.component.props.size === 'hero';
+        const beside = picker ? [picker] : hero ? [] : rest.filter((x) => SMALL.includes(x.component.type)).slice(0, 2);
         out.push({ ...floor, span: beside.length ? 8 : 12, tall: beside.length === 2 });
         out.push(...beside.map((x) => ({ ...x, span: 4, tall: false })));
         rest = rest.filter((x) => x !== floor && !beside.includes(x));
@@ -62,7 +67,8 @@ export function layout(components: (Component | undefined)[]): Placed[] {
         row = [];
     };
     for (const x of rest) {
-        const span = MEDIUM.includes(x.component.type) ? 6 : 4;
+        const size = x.component.props.size;
+        const span = x.component.type === 'EntityCard' ? 4 : size === 'hero' ? 8 : size === 'compact' ? 4 : MEDIUM.includes(x.component.type) ? 6 : 4;
         if (row.reduce((sum, p) => sum + p.span, 0) + span > 12) flush();
         row.push({ ...x, span, tall: false });
     }

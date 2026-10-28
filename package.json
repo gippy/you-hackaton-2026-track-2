@@ -18,7 +18,7 @@
         "proof": "node scripts/proof.ts",
         "build": "vite build",
         "type-check": "tsc --noEmit && tsc --noEmit -p web",
-        "test": "node --test web/src/route.test.ts",
+        "test": "node --test web/src/route.test.ts web/src/layout.test.ts",
         "check": "pnpm run type-check && pnpm run test && pnpm run build"
     },
     "dependencies": {
