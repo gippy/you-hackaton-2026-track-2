@@ -164,7 +164,7 @@ export interface Floor {
     connections: { a: string; b: string; via: string | null }[];
 }
 
-/** One image from art/nightfall/manifest.json. `file` is relative to the repo root. */
+/** One image from art/station/manifest.json. `file` is relative to the repo root. */
 export interface ArtAsset {
     file: string;
     kind: 'entity' | 'sector' | 'hero' | 'icon';

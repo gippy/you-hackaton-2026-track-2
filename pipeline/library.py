@@ -30,7 +30,7 @@ def _load_optional(key: str) -> dict:
 # The Loft's floor (a schematic) and the blocks around it (OpenStreetMap), from data/map/.
 FLOOR: dict = _load_optional("floor_plan")
 AREA: dict = _load_optional("area_map")
-# The art library (art/nightfall/manifest.json): the model may pick entity and sector images by id.
+# The art library (art/station/manifest.json): the model may pick entity and sector images by id.
 ART: dict[str, dict] = _load_optional("art_manifest")
 ENTITY_IMAGES = {k: v["alt"] for k, v in ART.items() if v.get("kind") == "entity"}
 SCENE_IMAGES = {k: v["alt"] for k, v in ART.items() if v.get("kind") == "sector"}

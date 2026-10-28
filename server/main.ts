@@ -23,7 +23,7 @@ const ROOT = resolve(import.meta.dirname, '..');
 const DIST = join(ROOT, 'web', 'dist');
 const FIXTURES = join(ROOT, 'fixtures');
 const OFFICIAL = 'haunted-dashboard.json';
-const ART = join(ROOT, 'art', 'nightfall'); // the only part of art/ the page may load
+const ART = join(ROOT, 'art', 'station'); // the only part of art/ the page may load
 const MAP = join(ROOT, 'data', 'map');
 const SPEECH = join(ROOT, 'out', 'speech');
 // The demo opens on Nightfall step 20, a real threat with a decision to make (step 1 is a costume).
@@ -105,7 +105,7 @@ function sendFile(res: ServerResponse, file: string, type: string, cache: string
  * - /manifest.json: the current run's state
  * - /speech/<hash>.mp3: a spoken call from out/speech/
  * - /data/map/area.geojson: the venue's map
- * - /art/nightfall/...: the art the page shows
+ * - /art/station/...: the art the page shows
  * - everything else: the built page in web/dist/
  */
 function handle(req: IncomingMessage, res: ServerResponse): void {
@@ -122,7 +122,7 @@ function handle(req: IncomingMessage, res: ServerResponse): void {
     if (path === '/data/map/area.geojson' && existsSync(join(MAP, 'area.geojson'))) {
         return sendFile(res, join(MAP, 'area.geojson'), 'application/geo+json', 'max-age=3600');
     }
-    if (path.startsWith('/art/nightfall/')) {
+    if (path.startsWith('/art/station/')) {
         const art = normalize(join(ROOT, decodeURIComponent(path)));
         const type = TYPES[extname(art)];
         if (art.startsWith(`${ART}/`) && existsSync(art) && type && extname(art) !== '.json') return sendFile(res, art, type, 'max-age=3600');

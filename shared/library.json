@@ -259,7 +259,7 @@
     "power_cut": "icon_power_cut",
     "iron_filings": "icon_iron_filings"
   },
-  "art_manifest": "art/nightfall/manifest.json",
+  "art_manifest": "art/station/manifest.json",
   "floor_plan": "data/map/floor.json",
   "area_map": "data/map/area.geojson",
   "entity_classes": {

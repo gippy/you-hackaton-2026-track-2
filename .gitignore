@@ -25,7 +25,7 @@ node_modules/
 web/dist/
 *.tsbuildinfo
 
-# Raw renders: only the WebP files and icons in art/nightfall are committed
+# Raw renders: only the WebP files and icons in art/station are committed
 art/raw/
 art/*.png
 
