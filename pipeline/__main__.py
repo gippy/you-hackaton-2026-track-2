@@ -35,7 +35,8 @@ def main() -> int:
     flow = HauntFlow().bind(emit)
     try:
         flow.kickoff(inputs={"raw": str(incident.get("raw", "")), "incident_id": str(incident.get("incident_id", "")),
-                             "severity_tier": str(incident.get("severity_tier", ""))})
+                             "severity_tier": str(incident.get("severity_tier", "")),
+                             "sky": incident.get("sky") or {}})
     except Exception as exc:  # noqa: BLE001 - the server falls back to the saved run on any failure
         emit({"type": "fatal", "detail": str(exc)[:500]})
         return 1

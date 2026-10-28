@@ -83,7 +83,7 @@ export function App() {
 
     const post = (msg: ClientMessage) => ws.current?.readyState === WebSocket.OPEN && ws.current.send(JSON.stringify(msg));
     const { incident, library, operator } = state;
-    const ctx: Ctx | null = library && { library, sources: state.sources, operator, send };
+    const ctx: Ctx | null = library && { library, sources: state.sources, sky: state.sky, operator, send };
     const cited = new Set<number>();
     for (const c of state.components) {
         if (c?.type === 'SourceLedger') c.props.cited.forEach((n) => cited.add(n));

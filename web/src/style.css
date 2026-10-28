@@ -182,6 +182,20 @@ button.ghost { background: transparent; color: var(--accent); border: 1px solid 
 .systems li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 10px; background: var(--panel-2); border-radius: 6px; }
 .systems .online { color: var(--ok); } .systems .degraded { color: var(--warn); } .systems .offline { color: var(--danger); }
 
+.sky { display: flex; flex-direction: column; gap: 10px; }
+.sky-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.sky-head .warning { font-weight: 650; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { background: transparent; color: var(--muted); border-radius: 0; padding: 4px 10px; font-weight: 600; font-size: 12px; }
+.seg button.on { background: var(--accent); color: var(--on-accent); }
+.sky-events { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+.sky-event { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); }
+.sky-event .time { font: 700 20px var(--mono); }
+.sky-event .count { font-weight: 650; }
+.sky-event.focus { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 18px var(--glow); }
+.sky-event.passed { opacity: 0.55; }
+.moon-tile { align-items: center; justify-content: center; text-align: center; }
+.moon { width: 40px; height: 40px; }
 .ledger { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
 .ledger p { margin: 2px 0 0; color: var(--muted); }
 

@@ -73,7 +73,7 @@ COMPOSE_SYSTEM = (
     "You design the live command station a containment commander operates during a paranormal incident. "
     "Compose it from this fixed component library, choosing only the components this incident needs, "
     "most urgent first, each at most once (4 to 7 components for a real incident):\n"
-    + "\n".join(f"- {k}: {v}" for k, v in library.COMPONENTS.items())
+    + "{components}"
     + "\nFloor plan adjacency (a safe_route may only step between neighbours, and must end at entrance):\n"
     + "\n".join(f"- {k}: {', '.join(v)}" for k, v in library.adjacency().items())
     + "\nFill props with values from the incident. Never invent sensor readings the incident does not report. "
@@ -182,6 +182,7 @@ class HauntState(BaseModel):
     manifest: dict = {}
     notes: list[str] = []
     models: list[str] = []
+    sky: dict = {}  # scenario steps only: server/sky.ts output, with minutes_to each event at the step's clock
 
 
 class HauntFlow(Flow[HauntState]):
@@ -268,10 +269,36 @@ class HauntFlow(Flow[HauntState]):
                     ledger.add(query, search(query))
                 except YouError as exc:
                     self.state.notes.append(str(exc))
+        if self.state.sky:
+            self._ground_sky(ledger)
         self.state.sources = ledger.sources
         self._emit({"type": "sources", "sources": ledger.sources, "research": self.state.research})
         detail = f"{len(ledger.queries)} search(es), {len(ledger.sources)} source(s)"
         self.step("ground", "done" if ledger.sources else "failed", detail)
+
+    def _ground_sky(self, ledger: Ledger) -> None:
+        """Add the sky's sources: wttr.in's live astronomy (fetched by the server) and a You.com search."""
+        live = self.state.sky.get("live_source")
+        if live:
+            ledger.add("wttr.in astronomy", [{"title": "wttr.in astronomy for San Francisco (live)", "url": live["url"],
+                                              "description": live["summary"], "snippet": live["summary"]}])
+        query = f"San Francisco sunset moonrise {self.state.sky.get('day', '')} timeanddate"
+        try:
+            ledger.add(query, search(query, count=3))
+        except YouError as exc:
+            self.state.notes.append(str(exc))
+
+    def _sky_facts(self) -> str:
+        sky = self.state.sky
+        if not sky:
+            return ""
+        times = ", ".join(f"{e['label'].lower()} {e['local']} ({e['source']})" for e in sky["events"])
+        clock = f"The scenario clock reads {sky['clock']}. " if sky.get("clock") else ""
+        minutes = ", ".join(f"{k}: {v} min" for k, v in sky.get("minutes_to", {}).items())
+        moon = sky["moon"]
+        return (f"\n\nSky over the Loft on {sky['day']}: {times}. Moon: {moon['phase']}, {moon['illumination']}% lit. "
+                f"{clock}Minutes to each event (negative once passed): {minutes}. "
+                "Use SkyClock when the time of day changes the threat, and cite the sky sources in it.")
 
     @listen(ground)
     def compose(self):
@@ -282,7 +309,11 @@ class HauntFlow(Flow[HauntState]):
             f"Incident {self.state.incident_id} ({self.state.severity_tier}):\n{json.dumps(self.state.incident)}\n\n"
             f"Playbook: {book['label']}. Arsenal ids: {', '.join(book['arsenal'])}.\n\n"
             f"Numbered sources from You.com:\n{sources}\n\nLore Researcher notes:\n{self.state.research or 'none'}"
+            + self._sky_facts()
         )
+        has_sky = bool(self.state.sky)
+        system = COMPOSE_SYSTEM.replace(
+            "{components}", "\n".join(f"- {k}: {v}" for k, v in library.components_for(has_sky).items()))
         parser, sent, frame = ComponentStream(), [], {}
 
         def on_text(text: str) -> None:
@@ -301,8 +332,8 @@ class HauntFlow(Flow[HauntState]):
                     self._emit({"type": "component", "index": len(sent) - 1, "component": cleaned["components"][-1]})
                     self.step("compose", "progress", f"{len(sent)} component(s) placed")
 
-        raw, model = chat_json(library.manifest_schema(book["arsenal"], len(self.state.sources)), "manifest",
-                               COMPOSE_SYSTEM, user, on_text)
+        raw, model = chat_json(library.manifest_schema(book["arsenal"], len(self.state.sources), has_sky), "manifest",
+                               system, user, on_text)
         manifest, notes = library.clean_manifest(raw, book["arsenal"], len(self.state.sources))
         if not manifest["components"]:
             raise FlowFailed("the model returned a manifest with no usable components")

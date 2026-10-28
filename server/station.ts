@@ -14,6 +14,7 @@ import library from '../shared/library.json' with { type: 'json' };
 import type { ClientMessage, FixtureIncident, FlowEvent, Library, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
 import { alertText, channelId, send } from './dispatch.ts';
 import { OneError } from './one.ts';
+import { skyFor, today } from './sky.ts';
 import { speak } from './speech.ts';
 
 const REPLAY_GAP_MS = 350; // longest pause between replayed messages
@@ -99,11 +100,12 @@ export class Station {
     compileIncident(incidentId: string): boolean {
         const incident = [...this.opts.scenarios.flatMap((s) => s.steps), ...this.opts.incidents].find((i) => i.incident_id === incidentId);
         if (!incident) return false;
-        void this.compile(incident.raw_incident_stream, incident.incident_id, incident.severity_tier);
+        void this.compile(incident.raw_incident_stream, incident.incident_id, incident.severity_tier, incident.time ?? '');
         return true;
     }
 
-    async compile(raw: string, incidentId: string, severityTier: string): Promise<void> {
+    /** Run the pipeline on a report. `clock` is a scenario step's "HH:MM": the step then gets a sky. */
+    async compile(raw: string, incidentId: string, severityTier: string, clock = ''): Promise<void> {
         if (!raw.trim()) return;
         if (this.busy) {
             this.broadcastOnly({ type: 'error', detail: 'A run is already in progress.' });
@@ -119,12 +121,15 @@ export class Station {
             this.emit({ type: 'run_begin', incident_id: incidentId, source: 'live' });
             const events: SavedRun['events'] = [];
             const t0 = Date.now();
+            const record = (msg: FlowEvent) => {
+                events.push({ t: (Date.now() - t0) / 1000, msg });
+                this.emit(msg);
+            };
+            const sky = clock ? await skyFor(today(), clock, this.outDir, false) : undefined;
+            if (sky) record({ type: 'sky', sky });
             let state: RunState;
             try {
-                state = await this.runWorker({ raw, incident_id: incidentId, severity_tier: severityTier }, (msg) => {
-                    events.push({ t: (Date.now() - t0) / 1000, msg });
-                    this.emit(msg);
-                });
+                state = await this.runWorker({ raw, incident_id: incidentId, severity_tier: severityTier, sky }, record);
             } catch (err) {
                 const detail = (err as Error).message;
                 console.error(`Pipeline failed: ${detail}`);

@@ -59,8 +59,16 @@ def _component(name: str, props: dict) -> dict:
     })
 
 
-def manifest_schema(arsenal: list[str], source_count: int) -> dict:
-    """The strict json_schema for one manifest. Arsenal and sources are per run, so the schema is too."""
+SKY_EVENTS = ["sunset", "civil_dusk", "full_dark", "moonrise"]
+
+
+def components_for(sky: bool) -> dict[str, str]:
+    """The components a run may use: SkyClock only when the run has a sky (a scenario step)."""
+    return {k: v for k, v in COMPONENTS.items() if sky or k != "SkyClock"}
+
+
+def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) -> dict:
+    """The strict json_schema for one manifest. Arsenal, sources and the sky are per run, so the schema is too."""
     source_ref = {"type": "integer", "minimum": 0, "maximum": source_count,
                   "description": "1-based number of the supporting source, 0 if none"}
     variants = [
@@ -90,6 +98,11 @@ def manifest_schema(arsenal: list[str], source_count: int) -> dict:
             "name": {"type": "string"}, "status": _enum(["online", "degraded", "offline"])})}}),
         _component("SourceLedger", {"cited": {"type": "array", "items": source_ref}}),
     ]
+    if sky:
+        variants.append(_component("SkyClock", {
+            "focus": {**_enum(SKY_EVENTS), "description": "The sky event that matters most for this incident"},
+            "warning": {"type": "string", "description": "What to do before that event, under 15 words"},
+            "cited": {"type": "array", "items": source_ref}}))
     return _obj({
         "title": {"type": "string", "description": "Station title for this incident, under 8 words"},
         "theme": _enum(THEMES),
@@ -137,7 +150,7 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int) -> tuple[di
                 notes.append("dropped a safe route that walks through walls")
                 route = []
             props["safe_route"] = route
-        if kind == "SourceLedger":
+        if kind in ("SourceLedger", "SkyClock"):
             props["cited"] = sorted({n for n in props.get("cited") or [] if 1 <= n <= source_count})
         components.append({"type": kind, "why": comp.get("why", ""), "props": props})
     out = {

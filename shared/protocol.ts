@@ -54,9 +54,35 @@ export type Component =
           }
       >
     | Base<'SystemsBoard', { systems: { name: string; status: SystemStatus }[] }>
-    | Base<'SourceLedger', { cited: number[] }>;
+    | Base<'SourceLedger', { cited: number[] }>
+    | Base<'SkyClock', { focus: SkyEvent['id']; warning: string; cited: number[] }>;
 
 export type ComponentType = Component['type'];
+
+export interface SkyEvent {
+    id: 'sunset' | 'civil_dusk' | 'full_dark' | 'moonrise';
+    label: string;
+    /** "HH:MM" in the Loft's time zone, and the same moment as ISO. */
+    local: string;
+    at: string;
+    /** Where `local` came from: wttr.in when the network was up, else suncalc. `computed` is suncalc's own. */
+    source: 'wttr.in' | 'suncalc';
+    computed: string;
+}
+
+/** The sky over the Loft for a scenario step, computed by server/sky.ts. */
+export interface Sky {
+    day: string;
+    place: string;
+    /** The scenario step's "HH:MM", or empty for live time. */
+    clock: string;
+    clock_at: string;
+    events: SkyEvent[];
+    /** Minutes from `clock` (or from when the run started) to each event; negative once it has passed. */
+    minutes_to: Partial<Record<SkyEvent['id'], number>>;
+    moon: { phase: string; illumination: number; source: 'wttr.in' | 'suncalc' };
+    live_source: { url: string; summary: string } | null;
+}
 
 export interface Manifest {
     title: string;
@@ -80,6 +106,7 @@ export interface RunState {
     manifest: Manifest;
     notes: string[];
     models: string[];
+    sky?: Sky;
 }
 
 export interface Library {
@@ -121,7 +148,8 @@ export type FlowEvent =
     | { type: 'search'; query: string; hits: { n: number; title: string; url: string }[] }
     | { type: 'sources'; sources: Source[]; research: string }
     | { type: 'frame'; title?: string; theme?: Theme; sound_cue?: string }
-    | { type: 'component'; index: number; component: Component };
+    | { type: 'component'; index: number; component: Component }
+    | { type: 'sky'; sky: Sky };
 
 export type DispatchMode = 'dry-run' | 'live' | 'offline';
 

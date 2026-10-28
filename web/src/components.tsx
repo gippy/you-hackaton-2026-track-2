@@ -1,13 +1,14 @@
 // One renderer per component in the library. The model picks which ones appear and in what order;
 // it never writes markup. Model and web text is rendered as React text, and only http(s) links render.
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 
-import type { Component, ComponentType, Library, Source } from '../../shared/protocol.ts';
+import type { Component, ComponentType, Library, Sky, Source } from '../../shared/protocol.ts';
 import type { Event, Operator } from './station.ts';
 
 export interface Ctx {
     library: Library;
     sources: Source[];
+    sky: Sky | null;
     operator: Operator;
     send: (event: Event) => void;
 }
@@ -23,9 +24,10 @@ export const TITLES: Record<ComponentType, string> = {
     CountermeasurePicker: 'Countermeasures',
     SystemsBoard: 'Facility systems',
     SourceLedger: 'Grounding',
+    SkyClock: 'Sky clock',
 };
 
-const WIDE = new Set<ComponentType>(['ThreatBanner', 'FloorPlan', 'CountermeasurePicker']);
+const WIDE = new Set<ComponentType>(['ThreatBanner', 'FloorPlan', 'CountermeasurePicker', 'SkyClock']);
 
 export function domain(url: string): string {
     try {
@@ -98,6 +100,8 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
                     ))}
                 </ul>
             );
+        case 'SkyClock':
+            return <SkyClock p={c.props} ctx={ctx} />;
         case 'SourceLedger': {
             const cited = c.props.cited.length ? c.props.cited : ctx.sources.map((s) => s.n);
             return (
@@ -333,6 +337,95 @@ function Picker({ p, ctx }: { p: Props<'CountermeasurePicker'>; ctx: Ctx }) {
                     );
                 })}
             </div>
+        </div>
+    );
+}
+
+/** "in 7 min", "in 1 h 47 min", "in 6:42" in the last ten minutes of live time, or "12 min ago". */
+function countdown(ms: number, live: boolean): string {
+    const minutes = Math.round(ms / 60000);
+    if (ms < 0) return minutes === 0 ? 'now' : `${-minutes} min ago`;
+    if (live && ms < 10 * 60000) return `in ${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
+    return minutes >= 60 ? `in ${Math.floor(minutes / 60)} h ${minutes % 60} min` : `in ${minutes} min`;
+}
+
+/** The moon's lit part: waning lights the left side and waxing the right, as seen from the northern hemisphere. */
+function Moon({ illumination, phase }: { illumination: number; phase: string }) {
+    const f = Math.max(0, Math.min(1, illumination / 100));
+    const r = 18;
+    const rx = r * Math.abs(2 * f - 1);
+    const waning = /waning|last/i.test(phase);
+    const gibbous = f > 0.5;
+    const edge = waning ? 0 : 1; // the lit side's outer edge
+    const terminator = gibbous === waning ? 0 : 1;
+    return (
+        <svg viewBox="0 0 40 40" className="moon" role="img" aria-label={`${phase}, ${illumination}% lit`}>
+            <circle cx={20} cy={20} r={r} fill="var(--panel-2)" stroke="var(--line)" />
+            <path d={`M20 2 A${r} ${r} 0 0 ${edge} 20 38 A${rx} ${r} 0 0 ${terminator} 20 2`} fill="#f5e9c8" />
+        </svg>
+    );
+}
+
+function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
+    const sky = ctx.sky;
+    const [mode, setMode] = useState<'scenario' | 'live'>(sky?.clock ? 'scenario' : 'live');
+    const [now, setNow] = useState(() => Date.now());
+    useEffect(() => {
+        if (mode !== 'live') return;
+        const timer = window.setInterval(() => setNow(Date.now()), 1000);
+        return () => clearInterval(timer);
+    }, [mode]);
+    if (!sky) return <p className="muted">No sky data for this run.</p>;
+    const reference = mode === 'scenario' && sky.clock_at ? Date.parse(sky.clock_at) : now;
+    const cited = p.cited.map((n) => ctx.sources.find((s) => s.n === n)).filter((s): s is Source => Boolean(s));
+    return (
+        <div className="sky">
+            <div className="sky-head">
+                <span className="warning">{p.warning}</span>
+                <span className="seg" role="group" aria-label="Count down from">
+                    {sky.clock && (
+                        <button type="button" className={mode === 'scenario' ? 'on' : ''} aria-pressed={mode === 'scenario'} onClick={() => setMode('scenario')}>
+                            Scenario {sky.clock}
+                        </button>
+                    )}
+                    <button type="button" className={mode === 'live' ? 'on' : ''} aria-pressed={mode === 'live'} onClick={() => setMode('live')}>
+                        Live now
+                    </button>
+                </span>
+            </div>
+            <div className="sky-events">
+                {sky.events.map((e) => {
+                    const ms = Date.parse(e.at) - reference;
+                    return (
+                        <div key={e.id} className={`sky-event ${e.id === p.focus ? 'focus' : ''} ${ms < 0 ? 'passed' : ''}`}>
+                            <span className="muted small">{e.label}</span>
+                            <b className="time">{e.local}</b>
+                            <span className="count">{countdown(ms, mode === 'live')}</span>
+                            <span className="muted small" title={e.source === 'wttr.in' ? `suncalc computed ${e.computed}` : 'computed offline'}>
+                                {e.source === 'wttr.in' ? 'wttr.in' : 'computed'}
+                            </span>
+                        </div>
+                    );
+                })}
+                <div className="sky-event moon-tile">
+                    <Moon illumination={sky.moon.illumination} phase={sky.moon.phase} />
+                    <span className="small">
+                        {sky.moon.phase}, {sky.moon.illumination}% lit
+                    </span>
+                </div>
+            </div>
+            {cited.length > 0 && (
+                <div className="muted small">
+                    Sky sources:{' '}
+                    {cited.map((s) => (
+                        <span key={s.n}>
+                            <Link url={s.url}>
+                                [{s.n}] {domain(s.url)}
+                            </Link>{' '}
+                        </span>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

@@ -1,7 +1,7 @@
 // The page's state: everything the server has streamed for the current run, plus the operator's choices.
 // Every server message goes through `reduce`, so a late joiner that gets the history replayed ends up
 // in the same state as a page that watched the run live.
-import type { Action, Component, DispatchMode, FixtureIncident, Incident, Library, Scenario, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
+import type { Action, Component, DispatchMode, FixtureIncident, Incident, Library, Scenario, Sky, Manifest, ServerMessage, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
 export interface Step {
     state?: StepState;
@@ -29,6 +29,7 @@ export interface State {
     queries: string[];
     incident: { incident: Incident; incident_id: string; severity_tier: string; raw: string } | null;
     sources: Source[];
+    sky: Sky | null;
     title: string;
     theme: Theme;
     components: Component[];
@@ -62,6 +63,7 @@ export const initial: State = {
     queries: [],
     incident: null,
     sources: [],
+    sky: null,
     title: 'Haunted Command Station',
     theme: 'crypt-dark',
     components: [],
@@ -106,6 +108,8 @@ function server(state: State, msg: ServerMessage): State {
             return { ...state, queries: [...state.queries, `${msg.query} → ${msg.hits.length} hits`] };
         case 'sources':
             return { ...state, sources: msg.sources };
+        case 'sky':
+            return { ...state, sky: msg.sky };
         case 'frame':
             return { ...state, title: msg.title ?? state.title, theme: msg.theme ?? state.theme };
         case 'component': {

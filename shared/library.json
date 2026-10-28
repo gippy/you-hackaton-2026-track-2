@@ -122,7 +122,8 @@
     "CivilianTracker": "People at risk: how many, where, their condition and extraction priority. Only when people are involved.",
     "CountermeasurePicker": "Ranked countermeasures from the playbook arsenal, each tied to a grounding source. The operator picks one to dispatch.",
     "SystemsBoard": "Status of facility systems the incident mentions (network, security, power, doors).",
-    "SourceLedger": "The You.com sources the station is grounded in, with the ones the plan leans on marked."
+    "SourceLedger": "The You.com sources the station is grounded in, with the ones the plan leans on marked.",
+    "SkyClock": "Countdown to sunset, civil dusk, full dark and moonrise, with the moon's phase. Only for scenario steps, when the time of day changes the threat."
   },
   "actions": [
     "contain",
