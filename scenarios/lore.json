@@ -1,0 +1,1134 @@
+{
+  "about": "Monster catalog for the Haunted Dashboard. It is folklore and popular ghost-hunting convention, not science. Brackets inside sensor_signatures say where each signature comes from: [folklore], [convention], [pop convention], [dashboard-suggested] or [invented]. No source gives EMF numbers; every numeric EMF band is our suggestion for the dashboard. A countermeasure whose tradition says 'Dashboard-invented' has no folk tradition behind it.",
+  "baselines": {
+    "emf_milligauss_indoor": "about 0.1 to 4 mG (Wisconsin Department of Health Services)",
+    "room_temperature_c": "21 to 22 C in the Loft (assumed)"
+  },
+  "arsenal_keys": "arsenal_key values match shared/library.json arsenal; null means no dashboard equivalent",
+  "index_field": "index_text: one paragraph per entity built from the other fields, ready to embed (for example with parasail-bge-m3)",
+  "entities": [
+    {
+      "id": "ghost",
+      "name": "Ghost / Phantom (apparition)",
+      "playbook": "spectral",
+      "aliases": [
+        "phantom",
+        "apparition",
+        "spectre",
+        "intelligent haunting",
+        "revenant spirit"
+      ],
+      "summary": "Folklore's spirit of a dead person who lingers among the living, usually after a violent death, a wrong, or unfinished business. Ghost-hunting convention treats it as an interactive presence that shows up as cold spots, EMF fluctuations and EVP; none of those links is scientifically established.",
+      "signs": [
+        "A figure that looks like the dead person, sometimes pale or translucent, sometimes bearing the wounds of its death",
+        "Sudden chill, a sense of being watched, dread in one specific spot or room",
+        "Footsteps, whispers, knocking, low moaning or wailing with no visible source",
+        "Doors, lights or small objects behaving oddly near the sighting",
+        "Pets staring at or avoiding an empty spot",
+        "Responds to questions (answers by knocks, EMF lights or EVP), which is what separates it from a residual haunting"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "Indoor baseline is roughly 0.1-4 mG (typical home 0.5-2.5 mG; a can opener reads ~600 mG at 6 in but ~2 mG at 4 ft). Ghost-hunting convention flags brief, erratic spikes of roughly 3-20 mG away from wiring and appliances, ideally coinciding with a cold spot or EVP. [convention; the 3-20 mG band is a dashboard-suggested threshold, not a measured property of ghosts]",
+        "temperature": "Localized cold spot. Ghost hunters report drops from a few degrees F to 40+ F (about 2-22 C); dashboard-suggested typical value is a 3-10 C drop within about 1 m lasting seconds to minutes. [ghost-hunting convention, no scientific link; IR thermometers only read surface temperature]",
+        "audio": "EVP (faint voices on recorders that nobody heard live), whispers, footsteps, knocks, moaning or wailing. [convention] A standing infrasound wave near 19 Hz is the classic mundane lookalike.",
+        "motion": "Shadow or figure in peripheral vision that vanishes when looked at directly; PIR or laser-grid trips with nobody present; sometimes a cold draft that moves. [convention]",
+        "other": "Battery drain, flickering lights, REM-pod or K-II meters lighting up in response to questions. [convention; cold alone also drains batteries]. Sense of dread or being watched."
+      },
+      "behavior": "Anchored to a place, object or person tied to its death. Folklorists list the reasons ghosts return as finishing unfinished business, warning or informing, punishing or protesting, guarding, and rewarding. Many are passive or benign; vengeful ghosts are tied to murder or injustice.",
+      "escalation": "Folklore: a grieving or vengeful ghost starts with sounds and cold, moves to apparitions, touches and disturbed sleep, and in some stories to possession or following a person or object to a new home. Escalation is usually read as the ghost not being heard or its business staying unresolved.",
+      "countermeasures": [
+        {
+          "name": "Salt line at doors and windows, salt circle, salt carried in a pocket, salt water wipe-down",
+          "arsenal_key": "salt_ring",
+          "tradition": "European and Christian folk practice (salt in holy water, exorcism); widely repeated in modern ghost-hunting",
+          "notes": "Barrier logic: ghost cannot cross the line. Cheap and safe, no evidence it works. Replenish after crossings."
+        },
+        {
+          "name": "Cold iron: horseshoe over the door, iron rod on a grave, iron nails or an iron knife under the threshold",
+          "arsenal_key": "iron_filings",
+          "tradition": "European folk magic: spirits and fairies cannot pass cold iron",
+          "notes": "Iron filings are the dashboard's sprinkle-able version of the nails and rods. Folklore says iron also protects whole villages."
+        },
+        {
+          "name": "Burning sage, St. John's wort or other herbs and wafting the smoke through the space (smudging)",
+          "arsenal_key": "sage_smoke",
+          "tradition": "Modern popular banishing practice drawing on folk-magic herb cleansing; the sage-stick form is a recent borrowing",
+          "notes": "Treat as a ritual comfort measure. Watch smoke detectors."
+        },
+        {
+          "name": "Holy water, blessed candles, prayer or a formal exorcism",
+          "arsenal_key": null,
+          "tradition": "Catholic and other religious exorcism traditions; most religions have a version",
+          "notes": "Needs clergy; not something the arsenal replicates."
+        },
+        {
+          "name": "Tell it it is dead and ask it to leave; open doors and windows after a death; carry the corpse out feet first; rearrange the furniture so the ghost does not recognize the house",
+          "arsenal_key": null,
+          "tradition": "Folk funeral customs and modern 'crossing over' advice",
+          "notes": "Fits the unfinished-business reading: the ghost leaves when it is released, not repelled."
+        },
+        {
+          "name": "Find and properly bury the remains, or give the dead a proper tomb",
+          "arsenal_key": null,
+          "tradition": "Classical haunted-house tale (Pliny the Younger and the philosopher Athenodorus); recurs in the Egyptian 'A Ghost Story' papyrus",
+          "notes": "Restoring the body or tomb is the oldest cure on record for an intelligent ghost."
+        },
+        {
+          "name": "Garlic over the door, brass bells, gemstone or pebble charms",
+          "arsenal_key": null,
+          "tradition": "General European protective folk magic",
+          "notes": "Low-priority extras."
+        },
+        {
+          "name": "Kill power and go electronics-free for a session to see which effects survive",
+          "arsenal_key": "power_cut",
+          "tradition": "Investigation convention (electronics-free zones, control readings), not folklore",
+          "notes": "Rules out wiring and equipment interference before treating it as a ghost."
+        },
+        {
+          "name": "EMF disruption to break the field a ghost is supposed to manifest through",
+          "arsenal_key": "emf_disruptor",
+          "tradition": "Dashboard-invented, extrapolated from the convention that spirits disturb EMF",
+          "notes": "No folklore basis. Use only after mundane EMF sources are ruled out."
+        }
+      ],
+      "false_positives": [
+        "HVAC draft, open vent or door producing a cold spot (check with a second thermometer, not only an IR gun)",
+        "Faulty wiring, appliances, phones, walkie-talkies, radio towers or the investigators' own gear causing EMF spikes",
+        "Infrasound near 19 Hz from an extractor fan or duct resonance causing dread, chills and peripheral-vision figures",
+        "EVP that is really radio pickup, recorder self-noise, compression artifacts or pareidolia",
+        "Dust or moisture orbs and IR reflections; fog machine, hologram, projection or costumed actor at a spooky event",
+        "Building creaks, pipes and thermal expansion; suggestion in a venue with a haunted reputation"
+      ],
+      "sources": [
+        {
+          "title": "Ghostlore (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Ghostlore"
+        },
+        {
+          "title": "Ghost hunting (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Ghost_hunting"
+        },
+        {
+          "title": "Protection against Ghosts (folk remedies list)",
+          "url": "http://gomanzanillo.com/features/ghosts/protection.htm"
+        },
+        {
+          "title": "Vic Tandy (Wikipedia), infrasound and apparitions",
+          "url": "https://en.wikipedia.org/wiki/Vic_Tandy"
+        }
+      ],
+      "index_text": "Ghost / Phantom (apparition) (phantom, apparition, spectre, intelligent haunting, revenant spirit). Playbook: spectral. Folklore's spirit of a dead person who lingers among the living, usually after a violent death, a wrong, or unfinished business. Ghost-hunting convention treats it as an interactive presence that shows up as cold spots, EMF fluctuations and EVP; none of those links is scientifically established. Signs: A figure that looks like the dead person, sometimes pale or translucent, sometimes bearing the wounds of its death; Sudden chill, a sense of being watched, dread in one specific spot or room; Footsteps, whispers, knocking, low moaning or wailing with no visible source; Doors, lights or small objects behaving oddly near the sighting; Pets staring at or avoiding an empty spot; Responds to questions (answers by knocks, EMF lights or EVP), which is what separates it from a residual haunting. Sensors: emf_milligauss: Indoor baseline is roughly 0.1-4 mG (typical home 0.5-2.5 mG; a can opener reads ~600 mG at 6 in but ~2 mG at 4 ft). Ghost-hunting convention flags brief, erratic spikes of roughly 3-20 mG away from wiring and appliances, ideally coinciding with a cold spot or EVP. [convention; the 3-20 mG band is a dashboard-suggested threshold, not a measured property of ghosts] temperature: Localized cold spot. Ghost hunters report drops from a few degrees F to 40+ F (about 2-22 C); dashboard-suggested typical value is a 3-10 C drop within about 1 m lasting seconds to minutes. [ghost-hunting convention, no scientific link; IR thermometers only read surface temperature] audio: EVP (faint voices on recorders that nobody heard live), whispers, footsteps, knocks, moaning or wailing. [convention] A standing infrasound wave near 19 Hz is the classic mundane lookalike. motion: Shadow or figure in peripheral vision that vanishes when looked at directly; PIR or laser-grid trips with nobody present; sometimes a cold draft that moves. [convention] other: Battery drain, flickering lights, REM-pod or K-II meters lighting up in response to questions. [convention; cold alone also drains batteries]. Sense of dread or being watched. Behavior: Anchored to a place, object or person tied to its death. Folklorists list the reasons ghosts return as finishing unfinished business, warning or informing, punishing or protesting, guarding, and rewarding. Many are passive or benign; vengeful ghosts are tied to murder or injustice. Escalation: Folklore: a grieving or vengeful ghost starts with sounds and cold, moves to apparitions, touches and disturbed sleep, and in some stories to possession or following a person or object to a new home. Escalation is usually read as the ghost not being heard or its business staying unresolved. Countermeasures: Salt line at doors and windows, salt circle, salt carried in a pocket, salt water wipe-down [salt_ring]; Cold iron: horseshoe over the door, iron rod on a grave, iron nails or an iron knife under the threshold [iron_filings]; Burning sage, St. John's wort or other herbs and wafting the smoke through the space (smudging) [sage_smoke]; Holy water, blessed candles, prayer or a formal exorcism; Tell it it is dead and ask it to leave; open doors and windows after a death; carry the corpse out feet first; rearrange the furniture so the ghost does not recognize the house; Find and properly bury the remains, or give the dead a proper tomb; Garlic over the door, brass bells, gemstone or pebble charms; Kill power and go electronics-free for a session to see which effects survive [power_cut]; EMF disruption to break the field a ghost is supposed to manifest through [emf_disruptor]. Mundane look-alikes: HVAC draft, open vent or door producing a cold spot (check with a second thermometer, not only an IR gun); Faulty wiring, appliances, phones, walkie-talkies, radio towers or the investigators' own gear causing EMF spikes; Infrasound near 19 Hz from an extractor fan or duct resonance causing dread, chills and peripheral-vision figures; EVP that is really radio pickup, recorder self-noise, compression artifacts or pareidolia; Dust or moisture orbs and IR reflections; fog machine, hologram, projection or costumed actor at a spooky event; Building creaks, pipes and thermal expansion; suggestion in a venue with a haunted reputation."
+    },
+    {
+      "id": "poltergeist",
+      "name": "Poltergeist",
+      "playbook": "spectral",
+      "aliases": [
+        "noisy ghost",
+        "stone-throwing devil",
+        "RSPK",
+        "recurrent spontaneous psychokinesis"
+      ],
+      "summary": "A 'noisy spirit' that raps, throws and moves objects, starts fires or floods, often centered on one person (typically a young person under stress) rather than on a place. Researchers split between a spirit explanation and recurrent spontaneous psychokinesis (RSPK); neither is proven, and fraud and mundane causes are common.",
+      "signs": [
+        "Raps, knocks, thuds and scratching with no source; sometimes answers questions in coded knocks",
+        "Small objects moved or thrown (most common), then larger furniture; doors and windows opening and closing",
+        "Sudden onset, a burst of days to months, then an equally sudden end",
+        "Activity follows one person and often stops when that person leaves; usually worse at night",
+        "Less often: apports (objects appearing), voices, spontaneous fires, water leaks, electrical or phone malfunctions, a human figure"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "Indoor baseline 0.1-4 mG. Convention and fiction expect large erratic bursts of roughly 5-50 mG synchronized with objects moving or lights failing, centered near the focus person. [convention and dashboard-suggested range; no folklore source gives a number]",
+        "temperature": "Not temperature-led. Occasional cold drafts or hot-to-the-touch objects are reported in a small share of cases. [folklore, weak]",
+        "audio": "Rapping or knocking (about half of 500 surveyed cases), thuds, scratching, footsteps, sometimes a voice or groan. Raps may respond to questions with a set number of knocks. [folklore; case surveys]",
+        "motion": "Objects thrown or levitated (small objects in about two thirds of cases, large furniture in about a third); moves when nobody is watching, may stop when observed. Dashboard: accelerometer or camera sees impulsive, non-ballistic motion.",
+        "other": "Electrical malfunctions, flickering lights, phones dialing, bulbs unscrewing, small fires, puddles. [folklore, modern cases] Electronics sensors may act up near the focus person."
+      },
+      "behavior": "Disruptive and playful or malicious; person-centered more than place-centered. In the spirit reading it is a discarnate prankster or demon; in the RSPK reading it is repressed anger or distress of a living agent discharged without awareness.",
+      "escalation": "Starts with raps, then small objects, then furniture, slaps or scratches, and in the worst famous cases fires and injuries. Tends to peak within weeks and then fade. The cases that run longest are those where the focus person stays in a stressful setting.",
+      "countermeasures": [
+        {
+          "name": "Remove or relocate the focus person, or reduce the stress around them",
+          "arsenal_key": null,
+          "tradition": "Parapsychology (RSPK), supported by cases that ended when the agent moved away",
+          "notes": "The most consistent historical fix, and a reminder that the dashboard should flag a person-centered pattern."
+        },
+        {
+          "name": "Clergy, blessing or exorcism; communicating with the knocks to ask what it wants",
+          "arsenal_key": null,
+          "tradition": "Older folklore treated it as a demon or restless spirit; Spiritualists treated raps as messages",
+          "notes": "Communicative cases sometimes name a dead person and a grievance."
+        },
+        {
+          "name": "Salt lines and cold iron at thresholds and around the affected bed or room",
+          "arsenal_key": "salt_ring",
+          "tradition": "Generic ghost and spirit warding from European folk magic",
+          "notes": "Same barrier logic as for ghosts; no case evidence that it stops thrown objects."
+        },
+        {
+          "name": "Sage or herb smoke through the affected rooms",
+          "arsenal_key": "sage_smoke",
+          "tradition": "Modern popular banishing practice",
+          "notes": "Ritual comfort that may also calm a stressed focus person."
+        },
+        {
+          "name": "Cut the mains and quarantine electronics to stop electrical effects and isolate hoaxes",
+          "arsenal_key": "power_cut",
+          "tradition": "Investigation convention",
+          "notes": "Several famous cases turned out to be faulty wiring plus tampering; cutting power is also a safety measure against fires."
+        },
+        {
+          "name": "Foam or physical barricade to protect people and equipment from thrown objects and to hold furniture in place",
+          "arsenal_key": "barricade_foam",
+          "tradition": "Dashboard-invented physical mitigation, not folklore",
+          "notes": "Treat as damage control while the cause is investigated."
+        }
+      ],
+      "false_positives": [
+        "Fraud or pranks, including a bored child or a hacker with a string (the Fox sisters later admitted cracking toe joints for their famous raps)",
+        "Faulty wiring or appliance faults (a famous German case was partly traced to wiring)",
+        "Infrasound or fan resonance making objects visibly vibrate (Tandy's clamped fencing foil shaking in a vise)",
+        "Subterranean water movement or minor seismic vibration shifting small objects",
+        "Settling pipes and thermal expansion; drafts or loose fixtures; crowd noise and doors in a busy venue"
+      ],
+      "sources": [
+        {
+          "title": "Poltergeists (Overview), Psi Encyclopedia, Society for Psychical Research",
+          "url": "https://psi-encyclopedia.spr.ac.uk/articles/poltergeists-overview/"
+        },
+        {
+          "title": "Psychological Aspects of Poltergeist Cases, Psi Encyclopedia",
+          "url": "https://psi-encyclopedia.spr.ac.uk/articles/psychological-aspects-poltergeist-cases/"
+        },
+        {
+          "title": "Electromagnetic Fields (EMF), Wisconsin DHS (baseline levels)",
+          "url": "https://www.dhs.wisconsin.gov/air/emf.htm"
+        },
+        {
+          "title": "Vic Tandy (Wikipedia), infrasound",
+          "url": "https://en.wikipedia.org/wiki/Vic_Tandy"
+        }
+      ],
+      "index_text": "Poltergeist (noisy ghost, stone-throwing devil, RSPK, recurrent spontaneous psychokinesis). Playbook: spectral. A 'noisy spirit' that raps, throws and moves objects, starts fires or floods, often centered on one person (typically a young person under stress) rather than on a place. Researchers split between a spirit explanation and recurrent spontaneous psychokinesis (RSPK); neither is proven, and fraud and mundane causes are common. Signs: Raps, knocks, thuds and scratching with no source; sometimes answers questions in coded knocks; Small objects moved or thrown (most common), then larger furniture; doors and windows opening and closing; Sudden onset, a burst of days to months, then an equally sudden end; Activity follows one person and often stops when that person leaves; usually worse at night; Less often: apports (objects appearing), voices, spontaneous fires, water leaks, electrical or phone malfunctions, a human figure. Sensors: emf_milligauss: Indoor baseline 0.1-4 mG. Convention and fiction expect large erratic bursts of roughly 5-50 mG synchronized with objects moving or lights failing, centered near the focus person. [convention and dashboard-suggested range; no folklore source gives a number] temperature: Not temperature-led. Occasional cold drafts or hot-to-the-touch objects are reported in a small share of cases. [folklore, weak] audio: Rapping or knocking (about half of 500 surveyed cases), thuds, scratching, footsteps, sometimes a voice or groan. Raps may respond to questions with a set number of knocks. [folklore; case surveys] motion: Objects thrown or levitated (small objects in about two thirds of cases, large furniture in about a third); moves when nobody is watching, may stop when observed. Dashboard: accelerometer or camera sees impulsive, non-ballistic motion. other: Electrical malfunctions, flickering lights, phones dialing, bulbs unscrewing, small fires, puddles. [folklore, modern cases] Electronics sensors may act up near the focus person. Behavior: Disruptive and playful or malicious; person-centered more than place-centered. In the spirit reading it is a discarnate prankster or demon; in the RSPK reading it is repressed anger or distress of a living agent discharged without awareness. Escalation: Starts with raps, then small objects, then furniture, slaps or scratches, and in the worst famous cases fires and injuries. Tends to peak within weeks and then fade. The cases that run longest are those where the focus person stays in a stressful setting. Countermeasures: Remove or relocate the focus person, or reduce the stress around them; Clergy, blessing or exorcism; communicating with the knocks to ask what it wants; Salt lines and cold iron at thresholds and around the affected bed or room [salt_ring]; Sage or herb smoke through the affected rooms [sage_smoke]; Cut the mains and quarantine electronics to stop electrical effects and isolate hoaxes [power_cut]; Foam or physical barricade to protect people and equipment from thrown objects and to hold furniture in place [barricade_foam]. Mundane look-alikes: Fraud or pranks, including a bored child or a hacker with a string (the Fox sisters later admitted cracking toe joints for their famous raps); Faulty wiring or appliance faults (a famous German case was partly traced to wiring); Infrasound or fan resonance making objects visibly vibrate (Tandy's clamped fencing foil shaking in a vise); Subterranean water movement or minor seismic vibration shifting small objects; Settling pipes and thermal expansion; drafts or loose fixtures; crowd noise and doors in a busy venue."
+    },
+    {
+      "id": "residual_haunting",
+      "name": "Residual haunting (stone tape echo)",
+      "playbook": "spectral",
+      "aliases": [
+        "stone tape",
+        "place memory",
+        "recorded haunting",
+        "imprint haunting",
+        "non-intelligent haunting"
+      ],
+      "summary": "A haunting pattern where the same sights or sounds replay identically at the same place and time and ignore witnesses, as if recorded. The 'stone tape' name comes from a 1972 BBC play; the recording mechanism has no scientific support and is best used as a label for the pattern, not an explanation.",
+      "signs": [
+        "The same figure walks the same path and vanishes at the same spot every time",
+        "The same footsteps, voices, music or battle sounds at the same time of day or year",
+        "No reaction to questions, people, lights or changes; no variation between replays",
+        "May continue where an old door or staircase used to be after the building was altered",
+        "Usually tied to a place where something emotionally intense happened"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "Baseline 0-5 mG with no erratic fluctuation. Any blip repeats in the same pattern at each replay. [dashboard-invented discriminator; paranormal convention only says residuals are less likely to react to meters or questions than intelligent hauntings]",
+        "temperature": "A cold spot at a fixed location that recurs at the same time and does not drift or respond to requests. [convention plus dashboard-invented repeatability]",
+        "audio": "Identical replay of footsteps, voices, crying or music at the same clock time and loudness; EVP question sessions get no response. [folklore and convention]",
+        "motion": "A repeating path with the same timing, no interaction with objects or people. PIR and camera data are strikingly regular. [folklore]",
+        "other": "Said to trigger on time of day, anniversaries, weather or temperature changes. Dashboard-suggested: correlate with HVAC cycles, trains, traffic or timers before calling it paranormal."
+      },
+      "behavior": "Passive playback of an impression of past events. No awareness, no intent, no interaction. Calling something residual describes the pattern, not a proven mechanism.",
+      "escalation": "None in the strict sense: it does not worsen, spread or follow people. Anything that responds, escalates or follows should be reclassified as an intelligent haunting or poltergeist. Lore says residuals fade after many repetitions.",
+      "countermeasures": [
+        {
+          "name": "Observe, log and repeat-record across several occurrences without engaging",
+          "arsenal_key": null,
+          "tradition": "Investigation convention for residual-type cases",
+          "notes": "Recommended default: the dashboard should say 'monitor, no intervention' for a confirmed residual."
+        },
+        {
+          "name": "Smoke cleansing of the space",
+          "arsenal_key": "sage_smoke",
+          "tradition": "Modern popular practice for 'clearing' a place",
+          "notes": "Effect on a recording is unproven; a comfort ritual at best."
+        },
+        {
+          "name": "Cut power or stop timed equipment to test whether the replay is electrical or looped",
+          "arsenal_key": "power_cut",
+          "tradition": "Investigation convention, not folklore",
+          "notes": "A replay that survives a full power cut is more interesting; one that stops was equipment."
+        },
+        {
+          "name": "Change or remove the anchor (renovate, remove the object or room)",
+          "arsenal_key": null,
+          "tradition": "Place-memory lore, though the same lore says the replay can persist after renovation",
+          "notes": "Unreliable."
+        },
+        {
+          "name": "Exorcism, salt or iron to repel it",
+          "arsenal_key": null,
+          "tradition": "Aimed at intelligent spirits",
+          "notes": "Counterproductive: there is no agent to repel. Explicitly not recommended for residuals."
+        }
+      ],
+      "false_positives": [
+        "Periodic mundane sources: HVAC cycling, plumbing, elevators, trains, traffic, scheduled lighting",
+        "A looped audio track, animatronic prop or projector on a timer at a Halloween venue (literally a recording)",
+        "A person with a routine, such as a cleaner or security guard on patrol",
+        "Sunlight and window reflections that repeat with the sun angle",
+        "Pareidolia and expectation in a place with a known ghost story"
+      ],
+      "sources": [
+        {
+          "title": "The Stone Tape Theory: Residual Hauntings, Recorded Echoes (HauntedSilence)",
+          "url": "https://hauntedsilence.com/paranormal-101/stone-tape-theory-residual-hauntings/"
+        },
+        {
+          "title": "Residual Hauntings and The Stone Tape Theory (Jim Harold)",
+          "url": "https://jimharold.com/residual-hauntings-and-the-stone-tape-theory/"
+        },
+        {
+          "title": "What Is the Stone Tape Theory? (wikiHow)",
+          "url": "https://www.wikihow.life/Stone-Tape-Theory"
+        },
+        {
+          "title": "A Beginner's Guide to Ghost Hunting Equipment (Haunted Hosts)",
+          "url": "https://hauntedhosts.com/library/explainers/beginners-guide-ghost-hunting-equipment/"
+        }
+      ],
+      "index_text": "Residual haunting (stone tape echo) (stone tape, place memory, recorded haunting, imprint haunting, non-intelligent haunting). Playbook: spectral. A haunting pattern where the same sights or sounds replay identically at the same place and time and ignore witnesses, as if recorded. The 'stone tape' name comes from a 1972 BBC play; the recording mechanism has no scientific support and is best used as a label for the pattern, not an explanation. Signs: The same figure walks the same path and vanishes at the same spot every time; The same footsteps, voices, music or battle sounds at the same time of day or year; No reaction to questions, people, lights or changes; no variation between replays; May continue where an old door or staircase used to be after the building was altered; Usually tied to a place where something emotionally intense happened. Sensors: emf_milligauss: Baseline 0-5 mG with no erratic fluctuation. Any blip repeats in the same pattern at each replay. [dashboard-invented discriminator; paranormal convention only says residuals are less likely to react to meters or questions than intelligent hauntings] temperature: A cold spot at a fixed location that recurs at the same time and does not drift or respond to requests. [convention plus dashboard-invented repeatability] audio: Identical replay of footsteps, voices, crying or music at the same clock time and loudness; EVP question sessions get no response. [folklore and convention] motion: A repeating path with the same timing, no interaction with objects or people. PIR and camera data are strikingly regular. [folklore] other: Said to trigger on time of day, anniversaries, weather or temperature changes. Dashboard-suggested: correlate with HVAC cycles, trains, traffic or timers before calling it paranormal. Behavior: Passive playback of an impression of past events. No awareness, no intent, no interaction. Calling something residual describes the pattern, not a proven mechanism. Escalation: None in the strict sense: it does not worsen, spread or follow people. Anything that responds, escalates or follows should be reclassified as an intelligent haunting or poltergeist. Lore says residuals fade after many repetitions. Countermeasures: Observe, log and repeat-record across several occurrences without engaging; Smoke cleansing of the space [sage_smoke]; Cut power or stop timed equipment to test whether the replay is electrical or looped [power_cut]; Change or remove the anchor (renovate, remove the object or room); Exorcism, salt or iron to repel it. Mundane look-alikes: Periodic mundane sources: HVAC cycling, plumbing, elevators, trains, traffic, scheduled lighting; A looped audio track, animatronic prop or projector on a timer at a Halloween venue (literally a recording); A person with a routine, such as a cleaner or security guard on patrol; Sunlight and window reflections that repeat with the sun angle; Pareidolia and expectation in a place with a known ghost story."
+    },
+    {
+      "id": "zombie",
+      "name": "Zombie (Haitian zonbi and modern pop zombie)",
+      "playbook": "corporeal",
+      "aliases": [
+        "zonbi",
+        "zombi",
+        "revenant",
+        "walker",
+        "living dead"
+      ],
+      "summary": "Two different monsters share one name. The Haitian zonbi is a person robbed of will and made to labor by a bokor sorcerer, a fear rooted in slavery and not a flesh eater. The modern pop zombie is a reanimated, infectious, flesh-eating corpse that spreads by bites, popularized by George Romero in 1968.",
+      "signs": [
+        "Haitian zonbi: a blank-faced, unfocused, silent person who obeys commands, may be recognized as someone officially dead years earlier; also a spirit-only kind (zonbi jardin) held by a bokor",
+        "Pop zombie: shambling, groaning individuals or crowds, advancing toward noise, light and living people",
+        "Decay smell, pale or gray skin, wounds ignored (pop convention)",
+        "Fresh bites or scratches on victims, followed by fever and turning (pop convention)",
+        "Graves or bodies disturbed, or a bokor-style figure orchestrating the group (folklore)"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "No signature in folklore. Dashboard keeps baseline 0-5 mG. [invented: the lack of an EMF anomaly separates it from spectral entities]",
+        "temperature": "Pop and dashboard: forms that read near ambient or cool on thermal imaging among warm bodies. [invented; useful for telling a corpse-like entity from a warm costumed human]",
+        "audio": "Groaning, shuffling, dragging steps, low crowd murmur; Haitian zonbi are silent and obedient. [pop convention vs folklore]",
+        "motion": "Slow shambling crowds converging on noise or light; Haitian zonbi walk steadily in a line to labor. [pop and folklore]",
+        "other": "Decay smell, flies, soil or grave dirt; no mirror or reflection anomaly. [pop convention]"
+      },
+      "behavior": "Haitian zonbi: obedient, will-less labor under a bokor's control; death was not real but induced, and the soul or ti bon ange is taken. Pop zombie: mindless hunger, attracted to living people, noise and light, difficult to stop except by destroying the brain or body.",
+      "escalation": "Haitian: the bokor gathers more laborers; the greater fear is becoming one yourself. Pop: bites or scratches infect victims who rise as new zombies, so a small incident grows into a crowd exponentially.",
+      "countermeasures": [
+        {
+          "name": "Feed the zonbi salt (or let it see the sea) to restore its will and release it",
+          "arsenal_key": "salt_ring",
+          "tradition": "Haitian folk belief, reported in popular accounts; the salt is eaten, not poured as a line",
+          "notes": "Mapped to salt_ring only loosely. A salt line is a modern borrowing from ghost lore; salt as an antidote is the zonbi-specific tradition."
+        },
+        {
+          "name": "Mutilate, poison or guard the corpse so it cannot be taken, or watch the grave",
+          "arsenal_key": null,
+          "tradition": "Reported Haitian family custom to prevent zombification",
+          "notes": "Not recommended or implementable; shows that prevention focuses on the body."
+        },
+        {
+          "name": "Identify and neutralize the controlling bokor, or free the soul by ritual",
+          "arsenal_key": null,
+          "tradition": "Haitian Vodou (control rests with the sorcerer; Baron Samedi can release souls)",
+          "notes": "In the dashboard, look for the 'controller' behind a coordinated crowd."
+        },
+        {
+          "name": "Barricade doors and hold chokepoints against a shambling crowd",
+          "arsenal_key": "barricade_foam",
+          "tradition": "Pop zombie fiction (Romero-era siege story)",
+          "notes": "Slows the group; pairs with a clear exit plan."
+        },
+        {
+          "name": "Fire to destroy the body and prevent reanimation",
+          "arsenal_key": "flare_line",
+          "tradition": "Pop zombie fiction",
+          "notes": "Venue fire risk. Use contained flare lines only."
+        },
+        {
+          "name": "Concentrated heat on a single target",
+          "arsenal_key": "thermal_lances",
+          "tradition": "Pop zombie fiction",
+          "notes": "Dashboard-style precision fire for individual zombies."
+        },
+        {
+          "name": "Noise to lure or scatter a crowd",
+          "arsenal_key": "sound_cannon",
+          "tradition": "Dashboard-invented, based on the pop idea that zombies are drawn to noise",
+          "notes": "Double-edged: it may attract more than it disperses."
+        }
+      ],
+      "false_positives": [
+        "Costumed zombie walk, bar crawl or party crowd in makeup",
+        "Exhausted, sleep-deprived hackathon attendees at 3 a.m. shambling toward the coffee",
+        "Intoxicated or sleepwalking people; people in a daze after a medical event",
+        "Film shoot or staged performers; fog machine plus dim light",
+        "Crowd noise and groaning from a game, video or speakers"
+      ],
+      "sources": [
+        {
+          "title": "Zombies (Mythology and Folklore, WHCCD Pressbooks)",
+          "url": "https://pressbooks.whccd.edu/mythologyandfolklore/chapter/zombies/"
+        },
+        {
+          "title": "The Origin of Zombies: From African Folklore and Haitian Vodou to Pop Culture (Origin Trace)",
+          "url": "https://origin-trace.com/article/origin-of-zombies/"
+        },
+        {
+          "title": "Zonbi folklore (Vodou in Haiti)",
+          "url": "https://vodouinhaiti.wordpress.com/zonbi/"
+        },
+        {
+          "title": "Myths, Legends, and Faith: Zombies",
+          "url": "https://lewisrhystwiby.wordpress.com/2022/10/30/myths-legends-and-faith-zombies/"
+        }
+      ],
+      "index_text": "Zombie (Haitian zonbi and modern pop zombie) (zonbi, zombi, revenant, walker, living dead). Playbook: corporeal. Two different monsters share one name. The Haitian zonbi is a person robbed of will and made to labor by a bokor sorcerer, a fear rooted in slavery and not a flesh eater. The modern pop zombie is a reanimated, infectious, flesh-eating corpse that spreads by bites, popularized by George Romero in 1968. Signs: Haitian zonbi: a blank-faced, unfocused, silent person who obeys commands, may be recognized as someone officially dead years earlier; also a spirit-only kind (zonbi jardin) held by a bokor; Pop zombie: shambling, groaning individuals or crowds, advancing toward noise, light and living people; Decay smell, pale or gray skin, wounds ignored (pop convention); Fresh bites or scratches on victims, followed by fever and turning (pop convention); Graves or bodies disturbed, or a bokor-style figure orchestrating the group (folklore). Sensors: emf_milligauss: No signature in folklore. Dashboard keeps baseline 0-5 mG. [invented: the lack of an EMF anomaly separates it from spectral entities] temperature: Pop and dashboard: forms that read near ambient or cool on thermal imaging among warm bodies. [invented; useful for telling a corpse-like entity from a warm costumed human] audio: Groaning, shuffling, dragging steps, low crowd murmur; Haitian zonbi are silent and obedient. [pop convention vs folklore] motion: Slow shambling crowds converging on noise or light; Haitian zonbi walk steadily in a line to labor. [pop and folklore] other: Decay smell, flies, soil or grave dirt; no mirror or reflection anomaly. [pop convention] Behavior: Haitian zonbi: obedient, will-less labor under a bokor's control; death was not real but induced, and the soul or ti bon ange is taken. Pop zombie: mindless hunger, attracted to living people, noise and light, difficult to stop except by destroying the brain or body. Escalation: Haitian: the bokor gathers more laborers; the greater fear is becoming one yourself. Pop: bites or scratches infect victims who rise as new zombies, so a small incident grows into a crowd exponentially. Countermeasures: Feed the zonbi salt (or let it see the sea) to restore its will and release it [salt_ring]; Mutilate, poison or guard the corpse so it cannot be taken, or watch the grave; Identify and neutralize the controlling bokor, or free the soul by ritual; Barricade doors and hold chokepoints against a shambling crowd [barricade_foam]; Fire to destroy the body and prevent reanimation [flare_line]; Concentrated heat on a single target [thermal_lances]; Noise to lure or scatter a crowd [sound_cannon]. Mundane look-alikes: Costumed zombie walk, bar crawl or party crowd in makeup; Exhausted, sleep-deprived hackathon attendees at 3 a.m. shambling toward the coffee; Intoxicated or sleepwalking people; people in a daze after a medical event; Film shoot or staged performers; fog machine plus dim light; Crowd noise and groaning from a game, video or speakers."
+    },
+    {
+      "id": "vampire",
+      "name": "Vampire",
+      "playbook": "corporeal",
+      "aliases": [
+        "revenant",
+        "blood-drinker",
+        "nosferatu",
+        "upir",
+        "strigoi"
+      ],
+      "summary": "An undead creature that preys on the living, usually by drinking blood. Folk vampires were recently dead neighbors and relatives blamed for plague and misfortune; the aristocratic, sunlight-fearing, garlic-hating vampire is largely a product of Gothic fiction and film.",
+      "signs": [
+        "Pale figure active only at night, sometimes beautiful, sometimes grotesque",
+        "Puncture wounds on the neck, weakness and anemia in victims, deaths clustered in one family",
+        "No reflection or shadow; may not appear on film (reported in legend and fiction)",
+        "Corpse that looks fresh, bloated or with a bloody mouth when dug up (folk reading of normal decomposition)",
+        "Bat or animal shapes, entering a home only if invited (fiction and some folklore)"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "No folklore EMF signature. Dashboard keeps baseline 0-5 mG. [invented: absence of EMF anomaly]",
+        "temperature": "Folklore gives none. Dashboard-suggested: cool skin, a thermal-imaging blind spot relative to warm people. [invented]",
+        "audio": "Mostly silent; wing flutter or a hiss in fiction. [pop convention]",
+        "motion": "Fast, nocturnal, climbs or glides; avoids mirrors and cameras. Dashboard: a person who is absent from reflections or video but seen by eye. [folklore extended to sensors; Britannica notes the 'cannot be photographed' idea]",
+        "other": "Missing reflection or camera feed, blood loss in victims, garlic or holy-symbol aversion. Lethal sunlight is a 1922 film invention (Nosferatu), not old folklore."
+      },
+      "behavior": "Rises from the grave at night to feed on blood or other essence, returning before dawn; strongest against its own family and neighbors in folk accounts. Fiction adds hypnosis, shapeshifting and aristocracy.",
+      "escalation": "Victims die and become vampires, spreading like a plague, starting with the vampire's own household. Folk belief tied vampire panics to epidemics (for example the Serbian exhumations of 1725 and 1732).",
+      "countermeasures": [
+        {
+          "name": "Sunlight exposure",
+          "arsenal_key": "uv_floodlights",
+          "tradition": "Popular legend and film (Nosferatu, 1922); not a universal folk rule",
+          "notes": "Britannica lists sunlight among the popular killing methods; treat as pop convention. UV lamps are a hazard to people too."
+        },
+        {
+          "name": "Fire or cremation of the body",
+          "arsenal_key": "flare_line",
+          "tradition": "Folklore (burning suspected revenants) and popular legend",
+          "notes": "Fire is one of the most consistent folk methods; contained flare lines only in a venue."
+        },
+        {
+          "name": "Intense, directed heat or burning of a target",
+          "arsenal_key": "thermal_lances",
+          "tradition": "Same fire tradition, dashboard precision form",
+          "notes": ""
+        },
+        {
+          "name": "Wooden stake through the heart (oak, ash, hawthorn), decapitation or pinning the body so it cannot rise",
+          "arsenal_key": "barricade_foam",
+          "tradition": "Folklore: staking and decapitation of suspected revenants; folk aim was often to pin the corpse in the grave",
+          "notes": "Barricade foam is the dashboard's non-lethal restraint stand-in; the stake itself is not an arsenal item."
+        },
+        {
+          "name": "Garlic wreaths, hawthorn or rowan branches at doors; seeds or grain scattered to be counted",
+          "arsenal_key": null,
+          "tradition": "European and Balkan folklore; garlic is an old protective plant that fiction made vampire-specific",
+          "notes": "Low-cost wards; the seed-counting compulsion is a folk motif."
+        },
+        {
+          "name": "Salt and iron at the threshold; church bells",
+          "arsenal_key": "salt_ring",
+          "tradition": "General European protective magic, repeated in vampire lore",
+          "notes": "Iron can use iron_filings in the same way."
+        },
+        {
+          "name": "Holy water, crucifix or consecrated ground",
+          "arsenal_key": null,
+          "tradition": "Christian folk practice, made central by Dracula (1897)",
+          "notes": ""
+        },
+        {
+          "name": "Running water barrier (cannot be crossed)",
+          "arsenal_key": null,
+          "tradition": "Folklore",
+          "notes": "Hard to deploy indoors."
+        },
+        {
+          "name": "Silver",
+          "arsenal_key": "silver_netting",
+          "tradition": "Modern fiction only; folk vampires have no silver rule",
+          "notes": "Low confidence; kept because many modern players expect it."
+        }
+      ],
+      "false_positives": [
+        "Halloween costume with fake fangs, cape and white makeup",
+        "Stage blood and theatrical performance",
+        "Camera glare, mirrors in poor lighting or a disabled camera making someone vanish from the reflection or video",
+        "Medical causes: anemia, porphyria, rabies-like behavior, light sensitivity",
+        "Bat or insect bites, and ordinary neck bruises or hickeys",
+        "Fog machine plus dramatic lighting"
+      ],
+      "sources": [
+        {
+          "title": "Vampire, Encyclopaedia Britannica",
+          "url": "https://www.britannica.com/topic/vampire"
+        },
+        {
+          "title": "Vampire Weaknesses Explained: What Are Vampires Really Afraid Of?",
+          "url": "https://antonyjstanton.com/vampire-weaknesses-what-are-vampires-afraid-of/"
+        },
+        {
+          "title": "Vampire Folklore (Midwestern at Heart)",
+          "url": "https://midwesternatheart.com/2020/10/vampire-folklore/"
+        }
+      ],
+      "index_text": "Vampire (revenant, blood-drinker, nosferatu, upir, strigoi). Playbook: corporeal. An undead creature that preys on the living, usually by drinking blood. Folk vampires were recently dead neighbors and relatives blamed for plague and misfortune; the aristocratic, sunlight-fearing, garlic-hating vampire is largely a product of Gothic fiction and film. Signs: Pale figure active only at night, sometimes beautiful, sometimes grotesque; Puncture wounds on the neck, weakness and anemia in victims, deaths clustered in one family; No reflection or shadow; may not appear on film (reported in legend and fiction); Corpse that looks fresh, bloated or with a bloody mouth when dug up (folk reading of normal decomposition); Bat or animal shapes, entering a home only if invited (fiction and some folklore). Sensors: emf_milligauss: No folklore EMF signature. Dashboard keeps baseline 0-5 mG. [invented: absence of EMF anomaly] temperature: Folklore gives none. Dashboard-suggested: cool skin, a thermal-imaging blind spot relative to warm people. [invented] audio: Mostly silent; wing flutter or a hiss in fiction. [pop convention] motion: Fast, nocturnal, climbs or glides; avoids mirrors and cameras. Dashboard: a person who is absent from reflections or video but seen by eye. [folklore extended to sensors; Britannica notes the 'cannot be photographed' idea] other: Missing reflection or camera feed, blood loss in victims, garlic or holy-symbol aversion. Lethal sunlight is a 1922 film invention (Nosferatu), not old folklore. Behavior: Rises from the grave at night to feed on blood or other essence, returning before dawn; strongest against its own family and neighbors in folk accounts. Fiction adds hypnosis, shapeshifting and aristocracy. Escalation: Victims die and become vampires, spreading like a plague, starting with the vampire's own household. Folk belief tied vampire panics to epidemics (for example the Serbian exhumations of 1725 and 1732). Countermeasures: Sunlight exposure [uv_floodlights]; Fire or cremation of the body [flare_line]; Intense, directed heat or burning of a target [thermal_lances]; Wooden stake through the heart (oak, ash, hawthorn), decapitation or pinning the body so it cannot rise [barricade_foam]; Garlic wreaths, hawthorn or rowan branches at doors; seeds or grain scattered to be counted; Salt and iron at the threshold; church bells [salt_ring]; Holy water, crucifix or consecrated ground; Running water barrier (cannot be crossed); Silver [silver_netting]. Mundane look-alikes: Halloween costume with fake fangs, cape and white makeup; Stage blood and theatrical performance; Camera glare, mirrors in poor lighting or a disabled camera making someone vanish from the reflection or video; Medical causes: anemia, porphyria, rabies-like behavior, light sensitivity; Bat or insect bites, and ordinary neck bruises or hickeys; Fog machine plus dramatic lighting."
+    },
+    {
+      "id": "werewolf",
+      "name": "Werewolf",
+      "playbook": "corporeal",
+      "aliases": [
+        "lycanthrope",
+        "wolf-man",
+        "loup-garou",
+        "lobizon",
+        "vukodlak"
+      ],
+      "summary": "A human who turns into a wolf or wolf-man. Medieval and early modern Europe tied werewolves to real wolf attacks and witch-and-werewolf trials; the silver weakness, full-moon trigger and bite contagion are mostly 20th-century film inventions.",
+      "signs": [
+        "Large wolf-like attacks on livestock or people, with unusually bold animals (the Beast of Gevaudan, 1764-67, claimed over 100 lives)",
+        "A human who is absent or exhausted when attacks happen, with wounds or injuries matching the animal",
+        "Howling at night, claw marks, torn carcasses, wolf-sized tracks",
+        "Superhuman strength and speed; transformation (wolf skin, curse, or a cursed bite depending on tradition)",
+        "Pop convention: attacks tied to the full moon and curse spread by bite"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "No folklore EMF signature. Dashboard keeps baseline 0-5 mG. [invented]",
+        "temperature": "Warm-blooded animal: a large, strong heat signature on thermal cameras, unlike spectral entities. [dashboard-invented, follows from it being physical]",
+        "audio": "Howl and growl, carried across a distance, answering dogs. [folklore]",
+        "motion": "Fast, strong, large quadruped or hunched form; PIR and cameras triggered; torn or dragged objects. [folklore and animal reality]",
+        "other": "Moon-phase correlation is a 1943 film convention, not old folklore. Livestock panic, canine alarm, wet fur or musky smell."
+      },
+      "behavior": "Human by day, beast by night (or on the full moon in modern tellings), lacking control during transformation. In folklore the older questions were about guilt, outlawry and who might be a wolf in the community.",
+      "escalation": "Modern fiction: each bitten victim becomes a werewolf, so a single attacker can seed a pack. Folklore escalation is more about repeated killings, panic and persecution of suspects.",
+      "countermeasures": [
+        {
+          "name": "Silver (bullets, blades, netting)",
+          "arsenal_key": "silver_netting",
+          "tradition": "Film convention from The Wolf Man (1941); some folk protection also used silver jewelry or coins, but not as a werewolf weakness",
+          "notes": "Dashboard fiction layer: silver_netting is the non-lethal containment version."
+        },
+        {
+          "name": "Wolfsbane (aconite, monkshood) planted at doors or hung in the home",
+          "arsenal_key": null,
+          "tradition": "European folklore and fiction; named for poisoned wolf bait; sources disagree whether it repels, kills, cures or even triggers transformation",
+          "notes": "Aconite is genuinely toxic to people and pets; handling hazard."
+        },
+        {
+          "name": "Cold iron or an iron blade",
+          "arsenal_key": "iron_filings",
+          "tradition": "Some European traditions list iron among werewolf weaknesses",
+          "notes": "Weak support, fits the dashboard's iron option."
+        },
+        {
+          "name": "Draw blood from the wound in human form to break the spell; call the afflicted by their Christian name",
+          "arsenal_key": null,
+          "tradition": "Older European folklore",
+          "notes": "Social and ritual cures, not arsenal items."
+        },
+        {
+          "name": "Fire and burning the body; decapitation (Slavic folklore)",
+          "arsenal_key": "flare_line",
+          "tradition": "Folklore, execution of suspected werewolves",
+          "notes": "Contained flare lines only."
+        },
+        {
+          "name": "Wait for dawn: cock's crow or sunrise returns the wolf to human form",
+          "arsenal_key": null,
+          "tradition": "Folklore",
+          "notes": "Time-based outlast strategy."
+        },
+        {
+          "name": "Barricade doors and secure livestock",
+          "arsenal_key": "barricade_foam",
+          "tradition": "Practical defence against a real predator",
+          "notes": "Pair with real wildlife response."
+        }
+      ],
+      "false_positives": [
+        "Stray dogs, coyotes, foxes or real wolves; a wolf-like husky",
+        "Costume or fur suit with a mask; a mascot",
+        "Wind howling in eaves or ducts; sirens setting off neighborhood dogs",
+        "Speakers playing howl sound effects at a themed event",
+        "Claw-like damage from raccoons, deer or storm debris"
+      ],
+      "sources": [
+        {
+          "title": "Werewolf: Medieval European Creature, Myth, Origin and Powers (Drakorix)",
+          "url": "https://drakorix.com/chronicles/werewolf"
+        },
+        {
+          "title": "How to Kill a Werewolf According to Folklore (Skywarrior Books)",
+          "url": "https://www.skywarriorbooks.com/how-to-kill-a-werewolf-according-to-folklore/"
+        },
+        {
+          "title": "Monsters, Magic, and Monkshood (Chicago Botanic Garden)",
+          "url": "https://www.chicagobotanic.org/blog/plants-and-gardening/monsters-magic-and-monkshood"
+        },
+        {
+          "title": "Wolfsbane and Werewolves (Beth Trissel)",
+          "url": "https://bethtrissel.wordpress.com/2011/01/09/wolfs-bane-and-werewolves/"
+        }
+      ],
+      "index_text": "Werewolf (lycanthrope, wolf-man, loup-garou, lobizon, vukodlak). Playbook: corporeal. A human who turns into a wolf or wolf-man. Medieval and early modern Europe tied werewolves to real wolf attacks and witch-and-werewolf trials; the silver weakness, full-moon trigger and bite contagion are mostly 20th-century film inventions. Signs: Large wolf-like attacks on livestock or people, with unusually bold animals (the Beast of Gevaudan, 1764-67, claimed over 100 lives); A human who is absent or exhausted when attacks happen, with wounds or injuries matching the animal; Howling at night, claw marks, torn carcasses, wolf-sized tracks; Superhuman strength and speed; transformation (wolf skin, curse, or a cursed bite depending on tradition); Pop convention: attacks tied to the full moon and curse spread by bite. Sensors: emf_milligauss: No folklore EMF signature. Dashboard keeps baseline 0-5 mG. [invented] temperature: Warm-blooded animal: a large, strong heat signature on thermal cameras, unlike spectral entities. [dashboard-invented, follows from it being physical] audio: Howl and growl, carried across a distance, answering dogs. [folklore] motion: Fast, strong, large quadruped or hunched form; PIR and cameras triggered; torn or dragged objects. [folklore and animal reality] other: Moon-phase correlation is a 1943 film convention, not old folklore. Livestock panic, canine alarm, wet fur or musky smell. Behavior: Human by day, beast by night (or on the full moon in modern tellings), lacking control during transformation. In folklore the older questions were about guilt, outlawry and who might be a wolf in the community. Escalation: Modern fiction: each bitten victim becomes a werewolf, so a single attacker can seed a pack. Folklore escalation is more about repeated killings, panic and persecution of suspects. Countermeasures: Silver (bullets, blades, netting) [silver_netting]; Wolfsbane (aconite, monkshood) planted at doors or hung in the home; Cold iron or an iron blade [iron_filings]; Draw blood from the wound in human form to break the spell; call the afflicted by their Christian name; Fire and burning the body; decapitation (Slavic folklore) [flare_line]; Wait for dawn: cock's crow or sunrise returns the wolf to human form; Barricade doors and secure livestock [barricade_foam]. Mundane look-alikes: Stray dogs, coyotes, foxes or real wolves; a wolf-like husky; Costume or fur suit with a mask; a mascot; Wind howling in eaves or ducts; sirens setting off neighborhood dogs; Speakers playing howl sound effects at a themed event; Claw-like damage from raccoons, deer or storm debris."
+    },
+    {
+      "id": "banshee",
+      "name": "Banshee (bean sidhe)",
+      "playbook": "spectral",
+      "aliases": [
+        "bean sidhe",
+        "bean si",
+        "wailing woman",
+        "bean nighe (Scottish washer-woman)",
+        "keening woman"
+      ],
+      "summary": "A female spirit of Irish folklore whose keening wail is heard before a death in an old family. She warns or mourns rather than kills; the killer scream is a modern horror simplification.",
+      "signs": [
+        "A wail, keen or lament heard at night near a window or house, often before the news of a death arrives",
+        "A young woman, a stately matron or an old crone, in white or grey, with long hair and a comb",
+        "A washer at a ford rinsing bloody clothes (Scottish bean nighe form)",
+        "She vanishes into mist with a sound like fluttering bird wings when noticed",
+        "Several banshees keening together signals the death of someone great or holy"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "No folklore EMF signature. Dashboard keeps baseline 0-5 mG, which separates her from poltergeists. [invented]",
+        "temperature": "Chill or mist at the sighting; she dissolves into mist. [folklore; magnitude invented, mild 1-3 C]",
+        "audio": "Keening: a rising and falling wail or low sobbing, sometimes like a cry between a woman and an owl; heard at night, outdoors near the home. [folklore]",
+        "motion": "Mostly stationary or drifting figure at the edge of the home; disappears when watched. [folklore]",
+        "other": "A comb on the ground (leave it alone), a washing-at-the-ford figure, and a death in a family within days."
+      },
+      "behavior": "Attached to particular old Irish families, especially O' and Mac names. In many tales she is a mourner or herald, not a killer, and may be a fairy woman or the ghost of a murdered woman or mother who died in childbirth.",
+      "escalation": "No escalation in the usual sense. The wail marks the clock: a death follows the cry, often within days. The wail may be heard far from Ireland as families emigrated, and in some versions only the doomed person hears it.",
+      "countermeasures": [
+        {
+          "name": "Do not confront; treat the wail as a warning and check on the family member at risk",
+          "arsenal_key": null,
+          "tradition": "Irish tradition: there is no battle with the banshee, she announces what is already coming",
+          "notes": "The honest recommendation is verify, notify and monitor, not banish."
+        },
+        {
+          "name": "Leave her comb where it lies; taking it is risky until returned properly",
+          "arsenal_key": null,
+          "tradition": "Irish folk tales",
+          "notes": "A taboo, not a ward."
+        },
+        {
+          "name": "Counter the sound itself (cancel or mask the wail) and keep people calm",
+          "arsenal_key": "sound_cannon",
+          "tradition": "Dashboard-invented; no folklore support",
+          "notes": "Only if the source is confirmed as a real sound."
+        },
+        {
+          "name": "Salt or iron at the window",
+          "arsenal_key": "salt_ring",
+          "tradition": "General spirit-warding folklore, not banshee-specific",
+          "notes": "Low confidence; banshees are not hostile in tradition."
+        }
+      ],
+      "false_positives": [
+        "Barn owl screech or fox or vixen scream outside (a barn owl cry is a proposed origin of the legend)",
+        "Cat fight, wind in eaves or chimneys, or a whistling gap in a door or window",
+        "PA feedback, speaker squeal, a siren in the distance, or a recording at a themed event",
+        "A person crying or singing nearby; keening from a performer",
+        "Infrasound or duct resonance producing a wail-like tone"
+      ],
+      "sources": [
+        {
+          "title": "Banshee (Myth and Folklore Wiki)",
+          "url": "https://mythus.fandom.com/wiki/Banshee"
+        },
+        {
+          "title": "Banshee Meaning: The Bean Sidhe in Irish Folklore (LikeMyth)",
+          "url": "https://likemyth.com/celtic-european-folklore/banshee-meaning"
+        },
+        {
+          "title": "Banshee (Cryptid Wiki)",
+          "url": "https://cryptidz.fandom.com/wiki/Banshee"
+        },
+        {
+          "title": "Banshee: The Wailing Spirit of Death in Irish Folklore (Mythos Anthology)",
+          "url": "https://mythosanthology.com/banshee/"
+        }
+      ],
+      "index_text": "Banshee (bean sidhe) (bean sidhe, bean si, wailing woman, bean nighe (Scottish washer-woman), keening woman). Playbook: spectral. A female spirit of Irish folklore whose keening wail is heard before a death in an old family. She warns or mourns rather than kills; the killer scream is a modern horror simplification. Signs: A wail, keen or lament heard at night near a window or house, often before the news of a death arrives; A young woman, a stately matron or an old crone, in white or grey, with long hair and a comb; A washer at a ford rinsing bloody clothes (Scottish bean nighe form); She vanishes into mist with a sound like fluttering bird wings when noticed; Several banshees keening together signals the death of someone great or holy. Sensors: emf_milligauss: No folklore EMF signature. Dashboard keeps baseline 0-5 mG, which separates her from poltergeists. [invented] temperature: Chill or mist at the sighting; she dissolves into mist. [folklore; magnitude invented, mild 1-3 C] audio: Keening: a rising and falling wail or low sobbing, sometimes like a cry between a woman and an owl; heard at night, outdoors near the home. [folklore] motion: Mostly stationary or drifting figure at the edge of the home; disappears when watched. [folklore] other: A comb on the ground (leave it alone), a washing-at-the-ford figure, and a death in a family within days. Behavior: Attached to particular old Irish families, especially O' and Mac names. In many tales she is a mourner or herald, not a killer, and may be a fairy woman or the ghost of a murdered woman or mother who died in childbirth. Escalation: No escalation in the usual sense. The wail marks the clock: a death follows the cry, often within days. The wail may be heard far from Ireland as families emigrated, and in some versions only the doomed person hears it. Countermeasures: Do not confront; treat the wail as a warning and check on the family member at risk; Leave her comb where it lies; taking it is risky until returned properly; Counter the sound itself (cancel or mask the wail) and keep people calm [sound_cannon]; Salt or iron at the window [salt_ring]. Mundane look-alikes: Barn owl screech or fox or vixen scream outside (a barn owl cry is a proposed origin of the legend); Cat fight, wind in eaves or chimneys, or a whistling gap in a door or window; PA feedback, speaker squeal, a siren in the distance, or a recording at a themed event; A person crying or singing nearby; keening from a performer; Infrasound or duct resonance producing a wail-like tone."
+    },
+    {
+      "id": "witch_hex",
+      "name": "Witch / Hex (maleficium)",
+      "playbook": "anomalous",
+      "aliases": [
+        "witch",
+        "curse",
+        "hex",
+        "evil eye",
+        "bewitchment",
+        "maleficium"
+      ],
+      "summary": "A person or object blamed for deliberate magical harm: sudden illness, spoiled milk, sick livestock, bad luck. Early modern Europe built a whole counter-magic toolkit (iron, salt, rowan, witch bottles) around it; most of it protects the target rather than hunting the witch.",
+      "signs": [
+        "A cluster of unexplained mishaps hitting one household or person: illness, spoiled food, dying animals, failed equipment",
+        "Cursed objects found hidden: pins, poppets, a bottle, hair or nail clippings",
+        "Evil-eye reputation of a specific neighbor; a grudge preceding the bad luck",
+        "In folklore, a witch who cannot eat salt or cross cold iron or running water"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "No folklore EMF signature. Dashboard-invented: localized 5-15 mG flutter around a suspected hex object or poppet, otherwise baseline 0-5 mG.",
+        "temperature": "None in folklore. Dashboard: no consistent signature. [invented]",
+        "audio": "None in folklore. Dashboard: none. [invented]",
+        "motion": "None documented. Dashboard-suggested: no physical motion; the signature is an error cluster in time.",
+        "other": "Unexplained failures concentrating on one person or system; sulfur or burnt smell sometimes; the physical hex object. [mostly invented; folklore describes the effects, not sensor traces]"
+      },
+      "behavior": "Targeted and personal: the curse follows a grudge or a pact with a named target. Counter-magic works by blocking, reflecting or breaking the spell, or by revealing the witch.",
+      "escalation": "From small mishaps (souring milk, sickly cattle) to serious illness and death in the household, spreading from the target to those around. In witch-bottle practice the victim's torment is mirrored back on the witch.",
+      "countermeasures": [
+        {
+          "name": "Salt: sprinkled across thresholds, salted food, salt in the churn, holy water",
+          "arsenal_key": "salt_ring",
+          "tradition": "European folk magic; salt is anathema to witches and breaks spells",
+          "notes": "Folklore also says witches cannot eat salted food, a way to test for them."
+        },
+        {
+          "name": "Cold iron: nails under the doorstep, knife, horseshoe, amulets",
+          "arsenal_key": "iron_filings",
+          "tradition": "European folklore; witches cannot pass cold iron",
+          "notes": "Burying an iron knife under the door is an old ward."
+        },
+        {
+          "name": "Witch bottle: a bottle of bent pins, nails, hair, urine or salt buried at the hearth or threshold, or heated to break the spell",
+          "arsenal_key": null,
+          "tradition": "Elizabethan and Stuart England (East Anglia), documented archaeologically (for example the Greenwich bottle, found 2004)",
+          "notes": "Sealed historic bottles can explode when heated; modern versions use jars. Nearest arsenal match is a mix of salt and iron."
+        },
+        {
+          "name": "Rowan, ash, hawthorn, hazel, birch or holly branches and red thread over doors",
+          "arsenal_key": null,
+          "tradition": "British and Celtic folklore",
+          "notes": "Rowan crosses are a classic anti-witch charm."
+        },
+        {
+          "name": "Burn rue, St. John's wort or sage as banishing incense and waft the smoke through the space",
+          "arsenal_key": "sage_smoke",
+          "tradition": "Modern witchcraft and folk-magic herbal banishing",
+          "notes": "Modern practice more than historical anti-witch lore."
+        },
+        {
+          "name": "Running water: cross a stream to escape",
+          "arsenal_key": null,
+          "tradition": "European folklore",
+          "notes": ""
+        },
+        {
+          "name": "Copies of St. John's Gospel or Creed, Aves and Paternosters",
+          "arsenal_key": null,
+          "tradition": "17th-century Christian charm practice",
+          "notes": "Historical curiosity."
+        }
+      ],
+      "false_positives": [
+        "Ordinary bad luck, coincidence and confirmation bias",
+        "Spoiled food from failed refrigeration, mold or food poisoning",
+        "Equipment faults, brownouts and overheating that cluster by chance",
+        "A prank 'hex bag', Halloween prop or ritual-themed decor, candles and burning sage setting off alarms",
+        "Nocebo effect: being told you are cursed makes minor symptoms feel real"
+      ],
+      "sources": [
+        {
+          "title": "Protection against Witches (Nightbringer)",
+          "url": "https://nightbringer.se/nightbringer/witch_protection.html"
+        },
+        {
+          "title": "Witch Bottle (Occult World)",
+          "url": "https://occult-world.com/witch-bottle/"
+        },
+        {
+          "title": "Salt Folklore and Magic (Learn Religions)",
+          "url": "https://www.learnreligions.com/salt-folklore-and-magic-2562502"
+        }
+      ],
+      "index_text": "Witch / Hex (maleficium) (witch, curse, hex, evil eye, bewitchment, maleficium). Playbook: anomalous. A person or object blamed for deliberate magical harm: sudden illness, spoiled milk, sick livestock, bad luck. Early modern Europe built a whole counter-magic toolkit (iron, salt, rowan, witch bottles) around it; most of it protects the target rather than hunting the witch. Signs: A cluster of unexplained mishaps hitting one household or person: illness, spoiled food, dying animals, failed equipment; Cursed objects found hidden: pins, poppets, a bottle, hair or nail clippings; Evil-eye reputation of a specific neighbor; a grudge preceding the bad luck; In folklore, a witch who cannot eat salt or cross cold iron or running water. Sensors: emf_milligauss: No folklore EMF signature. Dashboard-invented: localized 5-15 mG flutter around a suspected hex object or poppet, otherwise baseline 0-5 mG. temperature: None in folklore. Dashboard: no consistent signature. [invented] audio: None in folklore. Dashboard: none. [invented] motion: None documented. Dashboard-suggested: no physical motion; the signature is an error cluster in time. other: Unexplained failures concentrating on one person or system; sulfur or burnt smell sometimes; the physical hex object. [mostly invented; folklore describes the effects, not sensor traces] Behavior: Targeted and personal: the curse follows a grudge or a pact with a named target. Counter-magic works by blocking, reflecting or breaking the spell, or by revealing the witch. Escalation: From small mishaps (souring milk, sickly cattle) to serious illness and death in the household, spreading from the target to those around. In witch-bottle practice the victim's torment is mirrored back on the witch. Countermeasures: Salt: sprinkled across thresholds, salted food, salt in the churn, holy water [salt_ring]; Cold iron: nails under the doorstep, knife, horseshoe, amulets [iron_filings]; Witch bottle: a bottle of bent pins, nails, hair, urine or salt buried at the hearth or threshold, or heated to break the spell; Rowan, ash, hawthorn, hazel, birch or holly branches and red thread over doors; Burn rue, St. John's wort or sage as banishing incense and waft the smoke through the space [sage_smoke]; Running water: cross a stream to escape; Copies of St. John's Gospel or Creed, Aves and Paternosters. Mundane look-alikes: Ordinary bad luck, coincidence and confirmation bias; Spoiled food from failed refrigeration, mold or food poisoning; Equipment faults, brownouts and overheating that cluster by chance; A prank 'hex bag', Halloween prop or ritual-themed decor, candles and burning sage setting off alarms; Nocebo effect: being told you are cursed makes minor symptoms feel real."
+    },
+    {
+      "id": "mummy",
+      "name": "Mummy / Mummy's curse",
+      "playbook": "corporeal",
+      "aliases": [
+        "pharaoh's curse",
+        "cursed mummy",
+        "bandaged revenant",
+        "tomb guardian"
+      ],
+      "summary": "A reanimated, bandaged corpse and a curse on those who disturb a tomb. Despite the Egyptian setting, the mummy's curse is largely a 19th-century English and American invention that blew up after Tutankhamun's tomb opened in 1922; ancient tomb texts were legal-style warnings, not death curses.",
+      "signs": [
+        "A bandaged or desiccated figure that moves, usually slowly, often toward whoever took an artifact",
+        "A misfortune or death cluster among people who opened a tomb or handled a relic",
+        "Dust, dry resin or linen smell, ancient seals or inscriptions near the event",
+        "In reality: respiratory illness and mold in old, sealed tombs and exhibitions"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "No folklore EMF signature. Dashboard keeps baseline 0-5 mG. [invented]",
+        "temperature": "Dry, cool tomb air. Dashboard: a cool, dry-cored form; skin or wrappings read near ambient on thermal imaging. [invented]",
+        "audio": "Dry rustle of linen, slow dragging steps. [pop convention]",
+        "motion": "Slow, relentless advance toward the person who took the artifact; a strangling grip in the 1822 novel The Mummy. [fiction]",
+        "other": "Dust and spores; an air-quality sensor may flag fungal or particulate load (Aspergillus flavus was blamed for a 1973 Polish tomb case, though the evidence is contested). A strong resin or incense smell."
+      },
+      "behavior": "In fiction: a vengeful dead priest or pharaoh rising to punish tomb robbers, recover stolen goods or reclaim a bride. In ancient Egyptian belief, the ka needed offerings at the tomb and the ba returned to it at night; ancient inscriptions threatened offenders with legal or divine consequences, not undead vengeance.",
+      "escalation": "Misfortune spreads from the person who disturbed the tomb to others tied to the expedition; each death feeds the rumor. In the fiction, the mummy escalates from slow pursuit to strangulation and mass mayhem.",
+      "countermeasures": [
+        {
+          "name": "Return the artifacts, restore the tomb and respect the dead",
+          "arsenal_key": null,
+          "tradition": "Egyptian texts that appeal to visitors to leave tombs intact; 'A Ghost Story' where a dead man asks for a new tomb",
+          "notes": "The honest, most historical fix: restore the body and tomb."
+        },
+        {
+          "name": "Offerings and flowers to placate the dead (as the public sent for a museum mummy in 1912)",
+          "arsenal_key": null,
+          "tradition": "Popular curse folklore; Egyptian offering custom",
+          "notes": ""
+        },
+        {
+          "name": "Fire: burn the wrappings (mummies used as torches in 1820s fiction)",
+          "arsenal_key": "flare_line",
+          "tradition": "19th-century adventure fiction",
+          "notes": "Dry linen and resin burn readily; venue fire risk."
+        },
+        {
+          "name": "Concentrated heat to destroy a reanimated body",
+          "arsenal_key": "thermal_lances",
+          "tradition": "Fiction and film",
+          "notes": ""
+        },
+        {
+          "name": "Sterilize or ventilate the space and mask up against fungal spores",
+          "arsenal_key": "uv_floodlights",
+          "tradition": "Dashboard-invented, with real-world rationale (germicidal UV, ventilation) for the actual mold hazard behind some 'curse' cases",
+          "notes": "UV-C is harmful to people; keep the space empty during use."
+        },
+        {
+          "name": "Hold a slow-moving body behind barriers",
+          "arsenal_key": "barricade_foam",
+          "tradition": "Dashboard-invented, based on mummy fiction (slow, relentless)",
+          "notes": ""
+        }
+      ],
+      "false_positives": [
+        "Costumed partygoer wrapped in toilet paper or bandages",
+        "Museum exhibit, prop or mannequin; theatrical performer",
+        "Dust, allergens or mold in an old building causing coughing or illness (the real-life analogue of the curse)",
+        "Someone with an injury bandaged head-to-toe; fog machine",
+        "Coincidence: the Carnarvon death was blood poisoning and pneumonia, and most people at the tomb opening lived long lives"
+      ],
+      "sources": [
+        {
+          "title": "Curse of the Mummy (National Geographic)",
+          "url": "https://www.nationalgeographic.com/history/article/curse-of-the-mummy"
+        },
+        {
+          "title": "What is the ancient Egyptian 'mummy's curse'? (Live Science)",
+          "url": "https://www.livescience.com/ancient-egyptian-mummy-curse.html"
+        },
+        {
+          "title": "Ancient Egyptian tomb warnings, curses, and ghosts (National Museums Scotland)",
+          "url": "https://www.nms.ac.uk/discover-catalogue/ancient-egyptian-tomb-warnings-curses-and-ghosts"
+        },
+        {
+          "title": "'Curse of the mummy' unwrapped: It's an English invention (Globe and Mail)",
+          "url": "https://www.theglobeandmail.com/amp/technology/science/curse-of-the-mummy-unwrapped-its-an-english-invention/article22500568/"
+        }
+      ],
+      "index_text": "Mummy / Mummy's curse (pharaoh's curse, cursed mummy, bandaged revenant, tomb guardian). Playbook: corporeal. A reanimated, bandaged corpse and a curse on those who disturb a tomb. Despite the Egyptian setting, the mummy's curse is largely a 19th-century English and American invention that blew up after Tutankhamun's tomb opened in 1922; ancient tomb texts were legal-style warnings, not death curses. Signs: A bandaged or desiccated figure that moves, usually slowly, often toward whoever took an artifact; A misfortune or death cluster among people who opened a tomb or handled a relic; Dust, dry resin or linen smell, ancient seals or inscriptions near the event; In reality: respiratory illness and mold in old, sealed tombs and exhibitions. Sensors: emf_milligauss: No folklore EMF signature. Dashboard keeps baseline 0-5 mG. [invented] temperature: Dry, cool tomb air. Dashboard: a cool, dry-cored form; skin or wrappings read near ambient on thermal imaging. [invented] audio: Dry rustle of linen, slow dragging steps. [pop convention] motion: Slow, relentless advance toward the person who took the artifact; a strangling grip in the 1822 novel The Mummy. [fiction] other: Dust and spores; an air-quality sensor may flag fungal or particulate load (Aspergillus flavus was blamed for a 1973 Polish tomb case, though the evidence is contested). A strong resin or incense smell. Behavior: In fiction: a vengeful dead priest or pharaoh rising to punish tomb robbers, recover stolen goods or reclaim a bride. In ancient Egyptian belief, the ka needed offerings at the tomb and the ba returned to it at night; ancient inscriptions threatened offenders with legal or divine consequences, not undead vengeance. Escalation: Misfortune spreads from the person who disturbed the tomb to others tied to the expedition; each death feeds the rumor. In the fiction, the mummy escalates from slow pursuit to strangulation and mass mayhem. Countermeasures: Return the artifacts, restore the tomb and respect the dead; Offerings and flowers to placate the dead (as the public sent for a museum mummy in 1912); Fire: burn the wrappings (mummies used as torches in 1820s fiction) [flare_line]; Concentrated heat to destroy a reanimated body [thermal_lances]; Sterilize or ventilate the space and mask up against fungal spores [uv_floodlights]; Hold a slow-moving body behind barriers [barricade_foam]. Mundane look-alikes: Costumed partygoer wrapped in toilet paper or bandages; Museum exhibit, prop or mannequin; theatrical performer; Dust, allergens or mold in an old building causing coughing or illness (the real-life analogue of the curse); Someone with an injury bandaged head-to-toe; fog machine; Coincidence: the Carnarvon death was blood poisoning and pneumonia, and most people at the tomb opening lived long lives."
+    },
+    {
+      "id": "will_o_wisp",
+      "name": "Will-o'-the-wisp (ignis fatuus)",
+      "playbook": "anomalous",
+      "aliases": [
+        "ignis fatuus",
+        "jack-o'-lantern",
+        "friar's lantern",
+        "hinkypunk",
+        "corpse candle",
+        "irrlicht",
+        "feu follet"
+      ],
+      "summary": "A pale, flickering ghost light seen over bogs and marshes that lures travelers off the path. Folklore calls it ghosts, fairies or a doomed trickster; the best natural explanation is the oxidation of marsh gases such as phosphine and methane, plus fungi and cold flames.",
+      "signs": [
+        "Small, pale blue or white balls of light or flame hovering a few meters above bogs, marshes or graveyards",
+        "A light that dances, drifts, and retreats when approached and follows when you back away",
+        "A flame with no heat and no smoke",
+        "Travelers led off the path into water, mud or off a precipice"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "No folklore EMF signature. Dashboard keeps baseline 0-5 mG. [invented]",
+        "temperature": "Cold flame: little or no heat on thermal imaging, no smoke. [folklore and the cold-flame explanation]",
+        "audio": "Silent. [folklore]",
+        "motion": "Drifts and retreats when approached; follows when you retreat (air displacement by the observer). [folklore plus physical explanation]",
+        "other": "Pale blue or white flicker; possibly a gas or organic-decay smell. Light and gas sensors are the useful ones; a methane or phosphine reading would explain it."
+      },
+      "behavior": "A mischievous or malicious guide: it leads people astray rather than attacking. Traditional tales give it a human origin (Will or Jack, a wicked blacksmith or trickster who is doomed to wander with a coal), or make it a goblin, fairy or the soul of an unbaptized person.",
+      "escalation": "The danger is cumulative: the traveler follows it deeper into the marsh until lost or drowned. More lights suggest a bigger gas source, which in an indoor venue is a real ignition or explosion hazard.",
+      "countermeasures": [
+        {
+          "name": "Do not follow it; stand still so it drifts back and keep to the known path",
+          "arsenal_key": null,
+          "tradition": "Folk advice, and consistent with the air-displacement explanation",
+          "notes": "Most sensible rule."
+        },
+        {
+          "name": "Turn your coat or cap inside out",
+          "arsenal_key": null,
+          "tradition": "British and Channel Islands folklore",
+          "notes": "Said to stop the light in its tracks."
+        },
+        {
+          "name": "Stick a knife blade-up into the ground",
+          "arsenal_key": "iron_filings",
+          "tradition": "Folklore (the light is said to attack the blade); iron is the traditional anti-fairy metal",
+          "notes": ""
+        },
+        {
+          "name": "Burn off or vent the gas under controlled conditions",
+          "arsenal_key": "flare_line",
+          "tradition": "Dashboard-invented, based on the marsh-gas explanation (methane and phosphine ignite)",
+          "notes": "Real hazard: only with trained staff and gas readings. Not a folklore remedy."
+        },
+        {
+          "name": "Fence off or block the area",
+          "arsenal_key": "barricade_foam",
+          "tradition": "Dashboard-invented",
+          "notes": "Keeps people away from the bog or source."
+        }
+      ],
+      "false_positives": [
+        "Fireflies, foxfire (bioluminescent fungi on rotting wood)",
+        "Reflections of moon or lights on water or mist; LED indicators, exit signs, router lights or phone screens in a dark room",
+        "Drones with lights; laser pointers; projector artifacts",
+        "Marsh-gas flame, ball lightning or other real atmospheric lights (the natural explanation, not a hoax)",
+        "Smart bulbs flickering from a power fault"
+      ],
+      "sources": [
+        {
+          "title": "Will-o'-the-wisp (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Will-o'-the-wisp"
+        },
+        {
+          "title": "Will-o'-the-Wisp: Monstrous Flame or Scientific Phenomenon? (PBS Monstrum)",
+          "url": "https://www.pbs.org/video/will-o-the-wisp-monstrous-flame-or-scientific-phenomenon-dsugln/"
+        },
+        {
+          "title": "Will-o'-the-Wisp? Science of Swamp Gas and Ignis Fatuus",
+          "url": "https://www.gsnsp.com/will-o-the-wisp-science-swamp-gas-ignis-fatuus/"
+        },
+        {
+          "title": "Natural Wonders: Will-o'-the-Wisp (Explorersweb)",
+          "url": "https://explorersweb.com/natural-wonders-will-o-the-wisp/"
+        }
+      ],
+      "index_text": "Will-o'-the-wisp (ignis fatuus) (ignis fatuus, jack-o'-lantern, friar's lantern, hinkypunk, corpse candle, irrlicht, feu follet). Playbook: anomalous. A pale, flickering ghost light seen over bogs and marshes that lures travelers off the path. Folklore calls it ghosts, fairies or a doomed trickster; the best natural explanation is the oxidation of marsh gases such as phosphine and methane, plus fungi and cold flames. Signs: Small, pale blue or white balls of light or flame hovering a few meters above bogs, marshes or graveyards; A light that dances, drifts, and retreats when approached and follows when you back away; A flame with no heat and no smoke; Travelers led off the path into water, mud or off a precipice. Sensors: emf_milligauss: No folklore EMF signature. Dashboard keeps baseline 0-5 mG. [invented] temperature: Cold flame: little or no heat on thermal imaging, no smoke. [folklore and the cold-flame explanation] audio: Silent. [folklore] motion: Drifts and retreats when approached; follows when you retreat (air displacement by the observer). [folklore plus physical explanation] other: Pale blue or white flicker; possibly a gas or organic-decay smell. Light and gas sensors are the useful ones; a methane or phosphine reading would explain it. Behavior: A mischievous or malicious guide: it leads people astray rather than attacking. Traditional tales give it a human origin (Will or Jack, a wicked blacksmith or trickster who is doomed to wander with a coal), or make it a goblin, fairy or the soul of an unbaptized person. Escalation: The danger is cumulative: the traveler follows it deeper into the marsh until lost or drowned. More lights suggest a bigger gas source, which in an indoor venue is a real ignition or explosion hazard. Countermeasures: Do not follow it; stand still so it drifts back and keep to the known path; Turn your coat or cap inside out; Stick a knife blade-up into the ground [iron_filings]; Burn off or vent the gas under controlled conditions [flare_line]; Fence off or block the area [barricade_foam]. Mundane look-alikes: Fireflies, foxfire (bioluminescent fungi on rotting wood); Reflections of moon or lights on water or mist; LED indicators, exit signs, router lights or phone screens in a dark room; Drones with lights; laser pointers; projector artifacts; Marsh-gas flame, ball lightning or other real atmospheric lights (the natural explanation, not a hoax); Smart bulbs flickering from a power fault."
+    },
+    {
+      "id": "gremlin",
+      "name": "Gremlin",
+      "playbook": "anomalous",
+      "aliases": [
+        "air imp",
+        "widget (Dahl)",
+        "machine sprite",
+        "tech sabotage goblin"
+      ],
+      "summary": "A mischievous creature blamed for inexplicable machine failures. It originated in 1920s RAF slang, spread in World War II, and was also a morale-saving way for crews to blame something other than each other. It fits a tech venue well.",
+      "signs": [
+        "Machines fail without a traceable cause: wires cut or chewed, bolts loose, instruments misaligned, fuel contaminated",
+        "Failures cluster around complex electronics or engines, then clear up when someone looks closely",
+        "A small fast shape seen on a wing, fuselage or inside equipment (Twilight Zone style sightings)",
+        "Fixed problems return; failures cascade across systems"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "No traditional EMF figure. Dashboard-invented: intermittent 3-30 mG glitches and mains noise near the affected machines, with brownouts or device resets; baseline 0-5 mG otherwise. Gremlins are attracted to electronics.",
+        "temperature": "None in folklore. Dashboard: warm spots in overloaded gear. [invented]",
+        "audio": "Tiny scratching or gnawing inside casings, faint giggling in fiction. [pop and invented]",
+        "motion": "Small, fast, shadowy movement near machinery; not captured on camera. [folklore]",
+        "other": "Power flicker, battery drain, random resets, error-rate spikes; the signature is a time cluster of device faults, not a physical trace."
+      },
+      "behavior": "A prankster rather than a killer: pixies of the air that sabotage out of mischief and take no side in the war. They have been described as thriving on complex technology, and enemy aircraft had the same failures, which is partly why the legend was a joke and a coping mechanism.",
+      "escalation": "A minor glitch cascades into several systems failing or a grounded aircraft. In the 1984 film, gremlins multiply when wet and turn savage when fed after midnight; that escalation is pop fiction.",
+      "countermeasures": [
+        {
+          "name": "Routine maintenance and pre-flight checks, including posters and pamphlets that blamed gremlins for sloppy maintenance",
+          "arsenal_key": null,
+          "tradition": "RAF and US wartime safety culture",
+          "notes": "The honest cure for most gremlins: good maintenance and procedure."
+        },
+        {
+          "name": "Isolate the machine and cut power to the affected unit or rack",
+          "arsenal_key": "power_cut",
+          "tradition": "Dashboard-invented",
+          "notes": "Stops cascading failures; restore one subsystem at a time."
+        },
+        {
+          "name": "Shield sensitive electronics from interference",
+          "arsenal_key": "faraday_mesh",
+          "tradition": "Dashboard-invented, based on the real idea of EMI shielding",
+          "notes": "Genuine engineering fix for interference-driven glitches."
+        },
+        {
+          "name": "EMF disruption near the affected hardware",
+          "arsenal_key": "emf_disruptor",
+          "tradition": "Dashboard-invented, extrapolated from 'attracted to electronics'",
+          "notes": "May worsen real EMI; use carefully."
+        },
+        {
+          "name": "Expose it: bright light or finding the creature stops it",
+          "arsenal_key": "uv_floodlights",
+          "tradition": "Some tales and the 1984 film (sunlight kills the creatures)",
+          "notes": "Pop convention; keep UV off people."
+        },
+        {
+          "name": "Appease with small offerings of food or trinkets",
+          "arsenal_key": null,
+          "tradition": "Pilot superstition",
+          "notes": "More superstition than folklore."
+        }
+      ],
+      "false_positives": [
+        "Real hardware or software faults, loose cables, failing batteries, overheating",
+        "Overloaded power strips, USB hubs or Wi-Fi congestion in a hackathon venue",
+        "Cold batteries draining quickly, venue brownouts or HVAC cycling",
+        "Rodents chewing wires, dust, spilled drinks",
+        "Tired people blaming the demo; confirmation bias and buck-passing (the original gremlin job)"
+      ],
+      "sources": [
+        {
+          "title": "Gremlin (Myth and Folklore Wiki)",
+          "url": "https://mythus.fandom.com/wiki/Gremlin"
+        },
+        {
+          "title": "Gremlins, American Myths, Legends, and Tall Tales (Encyclopedia of American Folklore)",
+          "url": "https://erenow.org/common/american-myths-legends-tall-tales-3-volumes-encyclopedia-american-folklore/195.php"
+        },
+        {
+          "title": "Gremlins attack plane in new film: how Roald Dahl popularized them (Kelly Kazek)",
+          "url": "https://kellykazek.com/2021/02/12/gremlins-attack-plane-in-new-film-heres-how-roald-dahl-popularized-the-crafty-critters/"
+        },
+        {
+          "title": "Gremlin: The Hidden Saboteur of Aircraft and Technology (Mythlok)",
+          "url": "https://mythlok.com/urban-legends/gremlin/"
+        }
+      ],
+      "index_text": "Gremlin (air imp, widget (Dahl), machine sprite, tech sabotage goblin). Playbook: anomalous. A mischievous creature blamed for inexplicable machine failures. It originated in 1920s RAF slang, spread in World War II, and was also a morale-saving way for crews to blame something other than each other. It fits a tech venue well. Signs: Machines fail without a traceable cause: wires cut or chewed, bolts loose, instruments misaligned, fuel contaminated; Failures cluster around complex electronics or engines, then clear up when someone looks closely; A small fast shape seen on a wing, fuselage or inside equipment (Twilight Zone style sightings); Fixed problems return; failures cascade across systems. Sensors: emf_milligauss: No traditional EMF figure. Dashboard-invented: intermittent 3-30 mG glitches and mains noise near the affected machines, with brownouts or device resets; baseline 0-5 mG otherwise. Gremlins are attracted to electronics. temperature: None in folklore. Dashboard: warm spots in overloaded gear. [invented] audio: Tiny scratching or gnawing inside casings, faint giggling in fiction. [pop and invented] motion: Small, fast, shadowy movement near machinery; not captured on camera. [folklore] other: Power flicker, battery drain, random resets, error-rate spikes; the signature is a time cluster of device faults, not a physical trace. Behavior: A prankster rather than a killer: pixies of the air that sabotage out of mischief and take no side in the war. They have been described as thriving on complex technology, and enemy aircraft had the same failures, which is partly why the legend was a joke and a coping mechanism. Escalation: A minor glitch cascades into several systems failing or a grounded aircraft. In the 1984 film, gremlins multiply when wet and turn savage when fed after midnight; that escalation is pop fiction. Countermeasures: Routine maintenance and pre-flight checks, including posters and pamphlets that blamed gremlins for sloppy maintenance; Isolate the machine and cut power to the affected unit or rack [power_cut]; Shield sensitive electronics from interference [faraday_mesh]; EMF disruption near the affected hardware [emf_disruptor]; Expose it: bright light or finding the creature stops it [uv_floodlights]; Appease with small offerings of food or trinkets. Mundane look-alikes: Real hardware or software faults, loose cables, failing batteries, overheating; Overloaded power strips, USB hubs or Wi-Fi congestion in a hackathon venue; Cold batteries draining quickly, venue brownouts or HVAC cycling; Rodents chewing wires, dust, spilled drinks; Tired people blaming the demo; confirmation bias and buck-passing (the original gremlin job)."
+    },
+    {
+      "id": "wendigo",
+      "name": "Wendigo (Wiindigoo)",
+      "playbook": "corporeal",
+      "aliases": [
+        "windigo",
+        "wiindigoo",
+        "witiko",
+        "wihtikow",
+        "weetigo"
+      ],
+      "summary": "A spirit of famine, cold and cannibalism from Algonquian peoples (Ojibwe, Cree, Innu, Naskapi and others), which warns against greed and isolation. It is a living cultural tradition treated with respect; the antlered, deer-skulled monster of modern horror is a later invention.",
+      "signs": [
+        "Gaunt, ash-gray, emaciated humanoid, sunken eyes, bloody lips and a stench of decay; sometimes giant, with a heart of ice",
+        "Bitter wind, creaking trees and sudden extreme cold when it is near; winter, famine and isolation",
+        "People who are alone, desperate or starving; hunger that cannot be satisfied",
+        "Someone who has resorted to cannibalism becoming a wendigo in some traditions",
+        "Voice mimicry is a modern embellishment"
+      ],
+      "sensor_signatures": {
+        "emf_milligauss": "No folklore EMF signature. Dashboard keeps baseline 0-5 mG. [invented]",
+        "temperature": "Localized severe cold and frost; its breath freezes the air. Dashboard-suggested: a sharp local drop of about 10-20 C with frost on surfaces. [folklore for the cold; magnitude invented]",
+        "audio": "Howling wind, creaking trees, a drawn-out moan; mimicked voices in modern tellings. [folklore and modern]",
+        "motion": "Tall, fast, tireless tracker that hunts lone travelers. [folklore]",
+        "other": "Smell of decay and a feeling of insatiable hunger or dread; a person who becomes isolated, hungry and withdrawn is the human version."
+      },
+      "behavior": "Predator and warning: it hunts those who travel alone or break the ethic of sharing. In some traditions a person who eats human flesh becomes one; in others it is an external spirit that can possess people. The tradition enforces the absolute taboo against cannibalism.",
+      "escalation": "Hunger grows with feeding; it grows larger the more it eats. Possession progresses from hunger and withdrawal to violence and loss of humanity, which in the stories ends in the transformed person being killed for the community's safety. A spring thaw ends its season.",
+      "countermeasures": [
+        {
+          "name": "Stay together, share food, keep social bonds; do not travel alone",
+          "arsenal_key": null,
+          "tradition": "Algonquian teaching: the wendigo hunts the isolated and the selfish",
+          "notes": "The real, central protection; build it into the dashboard as a buddy-system rule."
+        },
+        {
+          "name": "Fire: melt the ice heart and burn the body",
+          "arsenal_key": "thermal_lances",
+          "tradition": "Traditional accounts and modern retellings (fire is the main weakness of the ice heart)",
+          "notes": "Concentrated heat is the dashboard's closest match."
+        },
+        {
+          "name": "Contained fire line to keep it away and warm people",
+          "arsenal_key": "flare_line",
+          "tradition": "Same fire tradition",
+          "notes": "Venue fire safety applies."
+        },
+        {
+          "name": "Cleansing rituals and help from medicine people; avoid speaking its name lightly in winter",
+          "arsenal_key": "sage_smoke",
+          "tradition": "Algonquian ritual practice; smoke cleansing is a loose mapping and should be treated respectfully",
+          "notes": "Smudging belongs to specific living traditions; the dashboard use is a loose stand-in."
+        },
+        {
+          "name": "Silver weapons before burning",
+          "arsenal_key": "silver_netting",
+          "tradition": "Some modern retellings only; not in traditional accounts",
+          "notes": "Low confidence."
+        }
+      ],
+      "false_positives": [
+        "A real cold snap, failed heating or open freezer; a dry-ice fog machine producing cold mist",
+        "A hungry, hypothermic or exhausted person wandering alone (the human analogue)",
+        "Costume with an antler skull mask, or a performer",
+        "Wind howling in ducts or trees creaking in a storm",
+        "Hallucination or hysteria from sleep deprivation and isolation"
+      ],
+      "sources": [
+        {
+          "title": "What is a Wendigo? Guide to the Algonquian Winter Spirit (Mythology Blog)",
+          "url": "https://www.mythologyblog.com/native-american/what-is-a-wendigo/"
+        },
+        {
+          "title": "Wiindigoo: The Algonquian Spirit of Endless Hunger (OldFolklore)",
+          "url": "https://oldfolklore.com/mythical-creatures/american-mythical-creatures/wiindigoo-anishinaabe-the-wendigo-algonquian-spirit-of-hunger/"
+        }
+      ],
+      "index_text": "Wendigo (Wiindigoo) (windigo, wiindigoo, witiko, wihtikow, weetigo). Playbook: corporeal. A spirit of famine, cold and cannibalism from Algonquian peoples (Ojibwe, Cree, Innu, Naskapi and others), which warns against greed and isolation. It is a living cultural tradition treated with respect; the antlered, deer-skulled monster of modern horror is a later invention. Signs: Gaunt, ash-gray, emaciated humanoid, sunken eyes, bloody lips and a stench of decay; sometimes giant, with a heart of ice; Bitter wind, creaking trees and sudden extreme cold when it is near; winter, famine and isolation; People who are alone, desperate or starving; hunger that cannot be satisfied; Someone who has resorted to cannibalism becoming a wendigo in some traditions; Voice mimicry is a modern embellishment. Sensors: emf_milligauss: No folklore EMF signature. Dashboard keeps baseline 0-5 mG. [invented] temperature: Localized severe cold and frost; its breath freezes the air. Dashboard-suggested: a sharp local drop of about 10-20 C with frost on surfaces. [folklore for the cold; magnitude invented] audio: Howling wind, creaking trees, a drawn-out moan; mimicked voices in modern tellings. [folklore and modern] motion: Tall, fast, tireless tracker that hunts lone travelers. [folklore] other: Smell of decay and a feeling of insatiable hunger or dread; a person who becomes isolated, hungry and withdrawn is the human version. Behavior: Predator and warning: it hunts those who travel alone or break the ethic of sharing. In some traditions a person who eats human flesh becomes one; in others it is an external spirit that can possess people. The tradition enforces the absolute taboo against cannibalism. Escalation: Hunger grows with feeding; it grows larger the more it eats. Possession progresses from hunger and withdrawal to violence and loss of humanity, which in the stories ends in the transformed person being killed for the community's safety. A spring thaw ends its season. Countermeasures: Stay together, share food, keep social bonds; do not travel alone; Fire: melt the ice heart and burn the body [thermal_lances]; Contained fire line to keep it away and warm people [flare_line]; Cleansing rituals and help from medicine people; avoid speaking its name lightly in winter [sage_smoke]; Silver weapons before burning [silver_netting]. Mundane look-alikes: A real cold snap, failed heating or open freezer; a dry-ice fog machine producing cold mist; A hungry, hypothermic or exhausted person wandering alone (the human analogue); Costume with an antler skull mask, or a performer; Wind howling in ducts or trees creaking in a storm; Hallucination or hysteria from sleep deprivation and isolation."
+    }
+  ]
+}
