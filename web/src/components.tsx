@@ -109,15 +109,20 @@ export function IncidentHead({ incident, ctx, action, directive }: { incident: I
     );
 }
 
-/** One component as a terminal window. `span` and `tall` come from layout.ts, never from the model. */
+/** One component as a terminal window. `span` and `tall` come from layout.ts, within the bounds it sets for the model's size. */
 export function Card({ index, component, ctx, span, tall }: { index: number; component: Component; ctx: Ctx; span: number; tall: boolean }) {
+    // The model's title for this incident, else the panel's own name; the area map is always "Around the tower".
+    const title = component.type === 'FloorPlan' && mapView(component.props, ctx) === 'area' ? 'Around the tower' : component.props?.title || TITLES[component.type];
     const extra =
         component.type === 'ThreatBanner' ? `threat sev-${component.props?.severity}` : component.type === 'FloorPlan' ? 'floor' : component.type === 'EMFGauge' ? 'gauge' : '';
     return (
         <article className={`card ${extra}`} style={{ gridColumn: `span ${span}`, gridRow: tall ? 'span 2' : undefined }}>
             {/* The incident headline is the panel's own title, so its frame header is for screen readers only. */}
             <header title={component.why} className={component.type === 'ThreatBanner' ? 'sr-only' : undefined}>
-                <h3>{component.type === 'FloorPlan' && mapView(component.props, ctx) === 'area' ? 'Around the tower' : TITLES[component.type]}</h3>
+                <h3>
+                    {title !== TITLES[component.type] && <span className="sr-only">{`${TITLES[component.type]}: `}</span>}
+                    {title}
+                </h3>
                 <span className="order" title={component.type}>
                     #{index + 1}
                 </span>

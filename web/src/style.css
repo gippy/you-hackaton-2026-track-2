@@ -257,6 +257,13 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .floor .route-start { fill: var(--hi); }
 .floor .route.blocked { stroke: var(--red); }
 .floor .route-exit { fill: var(--bg); stroke: var(--hi); stroke-width: 0.8; }
+.floor .marker-label { fill: var(--text); font: 3.4px var(--display); text-transform: uppercase; paint-order: stroke; stroke: var(--bg); stroke-width: 0.9px; pointer-events: none; }
+.glyph { stroke: var(--bg); stroke-width: 0.4; }
+.glyph.threat { fill: var(--red); }
+.glyph.people { fill: var(--text); }
+.glyph.countermeasure { fill: var(--hi); }
+.glyph.hazard { fill: var(--spook); }
+.legend-glyph { width: 10px; height: 10px; margin-right: 4px; vertical-align: -1px; overflow: visible; }
 .seal-label { margin-top: 10px; }
 .seal-list { flex-wrap: wrap; margin-top: 4px; }
 .seal-list button { font-size: 14px; padding: 3px 8px; }

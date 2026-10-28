@@ -1,9 +1,9 @@
 // The FloorPlan component's two views: the Loft's floor (a schematic from data/map/floor.json) and the
 // blocks around the tower (OpenStreetMap, data/map/area.geojson). The model's manifest places every
-// marker: the hot sector or outdoor spot, the sealed sectors and the route out.
+// marker: the hot sector or outdoor spot, the sealed sectors, the route out and short notes on the floor.
 import { useEffect, useMemo, useState } from 'react';
 
-import type { Component, Floor } from '../../shared/protocol.ts';
+import type { Component, Floor, Marker } from '../../shared/protocol.ts';
 import type { Ctx } from './components.tsx';
 import { routeThrough, type ThroughRoute } from './route.ts';
 import { artUrl, withToken } from './url.ts';
@@ -63,10 +63,112 @@ function walk(floor: Floor, aliases: Record<string, string>, route: string[], se
     }
 }
 
+// --- the model's notes on the floor -----------------------------------------------------------
+
+type Box = [number, number, number, number]; // x0, y0, x1, y1
+interface Placed {
+    marker: Marker;
+    at: Point; // the glyph's centre
+    side: 1 | -1; // the label runs to the glyph's right (1) or left (-1)
+}
+
+const MARK_SIZE = 3.4; // the label's height, the same as the zone labels
+const CHAR_W = 0.42; // VT323's advance in ems, with a little room
+const GLYPH = 1.4; // half the glyph's width
+const KIND_NAME: Record<Marker['kind'], string> = { threat: 'threat', people: 'people', countermeasure: 'countermeasure', hazard: 'hazard' };
+
+const overlap = (a: Box, b: Box) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
+const around = ([x, y]: Point, r: number): Box => [x - r, y - r, x + r, y + r];
+
+function textBox([x, y]: Point, text: string, size: number, anchor: 'start' | 'middle' | 'end'): Box {
+    const w = text.length * CHAR_W * size;
+    const x0 = anchor === 'start' ? x : anchor === 'middle' ? x - w / 2 : x - w;
+    return [x0, y - 0.8 * size, x0 + w, y + 0.2 * size];
+}
+
+function inside([x, y]: Point, poly: Point[]): boolean {
+    let hit = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const [xi, yi] = poly[i];
+        const [xj, yj] = poly[j];
+        if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) hit = !hit;
+    }
+    return hit;
+}
+
+/** Points every unit along the route, so a marker can keep off the line between its corners. */
+function along(path: Point[]): Point[] {
+    return path.flatMap((q, i) => {
+        if (i === 0) return [q];
+        const p = path[i - 1];
+        const n = Math.max(1, Math.ceil(Math.hypot(q[0] - p[0], q[1] - p[1])));
+        return Array.from({ length: n }, (_, k): Point => [p[0] + ((q[0] - p[0]) * (k + 1)) / n, p[1] + ((q[1] - p[1]) * (k + 1)) / n]);
+    });
+}
+
+/**
+ * A spot for each marker:
+ * - the glyph sits inside the marker's sector, with the label to its right or left, all on the floor
+ * - the spot overlaps the zone and block labels, the route, the exits and earlier markers the least
+ * - among equal spots, the one nearest the sector's label wins
+ */
+function placeMarkers(floor: Floor, markers: Marker[], idOf: (slug: string) => string, path: Point[]): Placed[] {
+    const { width, height } = floor.space;
+    const taken: Box[] = [
+        ...floor.zones.map((z) => textBox(z.label_at, z.label, 3.4, 'middle')),
+        ...floor.blocks.map((b) => textBox(b.label_at, b.aws_name, 2.4, b.label_anchor)),
+        ...along(path).map((q) => around(q, 1)),
+        ...(path.length ? [around(path[0], 2.8), around(path[path.length - 1], 2.8)] : []),
+        ...floor.features.filter((f) => f.exit).map((f) => around(f.at, 1.8)),
+    ];
+    const placed: Placed[] = [];
+    for (const marker of markers) {
+        const zone = floor.zones.find((z) => idOf(z.slug) === marker.sector);
+        if (!zone) continue;
+        const w = 2 * GLYPH + 0.8 + marker.label.length * CHAR_W * MARK_SIZE;
+        const xs = zone.polygon.map((q) => q[0]);
+        const ys = zone.polygon.map((q) => q[1]);
+        let best: { score: number; at: Point; side: 1 | -1; box: Box } | null = null;
+        for (let x = Math.min(...xs) + GLYPH; x <= Math.max(...xs) - GLYPH; x += 1) {
+            for (let y = Math.min(...ys) + GLYPH; y <= Math.max(...ys) - GLYPH; y += 1) {
+                if (!inside([x, y], zone.polygon)) continue;
+                for (const side of [1, -1] as const) {
+                    const [x0, x1] = side === 1 ? [x - GLYPH, x - GLYPH + w] : [x + GLYPH - w, x + GLYPH];
+                    const box: Box = [x0 - 0.3, y - MARK_SIZE / 2 - 0.3, x1 + 0.3, y + MARK_SIZE / 2 + 0.3];
+                    if (box[0] < 0 || box[1] < 0 || box[2] > width || box[3] > height) continue;
+                    const hit = taken.reduce((sum, b) => sum + overlap(box, b), 0);
+                    const score = hit * 100 + Math.hypot(x - zone.label_at[0], y - zone.label_at[1]);
+                    if (!best || score < best.score) best = { score, at: [x, y], side, box };
+                }
+            }
+        }
+        if (best) {
+            taken.push(best.box);
+            placed.push({ marker, at: best.at, side: best.side });
+        }
+    }
+    return placed;
+}
+
+/** The marker's shape: a diamond for a threat, a circle for people, a square for a countermeasure, a triangle for a hazard. */
+function Glyph({ kind, at: [x, y] }: { kind: Marker['kind']; at: Point }) {
+    const r = GLYPH;
+    if (kind === 'people') return <circle cx={x} cy={y} r={r} className={`glyph ${kind}`} />;
+    if (kind === 'countermeasure') return <rect x={x - r * 0.85} y={y - r * 0.85} width={r * 1.7} height={r * 1.7} className={`glyph ${kind}`} />;
+    const d = kind === 'threat' ? `M${x},${y - r}L${x + r},${y}L${x},${y + r}L${x - r},${y}Z` : `M${x},${y - r}L${x + r},${y + r * 0.8}L${x - r},${y + r * 0.8}Z`;
+    return <path d={d} className={`glyph ${kind}`} />;
+}
+
 function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
     const floor = ctx.library && ctx.floor;
     const sealed = ctx.operator.sealed;
     const route = useMemo(() => (floor ? walk(floor, ctx.library.sector_aliases, p.safe_route, sealed) : null), [floor, ctx.library, p.safe_route, sealed]);
+    const marks = useMemo(() => {
+        // A streaming manifest can hold a marker that is still being written.
+        const markers = (p.markers ?? []).filter((m) => m?.sector && m.label && m.kind in KIND_NAME);
+        const aliases = ctx.library?.sector_aliases ?? {};
+        return floor ? placeMarkers(floor, markers, (slug) => aliases[slug] ?? slug, route?.points ?? []) : [];
+    }, [floor, ctx.library, p.markers, route]);
     if (!floor) return <p className="muted">No floor plan available.</p>;
     const { sectors, sector_aliases } = ctx.library;
     // floor.json names sectors with the official slugs; the station's id for catering_coffee_bar is catering.
@@ -145,6 +247,15 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                         <title>{`Exit: ${exit.label}`}</title>
                     </rect>
                 )}
+                {/* The legend lists the markers for screen readers. */}
+                {marks.map(({ marker, at, side }, i) => (
+                    <g key={i} className="marker" aria-hidden="true">
+                        <Glyph kind={marker.kind} at={at} />
+                        <text x={at[0] + side * (GLYPH + 0.8)} y={at[1] + MARK_SIZE * 0.3} textAnchor={side === 1 ? 'start' : 'end'} className="marker-label">
+                            {marker.label}
+                        </text>
+                    </g>
+                ))}
             </svg>
             <div className="legend">
                 <span>
@@ -166,6 +277,14 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                           : `safe route: ${[...route.zones.map(name), ...(exit ? [exit.label] : [])].join(' → ')}`}
                     {route?.skipped.length ? ` (round sealed ${names(route.skipped)})` : ''}
                 </span>
+                {marks.map(({ marker }, i) => (
+                    <span key={i}>
+                        <svg viewBox={`${-GLYPH} ${-GLYPH} ${2 * GLYPH} ${2 * GLYPH}`} className="legend-glyph" aria-hidden="true">
+                            <Glyph kind={marker.kind} at={[0, 0]} />
+                        </svg>
+                        {`${KIND_NAME[marker.kind]} in ${name(marker.sector)}: ${marker.label}`}
+                    </span>
+                ))}
                 <span title={floor.notice}>Schematic, not to scale</span>
             </div>
             <div className="muted small seal-label">Seal sectors (or click one on the plan)</div>
