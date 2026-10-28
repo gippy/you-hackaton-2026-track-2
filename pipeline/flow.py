@@ -110,6 +110,10 @@ COMPOSE_SYSTEM = (
     + library.art_listing()
     + "\nA FloorPlan's safe_route starts where the people are and ends at entrance; list a sector in between only "
     "when the route must pass it. The page draws the walkable path.\n"
+    + "FloorPlan markers pin up to 4 facts from the report on the floor, each in its sector and at most 5 words: "
+    "where the creatures are (threat), where people are or who is hurt (people), a countermeasure in place (countermeasure), "
+    "or a danger to people such as smoke or a blocked stair (hazard). Never the route, which the page draws, "
+    "and never a fact the report does not give.\n"
     + "Outdoor spots around the tower. Only when the report puts the incident outside the building (a sidewalk, "
     "the plaza, the street), set FloorPlan view to area, anchor to the spot and hot_sector to entrance. "
     "Anything inside the Loft, including the main stage, uses view floor and anchor none:\n"

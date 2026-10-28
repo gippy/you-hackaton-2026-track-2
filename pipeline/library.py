@@ -48,6 +48,8 @@ CUES: list[str] = [k for k, v in SOUNDS.items() if v["kind"] in ("cue", "sting")
 ENTITY_CLASSES: dict[str, list[str]] = _LIB["entity_classes"]  # playbook -> words that name its creatures
 EMF_NORMAL_MG: float = _LIB["emf_normal_mg"]  # at or below this, an EMF reading is ordinary background
 SKY_EVENTS = ["sunset", "civil_dusk", "full_dark", "moonrise"]  # what a SkyClock can focus on
+MARKER_KINDS = ["threat", "people", "countermeasure", "hazard"]  # what a note on the floor plan is about
+MAX_MARKERS = 4
 # Minutes to the next sky event beyond which an unhurt crowd is watched, not contained yet.
 QUIET_LEAD_MIN = 100
 
@@ -163,7 +165,12 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
             "view": {**_enum(["floor", "area"]), "description": "area only when the incident is outside the building; floor for anything inside the Loft"},
             "anchor": {**_enum([*anchors(), "none"]), "description": "The outdoor spot of an incident outside the Loft, else none"},
             **({"scene": {**_enum([*SCENE_IMAGES, "none"]), "description": "A sector image to show beside the plan, or none"}}
-               if SCENE_IMAGES else {})}),
+               if SCENE_IMAGES else {}),
+            "markers": {"type": "array", "maxItems": MAX_MARKERS,
+                        "description": "Short notes pinned on the floor view, in their sectors, e.g. '2 vampires, row 16' or 'foam line here'",
+                        "items": _obj({"sector": _enum(SECTORS),
+                                       "label": {"type": "string", "description": "A fact from the report, at most 5 words"},
+                                       "kind": _enum(MARKER_KINDS)})}}),
         _component("CivilianTracker", {"count": {"type": "integer"}, "location": {"type": "string"},
                                        "condition": _enum(["pinned", "trapped", "injured", "evacuating", "safe", "unknown"]),
                                        "priority": _enum(["immediate", "high", "routine"])}),
@@ -317,7 +324,7 @@ def _clean_picker(props: dict, arsenal: list[str], source_count: int) -> None:
 
 
 def _clean_floor_plan(props: dict, notes: list[str]) -> None:
-    """Known sectors only, a safe route that ends at a way out, and a known scene, anchor and view."""
+    """Known sectors only, a safe route that ends at a way out, a known scene, anchor and view, and short markers."""
     props["seal"] = list(dict.fromkeys(sector_id(s) for s in props.get("seal") or [] if sector_id(s) in SECTORS))
     route = list(dict.fromkeys(sector_id(s) for s in props.get("safe_route") or [] if sector_id(s) in SECTORS))
     if not route and sector_id(props.get("hot_sector")) in SECTORS:
@@ -335,3 +342,21 @@ def _clean_floor_plan(props: dict, notes: list[str]) -> None:
         props["anchor"] = "none"
     if props.get("view") not in ("floor", "area"):
         props["view"] = "area" if props["anchor"] != "none" else "floor"
+    markers = []
+    for m in props.get("markers") or []:
+        label = _short(m.get("label"), 5, 28)
+        if sector_id(m.get("sector") or "") in SECTORS and m.get("kind") in MARKER_KINDS and label:
+            markers.append({"sector": sector_id(m["sector"]), "label": label, "kind": m["kind"]})
+    if len(markers) < len(props.get("markers") or []):
+        notes.append("dropped floor plan markers with an unknown sector or kind, or no label")
+    props["markers"] = markers[:MAX_MARKERS]
+
+
+def _short(text: str | None, words: int, chars: int) -> str:
+    """The first `words` words of `text` that fit in `chars` characters."""
+    out = ""
+    for word in str(text or "").split()[:words]:
+        if len(out) + len(word) + bool(out) > chars:
+            break
+        out = f"{out} {word}" if out else word
+    return out
