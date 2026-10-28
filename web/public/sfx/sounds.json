@@ -1,0 +1,67 @@
+{
+  "squelch": {
+    "prompt": "Short burst of walkie-talkie radio squelch, a crisp static click",
+    "duration": 0.6
+  },
+  "alert_chime": {
+    "prompt": "Two-tone electronic alert chime from a control room console, clean and urgent",
+    "duration": 1.2
+  },
+  "all_clear": {
+    "prompt": "Soft, gentle descending two-note chime signaling all clear, calm and reassuring",
+    "duration": 1.2
+  },
+  "ambient_drone": {
+    "prompt": "Low, dark ambient drone with a faint electrical hum, eerie haunted control room atmosphere",
+    "duration": 6,
+    "loop": true
+  },
+  "sting_ghost": {
+    "prompt": "Distant ship's bell tolling in thick fog with a faint ghostly whisper",
+    "duration": 2
+  },
+  "sting_poltergeist": {
+    "prompt": "Sudden clatter of objects thrown across a room followed by a creaking door",
+    "duration": 2
+  },
+  "sting_residual_haunting": {
+    "prompt": "Faint echo of footsteps on old wooden floorboards and a muffled distant piano note",
+    "duration": 2
+  },
+  "sting_zombie": {
+    "prompt": "Low guttural zombie groan with shuffling feet",
+    "duration": 2
+  },
+  "sting_vampire": {
+    "prompt": "Bat wings fluttering and a low sinister hiss",
+    "duration": 2
+  },
+  "sting_werewolf": {
+    "prompt": "Long wolf howl under a full moon, distant and echoing",
+    "duration": 2
+  },
+  "sting_banshee": {
+    "prompt": "Piercing mournful banshee wail fading into the wind",
+    "duration": 2
+  },
+  "sting_witch_hex": {
+    "prompt": "Bubbling cauldron with a raspy witch cackle",
+    "duration": 2
+  },
+  "sting_mummy": {
+    "prompt": "Sand pouring and a slow stone sarcophagus lid grinding open",
+    "duration": 2
+  },
+  "sting_will_o_wisp": {
+    "prompt": "Ethereal glassy shimmer with soft twinkling tones over night marsh insects",
+    "duration": 2
+  },
+  "sting_gremlin": {
+    "prompt": "Electrical sparks crackling with mischievous high-pitched chittering",
+    "duration": 2
+  },
+  "sting_wendigo": {
+    "prompt": "Bone-chilling winter wind with clattering antlers and a deep hollow growl",
+    "duration": 2
+  }
+}

@@ -12,7 +12,8 @@ import type { WebSocket, WebSocketServer } from 'ws';
 
 import library from '../shared/library.json' with { type: 'json' };
 import type { ClientMessage, FixtureIncident, FlowEvent, Library, RunState, ServerMessage } from '../shared/protocol.ts';
-import { alertText, channelId, OneError, send } from './dispatch.ts';
+import { alertText, channelId, send } from './dispatch.ts';
+import { OneError } from './one.ts';
 
 const REPLAY_GAP_MS = 350; // longest pause between replayed messages
 

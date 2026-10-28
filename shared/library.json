@@ -143,5 +143,116 @@
     "moderate",
     "weak",
     "unproven"
-  ]
+  ],
+  "sounds": {
+    "squelch": {
+      "kind": "ui",
+      "label": "Radio squelch",
+      "prompt": "Short burst of walkie-talkie radio squelch, a crisp static click",
+      "duration": 0.6
+    },
+    "alert_chime": {
+      "kind": "cue",
+      "label": "Alert chime: a real incident, the station is ready",
+      "prompt": "Two-tone electronic alert chime from a control room console, clean and urgent",
+      "duration": 1.2
+    },
+    "all_clear": {
+      "kind": "cue",
+      "label": "All clear: a harmless report, nothing to contain",
+      "prompt": "Soft, gentle descending two-note chime signaling all clear, calm and reassuring",
+      "duration": 1.2
+    },
+    "ambient_drone": {
+      "kind": "ambient",
+      "label": "Ambient drone loop",
+      "prompt": "Low, dark ambient drone with a faint electrical hum, eerie haunted control room atmosphere",
+      "duration": 6,
+      "loop": true
+    },
+    "sting_ghost": {
+      "kind": "sting",
+      "entity": "ghost",
+      "label": "Ghost or phantom: a ship's bell in fog",
+      "prompt": "Distant ship's bell tolling in thick fog with a faint ghostly whisper",
+      "duration": 2
+    },
+    "sting_poltergeist": {
+      "kind": "sting",
+      "entity": "poltergeist",
+      "label": "Poltergeist: objects thrown, a door creaks",
+      "prompt": "Sudden clatter of objects thrown across a room followed by a creaking door",
+      "duration": 2
+    },
+    "sting_residual_haunting": {
+      "kind": "sting",
+      "entity": "residual_haunting",
+      "label": "Residual haunting: echoing footsteps",
+      "prompt": "Faint echo of footsteps on old wooden floorboards and a muffled distant piano note",
+      "duration": 2
+    },
+    "sting_zombie": {
+      "kind": "sting",
+      "entity": "zombie",
+      "label": "Zombie: a groan and shuffling feet",
+      "prompt": "Low guttural zombie groan with shuffling feet",
+      "duration": 2
+    },
+    "sting_vampire": {
+      "kind": "sting",
+      "entity": "vampire",
+      "label": "Vampire: bat wings and a hiss",
+      "prompt": "Bat wings fluttering and a low sinister hiss",
+      "duration": 2
+    },
+    "sting_werewolf": {
+      "kind": "sting",
+      "entity": "werewolf",
+      "label": "Werewolf: a distant howl",
+      "prompt": "Long wolf howl under a full moon, distant and echoing",
+      "duration": 2
+    },
+    "sting_banshee": {
+      "kind": "sting",
+      "entity": "banshee",
+      "label": "Banshee: a mournful wail",
+      "prompt": "Piercing mournful banshee wail fading into the wind",
+      "duration": 2
+    },
+    "sting_witch_hex": {
+      "kind": "sting",
+      "entity": "witch_hex",
+      "label": "Witch or hex: a bubbling cauldron",
+      "prompt": "Bubbling cauldron with a raspy witch cackle",
+      "duration": 2
+    },
+    "sting_mummy": {
+      "kind": "sting",
+      "entity": "mummy",
+      "label": "Mummy: a sarcophagus lid grinds open",
+      "prompt": "Sand pouring and a slow stone sarcophagus lid grinding open",
+      "duration": 2
+    },
+    "sting_will_o_wisp": {
+      "kind": "sting",
+      "entity": "will_o_wisp",
+      "label": "Will-o'-the-wisp: a glassy shimmer over a marsh",
+      "prompt": "Ethereal glassy shimmer with soft twinkling tones over night marsh insects",
+      "duration": 2
+    },
+    "sting_gremlin": {
+      "kind": "sting",
+      "entity": "gremlin",
+      "label": "Gremlin: sparks and chittering",
+      "prompt": "Electrical sparks crackling with mischievous high-pitched chittering",
+      "duration": 2
+    },
+    "sting_wendigo": {
+      "kind": "sting",
+      "entity": "wendigo",
+      "label": "Wendigo: winter wind and a hollow growl",
+      "prompt": "Bone-chilling winter wind with clattering antlers and a deep hollow growl",
+      "duration": 2
+    }
+  }
 }
