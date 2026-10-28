@@ -327,7 +327,7 @@ def summarize(rows: list[dict], keys: dict[str, dict]) -> dict:
     sets = [tuple(s["panel_set"]) for s in done]
     exp_sets = {tuple(sorted(keys[r["incident_id"]]["panels_expected"])) for r in rows}
     pairs = [jaccard_distance(set(a), set(b)) for i, a in enumerate(sets) for b in sets[i + 1:]]
-    common = max(set(sets), key=sets.count) if sets else ()
+    common = Counter(sets).most_common(1)[0][0] if sets else ()  # a tie goes to the layout seen first
     m: dict = {
         "steps": len(rows), "failed": sum(s["failed"] for s in sc),
         "harmless_n": len(harmless),
