@@ -4,15 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Haunted Command Station</title>
-  <script>
-    // Light or dark before the first paint: the saved choice, else the system setting.
-    (function () {
-      var mode = null;
-      try { mode = localStorage.getItem('hcs-mode'); } catch (e) {}
-      if (mode !== 'light' && mode !== 'dark') mode = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      document.documentElement.dataset.mode = mode;
-    })();
-  </script>
 </head>
 <body data-theme="crypt-dark">
   <div id="root"></div>

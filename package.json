@@ -21,6 +21,8 @@
         "check": "pnpm run type-check && pnpm run build"
     },
     "dependencies": {
+        "@fontsource/ibm-plex-mono": "^5.3.0",
+        "@fontsource/vt323": "^5.3.0",
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
         "suncalc": "^1.9.0",

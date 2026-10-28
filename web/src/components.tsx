@@ -111,7 +111,11 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
             const asset = ctx.art[c.props.image];
             return (
                 <figure className="entity">
-                    {asset && <img src={artUrl(asset.file)} alt={asset.alt} loading="lazy" />}
+                    {asset && (
+                        <span className="crt-img">
+                            <img src={artUrl(asset.file)} alt={asset.alt} loading="lazy" />
+                        </span>
+                    )}
                     <figcaption>
                         <span className={`pill verdict-${c.props.verdict}`}>{c.props.verdict}</span> {c.props.caption}
                     </figcaption>
@@ -143,7 +147,7 @@ function Gauge(p: Props<'EMFGauge'>) {
     const arc = (a: number, b: number, color: string) => {
         const [x1, y1] = pt(a);
         const [x2, y2] = pt(b);
-        return <path d={`M${x1} ${y1} A80 80 0 0 1 ${x2} ${y2}`} stroke={color} strokeWidth={14} fill="none" />;
+        return <path d={`M${x1} ${y1} A80 80 0 0 1 ${x2} ${y2}`} style={{ stroke: color }} strokeWidth={14} fill="none" />;
     };
     const th = Math.min(p.threshold_mg / max, 1);
     const v = Math.min(p.value_mg / max, 1);
@@ -152,9 +156,9 @@ function Gauge(p: Props<'EMFGauge'>) {
     return (
         <div className={`status-${p.status}`}>
             <svg viewBox="0 0 200 112" role="img" aria-label={`EMF ${p.value_mg} milligauss, danger above ${p.threshold_mg}`}>
-                {arc(0, th * 0.5, '#4ade80')}
-                {arc(th * 0.5, th, '#ffb547')}
-                {arc(th, 1, '#ff4d6d')}
+                {arc(0, th * 0.5, 'var(--dim)')}
+                {arc(th * 0.5, th, 'var(--amber)')}
+                {arc(th, 1, 'var(--red)')}
                 <text x={tx} y={ty} textAnchor="middle" fontSize={9} fill="currentColor">
                     {p.threshold_mg}
                 </text>
@@ -307,8 +311,8 @@ function Moon({ illumination, phase }: { illumination: number; phase: string }) 
     const terminator = gibbous === waning ? 0 : 1;
     return (
         <svg viewBox="0 0 40 40" className="moon" role="img" aria-label={`${phase}, ${illumination}% lit`}>
-            <circle cx={20} cy={20} r={r} fill="var(--panel-2)" stroke="var(--line)" />
-            <path d={`M20 2 A${r} ${r} 0 0 ${edge} 20 38 A${rx} ${r} 0 0 ${terminator} 20 2`} fill="#f5e9c8" />
+            <circle cx={20} cy={20} r={r} className="moon-dark" />
+            <path d={`M20 2 A${r} ${r} 0 0 ${edge} 20 38 A${rx} ${r} 0 0 ${terminator} 20 2`} className="moon-lit" />
         </svg>
     );
 }
@@ -327,7 +331,7 @@ function SkyClock({ p, ctx }: { p: Props<'SkyClock'>; ctx: Ctx }) {
     const cited = p.cited.map((n) => ctx.sources.find((s) => s.n === n)).filter((s): s is Source => Boolean(s));
     const hero = ctx.art.hero_moonrise;
     return (
-        <div className="sky" style={hero ? { backgroundImage: `linear-gradient(90deg, var(--panel) 35%, transparent), url(${artUrl(hero.file)})` } : undefined}>
+        <div className="sky crt-bg" style={hero ? { backgroundImage: `linear-gradient(90deg, var(--panel) 40%, transparent), url(${artUrl(hero.file)})` } : undefined}>
             <div className="sky-head">
                 <span className="warning">{p.warning}</span>
                 <span className="seg" role="group" aria-label="Count down from">

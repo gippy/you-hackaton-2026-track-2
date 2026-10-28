@@ -16,29 +16,6 @@ const STEPS: { id: StepId; label: string; partner: string }[] = [
 /** A timeline label: the report without its leading "ALERT 18:15" or "GUEST REPORT 11:20," prefix. */
 const stepLabel = (raw: string) => raw.replace(/^[A-Z ]+\d{1,2}:\d{2},?\s*/, '').slice(0, 60);
 
-/** Light or dark: starts from the system setting (applied in index.html before paint), a click remembers the other. */
-function ModeToggle() {
-    const [mode, setMode] = useState(document.documentElement.dataset.mode === 'light' ? 'light' : 'dark');
-    const next = mode === 'light' ? 'dark' : 'light';
-    return (
-        <button
-            type="button"
-            className="ghost"
-            onClick={() => {
-                document.documentElement.dataset.mode = next;
-                try {
-                    localStorage.setItem('hcs-mode', next);
-                } catch {
-                    /* private window: the choice lasts until reload */
-                }
-                setMode(next);
-            }}
-        >
-            {next === 'light' ? 'Light mode' : 'Dark mode'}
-        </button>
-    );
-}
-
 export function App() {
     const [state, send] = useReducer(reduce, initial);
     const ws = useRef<WebSocket | null>(null);
@@ -148,7 +125,6 @@ export function App() {
                             setVolume(Number(e.target.value));
                         }}
                     />
-                    <ModeToggle />
                 </div>
                 <form className="dispatch" aria-label="Dispatch a containment alert" onSubmit={dispatch}>
                     <label>
@@ -341,7 +317,7 @@ export function App() {
                         {ctx && state.components.length ? (
                             state.components.map((c, i) => c && <Card key={`${i}-${c.type}`} index={i} component={c} ctx={ctx} />)
                         ) : (
-                            <div className="empty hero" style={state.art.hero_station_night ? { backgroundImage: `url(${artUrl(state.art.hero_station_night.file)})` } : undefined}>
+                            <div className="empty hero crt-bg" style={state.art.hero_station_night ? { backgroundImage: `url(${artUrl(state.art.hero_station_night.file)})` } : undefined}>
                                 {!incident ? 'Reading the incident…' : !state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…'}
                             </div>
                         )}

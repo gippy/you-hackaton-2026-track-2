@@ -21,10 +21,10 @@ const ROOT = resolve(import.meta.dirname, '..');
 const MFLUX = 'mflux-generate-z-image-turbo';
 const MODEL = 'mflux-community/z-image-turbo-mflux-q4';
 const STEPS = '9';
-// The station page's palette and mood, so art from separate runs still belongs together.
+// The station page's palette and mood (black and amber CRT), so art from separate runs still belongs together.
 const STYLE =
-    'near-black purple background, violet glow with small amber and red accents, ' +
-    'retro-futurist paranormal control room mood, cinematic digital illustration';
+    'pure black background, glowing amber and orange phosphor tones like an old CRT terminal, faint horizontal scanlines, ' +
+    'high contrast, one small blood-red accent, retro-futurist paranormal control room mood, cinematic digital illustration';
 
 const { values: args, positionals } = parseArgs({
     allowPositionals: true,

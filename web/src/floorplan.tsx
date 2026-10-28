@@ -28,7 +28,9 @@ export function FloorPlan({ p, ctx }: { p: Props; ctx: Ctx }) {
             {view === 'floor' ? <FloorView p={p} ctx={ctx} /> : <AreaView anchor={p.anchor && p.anchor !== 'none' ? p.anchor : null} />}
             {scene && (
                 <figure className="scene">
-                    <img src={artUrl(scene.file)} alt={scene.alt} loading="lazy" />
+                    <span className="crt-img">
+                        <img src={artUrl(scene.file)} alt={scene.alt} loading="lazy" />
+                    </span>
                     <figcaption className="muted small">{scene.alt}</figcaption>
                 </figure>
             )}
@@ -89,12 +91,12 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
             <svg viewBox={`-2 -2 ${width + 4} ${height + 4}`} role="img" aria-label={`Floor schematic, hot sector ${sectors[p.hot_sector] ?? p.hot_sector}`} className="floor-svg">
                 <defs>
                     <pattern id="hatch" width={2} height={2} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                        <rect width={2} height={2} fill="var(--panel-2)" />
-                        <line x1={0} y1={0} x2={0} y2={2} stroke="#ffb547" strokeWidth={0.8} />
+                        <rect width={2} height={2} style={{ fill: 'var(--bg)' }} />
+                        <line x1={0} y1={0} x2={0} y2={2} style={{ stroke: 'var(--amber)' }} strokeWidth={0.6} />
                     </pattern>
                     <pattern id="hatch-hot" width={2} height={2} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                        <rect width={2} height={2} fill="#5a1622" />
-                        <line x1={0} y1={0} x2={0} y2={2} stroke="#ff4d6d" strokeWidth={0.8} />
+                        <rect width={2} height={2} style={{ fill: 'var(--red-deep)' }} />
+                        <line x1={0} y1={0} x2={0} y2={2} style={{ stroke: 'var(--red)' }} strokeWidth={0.6} />
                     </pattern>
                 </defs>
                 <polygon points={points(floor.outline)} className="outline" />
@@ -148,19 +150,19 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                     ),
                 )}
                 {route.length > 1 && <polyline className="route" points={points(route)} />}
-                {route.length > 0 && <circle cx={route[0][0]} cy={route[0][1]} r={1.8} fill="#4ade80" />}
+                {route.length > 0 && <circle cx={route[0][0]} cy={route[0][1]} r={1.8} className="route-start" />}
             </svg>
             <div className="legend">
                 <span>
-                    <i style={{ background: '#ff4d6d' }} />
+                    <i className="sw-hot" />
                     hot sector
                 </span>
                 <span>
-                    <i style={{ background: '#ffb547' }} />
+                    <i className="sw-sealed" />
                     sealed (click a sector to change)
                 </span>
                 <span>
-                    <i style={{ background: '#4ade80' }} />
+                    <i className="sw-route" />
                     {p.safe_route.length ? `safe route: ${p.safe_route.map((id) => sectors[id] ?? id).join(' → ')}` : 'no safe route given'}
                 </span>
                 <span title={floor.notice}>Schematic, not to scale</span>
@@ -244,7 +246,7 @@ function AreaView({ anchor }: { anchor: string | null }) {
             </svg>
             <div className="legend">
                 <span>
-                    <i style={{ background: '#ff4d6d' }} />
+                    <i className="sw-hot" />
                     {anchor ? `incident: ${pin?.properties.label ?? anchor}` : 'the incident is inside the Loft'}
                 </span>
                 <span>
