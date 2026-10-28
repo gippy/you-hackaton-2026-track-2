@@ -1,7 +1,7 @@
-# Files apify push leaves out of the upload. None of them is read by the image (see .dockerignore),
-# and without them a clean clone fits the platform's source-files limit (sourceFilesTooLarge otherwise).
+# Files apify push leaves out of the upload. None of them is read by the image (see .dockerignore).
+# docs/ stays in: it keeps the upload above the CLI's 3 MB cut-off, so the CLI sends one archive. Below
+# it the CLI sends inline files, and with the art's base64 overhead the API refuses them (sourceFilesTooLarge).
 proof
-docs
 scripts
 eval
 scenarios

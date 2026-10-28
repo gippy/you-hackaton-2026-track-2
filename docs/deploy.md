@@ -74,7 +74,7 @@ apify secrets add oneSecret "$ONE_SECRET"
 git ls-files --cached --others --exclude-standard | grep -E '(^|/)\.env|\.onerc|\.venv/|\.pem$|\.key$' || echo "no secrets in the upload"
 ```
 
-`.env` and `.onerc` are in `.gitignore`, so they stay home. `.actorignore` keeps `proof/`, `docs/`, `scripts/` and the local-only folders out of the upload; the image reads none of them. It also keeps a clean clone under the size where the CLI sends inline source files, which the API otherwise refuses with `sourceFilesTooLarge`.
+`.env` and `.onerc` are in `.gitignore`, so they stay home. `.actorignore` keeps `proof/`, `scripts/`, `eval/` and the local-only folders out of the upload; the image reads none of them. `docs/` stays in on purpose: it keeps the upload above the CLI's 3 MB cut-off, so the CLI sends one archive. Below the cut-off the CLI sends inline source files, and with the art's base64 overhead the API refuses them with `sourceFilesTooLarge`.
 
 ### 3. Push
 
