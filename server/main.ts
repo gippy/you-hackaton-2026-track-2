@@ -15,6 +15,7 @@ import { parseArgs } from 'node:util';
 import { WebSocketServer } from 'ws';
 
 import type { FixtureIncident } from '../shared/protocol.ts';
+import { SPEECH_FILE } from './speech.ts';
 import { Station } from './station.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -27,6 +28,7 @@ const TYPES: Record<string, string> = {
     '.css': 'text/css',
     '.svg': 'image/svg+xml',
     '.json': 'application/json',
+    '.mp3': 'audio/mpeg',
 };
 
 const { values: args } = parseArgs({
@@ -89,6 +91,12 @@ const server = createServer((req, res) => {
     if (path === '/manifest.json') {
         res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
         res.end(JSON.stringify(station.run?.state ?? {}, null, 2));
+        return;
+    }
+    const speech = path.match(/^\/speech\/([^/]+)$/)?.[1];
+    if (speech && SPEECH_FILE.test(speech) && existsSync(join(ROOT, 'out', 'speech', speech))) {
+        res.writeHead(200, { 'content-type': 'audio/mpeg', 'cache-control': 'max-age=31536000, immutable' });
+        res.end(readFileSync(join(ROOT, 'out', 'speech', speech)));
         return;
     }
     const file = normalize(join(DIST, path === '/' ? 'index.html' : path));

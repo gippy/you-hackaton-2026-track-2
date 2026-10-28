@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useReducer, useRef, useState } from 'react';
 
 import type { Action, ClientMessage, ServerMessage, StepId } from '../../shared/protocol.ts';
 import { Card, domain, Link, type Ctx } from './components.tsx';
+import { SoundBoard } from './audio.ts';
 import { initial, reduce } from './station.ts';
 
 const STEPS: { id: StepId; label: string; partner: string }[] = [
@@ -37,6 +38,13 @@ function ModeToggle() {
 export function App() {
     const [state, send] = useReducer(reduce, initial);
     const ws = useRef<WebSocket | null>(null);
+    const sound = useRef(new SoundBoard());
+    const [soundOn, setSoundOn] = useState(false);
+    const [volume, setVolume] = useState(sound.current.volume);
+    const enableSound = (on: boolean) => {
+        sound.current.setEnabled(on);
+        setSoundOn(on);
+    };
     const [raw, setRaw] = useState('');
     const [live, setLive] = useState(false);
 
@@ -46,7 +54,11 @@ export function App() {
         const connect = () => {
             const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
             socket.onopen = () => send({ type: 'connected', value: true });
-            socket.onmessage = (ev) => send({ type: 'server', msg: JSON.parse(ev.data) as ServerMessage });
+            socket.onmessage = (ev) => {
+                const msg = JSON.parse(ev.data) as ServerMessage;
+                sound.current.onMessage(msg);
+                send({ type: 'server', msg });
+            };
             socket.onclose = () => {
                 send({ type: 'connected', value: false });
                 if (!closed) timer = window.setTimeout(connect, 1500);
@@ -82,6 +94,7 @@ export function App() {
     const dispatch = (e: FormEvent) => {
         e.preventDefault();
         if (armed && !confirm('Post this containment alert to the real #loft-incident channel?')) return;
+        if (!soundOn) enableSound(true); // the click is the interaction browsers wait for before playing audio
         send({ type: 'dispatching' });
         post({ type: 'dispatch', action: operator.action, countermeasure: operator.countermeasure, sealed: operator.sealed, extracted: operator.extracted.length, live: armed });
     };
@@ -103,6 +116,22 @@ export function App() {
                 <div className="status">
                     {incident && <span className={`pill sev-${incident.incident.severity}`}>{incident.incident.severity}</span>}
                     <span className={`pill ${state.source === 'snapshot' || state.mode === 'offline' ? 'snapshot' : state.connected ? 'live' : 'muted'}`}>{sourceLabel}</span>
+                    <button type="button" className="ghost" aria-pressed={soundOn} onClick={() => enableSound(!soundOn)}>
+                        {soundOn ? 'Mute' : 'Enable sound'}
+                    </button>
+                    <input
+                        type="range"
+                        className="volume"
+                        aria-label="Volume"
+                        min={0}
+                        max={1}
+                        step={0.05}
+                        value={volume}
+                        onChange={(e) => {
+                            sound.current.setVolume(Number(e.target.value));
+                            setVolume(Number(e.target.value));
+                        }}
+                    />
                     <ModeToggle />
                 </div>
                 <form className="dispatch" aria-label="Dispatch a containment alert" onSubmit={dispatch}>

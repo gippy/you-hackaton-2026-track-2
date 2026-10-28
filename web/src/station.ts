@@ -119,6 +119,8 @@ function server(state: State, msg: ServerMessage): State {
             return { ...state, dispatch: msg, dispatching: false };
         case 'error':
             return { ...state, banner: { text: msg.detail, kind: 'error' }, dispatching: false };
+        case 'speech':
+            return state; // played by the SoundBoard, not part of what the page shows
     }
 }
 

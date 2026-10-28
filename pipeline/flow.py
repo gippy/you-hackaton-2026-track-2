@@ -81,8 +81,13 @@ COMPOSE_SYSTEM = (
     "set `source` to the source number that supports each one and `support` to how strongly it does. "
     "Keep every rationale, directive and headline short: under 20 words. Pick the theme that fits the entity. "
     "recommended_action is contain, evacuate or observe. "
+    "sound_cue is the sound the station opens with; pick the sting of the entity's closest match, or all_clear "
+    "for a harmless report:\n"
+    + "\n".join(f"- {k}: {library.SOUNDS[k]['label']}" for k in library.CUES)
+    + "\n"
     "When the readings are normal and the report has an ordinary explanation (a fog machine, a costume, a prank), "
-    "keep the station calm: a low-severity ThreatBanner that says why it is safe, recommended_action observe, "
+    "keep the station calm: sound_cue all_clear, a low-severity ThreatBanner that says why it is safe, "
+    "recommended_action observe, "
     "3 components in all, and no CountermeasurePicker. " + UNTRUSTED
 )
 
@@ -286,6 +291,9 @@ class HauntFlow(Flow[HauntState]):
             if not frame.get("theme") and (theme := string_field(text, "theme")) is not None:
                 frame["theme"] = theme
                 self._emit({"type": "frame", **frame})
+            if not frame.get("sound_cue") and (cue := string_field(text, "sound_cue")) in library.CUES:
+                frame["sound_cue"] = cue
+                self._emit({"type": "frame", "sound_cue": cue})
             for comp in parser.feed(text):
                 cleaned, _ = library.clean_manifest({"components": sent + [comp]}, book["arsenal"], len(self.state.sources))
                 if len(cleaned["components"]) > len(sent):

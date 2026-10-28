@@ -61,6 +61,8 @@ export type ComponentType = Component['type'];
 export interface Manifest {
     title: string;
     theme: Theme;
+    /** A key of `sounds` in shared/library.json whose kind is cue or sting. Older saved runs have none. */
+    sound_cue?: string;
     components: Component[];
     recommended_action: Action;
     dispatch_rationale: string;
@@ -107,7 +109,7 @@ export type FlowEvent =
     | { type: 'route'; label: string; playbook: string; arsenal: { id: string; name: string }[] }
     | { type: 'search'; query: string; hits: { n: number; title: string; url: string }[] }
     | { type: 'sources'; sources: Source[]; research: string }
-    | { type: 'frame'; title?: string; theme?: Theme }
+    | { type: 'frame'; title?: string; theme?: Theme; sound_cue?: string }
     | { type: 'component'; index: number; component: Component };
 
 export type DispatchMode = 'dry-run' | 'live' | 'offline';
@@ -118,6 +120,7 @@ export type ServerMessage =
     | { type: 'run_begin'; incident_id: string; source: 'live' | 'snapshot'; detail?: string }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
     | { type: 'dispatch'; mode: DispatchMode; text: string; request?: unknown; response?: unknown; error?: string }
+    | { type: 'speech'; url: string }
     | { type: 'error'; detail: string };
 
 export type ClientMessage =

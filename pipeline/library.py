@@ -22,6 +22,8 @@ ACTIONS: list[str] = _LIB["actions"]
 SEVERITIES: list[str] = _LIB["severities"]
 THEMES: list[str] = _LIB["themes"]
 SUPPORT: list[str] = _LIB["support"]                    # how well the sources back a countermeasure
+SOUNDS: dict[str, dict] = _LIB["sounds"]                # generated once by `pnpm sfx`, played by the page
+CUES: list[str] = [k for k, v in SOUNDS.items() if v["kind"] in ("cue", "sting")]  # the sounds a manifest may open with
 
 
 def adjacency() -> dict[str, list[str]]:
@@ -85,6 +87,7 @@ def manifest_schema(arsenal: list[str], source_count: int) -> dict:
     return _obj({
         "title": {"type": "string", "description": "Station title for this incident, under 8 words"},
         "theme": _enum(THEMES),
+        "sound_cue": {**_enum(CUES), "description": "The sound the station opens with"},
         "components": {"type": "array", "items": {"anyOf": variants}, "minItems": 3, "maxItems": 8},
         "recommended_action": _enum(ACTIONS),
         "dispatch_rationale": {"type": "string", "description": "One line for the containment alert, under 20 words"},
@@ -134,6 +137,7 @@ def clean_manifest(raw: dict, arsenal: list[str], source_count: int) -> tuple[di
     out = {
         "title": raw.get("title") or "Haunted command station",
         "theme": raw.get("theme") if raw.get("theme") in THEMES else THEMES[0],
+        "sound_cue": raw.get("sound_cue") if raw.get("sound_cue") in CUES else "alert_chime",
         "components": components,
         "recommended_action": raw.get("recommended_action") if raw.get("recommended_action") in ACTIONS else "contain",
         "dispatch_rationale": raw.get("dispatch_rationale") or "",

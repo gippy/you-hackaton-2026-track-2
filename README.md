@@ -23,7 +23,7 @@ Different incidents get different stations. Besides the official fixture, `fixtu
 | CrewAI | Runs the pipeline as a Flow: `@start` intake, `@router` on incident class, one listener per playbook, an `or_` join into grounding, then composition. The Lore Researcher is a CrewAI `Agent` with a `BaseTool` for You.com. | `pipeline/flow.py` |
 | You.com | Search API (`POST https://ydc-index.io/v1/search`) grounds the countermeasures. Each hit becomes a numbered source that the manifest cites and the page links. | `pipeline/grounding.py` |
 | Parasail | Reasons in every step: incident extraction, the Lore Researcher agent, and the streamed manifest. Both direct calls use a strict `json_schema`. `parasail-deepseek-v41-flash` is the fallback model. | `pipeline/flow.py`, `pipeline/parasail.py` |
-| One | Sends the containment alert to Discord `#loft-incident`. The action id is found at run time by method and path, and the connection key comes from `one list`. | `server/dispatch.ts` |
+| One | Sends the containment alert to Discord `#loft-incident`, and reaches ElevenLabs for the spoken dispatch and the sound effects. Action ids are found at run time by method and path, and connection keys come from `one list`. | `server/one.ts`, `server/dispatch.ts`, `server/speech.ts` |
 
 ## How it is built
 
@@ -64,7 +64,8 @@ Put the keys in `.env` (it is gitignored):
 | `YDC_API_KEY` (or `YOU_API_KEY`) | You.com Search |
 | `ONE_SECRET` | The One CLI, for the dispatch |
 | `DISCORD_CHANNEL_ID` | Optional. Defaults to the venue's `#loft-incident` (`1564842098740695100`) |
-| `ONE_DISCORD_CONNECTION_KEY` | Optional. Only needed with more than one Discord connection in One |
+| `ONE_DISCORD_CONNECTION_KEY`, `ONE_ELEVENLABS_CONNECTION_KEY` | Optional. Only needed with more than one connection for that platform in One |
+| `ELEVENLABS_VOICE_ID` | Optional. The dispatcher's voice, default "Daniel, Steady Broadcaster" (`onwK4e9ZLuTAKqWW03F9`) |
 | `HAUNT_MODEL`, `HAUNT_FALLBACK_MODEL` | Optional. Default `parasail-minimax-m31-flash` and `parasail-deepseek-v41-flash` |
 
 For the dispatch, install the One CLI and connect Discord with the account that joined the venue server:
@@ -117,6 +118,22 @@ Every line comes from the current incident and the operator's choices. The page 
 
 The Discord action's URL template names the channel `channelId` and its validator checks `channel_id`, so the request sends both.
 
+## Sound
+
+The station has sound, made with ElevenLabs through One. Browsers block audio until you interact with the page, so it starts muted. "Enable sound" in the header turns it on, a dispatch click does too, and a slider sets the volume.
+
+- **Sound effects.** A radio squelch, an alert chime, an all-clear chime, a low ambient drone and one short sting per entity in the lore catalog, such as a banshee's wail or a wolf howl. They are generated once and committed in `web/public/sfx/` (about 324 KB), so they play offline too.
+- **The model picks the cue.** The manifest has a `sound_cue` field, an enum of the cue and sting ids, the same way it picks components. The station opens with that sound. The phantom gets a ship's bell in fog, the zombie crowd gets a groan, and a harmless report gets the all-clear chime.
+- **Spoken dispatch.** Every dispatch, dry runs included, is read aloud after a squelch. The voice starts with "Simulated dispatch, this is a drill." The server generates it in the background with One's ElevenLabs text-to-speech action and caches it in `out/speech/` under a hash of the text, so a repeated dispatch costs nothing. Generated speech is never committed. Offline, the speech is skipped and the effects still play.
+
+The prompts live in `shared/library.json` under `sounds`. `pnpm sfx` generates the sounds that are missing or whose prompt changed, and `web/public/sfx/sounds.json` records what each file was made from:
+
+```bash
+pnpm sfx                  # generate what is missing or changed
+pnpm sfx --list           # show what would be generated
+pnpm sfx --force zombie   # generate the sounds whose id contains "zombie" again
+```
+
 ## Art
 
 The art is made on a Mac with Apple Silicon. Parasail turns a short brief into image prompts in the station's palette, and [Z-Image Turbo](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo) renders each prompt locally through [mflux](https://github.com/mflux-community/mflux). Install mflux once. The first render downloads the 4-bit model, about 6 GB:
@@ -140,9 +157,9 @@ Images land in `art/`. `art/prompts.jsonl` keeps each image's prompt and seed, s
 ```text
 pipeline/        Python: the CrewAI Flow, the You.com tool, Parasail calls, the NDJSON worker
 server/          TypeScript: HTTP and WebSocket server, runs and replays, One dispatch
-web/             Vite + React page
+web/             Vite + React page; web/public/sfx holds the committed sound effects
 shared/          library.json and protocol.ts, read by all three
-scripts/         art.ts: Parasail writes image prompts, Z-Image Turbo renders them locally
+scripts/         art.ts renders images locally; sfx.ts generates the sound effects with ElevenLabs through One
 fixtures/        the published Track 2 incident, plus three simulated ones
 snapshots/       a saved run, for offline mode on a fresh clone
 ```

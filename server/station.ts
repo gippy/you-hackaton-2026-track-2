@@ -14,6 +14,7 @@ import library from '../shared/library.json' with { type: 'json' };
 import type { ClientMessage, FixtureIncident, FlowEvent, Library, RunState, ServerMessage } from '../shared/protocol.ts';
 import { alertText, channelId, send } from './dispatch.ts';
 import { OneError } from './one.ts';
+import { speak } from './speech.ts';
 
 const REPLAY_GAP_MS = 350; // longest pause between replayed messages
 
@@ -227,6 +228,8 @@ export class Station {
             sealed: Array.isArray(msg.sealed) ? msg.sealed.map(String) : [],
             extracted: Number(msg.extracted) || 0,
         });
+        // Offline, the page plays its committed effects and skips the speech quietly.
+        if (mode !== 'offline') void this.speakDispatch(text);
         let result: ServerMessage;
         try {
             result = { type: 'dispatch', text, ...(await send(text, mode)) };
@@ -236,5 +239,15 @@ export class Station {
         }
         console.log(`\nDispatch (${result.mode}) to #loft-incident:\n${JSON.stringify(result, null, 2)}\n`);
         this.broadcastOnly(result);
+    }
+
+    /** Voice the alert in the background; the page plays it when it is ready. A failure is only logged. */
+    private async speakDispatch(text: string): Promise<void> {
+        try {
+            const file = await speak(text, join(this.outDir, 'speech'));
+            this.broadcastOnly({ type: 'speech', url: `speech/${file}` });
+        } catch (err) {
+            console.warn(`Spoken dispatch skipped: ${(err as Error).message}`);
+        }
     }
 }
