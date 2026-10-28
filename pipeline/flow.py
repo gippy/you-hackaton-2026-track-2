@@ -1,12 +1,16 @@
-"""The ingestion Flow: raw incident text in, a schema-locked UI manifest out.
+"""The ingestion Flow: raw incident text in, a schema-locked station manifest out.
 
-    ingest    Parasail extracts a structured incident (strict json_schema)
-    triage    router on the incident class: spectral, corporeal or anomalous
+The steps run in this order, and the HauntFlow class lists them in the same order:
+
+    ingest       Parasail extracts a structured incident (strict json_schema)
+    triage       router on the incident class: spectral, corporeal or anomalous
     *_playbook   one listener per class loads that class's arsenal and lore focus
-    ground    a CrewAI Lore Researcher searches You.com and writes cited notes
-    compose   Parasail streams the manifest (strict json_schema); each component
-              is sent to the page the moment its JSON object closes
+    ground       a CrewAI Lore Researcher searches You.com and writes cited notes
+    compose      Parasail streams the manifest (strict json_schema); each component
+                 is sent to the page the moment its JSON object closes
 
+The prompts and schemas come first, then `chat_json` (the one Parasail call both
+model steps use), the flow, and the streaming parser `compose` uses.
 Every step reports through `emit`, which the server forwards over the WebSocket.
 """
 import json
@@ -91,6 +95,12 @@ EXTRACT_SYSTEM = (
     "unclear otherwise. " + UNTRUSTED
 )
 
+# Report facts that rule out a harmless verdict, whatever ordinary explanation the report gives: (field, note).
+NOT_HARMLESS = [
+    ("deliberate_act", "someone acted deliberately, so the harmless verdict became unclear"),
+    ("creature_countered", "something is held back or repelled by a countermeasure, so the harmless verdict became unclear"),
+]
+
 COMPOSE_SYSTEM = (
     "You design the live command station a containment commander operates during a paranormal incident. "
     "Compose it from this fixed component library, choosing only the components this incident needs, "
@@ -137,13 +147,16 @@ CALLS = {"incident": ("pipeline", "extract the structured incident"), "manifest"
 
 def chat_json(schema: dict, name: str, system: str, user: str, on_text: Callable[[str], None] | None = None,
               temperature: float = 0.3) -> tuple[dict, str]:
-    """One strict-json_schema completion on Parasail, streamed. Falls back to the second model once."""
+    """One strict-json_schema completion on Parasail, streamed. Falls back to the second model once.
+
+    `on_text` gets the whole reply so far after every streamed piece. Each attempt is one line in the proof ledger.
+    """
     errors = []
     source, purpose = CALLS.get(name, ("pipeline", name))
     for model in (MODEL, FALLBACK_MODEL):
         request = {"temperature": temperature, "stream": True, "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
                    "response_format": {"type": "json_schema", "json_schema": {"name": name, "strict": True, "schema": schema}}}
-        t0, text, finish, usage = time.monotonic(), "", None, None
+        t0, text, finish, usage, error = time.monotonic(), "", None, None, None
         try:
             stream = parasail.client().chat.completions.create(model=model, stream_options={"include_usage": True}, **request)
             for chunk in stream:
@@ -158,17 +171,246 @@ def chat_json(schema: dict, name: str, system: str, user: str, on_text: Callable
                     if on_text:
                         on_text(text)
             parsed = parasail.parse_json(text)
-            proof.record("parasail", {"source": source, "purpose": purpose, "model": model, "request": request,
-                                      "response": {"content": text, "finish_reason": finish}, "usage": usage,
-                                      "latency_ms": int((time.monotonic() - t0) * 1000)})
-            return parsed, model
         except Exception as exc:  # noqa: BLE001 - try the fallback model on any failure
-            proof.record("parasail", {"source": source, "purpose": purpose, "model": model, "request": request,
-                                      "response": {"content": text, "finish_reason": finish}, "usage": usage,
-                                      "latency_ms": int((time.monotonic() - t0) * 1000), "error": parasail._redact(exc)[:2000]})
-            errors.append(f"{model}: {parasail._redact(exc)[:200]}")
+            error = parasail.redact(exc)
+        entry = {"source": source, "purpose": purpose, "model": model, "request": request,
+                 "response": {"content": text, "finish_reason": finish}, "usage": usage,
+                 "latency_ms": int((time.monotonic() - t0) * 1000)}
+        if error is not None:
+            entry["error"] = error[:2000]
+        proof.record("parasail", entry)
+        if error is None:
+            return parsed, model
+        errors.append(f"{model}: {error[:200]}")
     raise FlowFailed("Parasail failed on both models: " + " | ".join(errors))
 
+
+class HauntState(BaseModel):
+    incident_id: str = ""
+    severity_tier: str = ""
+    raw: str = ""
+    incident: dict = {}
+    playbook: str = ""
+    sources: list[dict] = []
+    research: str = ""
+    manifest: dict = {}
+    notes: list[str] = []
+    models: list[str] = []
+    sky: dict = {}  # scenario steps only: server/sky.ts output, with minutes_to each event at the step's clock
+    moves: dict = {}  # what the operator did on the step before, when the page sent it on (shared/protocol.ts OperatorMoves)
+
+
+class HauntFlow(Flow[HauntState]):
+    # A dict, not a callable PrivateAttr: pydantic binds a callable default as a method.
+    _hooks: dict = PrivateAttr(default_factory=lambda: {"emit": lambda msg: None, "t0": 0.0})
+
+    def bind(self, emit: Callable[[dict], None]) -> "HauntFlow":
+        self._hooks["emit"] = emit
+        return self
+
+    def _emit(self, msg: dict) -> None:
+        self._hooks["emit"](msg)
+
+    def step(self, step_id: str, status: str, detail: str = "") -> None:
+        """Report a step's progress. `ms` is the time since the step started running."""
+        now = time.monotonic()
+        if status == "running":
+            self._hooks["t0"] = now
+        self._emit({"type": "step", "id": step_id, "state": status, "detail": detail,
+                    "ms": int((now - self._hooks["t0"]) * 1000)})
+
+    # ---- 1. ingest: the raw report becomes a structured incident
+
+    @start()
+    def ingest(self):
+        self.step("ingest", "running", "Parasail is structuring the raw report")
+        user = f"Severity tier from the feed: {self.state.severity_tier or 'none'}\nRaw incident report:\n{self.state.raw}"
+        # Temperature 0: the intake decides whether this is a threat, and the same report should get the same answer.
+        incident, model = chat_json(INCIDENT_SCHEMA, "incident", EXTRACT_SYSTEM, user, temperature=0)
+        for field, note in NOT_HARMLESS:
+            if incident.get("verdict") == "harmless" and incident.get(field):
+                incident["verdict"] = "unclear"
+                self.state.notes.append(note)
+        self.state.incident, self.state.models = incident, [model]
+        self._emit({"type": "incident", "incident": incident, "incident_id": self.state.incident_id,
+                    "severity_tier": self.state.severity_tier, "raw": self.state.raw})
+        self.step("ingest", "done", f"{incident['entity']} in {incident['sector']} ({model})")
+
+    # ---- 2. triage: route to one playbook per incident class
+
+    @router(ingest)
+    def triage(self) -> Literal["spectral", "corporeal", "anomalous"]:
+        # A named creature decides the playbook in code (a vampire is corporeal); the model's class is the fallback.
+        return library.entity_class(self.state.incident)
+
+    def _playbook(self, label: str) -> None:
+        self.state.playbook = label
+        book = library.PLAYBOOKS[label]
+        self._emit({"type": "route", "label": label, "playbook": book["label"],
+                    "arsenal": [{"id": a, "name": library.ARSENAL[a]} for a in book["arsenal"]]})
+        self.step("triage", "done", f"routed to the {label} playbook")
+
+    @listen("spectral")
+    def spectral_playbook(self):
+        self._playbook("spectral")
+
+    @listen("corporeal")
+    def corporeal_playbook(self):
+        self._playbook("corporeal")
+
+    @listen("anomalous")
+    def anomalous_playbook(self):
+        self._playbook("anomalous")
+
+    # ---- 3. ground: numbered You.com sources and the Lore Researcher's cited notes
+
+    @listen(or_(spectral_playbook, corporeal_playbook, anomalous_playbook))
+    def ground(self):
+        self.step("ground", "running", "Lore Researcher is searching You.com")
+        inc, book = self.state.incident, library.PLAYBOOKS[self.state.playbook]
+        ledger = Ledger(on_search=lambda q, hits: self._emit(
+            {"type": "search", "query": q, "hits": [{"n": h["n"], "title": h["title"], "url": h["url"]} for h in hits]}))
+        self._research(ledger)
+        if len(ledger.queries) == 0:
+            # The agent answered without searching. Ground it anyway; a manifest without sources is a guess.
+            self.state.notes.append("the Lore Researcher skipped its searches; the flow ran them")
+            for query in (f"{inc['entity']} countermeasures folklore", f"how to repel {inc['entity']} {book['lore_focus'][:40]}"):
+                self._search(ledger, query)
+        if self.state.sky:
+            # The sky's sources: wttr.in's live astronomy (fetched by the server) and a You.com search.
+            live = self.state.sky.get("live_source")
+            if live:
+                ledger.add("wttr.in astronomy", [{"title": "wttr.in astronomy for San Francisco (live)", "url": live["url"],
+                                                  "description": live["summary"], "snippet": live["summary"]}])
+            self._search(ledger, f"San Francisco sunset moonrise {self.state.sky.get('day', '')} timeanddate", count=3)
+        self.state.sources = ledger.sources
+        self._emit({"type": "sources", "sources": ledger.sources, "research": self.state.research})
+        detail = f"{len(ledger.queries)} search(es), {len(ledger.sources)} source(s)"
+        self.step("ground", "done" if ledger.sources else "failed", detail)
+
+    def _research(self, ledger: Ledger) -> None:
+        """Run the Lore Researcher agent. Its searches go into `ledger`; its notes into state.research."""
+        inc, book = self.state.incident, library.PLAYBOOKS[self.state.playbook]
+        researcher = Agent(
+            role="Lore Researcher",
+            goal="Find real-world lore and field practice that tells the commander which countermeasures work",
+            backstory=("You support a paranormal containment unit. You search before you answer, and every claim "
+                       "you make cites a numbered source. " + UNTRUSTED),
+            tools=[YouSearchTool(ledger)], llm=parasail.crew_llm(timeout=45, max_retries=1), max_iter=4, allow_delegation=False, verbose=False,
+        )
+        arsenal = ", ".join(f"{a} ({library.ARSENAL[a]})" for a in book["arsenal"])
+        prompt = (
+            f"Incident: {inc['summary']} Entity: {inc['entity']} ({self.state.playbook}).\n"
+            f"Our arsenal for this class: {arsenal}.\n"
+            f"Run exactly two you_search queries on {book['lore_focus']}, focused on this entity. "
+            "Then write 4 to 6 short bullets: which arsenal items the sources support against this entity and why, "
+            "each ending with its source number like [2]. Say so when no source supports an item."
+        )
+        try:
+            self.state.research = str(researcher.kickoff(prompt).raw)
+        except Exception as exc:  # noqa: BLE001 - grounding still happens without the agent
+            self.state.notes.append(f"Lore Researcher failed: {parasail.redact(exc)[:200]}")
+
+    def _search(self, ledger: Ledger, query: str, count: int = 4) -> None:
+        """One You.com search into the ledger. A failed search becomes a note, not a failed run."""
+        try:
+            ledger.add(query, search(query, count))
+        except YouError as exc:
+            self.state.notes.append(str(exc))
+
+    # ---- 4. compose: Parasail streams the station manifest, one component at a time
+
+    @listen(ground)
+    def compose(self):
+        self.step("compose", "running", "Parasail is choosing and ordering components")
+        arsenal, source_count, has_sky = library.PLAYBOOKS[self.state.playbook]["arsenal"], len(self.state.sources), bool(self.state.sky)
+        # Decided before streaming, because recommended_action is the last field the model writes.
+        lead = library.far_from_sky(self.state.incident, self.state.sky)
+        quiet = bool(lead)
+        system = COMPOSE_SYSTEM.replace(
+            "{components}", "\n".join(f"- {k}: {v}" for k, v in library.components_for(has_sky).items()))
+        parser, sent, frame = ComponentStream(), [], {}
+
+        def on_text(text: str) -> None:
+            """Send the title, theme, opening sound and each finished component as soon as they stream in."""
+            if not frame.get("title") and (title := string_field(text, "title")) is not None:
+                frame["title"] = title
+            if not frame.get("theme") and (theme := string_field(text, "theme")) is not None:
+                frame["theme"] = theme
+                self._emit({"type": "frame", **frame})
+            if not frame.get("sound_cue") and (cue := string_field(text, "sound_cue")) in library.CUES:
+                # The same rule as clean_manifest, applied before the cue streams to the page.
+                cue = library.opening_cue(cue, library.is_harmless(self.state.incident))
+                frame["sound_cue"] = cue
+                self._emit({"type": "frame", "sound_cue": cue})
+            for comp in parser.feed(text):
+                # Clean the components so far plus this one: it is sent only if the cleaning keeps it.
+                cleaned, _ = library.clean_manifest({"components": sent + [comp]}, arsenal, source_count,
+                                                    self.state.incident, quiet=quiet)
+                if len(cleaned["components"]) > len(sent):
+                    sent.append(comp)
+                    self._emit({"type": "component", "index": len(sent) - 1, "component": cleaned["components"][-1]})
+                    self.step("compose", "progress", f"{len(sent)} component(s) placed")
+
+        raw, model = chat_json(library.manifest_schema(arsenal, source_count, has_sky), "manifest",
+                               system, self._compose_prompt(lead), on_text)
+        manifest, notes = library.clean_manifest(raw, arsenal, source_count, self.state.incident, quiet=quiet)
+        if not manifest["components"]:
+            raise FlowFailed("the model returned a manifest with no usable components")
+        self.state.manifest = manifest
+        self.state.notes += notes
+        self.state.models.append(model)
+        self.step("compose", "done", f"{len(manifest['components'])} components: "
+                  + ", ".join(c["type"] for c in manifest["components"]) + f" ({model})")
+        return manifest
+
+    def _compose_prompt(self, lead: int | None) -> str:
+        """The compose call's user message: the incident, playbook, sources and notes, then the sky and the operator's moves."""
+        book = library.PLAYBOOKS[self.state.playbook]
+        sources = "\n".join(f"[{s['n']}] {s['title']} ({s['url']}): {s['snippet'][:240]}" for s in self.state.sources) or "none"
+        user = (
+            f"Incident {self.state.incident_id} ({self.state.severity_tier}):\n{json.dumps(self.state.incident)}\n\n"
+            f"Playbook: {book['label']}. Arsenal ids: {', '.join(book['arsenal'])}.\n\n"
+            f"Numbered sources from You.com:\n{sources}\n\nLore Researcher notes:\n{self.state.research or 'none'}"
+            + self._sky_facts()
+            + self._moves_facts()
+        )
+        if lead:
+            user += (f"\n\nNobody is hurt and the next sky event is {lead} minutes away: recommend observe, "
+                     "leave out the CountermeasurePicker, and say what to watch for until then.")
+        return user
+
+    def _sky_facts(self) -> str:
+        """The sky's times and the scenario clock, for a scenario step. Empty for a pasted report."""
+        sky = self.state.sky
+        if not sky:
+            return ""
+        times = ", ".join(f"{e['label'].lower()} {e['local']} ({e['source']})" for e in sky["events"])
+        clock = f"The scenario clock reads {sky['clock']}. " if sky.get("clock") else ""
+        minutes = ", ".join(f"{k}: {v} min" for k, v in sky.get("minutes_to", {}).items())
+        moon = sky["moon"]
+        return (f"\n\nSky over the Loft on {sky['day']}: {times}. Moon: {moon['phase']}, {moon['illumination']}% lit. "
+                f"{clock}Minutes to each event (negative once passed): {minutes}. "
+                "Use SkyClock when the time of day changes the threat, and cite the sky sources in it.")
+
+    def _moves_facts(self) -> str:
+        """What the operator did on the step before, for this station to build on. Empty when the page sent nothing."""
+        moves = self.state.moves
+        if not moves:
+            return ""
+        pick = library.ARSENAL.get(moves.get("countermeasure") or "")
+        sealed = [library.SECTORS.get(s, s) for s in moves.get("sealed") or []]
+        parts = [f"picked {pick}" if pick else "picked no countermeasure",
+                 f"sealed {', '.join(sealed)}" if sealed else "sealed nothing"]
+        if moves.get("people") is not None:
+            parts.append(f"got {moves.get('people_out', 0)} of {moves['people']} people out")
+        return (f"\n\nWhat the operator did at the previous step ({moves.get('time') or 'earlier'}): {'; '.join(parts)}. "
+                "Build on it: keep those sectors sealed in the FloorPlan unless this report shows they no longer need to be, "
+                "say in the ThreatBanner directive whether the picked countermeasure still fits, and count only the people "
+                "still inside.")
+
+
+# ---- streaming helpers for compose
 
 class ComponentStream:
     """Finds each complete component object in a streaming manifest, as soon as its JSON closes."""
@@ -182,6 +424,7 @@ class ComponentStream:
         self.done = False
 
     def feed(self, text: str) -> list[dict]:
+        """The components that closed since the last call. `text` is the whole reply so far."""
         found = []
         if self.pos < 0:
             m = re.search(r'"components"\s*:\s*\[', text)
@@ -218,215 +461,6 @@ class ComponentStream:
 
 
 def string_field(text: str, key: str) -> str | None:
+    """The value of a top-level string field in a partial JSON reply, once its closing quote has streamed."""
     m = re.search(rf'"{key}"\s*:\s*"((?:[^"\\]|\\.)*)"', text)
     return json.loads(f'"{m.group(1)}"') if m else None
-
-
-class HauntState(BaseModel):
-    incident_id: str = ""
-    severity_tier: str = ""
-    raw: str = ""
-    incident: dict = {}
-    playbook: str = ""
-    sources: list[dict] = []
-    research: str = ""
-    manifest: dict = {}
-    notes: list[str] = []
-    models: list[str] = []
-    sky: dict = {}  # scenario steps only: server/sky.ts output, with minutes_to each event at the step's clock
-    moves: dict = {}  # what the operator did on the step before, when the page sent it on (shared/protocol.ts OperatorMoves)
-
-
-class HauntFlow(Flow[HauntState]):
-    # A dict, not a callable PrivateAttr: pydantic binds a callable default as a method.
-    _hooks: dict = PrivateAttr(default_factory=lambda: {"emit": lambda msg: None, "t0": 0.0})
-
-    def bind(self, emit: Callable[[dict], None]) -> "HauntFlow":
-        self._hooks["emit"] = emit
-        return self
-
-    def _emit(self, msg: dict) -> None:
-        self._hooks["emit"](msg)
-
-    def step(self, sid: str, state: str, detail: str = "") -> None:
-        if state == "running":
-            self._hooks["t0"] = time.monotonic()
-        ms = int((time.monotonic() - self._hooks["t0"]) * 1000) if state != "running" else 0
-        self._emit({"type": "step", "id": sid, "state": state, "detail": detail, "ms": ms})
-
-    @start()
-    def ingest(self):
-        self.step("ingest", "running", "Parasail is structuring the raw report")
-        user = f"Severity tier from the feed: {self.state.severity_tier or 'none'}\nRaw incident report:\n{self.state.raw}"
-        # Temperature 0: the intake decides whether this is a threat, and the same report should get the same answer.
-        incident, model = chat_json(INCIDENT_SCHEMA, "incident", EXTRACT_SYSTEM, user, temperature=0)
-        if incident.get("verdict") == "harmless" and incident.get("deliberate_act"):
-            # Someone caused it on purpose, so it is not harmless, whatever else explains it.
-            incident["verdict"] = "unclear"
-            self.state.notes.append("someone acted deliberately, so the harmless verdict became unclear")
-        if incident.get("verdict") == "harmless" and incident.get("creature_countered"):
-            # Something is held back or reacting to a countermeasure: a creature is present, whatever else explains the report.
-            incident["verdict"] = "unclear"
-            self.state.notes.append("something is held back or repelled by a countermeasure, so the harmless verdict became unclear")
-        self.state.incident, self.state.models = incident, [model]
-        self._emit({"type": "incident", "incident": incident, "incident_id": self.state.incident_id,
-                    "severity_tier": self.state.severity_tier, "raw": self.state.raw})
-        self.step("ingest", "done", f"{incident['entity']} in {incident['sector']} ({model})")
-
-    @router(ingest)
-    def triage(self) -> Literal["spectral", "corporeal", "anomalous"]:
-        # A named creature decides the playbook in code (a vampire is corporeal); the model's class is the fallback.
-        return library.entity_class(self.state.incident)
-
-    def _playbook(self, label: str) -> None:
-        self.state.playbook = label
-        book = library.PLAYBOOKS[label]
-        self._emit({"type": "route", "label": label, "playbook": book["label"],
-                    "arsenal": [{"id": a, "name": library.ARSENAL[a]} for a in book["arsenal"]]})
-        self.step("triage", "done", f"routed to the {label} playbook")
-
-    @listen("spectral")
-    def spectral_playbook(self):
-        self._playbook("spectral")
-
-    @listen("corporeal")
-    def corporeal_playbook(self):
-        self._playbook("corporeal")
-
-    @listen("anomalous")
-    def anomalous_playbook(self):
-        self._playbook("anomalous")
-
-    @listen(or_(spectral_playbook, corporeal_playbook, anomalous_playbook))
-    def ground(self):
-        self.step("ground", "running", "Lore Researcher is searching You.com")
-        inc, book = self.state.incident, library.PLAYBOOKS[self.state.playbook]
-        ledger = Ledger(on_search=lambda q, hits: self._emit(
-            {"type": "search", "query": q, "hits": [{"n": h["n"], "title": h["title"], "url": h["url"]} for h in hits]}))
-        researcher = Agent(
-            role="Lore Researcher",
-            goal="Find real-world lore and field practice that tells the commander which countermeasures work",
-            backstory=("You support a paranormal containment unit. You search before you answer, and every claim "
-                       "you make cites a numbered source. " + UNTRUSTED),
-            tools=[YouSearchTool(ledger)], llm=parasail.crew_llm(timeout=45, max_retries=1), max_iter=4, allow_delegation=False, verbose=False,
-        )
-        arsenal = ", ".join(f"{a} ({library.ARSENAL[a]})" for a in book["arsenal"])
-        prompt = (
-            f"Incident: {inc['summary']} Entity: {inc['entity']} ({self.state.playbook}).\n"
-            f"Our arsenal for this class: {arsenal}.\n"
-            f"Run exactly two you_search queries on {book['lore_focus']}, focused on this entity. "
-            "Then write 4 to 6 short bullets: which arsenal items the sources support against this entity and why, "
-            "each ending with its source number like [2]. Say so when no source supports an item."
-        )
-        try:
-            self.state.research = str(researcher.kickoff(prompt).raw)
-        except Exception as exc:  # noqa: BLE001 - grounding still happens below without the agent
-            self.state.notes.append(f"Lore Researcher failed: {parasail._redact(exc)[:200]}")
-        if len(ledger.queries) == 0:
-            # The agent answered without searching. Ground it anyway; a manifest without sources is a guess.
-            self.state.notes.append("the Lore Researcher skipped its searches; the flow ran them")
-            for query in (f"{inc['entity']} countermeasures folklore", f"how to repel {inc['entity']} {book['lore_focus'][:40]}"):
-                try:
-                    ledger.add(query, search(query))
-                except YouError as exc:
-                    self.state.notes.append(str(exc))
-        if self.state.sky:
-            self._ground_sky(ledger)
-        self.state.sources = ledger.sources
-        self._emit({"type": "sources", "sources": ledger.sources, "research": self.state.research})
-        detail = f"{len(ledger.queries)} search(es), {len(ledger.sources)} source(s)"
-        self.step("ground", "done" if ledger.sources else "failed", detail)
-
-    def _ground_sky(self, ledger: Ledger) -> None:
-        """Add the sky's sources: wttr.in's live astronomy (fetched by the server) and a You.com search."""
-        live = self.state.sky.get("live_source")
-        if live:
-            ledger.add("wttr.in astronomy", [{"title": "wttr.in astronomy for San Francisco (live)", "url": live["url"],
-                                              "description": live["summary"], "snippet": live["summary"]}])
-        query = f"San Francisco sunset moonrise {self.state.sky.get('day', '')} timeanddate"
-        try:
-            ledger.add(query, search(query, count=3))
-        except YouError as exc:
-            self.state.notes.append(str(exc))
-
-    def _sky_facts(self) -> str:
-        sky = self.state.sky
-        if not sky:
-            return ""
-        times = ", ".join(f"{e['label'].lower()} {e['local']} ({e['source']})" for e in sky["events"])
-        clock = f"The scenario clock reads {sky['clock']}. " if sky.get("clock") else ""
-        minutes = ", ".join(f"{k}: {v} min" for k, v in sky.get("minutes_to", {}).items())
-        moon = sky["moon"]
-        return (f"\n\nSky over the Loft on {sky['day']}: {times}. Moon: {moon['phase']}, {moon['illumination']}% lit. "
-                f"{clock}Minutes to each event (negative once passed): {minutes}. "
-                "Use SkyClock when the time of day changes the threat, and cite the sky sources in it.")
-
-    def _moves_facts(self) -> str:
-        """What the operator did on the step before, for this station to build on. Empty when the page sent nothing."""
-        moves = self.state.moves
-        if not moves:
-            return ""
-        pick = library.ARSENAL.get(moves.get("countermeasure") or "")
-        sealed = [library.SECTORS.get(s, s) for s in moves.get("sealed") or []]
-        parts = [f"picked {pick}" if pick else "picked no countermeasure",
-                 f"sealed {', '.join(sealed)}" if sealed else "sealed nothing"]
-        if moves.get("people") is not None:
-            parts.append(f"got {moves.get('people_out', 0)} of {moves['people']} people out")
-        return (f"\n\nWhat the operator did at the previous step ({moves.get('time') or 'earlier'}): {'; '.join(parts)}. "
-                "Build on it: keep those sectors sealed in the FloorPlan unless this report shows they no longer need to be, "
-                "say in the ThreatBanner directive whether the picked countermeasure still fits, and count only the people "
-                "still inside.")
-
-    @listen(ground)
-    def compose(self):
-        self.step("compose", "running", "Parasail is choosing and ordering components")
-        book = library.PLAYBOOKS[self.state.playbook]
-        sources = "\n".join(f"[{s['n']}] {s['title']} ({s['url']}): {s['snippet'][:240]}" for s in self.state.sources) or "none"
-        user = (
-            f"Incident {self.state.incident_id} ({self.state.severity_tier}):\n{json.dumps(self.state.incident)}\n\n"
-            f"Playbook: {book['label']}. Arsenal ids: {', '.join(book['arsenal'])}.\n\n"
-            f"Numbered sources from You.com:\n{sources}\n\nLore Researcher notes:\n{self.state.research or 'none'}"
-            + self._sky_facts()
-            + self._moves_facts()
-        )
-        has_sky = bool(self.state.sky)
-        # Decided before streaming, because recommended_action is the last field the model writes.
-        lead = library.far_from_sky(self.state.incident, self.state.sky)
-        if lead:
-            user += (f"\n\nNobody is hurt and the next sky event is {lead} minutes away: recommend observe, "
-                     "leave out the CountermeasurePicker, and say what to watch for until then.")
-        system = COMPOSE_SYSTEM.replace(
-            "{components}", "\n".join(f"- {k}: {v}" for k, v in library.components_for(has_sky).items()))
-        parser, sent, frame = ComponentStream(), [], {}
-
-        def on_text(text: str) -> None:
-            if not frame.get("title") and (title := string_field(text, "title")) is not None:
-                frame["title"] = title
-            if not frame.get("theme") and (theme := string_field(text, "theme")) is not None:
-                frame["theme"] = theme
-                self._emit({"type": "frame", **frame})
-            if not frame.get("sound_cue") and (cue := string_field(text, "sound_cue")) in library.CUES:
-                # The same rule as clean_manifest, applied before the cue streams to the page.
-                cue = library.opening_cue(cue, library.is_harmless(self.state.incident))
-                frame["sound_cue"] = cue
-                self._emit({"type": "frame", "sound_cue": cue})
-            for comp in parser.feed(text):
-                cleaned, _ = library.clean_manifest({"components": sent + [comp]}, book["arsenal"], len(self.state.sources),
-                                                    self.state.incident, quiet=bool(lead))
-                if len(cleaned["components"]) > len(sent):
-                    sent.append(comp)
-                    self._emit({"type": "component", "index": len(sent) - 1, "component": cleaned["components"][-1]})
-                    self.step("compose", "progress", f"{len(sent)} component(s) placed")
-
-        raw, model = chat_json(library.manifest_schema(book["arsenal"], len(self.state.sources), has_sky), "manifest",
-                               system, user, on_text)
-        manifest, notes = library.clean_manifest(raw, book["arsenal"], len(self.state.sources), self.state.incident,
-                                                 quiet=bool(lead))
-        if not manifest["components"]:
-            raise FlowFailed("the model returned a manifest with no usable components")
-        self.state.manifest = manifest
-        self.state.notes += notes
-        self.state.models.append(model)
-        self.step("compose", "done", f"{len(manifest['components'])} components: "
-                  + ", ".join(c["type"] for c in manifest["components"]) + f" ({model})")
-        return manifest
