@@ -18,8 +18,8 @@
     --spook: #c9a0ff;
     --font: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
     --display: 'VT323', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
-    /* A terminal window: two chamfered corners and a stepped notch top right. */
     --page-max: 1800px; /* wider monitors get margins, not stretched panels */
+    /* A terminal window: two chamfered corners and a stepped notch top right. */
     --frame: polygon(0 12px, 12px 0, calc(100% - 46px) 0, calc(100% - 40px) 6px, 100% 6px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
     --cut: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
     color-scheme: dark;
@@ -45,11 +45,12 @@ h2::before, h3::before { content: '[ '; color: var(--amber); }
 h2::after, h3::after { content: ' ]'; color: var(--amber); }
 a { color: var(--hi); text-decoration: underline dotted; }
 a:hover { color: var(--amber); }
-.hidden { display: none !important; }
 .muted { color: var(--muted); }
 .small { font-size: 13px; }
 .center { text-align: center; }
 .spaced { margin-bottom: 8px; }
+.pill { font: 16px/1 var(--display); text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 8px 2px; border: 1px solid var(--amber); color: var(--amber); background: transparent; white-space: nowrap; }
+.pill.muted { color: var(--muted); border-color: var(--dim); }
 .partner { font: 13px var(--font); font-style: normal; color: var(--bg); background: var(--amber); padding: 0 6px; margin-left: 6px; letter-spacing: 0; vertical-align: 2px; }
 
 /* --- top bar ----------------------------------------------------------------------------- */
@@ -61,20 +62,12 @@ a:hover { color: var(--amber); }
 }
 .topbar::after { content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 4px; border-bottom: 1px dashed var(--dim); }
 .brand { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 360px; }
-.sub { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.sub { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); font-size: 13px; margin-top: 8px; }
 .controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px 18px; }
 .controls .group { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .controls .group + .group { padding-left: 18px; border-left: 1px dashed var(--dim); }
 .sigil { font: 34px var(--display); color: var(--amber); }
-.sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
 .volume { width: 90px; accent-color: var(--amber); }
-.pill { font: 16px/1 var(--display); text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 8px 2px; border: 1px solid var(--amber); color: var(--amber); background: transparent; white-space: nowrap; }
-.pill.muted { color: var(--muted); border-color: var(--dim); }
-.pill.sev-low { color: var(--muted); border-color: var(--dim); }
-.pill.sev-elevated { color: var(--hi); border-color: var(--hi); }
-.pill.sev-critical, .pill.sev-catastrophic { color: var(--bg); background: var(--red); border-color: var(--red); animation: throb 1.6s infinite; }
-.pill.live { color: var(--hi); border-color: var(--hi); }
-.pill.snapshot { color: var(--spook); border-color: var(--spook); }
 
 /* Call expert: a label, each expert's button with its page's status beside it, then the picked countermeasure. */
 .experts { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px 14px; max-width: 680px; }
@@ -88,9 +81,6 @@ a:hover { color: var(--amber); }
 .state::before { content: '● '; }
 .state.live { color: var(--hi); }
 .state.snapshot { color: var(--spook); }
-.seal-label { margin-top: 10px; }
-.seal-list { flex-wrap: wrap; margin-top: 4px; }
-.seal-list button { font-size: 14px; padding: 3px 8px; }
 fieldset.options { border: 0; margin: 0; padding: 0; min-width: 0; }
 .option label { display: flex; gap: 10px; align-items: center; cursor: pointer; }
 
@@ -135,8 +125,6 @@ button[aria-disabled='true'] { opacity: 0.4; cursor: not-allowed; }
     .experts { justify-content: flex-start; }
     .experts .cm { text-align: left; }
     .topbar { padding: 10px 16px; position: static; } /* on a phone the expert buttons would cover a third of the screen */
-    .stepper { flex: 1 1 100%; justify-content: space-between; min-width: 0; }
-    .stepper span { white-space: normal; text-align: center; }
     .sigil { display: none; }
     h1 { font-size: 22px; }
 }
@@ -156,7 +144,6 @@ button[aria-disabled='true'] { opacity: 0.4; cursor: not-allowed; }
 .steps li { display: flex; align-items: center; gap: 10px; }
 .steps li time { margin-left: auto; }
 .steps b { color: var(--amber); font-weight: 600; }
-.steps p { margin: 2px 0 0; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
 .steps time { font-size: 13px; color: var(--muted); }
 .dot { width: 9px; height: 9px; flex: none; background: var(--dim); }
 .steps li.running .dot, .steps li.progress .dot { background: var(--amber); animation: throb 1s infinite; }
@@ -173,18 +160,6 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 12px 0 0; font-size: 14px; align-items: baseline; }
 .facts dt { color: var(--muted); text-transform: uppercase; font-size: 13px; letter-spacing: 0.06em; }
 .facts dd { margin: 0; overflow-wrap: anywhere; }
-
-.sources { margin: 0; padding-left: 24px; font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
-.sources li { overflow-wrap: anywhere; }
-.sources li::marker { color: var(--dim); }
-.sources .domain { color: var(--muted); display: block; font-size: 13px; }
-.sources li.cited::marker { color: var(--hi); }
-
-.compile { display: flex; flex-direction: column; gap: 8px; }
-.compile textarea { width: 100%; resize: vertical; }
-.subrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin-top: 4px; }
-.stepper { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
-.stepper span { white-space: nowrap; }
 
 /* --- the station ------------------------------------------------------------------------- */
 .stage { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
@@ -206,6 +181,8 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
     .report-nav .next { margin-left: auto; }
     .report-nav .menu { order: 4; margin-left: 0; }
 }
+.compile { display: flex; flex-direction: column; gap: 8px; }
+.compile textarea { width: 100%; resize: vertical; }
 .report-text { margin: 0; padding: 10px 12px; border-left: 2px solid var(--amber); background: var(--bg); font-size: 16px; line-height: 1.5; color: var(--text); }
 .stage-head { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; border-bottom: 1px dashed var(--dim); padding-bottom: 6px; }
 .stage-head button.link { margin-left: auto; }
@@ -262,7 +239,6 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .floor .outline { fill: none; stroke: var(--dim); stroke-width: 0.5; }
 .floor .block { fill: rgba(255, 138, 31, 0.04); stroke: var(--dim); stroke-width: 0.4; }
 .floor .open-middle { fill: none; stroke: var(--dim); stroke-width: 0.3; stroke-dasharray: 1.2 1.2; }
-.floor .area { fill: none; stroke: var(--dim); stroke-width: 0.3; stroke-dasharray: 1 1; }
 .floor .sector { fill: rgba(255, 138, 31, 0.03); stroke: var(--amber); stroke-width: 0.35; cursor: pointer; transition: fill 0.2s steps(2); }
 .floor .sector:hover { fill: rgba(255, 138, 31, 0.14); }
 .floor .sector.hot { fill: rgba(255, 59, 31, 0.28); stroke: var(--red); stroke-width: 0.6; animation: hot 1.4s infinite; }
@@ -278,6 +254,9 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .floor .route-start { fill: var(--hi); }
 .floor .route.blocked { stroke: var(--red); }
 .floor .route-exit { fill: var(--bg); stroke: var(--hi); stroke-width: 0.8; }
+.seal-label { margin-top: 10px; }
+.seal-list { flex-wrap: wrap; margin-top: 4px; }
+.seal-list button { font-size: 14px; padding: 3px 8px; }
 
 .area-svg .ground { fill: var(--bg); }
 .osm.park { fill: none; stroke: var(--dim); stroke-width: 0.6; stroke-dasharray: 2 2; }

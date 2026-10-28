@@ -38,9 +38,7 @@ export function TopBar({ state, subtitle, sound, post }: { state: State; subtitl
                 </span>
                 <div>
                     <h1>{state.title}</h1>
-                    <div className="subrow">
-                        <div className="sub">{subtitle}</div>
-                    </div>
+                    <div className="sub">{subtitle}</div>
                 </div>
             </div>
             <div className="controls">
