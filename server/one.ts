@@ -5,6 +5,7 @@
 //   has more than one connection.
 // - Every `actions execute` is recorded in proof/partners.jsonl.
 import { execFile } from 'node:child_process';
+import { renameSync } from 'node:fs';
 
 import { record, redact, summarize } from './proof.ts';
 
@@ -84,6 +85,18 @@ async function executeWithProof(args: string[], timeout: number, purpose: string
         record('partners', { ...entry, error: String((err as Error).message).slice(0, 2000), latency_ms: Date.now() - t0 });
         throw err;
     }
+}
+
+/**
+ * Run an `actions execute` whose response is a file, such as ElevenLabs audio, and save it as `file`.
+ * One writes to `<file>.tmp` first, so a failed call leaves no half-written file. Returns the action's response.
+ */
+export async function executeToFile(args: string[], file: string, purpose: string): Promise<any> {
+    const tmp = `${file}.tmp`;
+    const res = await one([...args, '--output', tmp], 120_000, purpose);
+    if (!res.response?.saved) throw new OneError(`no file came back for ${purpose}: ${JSON.stringify(res).slice(0, 300)}`);
+    renameSync(tmp, file);
+    return res.response;
 }
 
 /** The promise cached under `key`, made on first use. A failed one is dropped, so the next call tries again. */

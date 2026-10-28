@@ -281,7 +281,7 @@ export class Station {
         if (this.opts.offline) return tell('Offline: no expert can be paged.');
         if (!this.run || this.busy) return tell('Wait for the station to finish building before calling an expert.');
         const wait = this.pager.cooldown(expert);
-        if (wait) return tell(`The ${library.experts[expert].label.toLowerCase()} was just paged. Wait ${wait} s before paging again.`);
+        if (wait) return tell(`The ${library.experts[expert].label.toLowerCase()} was just paged. Wait ${wait} seconds before paging again.`);
         const countermeasure = typeof msg.countermeasure === 'string' && msg.countermeasure in library.arsenal ? msg.countermeasure : null;
         void this.pager.open(pageRequest(this.run.state, expert, countermeasure));
         void this.speakCall(expert);

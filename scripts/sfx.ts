@@ -7,12 +7,12 @@
 //
 // The prompts live in shared/library.json under "sounds". web/public/sfx/sounds.json records the
 // prompt, length and loop setting each file was made from, so an unchanged sound is never paid for twice.
-import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 
 import library from '../shared/library.json' with { type: 'json' };
-import { connection, findAction, one } from '../server/one.ts';
+import { connection, executeToFile, findAction, one } from '../server/one.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const OUT = join(ROOT, 'web', 'public', 'sfx');
@@ -52,11 +52,9 @@ await one(['actions', 'load', actionId]); // read the action's docs before its f
 
 for (const [id, s] of todo) {
     const body = { text: s.prompt, duration_seconds: s.duration, ...(s.loop ? { loop: true } : {}) };
-    const tmp = join(OUT, `${id}.tmp.mp3`);
-    const res = await one(['actions', 'execute', 'elevenlabs', actionId, key, '-d', JSON.stringify(body), '--query-params', JSON.stringify({ output_format: FORMAT }), '--output', tmp], 120_000, `sound effect: ${id}`);
-    if (!res.response?.saved) throw new Error(`ElevenLabs did not return audio for ${id}: ${JSON.stringify(res).slice(0, 300)}`);
-    renameSync(tmp, join(OUT, `${id}.mp3`));
+    const args = ['actions', 'execute', 'elevenlabs', actionId, key, '-d', JSON.stringify(body), '--query-params', JSON.stringify({ output_format: FORMAT })];
+    const response = await executeToFile(args, join(OUT, `${id}.mp3`), `sound effect: ${id}`);
     made[id] = { prompt: s.prompt, duration: s.duration, ...(s.loop ? { loop: true } : {}) };
     writeFileSync(RECORD, `${JSON.stringify(made, null, 2)}\n`); // after every sound, so a failure keeps what was paid for
-    console.log(`  saved web/public/sfx/${id}.mp3 (${Math.round(res.response.size / 1024)} KB)`);
+    console.log(`  saved web/public/sfx/${id}.mp3 (${Math.round(response.size / 1024)} KB)`);
 }
