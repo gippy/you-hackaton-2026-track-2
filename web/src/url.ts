@@ -10,5 +10,5 @@ export function withToken(path: string): string {
     return `${path}${path.includes('?') ? '&' : '?'}token=${encodeURIComponent(token)}`;
 }
 
-/** The URL of an art file from the manifest (`art/nightfall/...`), relative to the page, versioned by its content. */
+/** The URL of an art file from the manifest (`art/station/...`), relative to the page, versioned by its content. */
 export const artUrl = (asset: ArtAsset) => withToken(`./${asset.file}${asset.v ? `?v=${asset.v}` : ''}`);

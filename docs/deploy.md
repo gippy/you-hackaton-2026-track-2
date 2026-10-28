@@ -10,7 +10,7 @@ The station runs as a private Standby Actor named `haunted-command-station` on t
 | `Dockerfile` | Four stages: the Vite build, the server's production `node_modules`, a Python 3.13 venv with CrewAI (through `uv`), and the runtime with the `one` CLI and `tini`. Base image, `pnpm`, `uv`, Python, `@withone/cli` and `tini` are pinned; the Python packages follow `requirements.txt`, where only `crewai` is exact |
 | `.dockerignore` | Keeps `.env`, `.onerc`, `.venv`, `node_modules`, `reference/`, `out/`, `art/raw/`, `eval/` and other local-only files out of the build context |
 
-The image holds no keys. The `Dockerfile` copies only the folders the station reads (`server`, `shared`, `pipeline`, `fixtures`, `snapshots`, `data/map`, `art/nightfall`, the built page), so a stray file in the repo cannot reach the image.
+The image holds no keys. The `Dockerfile` copies only the folders the station reads (`server`, `shared`, `pipeline`, `fixtures`, `snapshots`, `data/map`, `art/station`, the built page), so a stray file in the repo cannot reach the image.
 
 ## Build and test locally
 

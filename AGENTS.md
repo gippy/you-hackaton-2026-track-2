@@ -22,7 +22,7 @@ The contract between all three sits in `shared/`: `protocol.ts` (messages and pa
 | `shared/` | The contract: protocol types and the component library | `shared/protocol.ts` |
 | `fixtures/` | Incident reports and scenarios, with answer keys beside them | `fixtures/nightfall/scenario.json` |
 | `eval/` | Scoring harness that runs scenarios through the real pipeline against answer keys | `eval/README.md` |
-| `art/nightfall/` | Every scenario's art (WebP) and its `manifest.json` | `art/nightfall/manifest.json` |
+| `art/station/` | Every scenario's art (WebP) and its `manifest.json` | `art/station/manifest.json` |
 | `data/map/` | Floor plan and the OpenStreetMap area | `data/map/README.md` |
 | `snapshots/` | Committed saved runs that offline mode can replay | |
 | `proof/` | Ledgers of every partner call, written by `pnpm proof` | `proof/README.md` |

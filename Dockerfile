@@ -72,7 +72,7 @@ COPY pipeline ./pipeline
 COPY fixtures ./fixtures
 COPY snapshots ./snapshots
 COPY data/map ./data/map
-COPY art/nightfall ./art/nightfall
+COPY art/station ./art/station
 COPY --from=web /app/web/dist ./web/dist
 
 # out/ (saved runs, cached speech) and proof/ (ledgers) are written at run time, as the node user.

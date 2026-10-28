@@ -39,7 +39,7 @@ _Placeholder: the FloorPlan is getting realistic routes. The screenshots of both
 
 - **Shows:** a picture of the entity or of its harmless look-alike, a verdict (real, look-alike or unconfirmed) and a caption.
 - **When:** only when an image in the art library matches the report. A costume or prop gets its look-alike image. For a harmless report, the prompt allows at most one of ThermalReadout, SystemsBoard or EntityCard.
-- **Powered by:** the art manifest (`art/nightfall/manifest.json`), with images made by `pnpm art`, which renders with Z-Image Turbo on a Mac. Parasail picks the image and the verdict at run time.
+- **Powered by:** the art manifest (`art/station/manifest.json`), with images made by `pnpm art`, which renders with Z-Image Turbo on a Mac. Parasail picks the image and the verdict at run time.
 - **Operator:** read only.
 - **Accessibility:** the image's alt text comes from the art manifest.
 
