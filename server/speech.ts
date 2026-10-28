@@ -4,10 +4,10 @@
 // Each line is generated once and cached in out/speech/ under a hash of the voice, model and text, so a
 // repeated call costs nothing. Generated speech is never committed.
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, renameSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { connection, findAction, one, OneError } from './one.ts';
+import { connection, executeToFile, findAction } from './one.ts';
 
 const VOICE = process.env.ELEVENLABS_VOICE_ID || 'onwK4e9ZLuTAKqWW03F9'; // "Daniel, Steady Broadcaster"
 const MODEL = 'eleven_multilingual_v2';
@@ -33,16 +33,13 @@ async function generate(text: string, dir: string, name: string): Promise<string
         connection('elevenlabs'),
     ]);
     mkdirSync(dir, { recursive: true });
-    const tmp = join(dir, `${name}.tmp`);
     // The URL template names the voice voiceId and the validator checks voice_id: send both.
-    const res = await one([
+    const args = [
         'actions', 'execute', 'elevenlabs', actionId, key,
         '-d', JSON.stringify({ text, model_id: MODEL }),
         '--path-vars', JSON.stringify({ voiceId: VOICE, voice_id: VOICE }),
         '--query-params', JSON.stringify({ output_format: FORMAT }),
-        '--output', tmp,
-    ], 120_000, 'spoken call');
-    if (!res.response?.saved) throw new OneError(`ElevenLabs returned no audio: ${JSON.stringify(res).slice(0, 300)}`);
-    renameSync(tmp, join(dir, name));
+    ];
+    await executeToFile(args, join(dir, name), 'spoken call');
     return name;
 }
