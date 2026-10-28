@@ -24,7 +24,6 @@ art/prompts.jsonl
 eval
 scenarios
 proof
-smoke_test.py
 PREP.md
 MVP_PROMPT.md
 .claude

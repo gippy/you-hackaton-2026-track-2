@@ -3,8 +3,8 @@
 Checks every partner and the scenario feed with read-only calls, then prints one line per check.
 It never pulls a tick or submits a containment, so it does not touch your team's cursor or score.
 
-Run it from this folder:
-    .venv/bin/python smoke_test.py
+Run it from the repo root:
+    .venv/bin/python scripts/smoke_test.py
 """
 from __future__ import annotations
 
