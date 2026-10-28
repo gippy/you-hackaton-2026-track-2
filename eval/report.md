@@ -1,96 +1,96 @@
 # Nightfall eval report
 
-Generated 2026-10-28 15:29 · scenario `fixtures/nightfall/scenario.json` · answer key `fixtures/nightfall/answer-key.json` · Baseline: pipeline `d0f4cdd6fd` · Pass C: pipeline `a57d1180b5` · Pass D: pipeline `a57d1180b5`
+Generated 2026-10-28 16:00 · scenario `fixtures/nightfall/scenario.json` · answer key `fixtures/nightfall/answer-key.json` · Baseline: pipeline `d0f4cdd6fd` · Pass E: pipeline `963c226a64` · Pass F: pipeline `963c226a64`
 
 Dispatch is scored from `recommended_action` (observe = no dispatch). Nothing was sent to Discord or PagerDuty. Worker runs carry `PROOF_CONTEXT=eval` in the proof ledger.
 
 ## Score
 
-| | Baseline | Pass C | Pass D | Mean of passes |
+| | Baseline | Pass E | Pass F | Mean of passes |
 |---|---|---|---|---|
-| Points / 144 | 114.00 | 134.17 | 130.92 | 132.54 |
+| Points / 144 | 114.00 | 132.30 | 129.55 | 130.93 |
 
 ## Metrics
 
-| Metric | Baseline | Pass C | Pass D |
+| Metric | Baseline | Pass E | Pass F |
 |---|---|---|---|
-| **Misses** (key says contain/evacuate, model observed) | **0/14** | **1/14** | **2/14** |
-| False alarms (harmless step, model acts) | 3/5 | 0/5 | 0/5 |
-| Harmless handled calmly (observe, low banner, no discouraged panel) | 0/5 | 5/5 | 5/5 |
-| Harmless with the `all_clear` cue | 1/5 | 5/5 | 5/5 |
+| **Misses** (key says contain/evacuate, model observed) | **0/14** | **1/14** | **1/14** |
+| False alarms (harmless step, model acts) | 3/5 | 1/5 | 1/5 |
+| Harmless handled calmly (observe, low banner, no discouraged panel) | 0/5 | 4/5 | 4/5 |
+| Harmless with the `all_clear` cue | 1/5 | 4/5 | 4/5 |
 | Over-escalations (real step the key wants watched, model acts) | 4/5 | 1/5 | 1/5 |
 | Evacuate matches (key says evacuate) | 0/4 | 2/4 | 2/4 |
-| Action match | 13/24 | 19/24 | 18/24 |
-| Dispatch match | 17/24 | 22/24 | 21/24 |
+| Action match | 13/24 | 19/24 | 17/24 |
+| Dispatch match | 17/24 | 21/24 | 21/24 |
 | Hot sector match | 23/24 | 24/24 | 24/24 |
-| Routed to the key's playbook (corporeal) | 3/24 | 15/24 | 16/24 |
-| Intake severity copies the feed tier | 20/20 | 10/20 | 10/20 |
-| Panel recall, mean | 92% | 97% | 91% |
-| Steps with a discouraged panel | 9/24 | 2/24 | 2/24 |
-| Distinct layouts (key expects 13) | 12 | 15 | 13 |
+| Routed to the key's playbook (corporeal) | 3/24 | 15/24 | 17/24 |
+| Intake severity copies the feed tier | 20/20 | 9/20 | 11/20 |
+| Panel recall, mean | 92% | 97% | 94% |
+| Steps with a discouraged panel | 9/24 | 3/24 | 3/24 |
+| Distinct layouts (key expects 13) | 12 | 16 | 17 |
 | Failures | 0/24 | 0/24 | 0/24 |
-| Latency per step, mean | 14.7s | 14.1s | 14.3s |
-| Latency per step, median | 13.6s | 14.0s | 14.0s |
-| Latency per step, p95 | 19.8s | 19.0s | 18.9s |
-| Latency per step, max | 23.6s | 19.2s | 22.6s |
-| Time to the `incident` event (earliest thing the page could show) | 3.4s | 4.1s | 3.9s |
-| **Time to the first panel**, mean | 12.3s | 12.0s | 12.3s |
-| Time to the first panel, p95 | 17.5s | 16.3s | 16.1s |
-| Time to the first panel, max | 22.5s | 18.1s | 19.8s |
-| Time to the last panel, mean | 14.1s | 13.5s | 13.7s |
+| Latency per step, mean | 14.7s | 12.5s | 13.6s |
+| Latency per step, median | 13.6s | 12.3s | 13.0s |
+| Latency per step, p95 | 19.8s | 14.9s | 18.3s |
+| Latency per step, max | 23.6s | 15.0s | 20.2s |
+| Time to the `incident` event (earliest thing the page could show) | 3.4s | 3.7s | 3.8s |
+| **Time to the first panel**, mean | 12.3s | 10.7s | 11.7s |
+| Time to the first panel, p95 | 17.5s | 12.7s | 16.1s |
+| Time to the first panel, max | 22.5s | 12.8s | 17.0s |
+| Time to the last panel, mean | 14.1s | 11.9s | 13.0s |
 
 ## Action confusion (rows = key, columns = model: observe / contain / evacuate)
 
-| key | Baseline | Pass C | Pass D |
+| key | Baseline | Pass E | Pass F |
 |---|---|---|---|
-| observe | 3 / 7 / 0 | 9 / 0 / 1 | 9 / 1 / 0 |
-| contain | 0 / 10 / 0 | 1 / 8 / 1 | 2 / 7 / 1 |
+| observe | 3 / 7 / 0 | 8 / 2 / 0 | 8 / 2 / 0 |
+| contain | 0 / 10 / 0 | 1 / 9 / 0 | 1 / 7 / 2 |
 | evacuate | 0 / 4 / 0 | 0 / 2 / 2 | 0 / 2 / 2 |
 
 ## Per step
 
 Cells are `action pts`. Δ panels: `-X` an expected panel missing, `!X` a discouraged one present. A `*` marks an action different from the key.
 
-| # | Truth | Key | Feed tier | Baseline act pts | Pass C act pts | Pass D act pts | Pass C Δ panels | Pass D Δ panels | Flip A/B |
+| # | Truth | Key | Feed tier | Baseline act pts | Pass E act pts | Pass F act pts | Pass E Δ panels | Pass F Δ panels | Flip A/B |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | H | observe | ELEVATED_HAUNT | contain* 2.5 | observe 6 | observe 6 | – | – |  |
 | 2 | R | observe | UNVERIFIED | contain* 2.75 | observe 5 | observe 5 | !CivilianTracker | !CivilianTracker |  |
 | 3 | R | observe | LOW_HAUNT | contain* 4 | observe 6 | observe 6 | – | – |  |
 | 4 | H | observe | UNVERIFIED | observe 4.5 | observe 6 | observe 6 | – | – |  |
-| 5 | R | contain (D) | ELEVATED_HAUNT | contain 5 | evacuate* 5 | contain 6 | – | – | flip |
+| 5 | R | contain (D) | ELEVATED_HAUNT | contain 5 | contain 6 | evacuate* 5 | – | – | flip |
 | 6 | R | observe | UNVERIFIED | contain* 3 | observe 6 | observe 6 | – | – |  |
 | 7 | R | observe | LOW_HAUNT | observe 6 | observe 5.75 | observe 5.75 | -CivilianTracker | -CivilianTracker |  |
-| 8 | H | observe | CRITICAL_HAUNT | contain* 3 | observe 5.667 | observe 5.667 | -EMFGauge | -EMFGauge |  |
-| 9 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 6 | observe* 3.25 | – | -FloorPlan -CivilianTracker -CountermeasurePicker | flip |
+| 8 | H | observe | CRITICAL_HAUNT | contain* 3 | contain* 3 | contain* 3 | !CountermeasurePicker !CivilianTracker | !CountermeasurePicker !CivilianTracker |  |
+| 9 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
 | 10 | R | contain (D) | CRITICAL_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
 | 11 | H | observe | LOW_HAUNT | observe 5 | observe 6 | observe 6 | – | – |  |
 | 12 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | contain* 5 | contain* 5 | – | – |  |
 | 13 | R | contain (D) | ELEVATED_HAUNT | contain 5 | contain 6 | contain 6 | – | – |  |
 | 14 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
-| 15 | R | contain (D) | LOW_HAUNT | contain 6 | contain 5.75 | contain 6 | -ThermalReadout | – |  |
+| 15 | R | contain (D) | LOW_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
 | 16 | R | contain (D) | CRITICAL_HAUNT | contain 6 | observe* 4 | observe* 3.5 | – | -FloorPlan -CivilianTracker |  |
 | 17 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
 | 18 | H | observe | ELEVATED_HAUNT | contain* 2.5 | observe 6 | observe 6 | – | – |  |
 | 19 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | contain* 5 | contain* 5 | – | – |  |
 | 20 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | evacuate 6 | evacuate 6 | – | – |  |
-| 21 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | evacuate 6 | evacuate 6 | – | – |  |
-| 22 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 6 | evacuate* 5 | – | – | flip |
+| 21 | R | evacuate (D) | CRITICAL_HAUNT | contain* 5 | evacuate 5.8 | evacuate 6 | -ThermalReadout | – |  |
+| 22 | R | contain (D) | ELEVATED_HAUNT | contain 6 | contain 6 | evacuate* 4.8 | – | -SystemsBoard | flip |
 | 23 | R | contain (D) | LOW_HAUNT | contain 6 | contain 6 | contain 6 | – | – |  |
-| 24 | R | observe | UNVERIFIED | contain* 2.75 | evacuate* 3 | contain* 2.75 | !CountermeasurePicker | -ThermalReadout !CountermeasurePicker | flip |
+| 24 | R | observe | UNVERIFIED | contain* 2.75 | contain* 2.75 | contain* 2.5 | -SourceLedger !CountermeasurePicker | -ThermalReadout -SourceLedger !CountermeasurePicker |  |
 
 ## Where the points went
 
-| Criterion | Baseline | Pass C | Pass D |
+| Criterion | Baseline | Pass E | Pass F |
 |---|---|---|---|
-| action | 11.00 | 5.00 | 6.00 |
-| dispatch | 7.00 | 2.00 | 3.00 |
+| action | 11.00 | 5.00 | 7.00 |
+| dispatch | 7.00 | 3.00 | 3.00 |
 | hot | 1.00 | 0.00 | 0.00 |
-| recall | 2.00 | 0.83 | 2.08 |
-| no_discouraged | 9.00 | 2.00 | 2.00 |
+| recall | 2.00 | 0.70 | 1.45 |
+| no_discouraged | 9.00 | 3.00 | 3.00 |
 | no_failure | 0.00 | 0.00 | 0.00 |
 
-- **Pass C**: misses [16]; false alarms none; over-escalations [24]; contain/evacuate mismatches [5, 12, 19]; discouraged panels CivilianTracker [2]; CountermeasurePicker [24]; pipeline notes dropped an EMFGauge showing an ordinary reading ×2; someone acted deliberately, so the harmless verdict became unclear ×1; dropped a safe route that walks through walls ×2
-- **Pass D**: misses [9, 16]; false alarms none; over-escalations [24]; contain/evacuate mismatches [12, 19, 22]; discouraged panels CivilianTracker [2]; CountermeasurePicker [24]; pipeline notes dropped a safe route that walks through walls ×3; dropped an EMFGauge showing an ordinary reading ×2; someone acted deliberately, so the harmless verdict became unclear ×1
+- **Pass E**: misses [16]; false alarms [8]; over-escalations [24]; contain/evacuate mismatches [12, 19]; discouraged panels CivilianTracker [2, 8]; CountermeasurePicker [8, 24]; pipeline notes dropped an EMFGauge showing an ordinary reading ×2; dropped a sky warning that states times instead of an order ×10; the civilian count 140 became the 4 people in reach ×1; someone acted deliberately, so the harmless verdict became unclear ×1
+- **Pass F**: misses [16]; false alarms [8]; over-escalations [24]; contain/evacuate mismatches [5, 12, 19, 22]; discouraged panels CivilianTracker [2, 8]; CountermeasurePicker [8, 24]; pipeline notes dropped a sky warning that states times instead of an order ×12; dropped an EMFGauge showing an ordinary reading ×1; the civilian count 140 became the 4 people in reach ×1; someone acted deliberately, so the harmless verdict became unclear ×1
 
 ## Status after the guard experiments (15:15)
 
