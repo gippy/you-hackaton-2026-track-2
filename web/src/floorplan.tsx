@@ -1,10 +1,11 @@
 // The FloorPlan component's two views: the Loft's floor (a schematic from data/map/floor.json) and the
 // blocks around the tower (OpenStreetMap, data/map/area.geojson). The model's manifest places every
 // marker: the hot sector or outdoor spot, the sealed sectors and the route out.
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { Component, Floor } from '../../shared/protocol.ts';
 import type { Ctx } from './components.tsx';
+import { routeThrough, type ThroughRoute } from './route.ts';
 import { artUrl, withToken } from './url.ts';
 
 type Props = Extract<Component, { type: 'FloorPlan' }>['props'];
@@ -42,60 +43,38 @@ export function FloorPlan({ p, ctx }: { p: Props; ctx: Ctx }) {
 
 const points = (poly: Point[]) => poly.map(([x, y]) => `${x},${y}`).join(' ');
 
-const centroid = (poly: Point[]): Point => [poly.reduce((s, p) => s + p[0], 0) / poly.length, poly.reduce((s, p) => s + p[1], 0) / poly.length];
+/** Where floor.json draws a block's name. shared/protocol.ts's Floor type does not list these two fields yet. */
+type BlockLabel = { label_at?: Point; label_anchor?: 'start' | 'middle' | 'end' };
 
-/** Places a route can pass through that are not sectors: the hall (older data) or AWS's Reception block. */
-function corridors(floor: Floor): { id: string; label_at: Point }[] {
-    return [
-        ...(floor.areas ?? []).map((a) => ({ id: a.id, label_at: a.label_at })),
-        ...(floor.blocks ?? []).map((b) => ({ id: b.id, label_at: centroid(b.polygon) })),
-    ];
-}
-
-/** The route's drawn path: from sector to sector through the doors and corridors that connect them, then out an exit. */
-function routePath(floor: Floor, route: string[], slugOf: (id: string) => string): Point[] {
-    const zone = (slug: string) => floor.zones.find((z) => z.slug === slug);
-    const halls = corridors(floor);
-    const node = (id: string) => zone(id)?.label_at ?? halls.find((a) => a.id === id)?.label_at;
-    const door = (via: string | null) => floor.features.find((f) => f.id === via)?.at;
-    const link = (a: string, b: string) => floor.connections.find((c) => (c.a === a && c.b === b) || (c.a === b && c.b === a));
-    const out: Point[] = [];
+/**
+ * The model's route through its sectors as a walkable line (route.ts): through the doors, round sealed
+ * sectors, then out the last sector's exit. The start is where people are now, so it is never avoided.
+ */
+function walk(floor: Floor, aliases: Record<string, string>, route: string[], sealed: string[]): ThroughRoute | null {
+    if (!route.length) return null;
+    const slugOf = (id: string) => Object.entries(aliases).find(([, v]) => v === id)?.[0] ?? id;
     const slugs = route.map(slugOf);
-    slugs.forEach((slug, i) => {
-        const here = node(slug);
-        if (i > 0) {
-            const prev = slugs[i - 1];
-            const direct = link(prev, slug);
-            if (direct) {
-                const d = door(direct.via);
-                if (d) out.push(d);
-            } else {
-                // Through a corridor area, such as the hall.
-                const corridor = halls.find((a) => link(prev, a.id) && link(a.id, slug));
-                if (corridor) {
-                    const d1 = door(link(prev, corridor.id)!.via);
-                    const d2 = door(link(corridor.id, slug)!.via);
-                    out.push(...([d1, corridor.label_at, d2].filter(Boolean) as Point[]));
-                }
-            }
-        }
-        if (here) out.push(here);
-    });
-    const last = slugs[slugs.length - 1];
-    const exit = floor.features.find((f) => f.exit && f.zone === last);
-    if (exit) out.push(exit.at);
-    return out;
+    try {
+        return routeThrough(floor, slugs, { avoid: sealed.map(slugOf).filter((s) => s !== slugs[0]), exit: true });
+    } catch (err) {
+        console.error('Could not walk the safe route', err);
+        return null;
+    }
 }
 
 function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
     const floor = ctx.library && ctx.floor;
+    const sealed = ctx.operator.sealed;
+    const route = useMemo(() => (floor ? walk(floor, ctx.library.sector_aliases, p.safe_route, sealed) : null), [floor, ctx.library, p.safe_route, sealed]);
     if (!floor) return <p className="muted">No floor plan available.</p>;
     const { sectors, sector_aliases } = ctx.library;
     // floor.json names sectors with the official slugs; the station's id for catering_coffee_bar is catering.
     const idOf = (slug: string) => sector_aliases[slug] ?? slug;
-    const slugOf = (id: string) => Object.entries(sector_aliases).find(([, v]) => v === id)?.[0] ?? id;
-    const sealed = ctx.operator.sealed;
-    const route = p.safe_route.length > 1 ? routePath(floor, p.safe_route, slugOf) : [];
+    const name = (slug: string) => sectors[idOf(slug)] ?? floor.blocks?.find((b) => b.id === slug)?.aws_name ?? slug;
+    const names = (slugs: string[]) => slugs.map(name).join(', ');
+    const path = route?.points ?? [];
+    const end = path[path.length - 1];
+    const exit = route && !route.blocked && end ? floor.features.find((f) => f.exit && Math.hypot(f.at[0] - end[0], f.at[1] - end[1]) < 2) : undefined;
     const { width, height } = floor.space;
     return (
         <div>
@@ -112,15 +91,18 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                 </defs>
                 <polygon points={points(floor.outline)} className="outline" />
                 {(floor.blocks ?? []).map((b) => {
-                    // AWS's name for the block, in its bottom-left corner, clear of the sector labels in the middle.
-                    const x = Math.min(...b.polygon.map((p) => p[0]));
-                    const y = Math.max(...b.polygon.filter((p) => p[0] === x).map((p) => p[1]));
+                    // AWS's name for the block, where floor.json puts it: clear of borders, of the sector labels and of the
+                    // route markers, and beside the block when the block is too narrow for its name. Older data has no
+                    // label_at: then the name goes in the block's bottom-left corner.
+                    const placed = b as typeof b & BlockLabel;
+                    const corner = Math.min(...b.polygon.map((p) => p[0]));
+                    const at: Point = placed.label_at ?? [corner + 1.2, Math.max(...b.polygon.filter((p) => p[0] === corner).map((p) => p[1])) - 1.2];
                     return (
                         <g key={b.id}>
                             <polygon points={points(b.polygon)} className="block">
                                 <title>{`${b.aws_name} (AWS's name)`}</title>
                             </polygon>
-                            <text x={x + 1.2} y={y - 1.2} className="area-label">
+                            <text x={at[0]} y={at[1]} textAnchor={placed.label_anchor ?? 'start'} className="area-label">
                                 {b.aws_name}
                             </text>
                         </g>
@@ -167,8 +149,17 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                         </circle>
                     ),
                 )}
-                {route.length > 1 && <polyline className="route" points={points(route)} />}
-                {route.length > 0 && <circle cx={route[0][0]} cy={route[0][1]} r={1.8} className="route-start" />}
+                {path.length > 1 && <polyline className={`route ${route?.blocked ? 'blocked' : ''}`} points={points(path)} />}
+                {path.length > 0 && (
+                    <circle cx={path[0][0]} cy={path[0][1]} r={1.8} className="route-start">
+                        <title>Start</title>
+                    </circle>
+                )}
+                {exit && (
+                    <rect x={exit.at[0] - 1.8} y={exit.at[1] - 1.8} width={3.6} height={3.6} className="route-exit">
+                        <title>{`Exit: ${exit.label}`}</title>
+                    </rect>
+                )}
             </svg>
             <div className="legend">
                 <span>
@@ -181,7 +172,14 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                 </span>
                 <span>
                     <i className="sw-route" />
-                    {p.safe_route.length ? `safe route: ${p.safe_route.map((id) => sectors[id] ?? id).join(' → ')}` : 'no safe route given'}
+                    {!route
+                        ? 'no safe route given'
+                        : route.blocked
+                          ? route.blockedBy.length
+                              ? `No safe route: ${names(route.blockedBy)} ${route.blockedBy.length > 1 ? 'are' : 'is'} sealed`
+                              : 'No safe route found'
+                          : `safe route: ${[...route.zones.map(name), ...(exit ? [exit.label] : [])].join(' → ')}`}
+                    {route?.skipped.length ? ` (round sealed ${names(route.skipped)})` : ''}
                 </span>
                 <span title={floor.notice}>Schematic, not to scale</span>
             </div>

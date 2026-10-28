@@ -18,7 +18,8 @@
         "proof": "node scripts/proof.ts",
         "build": "vite build",
         "type-check": "tsc --noEmit && tsc --noEmit -p web",
-        "check": "pnpm run type-check && pnpm run build"
+        "test": "node --test web/src/route.test.ts",
+        "check": "pnpm run type-check && pnpm run test && pnpm run build"
     },
     "dependencies": {
         "@fontsource/ibm-plex-mono": "^5.3.0",
