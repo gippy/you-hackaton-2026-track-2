@@ -92,7 +92,6 @@ EXTRACT_SYSTEM = (
     "unclear otherwise. " + UNTRUSTED
 )
 
-
 # Report facts that rule out a harmless verdict, whatever ordinary explanation the report gives: (field, note).
 NOT_HARMLESS = [
     ("deliberate_act", "someone acted deliberately, so the harmless verdict became unclear"),
