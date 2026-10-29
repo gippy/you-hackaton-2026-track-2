@@ -13,7 +13,7 @@ export interface Operator {
     countermeasure: string | null;
     sealed: string[];
     extracted: number[]; // indexes of people marked extracted
-    map: 'floor' | 'area' | null; // the FloorPlan's view: the model's, until the operator switches it
+    map: 'floor' | 'area' | null; // the FloorPlan view the operator picked, or null for the model's
 }
 
 export interface State {
@@ -93,30 +93,10 @@ const cleanTitle = (title: string) =>
 
 const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
 
-/**
- * A component with every list and text prop present. Saved runs from older versions, or a model that
- * skipped a field, would otherwise hand a panel `undefined` where it expects an array.
- */
-function withDefaults(c: Component): Component {
-    const p: any = { ...(c.props ?? {}) };
-    const lists: Partial<Record<Component['type'], string[]>> = {
-        SourceLedger: ['cited'],
-        SkyClock: ['cited'],
-        CountermeasurePicker: ['options'],
-        SystemsBoard: ['systems'],
-        FloorPlan: ['seal', 'safe_route'],
-    };
-    for (const key of lists[c.type] ?? []) if (!Array.isArray(p[key])) p[key] = [];
-    if (c.type === 'CountermeasurePicker') p.options = p.options.filter((o: any) => o && typeof o.id === 'string');
-    return { ...c, why: c.why ?? '', props: p } as Component;
-}
-
-/** The operator's starting point is the model's: its recommended countermeasure, its sealed sectors and its map view. */
+/** The operator's starting point is the model's: its recommended countermeasure and its sealed sectors. */
 function adopt(operator: Operator, comp: Component): Operator {
     if (comp.type === 'CountermeasurePicker' && !operator.countermeasure) return { ...operator, countermeasure: comp.props.recommended };
-    if (comp.type === 'FloorPlan') {
-        return { ...operator, sealed: operator.sealed.length ? operator.sealed : comp.props.seal, map: operator.map ?? (comp.props.view === 'area' ? 'area' : 'floor') };
-    }
+    if (comp.type === 'FloorPlan') return { ...operator, sealed: operator.sealed.length ? operator.sealed : comp.props.seal };
     return operator;
 }
 
@@ -181,11 +161,11 @@ function applyServerMessage(state: State, msg: ServerMessage, foreign = false): 
             return { ...state, title: msg.title ? cleanTitle(msg.title) : state.title, theme: msg.theme ?? state.theme };
         case 'component': {
             const components = [...state.components];
-            components[msg.index] = withDefaults(msg.component);
-            return { ...state, components, operator: adopt(state.operator, components[msg.index]) };
+            components[msg.index] = msg.component;
+            return { ...state, components, operator: adopt(state.operator, msg.component) };
         }
         case 'run_end': {
-            const manifest = { ...msg.manifest, components: (msg.manifest.components ?? []).map(withDefaults) };
+            const { manifest } = msg;
             const operator = manifest.components.reduce(adopt, state.operator);
             const notes = msg.notes?.length && msg.source === 'live' ? { text: `Pipeline notes: ${msg.notes.join('; ')}`, kind: 'info' as const } : state.banner;
             return { ...state, manifest, components: manifest.components, title: manifest.title ? cleanTitle(manifest.title) : state.title, theme: manifest.theme, operator, banner: notes };

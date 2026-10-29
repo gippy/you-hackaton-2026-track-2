@@ -34,8 +34,8 @@ const LAST: ComponentType[] = ['SourceLedger'];
 const SMALL: ComponentType[] = ['EntityCard', 'SystemsBoard', 'ThermalReadout', 'EMFGauge'];
 const MEDIUM: ComponentType[] = ['CivilianTracker', 'CountermeasurePicker'];
 
-export function layout(components: (Component | undefined)[]): Placed[] {
-    const items = components.flatMap((component, index) => (component ? [{ component, index }] : []));
+export function layout(components: Component[]): Placed[] {
+    const items = components.map((component, index) => ({ component, index }));
     const of = (types: ComponentType[]) => items.filter((x) => types.includes(x.component.type));
     const out: Placed[] = of(FIRST).map((x) => ({ ...x, span: 12, tall: false }));
 

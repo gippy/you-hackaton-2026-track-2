@@ -149,11 +149,6 @@ export function App() {
     const current = at?.step;
     const running = Boolean(state.source) && !state.manifest;
 
-    const cited = new Set<number>();
-    for (const c of state.components) {
-        if (c?.type === 'SourceLedger' || c?.type === 'SkyClock') (c.props.cited ?? []).forEach((n) => cited.add(n));
-        if (c?.type === 'CountermeasurePicker') (c.props.options ?? []).forEach((o) => o.source && cited.add(o.source));
-    }
     const quick: Ctx['quick'] = {
         actions: state.manifest?.quick_actions ?? [],
         people: peopleCount(state.components),
@@ -161,7 +156,7 @@ export function App() {
         paged: (expert) => isPaged(state, expert),
     };
     const ctx: Ctx | null = library && {
-        library, art: state.art, floor: state.floor, sources: state.sources, cited, sky: state.sky,
+        library, art: state.art, floor: state.floor, sources: state.sources, sky: state.sky,
         incident: incident?.incident ?? null, clock: current?.time ?? '', action: state.manifest?.recommended_action ?? null, operator: state.operator, send, quick,
     };
 
@@ -193,7 +188,7 @@ export function App() {
                     {running
                         ? `Building the station for ${current ? `step ${current.step}` : 'the incident'}…`
                         : state.manifest && incident
-                          ? `Station ready: ${state.components.filter(Boolean).length} panels. ${incident.incident.entity} in ${library?.sectors[incident.incident.sector] ?? incident.incident.sector}. Recommended: ${state.manifest.recommended_action}.`
+                          ? `Station ready: ${state.components.length} panels. ${incident.incident.entity} in ${library?.sectors[incident.incident.sector] ?? incident.incident.sector}. Recommended: ${state.manifest.recommended_action}.`
                           : ''}
                     {EXPERTS.map((expert) => pageFor(state, expert))
                         .filter(Boolean)

@@ -13,8 +13,6 @@ export interface Ctx {
     art: Record<string, ArtAsset>;
     floor: Floor | null;
     sources: Source[];
-    /** Numbers of the sources the plan relies on: cited by the ledger, a countermeasure or the sky clock. */
-    cited: Set<number>;
     sky: Sky | null;
     /** The intake's incident, the step's clock ("19:33", or empty) and the model's recommended action. */
     incident: Incident | null;
@@ -143,13 +141,7 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
         case 'ThreatBanner':
             return (
                 <>
-                    {ctx.incident ? (
-                        <IncidentHead incident={ctx.incident} ctx={ctx} action={ctx.action} directive={c.props.directive} />
-                    ) : (
-                        <div className="incident-head">
-                            <p className="directive">{c.props.directive}</p>
-                        </div>
-                    )}
+                    {ctx.incident && <IncidentHead incident={ctx.incident} ctx={ctx} action={ctx.action} directive={c.props.directive} />}
                     <QuickActions ctx={ctx} />
                 </>
             );
@@ -183,7 +175,7 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
             );
         }
         case 'SourceLedger':
-            return <Ledger cited={new Set([...c.props.cited, ...ctx.cited])} sources={ctx.sources} />;
+            return <Ledger cited={new Set(c.props.cited)} sources={ctx.sources} />;
     }
 }
 
