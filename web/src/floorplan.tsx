@@ -334,13 +334,20 @@ interface Area {
 }
 
 let areaLoad: Promise<Area> | null = null;
-const loadArea = () => (areaLoad ??= fetch(withToken('./data/map/area.geojson')).then((r) => r.json() as Promise<Area>));
+
+/** The area map, fetched once. A failed fetch is forgotten, so the next time the view opens it tries again. */
+function loadArea(): Promise<Area> {
+    areaLoad ??= fetch(withToken('./data/map/area.geojson')).then((r) => (r.ok ? (r.json() as Promise<Area>) : Promise.reject(new Error(`HTTP ${r.status}`))));
+    areaLoad.catch(() => (areaLoad = null));
+    return areaLoad;
+}
 
 function AreaView({ anchor }: { anchor: string | null }) {
-    const [area, setArea] = useState<Area | null>(null);
+    const [area, setArea] = useState<Area | 'failed' | null>(null);
     useEffect(() => {
-        loadArea().then(setArea, () => setArea(null));
+        loadArea().then(setArea, () => setArea('failed'));
     }, []);
+    if (area === 'failed') return <p className="muted">The map could not be loaded.</p>;
     if (!area) return <p className="muted">Loading the map…</p>;
     const { lat0, lon0, x_m_per_deg_lon: kx, y_m_per_deg_lat: ky } = area.projection_hint;
     // Local equirectangular metres around the tower: x east, y north (flipped for SVG).

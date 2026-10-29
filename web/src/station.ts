@@ -87,9 +87,9 @@ export const initial: State = {
     notice: null,
 };
 
-/** The model sometimes opens its title with the fixture id ("SIM NIGHTFALL 21 — …"); the step shows elsewhere. */
+/** The model sometimes opens its title with the fixture id ("SIM NIGHTFALL 21 — …", "SIM-PHANTOM-02: …"); the step shows elsewhere. */
 const cleanTitle = (title: string) =>
-    title.replace(/^\s*sim[- ]nightfall[- ]\d+\s*[—–:-]\s*/i, '').replace(/\s*(?:[—–-]\s*|\()sim[- ]nightfall[- ]\d+\)?\s*$/i, '').trim() || title;
+    title.replace(/^\s*sim[- ][a-z]+[- ]\d+\s*[—–:-]\s*/i, '').replace(/\s*(?:[—–-]\s*|\()sim[- ][a-z]+[- ]\d+\)?\s*$/i, '').trim() || title;
 
 const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
 

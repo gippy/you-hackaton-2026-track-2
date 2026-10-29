@@ -200,8 +200,9 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .card header h3 { font-size: 20px; text-transform: uppercase; white-space: nowrap; }
 .card .order { font-size: 13px; color: var(--muted); }
 .card .why { margin: 6px 0 12px; color: var(--muted); font-size: 13px; }
-/* The model's reason for each panel and the panel's type: hidden until "Show reasoning", and on hover as a tooltip. */
-.components:not(.reasoning) .card .why, .components:not(.reasoning) .card .order { display: none; }
+/* The model's reason for each panel and the panel's type: hidden until "Show reasoning", and on hover as a tooltip.
+   The provisional cards' "intake only" label stays visible. */
+.components:not(.reasoning) .card .why, .components:not(.reasoning) .card:not(.provisional) .order { display: none; }
 .card .why::before { content: '// '; color: var(--dim); }
 
 /* A critical threat gets a red frame and nothing else; low and elevated keep the normal frame. */
