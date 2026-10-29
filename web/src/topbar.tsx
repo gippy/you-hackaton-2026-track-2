@@ -124,10 +124,17 @@ function Dispatch({ state, post }: { state: State; post: (msg: ClientMessage) =>
             >
                 Dispatch to #loft-incident
             </button>
-            {last && (
+            {last ? (
                 <span className={`page-status dispatch-${last.status}`} title={last.error ?? last.text}>
                     {DISPATCH_STATUS[last.status]}
                 </span>
+            ) : (
+                // Say why the control is waiting, so a click on it never seems to do nothing.
+                blocked && (
+                    <span className="page-status dispatch-off">
+                        {state.mode === 'offline' ? 'Offline' : !state.manifest ? 'Waiting for the station' : 'Observe: nothing to post'}
+                    </span>
+                )
             )}
         </span>
     );
