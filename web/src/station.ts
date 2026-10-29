@@ -1,7 +1,7 @@
 // The page's state: everything the server has streamed for the current run, plus the operator's choices.
 // Every server message goes through `reduce`, so a late joiner that gets the history replayed ends up
 // in the same state as a page that watched the run live.
-import type { ArtAsset, Component, DispatchInfo, FixtureIncident, Floor, Incident, Library, Manifest, OperatorMoves, PageInfo, Scenario, ServerMessage, Sky, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
+import type { ArtAsset, Component, DispatchInfo, FixtureIncident, Floor, Incident, Library, Manifest, OperatorMoves, PageInfo, Scenario, ScenarioStep, ServerMessage, Sky, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
 interface Step {
     state?: StepState;
@@ -120,13 +120,19 @@ function adopt(operator: Operator, comp: Component): Operator {
     return operator;
 }
 
-/** "step 21 (20:02)", an incident id, or "a pasted incident", for the notice about another viewer's run. */
-function runLabel(state: State, id: string): string {
-    for (const scenario of state.scenarios) {
+/** The scenario and step an incident id belongs to, when it is a scenario step. */
+export function findStep(scenarios: Scenario[], id: string | null | undefined): { scenario: Scenario; step: ScenarioStep } | undefined {
+    for (const scenario of scenarios) {
         const step = scenario.steps.find((s) => s.incident_id === id);
-        if (step) return `${scenario.title} step ${step.step} (${step.time})`;
+        if (step) return { scenario, step };
     }
-    return id || 'a pasted incident';
+    return undefined;
+}
+
+/** "Nightfall step 21 (20:02)", an incident id, or "a pasted incident", for the notice about another viewer's run. */
+function runLabel(state: State, id: string): string {
+    const at = findStep(state.scenarios, id);
+    return at ? `${at.scenario.title} step ${at.step.step} (${at.step.time})` : id || 'a pasted incident';
 }
 
 function applyServerMessage(state: State, msg: ServerMessage, foreign = false): State {

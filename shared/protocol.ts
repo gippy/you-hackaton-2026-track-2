@@ -207,12 +207,15 @@ export interface FixtureIncident {
     time?: string;
 }
 
+/** A scenario step always has its scenario, step number and clock time. */
+export type ScenarioStep = FixtureIncident & { scenario: string; step: number; time: string };
+
 /** A scenario from fixtures/<id>/scenario.json, played one step at a time. */
 export interface Scenario {
     id: string;
     title: string;
     sky: boolean; // the real sky over the venue matters to this scenario, so its steps get sunset and moonrise times
-    steps: FixtureIncident[];
+    steps: ScenarioStep[];
 }
 
 export type StepId = 'ingest' | 'triage' | 'ground' | 'compose';

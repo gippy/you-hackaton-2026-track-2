@@ -12,7 +12,7 @@ import { layout } from './layout.ts';
 import { BuildProgress } from './progress.tsx';
 import { Rail } from './rail.tsx';
 import { ReportPanel, type CompileRequest } from './report.tsx';
-import { initial, reduce, type Event, type State } from './station.ts';
+import { findStep, initial, reduce, type Event, type State } from './station.ts';
 import { TopBar } from './topbar.tsx';
 import { artUrl, withToken } from './url.ts';
 
@@ -144,8 +144,9 @@ export function App() {
 
     const { incident, library } = state;
     // Where the station on screen sits in a scenario, when it is one of its steps.
-    const scenario = state.scenarios.find((s) => s.steps.some((step) => step.incident_id === incident?.incident_id)) ?? state.scenarios[0];
-    const current = scenario?.steps.find((step) => step.incident_id === incident?.incident_id);
+    const at = findStep(state.scenarios, incident?.incident_id);
+    const scenario = at?.scenario ?? state.scenarios[0];
+    const current = at?.step;
     const running = Boolean(state.source) && !state.manifest;
 
     const cited = new Set<number>();
