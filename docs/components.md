@@ -6,7 +6,7 @@ The model also writes each panel's title and asks for its size:
 - **Title:** at most 5 words that name the panel for this incident, such as "Who's still in the hall". `clean_manifest` drops a title over 6 words or 32 characters, and the panel then shows its own name. Screen readers hear the panel's own name first.
 - **Size:** hero for the one panel the incident turns on, compact for a supporting reading, else standard. After the floor plan's row, a hero panel takes 8 columns and a compact one 4. A hero floor plan without a CountermeasurePicker takes the full row.
 
-The screenshots come from live runs on 2026-10-28 at 1440x900, cropped to the panel: Nightfall step 20 for the full set, step 21 for the report panel, step 18 for a harmless station, and `spooky-2026-9912` for the EMF gauge. "Reasoning" in the station header shows the model's reason for each panel.
+The screenshots come from live runs on 2026-10-28 at 1440x900, cropped to the panel: Nightfall step 20 for the full set, step 21 for the report panel, step 18 for a harmless station, Zombie Rush step 3 for the outdoor map, and `spooky-2026-9912` for the EMF gauge. "Reasoning" in the station header shows the model's reason for each panel.
 
 `clean_manifest` (`pipeline/library.py`) never adds a panel. It only drops panels that break a rule:
 - A harmless report loses CountermeasurePicker, CivilianTracker and FloorPlan.
@@ -57,6 +57,7 @@ The screenshots come from live runs on 2026-10-28 at 1440x900, cropped to the pa
 ### FloorPlan: floor and around the tower
 
 ![FloorPlan on the floor view with markers, step 20](components/floor-plan.webp)
+![FloorPlan around the tower, Zombie Rush step 3](components/floor-plan-area.webp)
 
 - **Shows:** two views. "Floor" is a schematic of the Loft (`data/map/floor.json`), with the hot sector hatched in red, the sealed sectors, the safe route out as a dotted line and the model's markers. "Around the tower" is the OpenStreetMap area (`data/map/area.geojson`), 150 meters around the tower, with a pin at the incident's outdoor spot, or at the venue when there is none. A scene image of the sector can sit under the plan.
 - **When:** a harmless report never gets it. The model sets the area view only when the report puts the incident outside the building.
