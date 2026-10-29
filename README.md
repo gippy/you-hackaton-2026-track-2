@@ -179,6 +179,8 @@ By 17:10 on October 28 the ledgers held 2,452 Parasail calls, about 6.1 million 
 
 ## Hosted on Apify
 
+<a href="https://jaroslavhejlek--haunted-command-station.apify.actor"><img src="docs/live-station-qr.png" alt="QR code that opens the live station on Apify" width="180" align="right"></a>
+
 The station runs as an Apify Actor in Standby mode at **https://jaroslavhejlek--haunted-command-station.apify.actor**, built automatically from every commit to `main`, so anyone can open it without installing anything or signing in. It opens on Nightfall step 1. A cold start takes about 10 seconds. On the Actor, "Call expert" pages my phone for real, at most once a minute per expert.
 
 If the page is opened with an API token in the URL (`?token=`), it adds the token to every URL it builds: the WebSocket, the sounds, the speech, the art and the map. The image holds no keys, which come from Apify secrets. See [`docs/deploy.md`](docs/deploy.md).
