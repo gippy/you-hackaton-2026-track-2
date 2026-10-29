@@ -2,7 +2,7 @@
 
 - Fix 1 (sky lead-time rule) landed in `5c42469`; the live code scored 133.07 in one pass.
 - Fix 2 (step 24 stand-down) was tried as an `aftermath` boolean and as an `ended_evidence` quote: 8 and 9 misses, then 1 and 3 after a predicate fix. Rejected, see Part 2 below. Leave step 24.
-- Guard for the step 23 miss (`creature_countered`): accepted, `eval/guard1.patch` applies to the live tree.
+- Guard for the step 23 miss (`creature_countered`): accepted, `eval/archive/guard1.patch` applies to the live tree.
 - Fix 3 (one LLM call less in grounding) is still open.
 
 ## What landed, and what is left

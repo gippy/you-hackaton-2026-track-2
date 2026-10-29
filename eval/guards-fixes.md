@@ -21,7 +21,7 @@ Accept rule: misses stay at 0/14 over two passes. Guard 1 (v4) had 0/14 and 0/14
 - Cost: none measurable. Mean points -0.10 and -0.27, inside the noise of about ±1. Harmless false alarms were 1/5 in both v4 passes and in v4 on the live code (step 8 each time); the controls had 0/5 and 1/5 (frozen) and 0/5 (live), so step 8 flips with or without the guard.
 - Not built from this scenario's words: the field's description is assembled from `library.ARSENAL` (the unit's own countermeasure names), so a new countermeasure extends it.
 
-Ready to apply: `git apply eval/guard1.patch` (checked with `git apply --check` against the live tree at `07258c4`; it touches `pipeline/flow.py` and `shared/protocol.ts`). The same change, written out:
+Ready to apply: `git apply eval/archive/guard1.patch` (checked with `git apply --check` against the live tree at `07258c4`; it touches `pipeline/flow.py` and `shared/protocol.ts`). The same change, written out:
 
 ```python
 # 1. INCIDENT_SCHEMA["required"]: add "creature_countered" between "deliberate_act" and "verdict".
