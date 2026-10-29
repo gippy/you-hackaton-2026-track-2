@@ -11,21 +11,30 @@ import { record, redact, summarize } from './proof.ts';
 
 export class OneError extends Error {}
 
-// Lookups done once per process.
-const actions = new Map<string, Promise<string>>(); // "<platform> <METHOD> <path>" -> action id
-const titles = new Map<string, { title: string; method: string; path: string }>(); // action id -> what it is, for the proof ledger
-const connections = new Map<string, Promise<string>>(); // platform -> connection key
-
-/**
- * Run `one --agent <args>` and return its JSON. The CLI prints a JSON error and exits non-zero on failure.
- * Every `actions execute` is recorded in proof/partners.jsonl, with `purpose` saying what it was for.
- */
-export function one(args: string[], timeout = 120_000, purpose = ''): Promise<any> {
-    if (args[0] === 'actions' && args[1] === 'execute') return executeWithProof(args, timeout, purpose);
-    return run(args, timeout);
+/** An action found with `one actions find`: its id, and what it is, for the proof ledger. */
+export interface Action {
+    id: string;
+    title: string;
+    method: string;
+    path: string;
 }
 
-function run(args: string[], timeout: number): Promise<any> {
+/** What an `actions execute` sends. Each field becomes one CLI flag. */
+export interface ActionRequest {
+    data?: unknown;
+    pathVars?: object;
+    queryParams?: object;
+    headers?: object;
+    /** Save a binary response, such as audio, to this file. */
+    output?: string;
+}
+
+// Lookups done once per process.
+const actions = new Map<string, Promise<Action>>(); // "<platform> <METHOD> <path>" -> action
+const connections = new Map<string, Promise<string>>(); // platform -> connection key
+
+/** Run `one --agent <args>` and return its JSON. The CLI prints a JSON error and exits non-zero on failure. */
+export function one(args: string[], timeout = 120_000): Promise<any> {
     return new Promise((resolve, reject) => {
         execFile('one', ['--agent', ...args], { timeout, maxBuffer: 8 * 1024 * 1024 }, (err, stdout, stderr) => {
             if (!stdout.trim()) {
@@ -57,29 +66,30 @@ function parseJson(out: string): any {
     }
 }
 
-/** The JSON value after a CLI flag such as `-d`, or undefined when the flag is not there. */
-const flag = (args: string[], name: string) => {
-    const i = args.indexOf(name);
-    return i >= 0 ? JSON.parse(args[i + 1]) : undefined;
-};
-
-async function executeWithProof(args: string[], timeout: number, purpose: string): Promise<any> {
-    const [, , platform, actionId] = args; // args[4] is the connection key: never recorded
-    const action = titles.get(actionId);
+/**
+ * Run an action with `one actions execute` and return the CLI's JSON. The call is recorded in
+ * proof/partners.jsonl, with `purpose` saying what it was for. The connection key is never recorded.
+ */
+export async function execute(platform: string, action: Action, req: ActionRequest, purpose: string, timeout = 120_000): Promise<any> {
+    const args = ['actions', 'execute', platform, action.id, await connection(platform)];
+    if (req.data !== undefined) args.push('-d', JSON.stringify(req.data));
+    if (req.pathVars) args.push('--path-vars', JSON.stringify(req.pathVars));
+    if (req.queryParams) args.push('--query-params', JSON.stringify(req.queryParams));
+    if (req.headers) args.push('--headers', JSON.stringify(req.headers));
+    if (req.output) args.push('--output', req.output);
     const entry = {
         partner: 'one',
         platform,
-        action: action?.title ?? actionId,
-        method: action?.method,
-        path: action?.path,
+        action: action.title,
+        method: action.method,
+        path: action.path,
         purpose,
-        dry_run: args.includes('--dry-run'),
-        request: { data: flag(args, '-d'), path_vars: flag(args, '--path-vars'), query_params: flag(args, '--query-params') },
+        request: { data: req.data, path_vars: req.pathVars, query_params: req.queryParams },
     };
     const t0 = Date.now();
     try {
-        const res = await run(args, timeout);
-        record('partners', { ...entry, response: entry.dry_run ? { would_send_to: res.request?.url } : summarize(res.response), latency_ms: Date.now() - t0 });
+        const res = await one(args, timeout);
+        record('partners', { ...entry, response: summarize(res.response), latency_ms: Date.now() - t0 });
         return res;
     } catch (err) {
         record('partners', { ...entry, error: String((err as Error).message).slice(0, 2000), latency_ms: Date.now() - t0 });
@@ -88,19 +98,19 @@ async function executeWithProof(args: string[], timeout: number, purpose: string
 }
 
 /**
- * Run an `actions execute` whose response is a file, such as ElevenLabs audio, and save it as `file`.
+ * Run an action whose response is a file, such as ElevenLabs audio, and save it as `file`.
  * One writes to `<file>.tmp` first, so a failed call leaves no half-written file. Returns the action's response.
  */
-export async function executeToFile(args: string[], file: string, purpose: string): Promise<any> {
+export async function executeToFile(platform: string, action: Action, req: ActionRequest, file: string, purpose: string): Promise<any> {
     const tmp = `${file}.tmp`;
-    const res = await one([...args, '--output', tmp], 120_000, purpose);
+    const res = await execute(platform, action, { ...req, output: tmp }, purpose);
     if (!res.response?.saved) throw new OneError(`no file came back for ${purpose}: ${JSON.stringify(res).slice(0, 300)}`);
     renameSync(tmp, file);
     return res.response;
 }
 
 /** The promise cached under `key`, made on first use. A failed one is dropped, so the next call tries again. */
-function cached(cache: Map<string, Promise<string>>, key: string, make: () => Promise<string>): Promise<string> {
+export function cached<T>(cache: Map<string, Promise<T>>, key: string, make: () => Promise<T>): Promise<T> {
     let found = cache.get(key);
     if (!found) {
         found = make();
@@ -113,21 +123,20 @@ function cached(cache: Map<string, Promise<string>>, key: string, make: () => Pr
 /** A path with its variables blanked, so `/incidents/{{id}}` and `/incidents/{id}` match. */
 const norm = (path: string) => path.replace(/\{\{?\w+\}?\}/g, '{}').replace(/\/$/, '');
 
-/** The action id for a platform's `method path`, found once per process. */
-export function findAction(platform: string, query: string, method: string, path: string, task: string): Promise<string> {
+/** The action for a platform's `method path`, found once per process. */
+export function findAction(platform: string, query: string, method: string, path: string, task: string): Promise<Action> {
     return cached(actions, `${platform} ${method} ${norm(path)}`, async () => {
         const res = await one(['actions', 'find', platform, query, '--task', task, '--no-knowledge', '-t', 'execute']);
         const answer = res.answers?.[0] ?? {};
         const candidates = [...(answer.selected ?? []), ...(answer.alsoSelected ?? []), ...(answer.alternatives ?? [])];
         const hit = candidates.find((a: any) => a.method?.toUpperCase() === method && norm(a.path) === norm(path));
         if (!hit) throw new OneError(`no ${platform} action matched ${method} ${path}`);
-        titles.set(hit.actionId, { title: hit.title, method: hit.method, path: hit.path });
-        return hit.actionId as string;
+        return { id: hit.actionId, title: hit.title, method: hit.method, path: hit.path };
     });
 }
 
 /** The connection key for a platform: ONE_<PLATFORM>_CONNECTION_KEY, else its only operational connection. */
-export function connection(platform: string): Promise<string> {
+function connection(platform: string): Promise<string> {
     const envName = `ONE_${platform.toUpperCase().replace(/-/g, '_')}_CONNECTION_KEY`; // pager-duty: ONE_PAGER_DUTY_…
     const fromEnv = process.env[envName]?.trim();
     if (fromEnv) return Promise.resolve(fromEnv);

@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { connection, executeToFile, findAction } from './one.ts';
+import { executeToFile, findAction } from './one.ts';
 
 const VOICE = process.env.ELEVENLABS_VOICE_ID || 'onwK4e9ZLuTAKqWW03F9'; // "Daniel, Steady Broadcaster"
 const MODEL = 'eleven_multilingual_v2';
@@ -28,18 +28,14 @@ export function speak(text: string, dir: string): Promise<string> {
 }
 
 async function generate(text: string, dir: string, name: string): Promise<string> {
-    const [actionId, key] = await Promise.all([
-        findAction('elevenlabs', 'stream text to speech audio for a voice', 'POST', '/text-to-speech/{{voiceId}}/stream', 'read a call for an expert aloud'),
-        connection('elevenlabs'),
-    ]);
+    const action = await findAction('elevenlabs', 'stream text to speech audio for a voice', 'POST', '/text-to-speech/{{voiceId}}/stream', 'read a call for an expert aloud');
     mkdirSync(dir, { recursive: true });
-    // The URL template names the voice voiceId and the validator checks voice_id: send both.
-    const args = [
-        'actions', 'execute', 'elevenlabs', actionId, key,
-        '-d', JSON.stringify({ text, model_id: MODEL }),
-        '--path-vars', JSON.stringify({ voiceId: VOICE, voice_id: VOICE }),
-        '--query-params', JSON.stringify({ output_format: FORMAT }),
-    ];
-    await executeToFile(args, join(dir, name), 'spoken call');
+    const req = {
+        data: { text, model_id: MODEL },
+        // The URL template names the voice voiceId and the validator checks voice_id: send both.
+        pathVars: { voiceId: VOICE, voice_id: VOICE },
+        queryParams: { output_format: FORMAT },
+    };
+    await executeToFile('elevenlabs', action, req, join(dir, name), 'spoken call');
     return name;
 }

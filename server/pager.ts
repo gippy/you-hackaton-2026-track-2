@@ -12,7 +12,7 @@ import { createHash } from 'node:crypto';
 
 import library from '../shared/library.json' with { type: 'json' };
 import type { Expert, PageInfo, RunState } from '../shared/protocol.ts';
-import { connection, findAction, one, OneError } from './one.ts';
+import { type Action, type ActionRequest, execute, findAction, one, OneError } from './one.ts';
 
 const POLL_MS = 15_000;
 const COOLDOWN_MS = 60_000; // one page per expert per minute, whatever the clicks
@@ -27,7 +27,7 @@ const ACTIONS = {
     get: ['get an incident by id', 'GET', '/incidents/{{id}}'],
     update: ['update an incident by id', 'PUT', '/incidents/{{id}}'],
 } as const;
-type Action = keyof typeof ACTIONS;
+type ActionName = keyof typeof ACTIONS;
 
 interface PageRequest {
     expert: Expert;
@@ -37,15 +37,14 @@ interface PageRequest {
     urgency: 'high' | 'low';
 }
 
-function actionId(action: Action): Promise<string> {
-    const [query, method, path] = ACTIONS[action];
+function pagerAction(name: ActionName): Promise<Action> {
+    const [query, method, path] = ACTIONS[name];
     return findAction('pager-duty', query, method, path, TASK);
 }
 
-/** Run a PagerDuty action through One with extra CLI flags, and return PagerDuty's response. */
-async function execute(action: Action, flags: string[], timeout: number, purpose: string): Promise<any> {
-    const [conn, id] = await Promise.all([connection('pager-duty'), actionId(action)]);
-    return (await one(['actions', 'execute', 'pager-duty', id, conn, ...flags], timeout, purpose)).response;
+/** Run a PagerDuty action through One, and return PagerDuty's response. */
+async function pagerDuty(name: ActionName, req: ActionRequest, purpose: string, timeout?: number): Promise<any> {
+    return (await execute('pager-duty', await pagerAction(name), req, purpose, timeout)).response;
 }
 
 let from: Promise<string> | null = null;
@@ -54,7 +53,7 @@ let from: Promise<string> | null = null;
 function fromEmail(): Promise<string> {
     from ??= (async () => {
         if (process.env.PAGERDUTY_FROM) return process.env.PAGERDUTY_FROM;
-        const owners = (await execute('listUsers', [], 120_000, 'find the From email'))?.users?.filter((u: any) => u.role === 'owner');
+        const owners = (await pagerDuty('listUsers', {}, 'find the From email'))?.users?.filter((u: any) => u.role === 'owner');
         if (owners?.length !== 1) throw new OneError(`PagerDuty has ${owners?.length ?? 0} owners; set PAGERDUTY_FROM in .env`);
         return owners[0].email as string;
     })();
@@ -101,7 +100,7 @@ export class Pager {
         }
         this.set(base);
         try {
-            const [email, createId] = await Promise.all([fromEmail(), actionId('create')]);
+            const [email, create] = await Promise.all([fromEmail(), pagerAction('create')]);
             const body = {
                 incident: {
                     type: 'incident',
@@ -112,14 +111,14 @@ export class Pager {
                     body: { type: 'incident_body', details: req.details },
                 },
             };
-            await one(['actions', 'load', createId]); // read the action's docs before its first execute
+            await one(['actions', 'load', create.id]); // read the action's docs before its first execute
             let incident: any;
             try {
-                incident = (await execute('create', ['-d', JSON.stringify(body), '--headers', JSON.stringify({ From: email })], 60_000, `call the ${req.expert}`))?.incident;
+                incident = (await pagerDuty('create', { data: body, headers: { From: email } }, `call the ${req.expert}`, 60_000))?.incident;
             } catch (err) {
                 // A second open incident with the same key is refused: follow the one that is open.
                 if (!/key|dedup|already/i.test(String((err as Error).message))) throw err;
-                const open = await execute('list', ['--query-params', JSON.stringify({ incident_key: key })], 120_000, 'find the open page');
+                const open = await pagerDuty('list', { queryParams: { incident_key: key } }, 'find the open page');
                 incident = (open?.incidents ?? []).find((i: any) => i.status !== 'resolved');
             }
             if (!incident?.id) throw new OneError('PagerDuty did not return an incident');
@@ -140,7 +139,7 @@ export class Pager {
                 return;
             }
             try {
-                const incident = (await execute('get', ['--path-vars', JSON.stringify({ id: page.id })], 120_000, 'follow the page'))?.incident;
+                const incident = (await pagerDuty('get', { pathVars: { id: page.id } }, 'follow the page'))?.incident;
                 const next = { ...page, ...fromIncident(incident) };
                 if (next.status !== page.status || next.acknowledged_by.join() !== page.acknowledged_by.join()) this.set(next);
             } catch (err) {
@@ -161,13 +160,12 @@ export class Pager {
     async resolve(page: PageInfo): Promise<void> {
         if (!page.id) return;
         try {
-            const email = await fromEmail();
-            const flags = [
-                '-d', JSON.stringify({ incident: { type: 'incident_reference', status: 'resolved' } }),
-                '--path-vars', JSON.stringify({ id: page.id }),
-                '--headers', JSON.stringify({ From: email }),
-            ];
-            const incident = (await execute('update', flags, 60_000, 'resolve the page'))?.incident;
+            const req = {
+                data: { incident: { type: 'incident_reference', status: 'resolved' } },
+                pathVars: { id: page.id },
+                headers: { From: await fromEmail() },
+            };
+            const incident = (await pagerDuty('update', req, 'resolve the page', 60_000))?.incident;
             this.set({ ...page, ...fromIncident(incident), error: undefined });
         } catch (err) {
             this.set({ ...page, error: `Resolve failed: ${String((err as Error).message).slice(0, 300)}` });
