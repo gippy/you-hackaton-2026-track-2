@@ -35,8 +35,7 @@ The screenshots come from live runs on 2026-10-28 at 1440x900, cropped to the pa
 
 - **Shows:** 1 to 3 buttons under the ThreatBanner's directive, each an order under 5 words, such as "Seal lounge" or "Switch to garlic line". A move already in effect shows a check mark and can't be pressed again.
 - **When:** the model writes them for the moves the commander most likely makes next. `clean_manifest` keeps only moves this station can run, each once:
-  - seal a sector, with a FloorPlan on the station, and never a sector the plan already seals
-  - unseal a sector the FloorPlan doesn't seal, or any sector when there is no FloorPlan
+  - seal or unseal a sector, with a FloorPlan on the station, and never a sector the plan already seals
   - switch to a picker option other than the recommended one, which is already picked
   - get all or half of the tracked people out, with a CivilianTracker on the station
   - call a known expert
