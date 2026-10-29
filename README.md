@@ -6,6 +6,7 @@ A raw incident report goes in. A working command station comes out, built live o
 
 The model reads the report, decides whether the threat is real, and builds the station this incident needs from a fixed component library: which panels, in what order, how big, under what titles, with which facts pinned on the floor plan and which next moves offered as buttons. Every countermeasure it offers cites a numbered You.com source. What the operator does then feeds the next report's station.
 
+- **[The demo video](https://youtu.be/ZqF8nGHmYpo)**: the station at work, narrated.
 - **[The live station](https://jaroslavhejlek--haunted-command-station.apify.actor)**: running on Apify, open to anyone, no sign-in. It opens on Nightfall step 1, and a cold start takes about 10 seconds.
 - **[How it works](docs/how-it-works.html)**: a field manual for judges on how CrewAI, You.com, Parasail and One are used, with a guide to the code. GitHub shows it as source, so download it or open it from a clone.
 - **[AGENTS.md](AGENTS.md)**: the map of the repo, the commands and the rules, for people and coding agents alike. Each main folder has its own.
