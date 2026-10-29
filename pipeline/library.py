@@ -367,7 +367,8 @@ def _clean_picker(props: dict) -> None:
 
 def _clean_quick_actions(actions: list[dict] | None, components: list[dict], calm: bool, notes: list[str]) -> list[dict]:
     """Keep the quick actions this station can run, each once:
-    - seal and unseal: a sector, with a FloorPlan on the station, and never one the plan already seals
+    - seal: a sector, with a FloorPlan on the station, and never one the plan already seals
+    - unseal: a sector the FloorPlan, if there is one, does not seal; the page unseals the operator's own seals
     - countermeasure: an option of the station's picker other than the recommended one, which is already picked
     - extract: all or half of the people on the station's CivilianTracker
     - call_expert: a known expert
@@ -378,7 +379,7 @@ def _clean_quick_actions(actions: list[dict] | None, components: list[dict], cal
     options = {o["id"] for o in picker["options"] if o["id"] != picker.get("recommended")} if picker else set()
     runnable = {
         "seal": lambda t: plan is not None and t in SECTORS and t not in plan["seal"],
-        "unseal": lambda t: plan is not None and t in SECTORS and t not in plan["seal"],
+        "unseal": lambda t: t in SECTORS and (plan is None or t not in plan["seal"]),
         "countermeasure": lambda t: t in options,
         "extract": lambda t: "CivilianTracker" in props and t in PEOPLE_SHARES,
         "call_expert": lambda t: t in EXPERTS,
