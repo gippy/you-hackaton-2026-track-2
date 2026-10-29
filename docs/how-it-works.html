@@ -108,7 +108,7 @@ figcaption b { color: var(--ink); font-weight: 600; }
 .axis { stroke: var(--line); stroke-width: 1; }
 
 /* Code map */
-.codemap { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.codemap { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
 .folder { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
 .folder h3 { font-family: var(--mono); font-size: 15px; color: var(--accent); }
 .folder dl { margin: 0; display: grid; gap: 8px; }
@@ -116,6 +116,8 @@ figcaption b { color: var(--ink); font-weight: 600; }
 .folder dd { margin: 0; font-size: 14px; color: var(--muted); }
 .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; }
 .two > * { min-width: 0; }
+.note { max-width: 70ch; font-size: 15px; }
+.sec-head p { color: var(--muted); }
 
 footer { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 18px; }
 </style>
@@ -123,18 +125,18 @@ footer { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line)
 <div class="wrap">
   <header class="top">
     <div class="top-row">
-      <span class="eyebrow">Hack with YOU · Track 2 · Nightfall scenario</span>
+      <span class="eyebrow">Hack with YOU · Track 2 · Three scenarios</span>
       <button class="theme-btn" id="theme-toggle" type="button">Light / dark</button>
     </div>
     <h1>Haunted Dashboard Field Manual</h1>
-    <p class="lead">A messy incident log goes in. A command station comes out, built panel by panel by a model, grounded in cited sources, with a button that pages a real expert.</p>
+    <p class="lead">A messy incident log goes in. A command station comes out, built panel by panel by a model and grounded in cited sources. The operator acts on it, can page a real expert, and the next step builds on both.</p>
   </header>
 
   <section class="partners" aria-label="The four partners">
     <div class="p-card"><h3>CrewAI</h3><p>Runs the pipeline as a Flow, with a research agent inside.</p><span class="fig-ref">Figures 2 and 3</span></div>
     <div class="p-card"><h3>You.com</h3><p>Finds the web sources every station is built on.</p><span class="fig-ref">Figure 3</span></div>
-    <div class="p-card"><h3>Parasail</h3><p>Every model call: the facts, the agent and the layout.</p><span class="fig-ref">Figures 2 and 4</span></div>
-    <div class="p-card"><h3>One</h3><p>Real actions: pages an expert, speaks the alert.</p><span class="fig-ref">Figure 5</span></div>
+    <div class="p-card"><h3>Parasail</h3><p>Every model call: the facts, the agent and the layout.</p><span class="fig-ref">Figures 2, 4 and 5</span></div>
+    <div class="p-card"><h3>One</h3><p>Real actions: pages an expert through PagerDuty, speaks the alert.</p><span class="fig-ref">Figure 7</span></div>
   </section>
 
   <section class="sec" aria-labelledby="f1">
@@ -340,12 +342,79 @@ footer { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line)
           <text class="t" x="696" y="230" text-anchor="middle">3 · EntityCard · 4</text>
         </svg>
       </div>
-      <figcaption><b>The model decides what and in which order. The page decides where.</b> A panel appears while the model is still writing the next one. A harmless verdict is forced to "observe" in code, whatever the model wrote. <code>flow.py · compose</code>, <code>web/src/layout.ts</code></figcaption>
+      <figcaption><b>The model decides what, in which order and how big. The page decides where.</b> A panel appears while the model is still writing the next one. A harmless verdict is forced to "observe" in code, whatever the model wrote. <code>flow.py · compose</code>, <code>web/src/layout.ts</code></figcaption>
     </figure>
   </section>
 
   <section class="sec" aria-labelledby="f5">
-    <div class="sec-head"><span class="eyebrow">Figure 5 · One</span><h2 id="f5">Call an expert</h2></div>
+    <div class="sec-head"><span class="eyebrow">Figure 5 · Parasail</span><h2 id="f5">What else the model writes</h2>
+      <p>The model never writes markup. Beyond picking panels, it fills these fields under the same strict schema, and code checks each one.</p></div>
+    <div class="partners">
+      <div class="p-card"><h3>Evidence highlights</h3><p>The intake quotes up to 5 phrases of 2 to 8 words, each tagged threat, harmless or people. Code drops any quote that is not word for word in the report. The incident report panel highlights the rest.</p><span class="fig-ref">library.py · clean_quotes, web/src/report.tsx</span></div>
+      <div class="p-card"><h3>Map tokens and markers</h3><p>Up to 6 markers on the floor plan, each in a sector with a label of at most 5 words. Each shows one of 16 map pictures or a countermeasure icon, else a colored dot. The label shows on hover.</p><span class="fig-ref">web/src/floorplan.tsx</span></div>
+      <div class="p-card"><h3>Panel titles and sizes</h3><p>Every panel gets a title for this incident in at most 5 words, such as "Who's still in the hall". It also asks for room: hero, standard or compact. The page turns that into columns.</p><span class="fig-ref">web/src/layout.ts</span></div>
+      <div class="p-card"><h3>Quick actions</h3><p>1 to 3 buttons for the commander's likely next move: seal or unseal a sector, switch countermeasure, mark people out, or call an expert. A harmless station offers at most unseal.</p><span class="fig-ref">web/src/actions.tsx</span></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="f6">
+    <div class="sec-head"><span class="eyebrow">Figure 6 · CrewAI Flow</span><h2 id="f6">Each step builds on the last</h2></div>
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 900 260" role="img" aria-label="Step N's station sends two things to step N plus 1. The operator's moves (countermeasure, seals, people out, expert calls) go with the next step to compose. The saved finding of each earlier step goes to the intake, which reads the last 6. The intake feeds compose, which builds the station for step N plus 1.">
+          <defs>
+            <marker id="g1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="g2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-hl" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <rect class="n" x="10" y="95" width="160" height="70"/>
+          <text class="t-b" x="90" y="125" text-anchor="middle">Station, step N</text>
+          <text class="t-s" x="90" y="145" text-anchor="middle">the operator acts</text>
+
+          <rect class="n-hl" x="240" y="15" width="260" height="80"/>
+          <text class="t-b" x="370" y="42" text-anchor="middle">Operator's moves</text>
+          <text class="t" x="370" y="62" text-anchor="middle">countermeasure, seals</text>
+          <text class="t" x="370" y="80" text-anchor="middle">people out, expert calls</text>
+
+          <rect class="n-soft" x="240" y="165" width="260" height="80"/>
+          <text class="t-b" x="370" y="192" text-anchor="middle">Saved finding</text>
+          <text class="t" x="370" y="212" text-anchor="middle">entity, class, verdict</text>
+          <text class="t-s" x="370" y="230" text-anchor="middle">time, sector, summary</text>
+
+          <rect class="n" x="620" y="15" width="130" height="80"/>
+          <text class="t-b" x="685" y="45" text-anchor="middle">compose</text>
+          <text class="t-s" x="685" y="64" text-anchor="middle">reads the moves</text>
+          <text class="t-a" x="685" y="83" text-anchor="middle">Parasail</text>
+
+          <rect class="n" x="620" y="165" width="130" height="80"/>
+          <text class="t-b" x="685" y="195" text-anchor="middle">ingest</text>
+          <text class="t-s" x="685" y="214" text-anchor="middle">reads the last 6</text>
+          <text class="t-a" x="685" y="233" text-anchor="middle">Parasail</text>
+
+          <rect class="n-hl" x="780" y="105" width="110" height="70"/>
+          <text class="t-b" x="835" y="135" text-anchor="middle">Station,</text>
+          <text class="t-b" x="835" y="155" text-anchor="middle">step N+1</text>
+
+          <polyline class="e-hl" points="170,115 205,115 205,55 238,55" marker-end="url(#g2)"/>
+          <polyline class="e" points="170,145 205,145 205,205 238,205" marker-end="url(#g1)"/>
+          <line class="e-hl" x1="500" y1="55" x2="618" y2="55" marker-end="url(#g2)"/>
+          <text class="t-a" x="559" y="47" text-anchor="middle">next step</text>
+          <line class="e" x1="500" y1="205" x2="618" y2="205" marker-end="url(#g1)"/>
+          <text class="t-s" x="559" y="197" text-anchor="middle">earlier steps</text>
+          <line class="e" x1="685" y1="165" x2="685" y2="97" marker-end="url(#g1)"/>
+          <text class="t-s" x="693" y="136">the incident</text>
+          <polyline class="e-hl" points="750,55 835,55 835,103" marker-end="url(#g2)"/>
+        </svg>
+      </div>
+      <figcaption><b>The station remembers.</b> Moves shape what the next station recommends. Findings shape how the next report is read. <code>flow.py · _moves_facts, _earlier_facts</code>, <code>server/station.ts</code></figcaption>
+    </figure>
+    <div class="two">
+      <div class="p-card"><h3>The operator's moves</h3><p>When the operator steps to the next report, the page sends what they did with it. Compose keeps those sectors sealed, says whether the picked countermeasure still fits, and counts only the people still inside. An expert already paged is on the way, so the station says what to hand over instead of calling again.</p></div>
+      <div class="p-card"><h3>Running memory</h3><p>Each scenario step's intake reads what up to 6 earlier steps found, from this station's saved runs. A later report that says "the figures" now gets a name. Its own checks can still clear it, such as a green badge or a normal temperature. In Zombie Rush, misses fell from 3 of 15 to 1.</p></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="f7">
+    <div class="sec-head"><span class="eyebrow">Figure 7 · One</span><h2 id="f7">Call an expert</h2></div>
     <figure>
       <div class="fig-body">
         <svg viewBox="0 0 900 340" role="img" aria-label="An operator clicks Call vampire hunter. The server checks the cooldown and the step-and-expert key, then asks the One CLI to create a PagerDuty incident marked simulated. PagerDuty pages the expert's phone. The expert acknowledges. The server polls the incident every 15 seconds and shows Acknowledged on the page.">
@@ -386,8 +455,19 @@ footer { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line)
           <text class="t-a" x="175" y="306" text-anchor="middle">Acknowledged by Jaroslav</text>
         </svg>
       </div>
-      <figcaption><b>A real page, safely.</b> Ghostbuster works the same way for spectral threats. One key per step and expert means a second click can't page twice. One also speaks "Calling the vampire hunter" through ElevenLabs. <code>server/pager.ts</code>, <code>server/speech.ts</code></figcaption>
+      <figcaption><b>A real page, safely.</b> Ghostbuster works the same way for spectral threats. One key per step and expert means a second click can't page twice. One also speaks "Calling the vampire hunter" through ElevenLabs. The call's status goes with the next step (Figure 6). <code>server/pager.ts</code>, <code>server/speech.ts</code></figcaption>
     </figure>
+  </section>
+
+  <section class="sec" aria-labelledby="scenarios">
+    <div class="sec-head"><span class="eyebrow">Fixtures</span><h2 id="scenarios">Three scenarios</h2>
+      <p>Each scenario is 24 steps of raw reports, with an answer key beside it that the model never sees.</p></div>
+    <div class="partners">
+      <div class="p-card"><h3>Nightfall</h3><p>Vampires and werewolves at the Loft. The corporeal playbook. The only scenario with a sky.</p><span class="fig-ref">fixtures/nightfall/</span></div>
+      <div class="p-card"><h3>The Coffee Bar Phantom</h3><p>An espresso gauge sweeping with the machine off, and paper cups stacked in a spiral. The spectral playbook.</p><span class="fig-ref">fixtures/phantom/</span></div>
+      <div class="p-card"><h3>Zombie Rush</h3><p>140 people queue at doors open, with grey skin and torn sleeves. Costumes or not? The corporeal playbook.</p><span class="fig-ref">fixtures/zombies/</span></div>
+    </div>
+    <p class="note"><b>Why only Nightfall gets a sky.</b> Vampires fear daylight, so sunset changes which countermeasures work. Its steps get the real sky times and moon phase over San Francisco. A phantom and a zombie rush don't depend on them, so those steps get no sky at all.</p>
   </section>
 
   <section class="sec" aria-labelledby="numbers">
@@ -439,23 +519,25 @@ footer { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line)
       </figure>
       <figure class="chart">
         <div class="fig-body">
-          <svg viewBox="0 0 560 230" role="img" aria-label="Eval score out of 144 on the 24 Nightfall steps: baseline 114, after fixes pass A 126.7, pass B 127.5.">
-            <line class="axis" x1="150" y1="14" x2="150" y2="170"/>
-            <line class="e-dash" x1="510" y1="14" x2="510" y2="170"/>
-            <text class="t-s" x="510" y="186" text-anchor="middle">144 max</text>
-            <text class="t" x="142" y="44" text-anchor="end">baseline</text>
-            <rect class="bar-m" x="150" y="28" width="285" height="24"><title>Baseline: 114 of 144</title></rect>
+          <svg viewBox="0 0 560 230" role="img" aria-label="Eval score out of 144 per scenario: Nightfall baseline 114, Nightfall now 134.9 averaged over two passes, The Coffee Bar Phantom 114.0, Zombie Rush 108.2.">
+            <line class="axis" x1="150" y1="14" x2="150" y2="216"/>
+            <line class="e-dash" x1="510" y1="14" x2="510" y2="216"/>
+            <text class="t-s" x="510" y="10" text-anchor="middle">144 max</text>
+            <text class="t" x="142" y="44" text-anchor="end">Nightfall, before</text>
+            <rect class="bar-m" x="150" y="28" width="285" height="24"><title>Nightfall baseline: 114 of 144</title></rect>
             <text class="t" x="443" y="45">114</text>
-            <text class="t" x="142" y="94" text-anchor="end">fixed, pass A</text>
-            <rect class="bar" x="150" y="78" width="316.8" height="24"><title>After fixes, pass A: 126.7 of 144</title></rect>
-            <text class="t" x="474" y="95">126.7</text>
-            <text class="t" x="142" y="144" text-anchor="end">fixed, pass B</text>
-            <rect class="bar" x="150" y="128" width="318.8" height="24"><title>After fixes, pass B: 127.5 of 144</title></rect>
-            <text class="t" x="476" y="145">127.5</text>
-            <text class="t-s" x="150" y="214">0</text>
+            <text class="t" x="142" y="94" text-anchor="end">Nightfall, now</text>
+            <rect class="bar" x="150" y="78" width="337.2" height="24"><title>Nightfall now, mean of two passes: 134.9 of 144</title></rect>
+            <text class="t-on" x="480" y="95" text-anchor="end">134.9</text>
+            <text class="t" x="142" y="144" text-anchor="end">Phantom</text>
+            <rect class="bar" x="150" y="128" width="285" height="24"><title>The Coffee Bar Phantom: 114.0 of 144</title></rect>
+            <text class="t" x="443" y="145">114.0</text>
+            <text class="t" x="142" y="194" text-anchor="end">Zombie Rush</text>
+            <rect class="bar" x="150" y="178" width="270.5" height="24"><title>Zombie Rush: 108.2 of 144</title></rect>
+            <text class="t" x="428" y="195">108.2</text>
           </svg>
         </div>
-        <figcaption><b>Eval: 114 to 127 of 144.</b> 24 Nightfall steps scored against an answer key: action, dispatch, sector, panels. <code>eval/report.md</code></figcaption>
+        <figcaption><b>Eval: Nightfall from 114 to 134.9 of 144,</b> the mean of two passes, with 0 of 14 misses. The Coffee Bar Phantom scores 114.0 with 0 of 11 misses, and Zombie Rush 108.2 with 1 of 15. Each step scores action, dispatch, sector, panels, no discouraged panel and no failure. <code>eval/report.md</code>, <code>eval/report-phantom-c.md</code>, <code>eval/report-zombies-c.md</code></figcaption>
       </figure>
     </div>
   </section>
@@ -464,38 +546,50 @@ footer { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line)
     <div class="sec-head"><span class="eyebrow">For judges and reviewers</span><h2 id="code">Code map</h2></div>
     <div class="codemap">
       <div class="folder"><h3>pipeline/</h3><dl>
-        <dt>flow.py</dt><dd>The CrewAI Flow, prompts and schemas</dd>
-        <dt>library.py</dt><dd>Playbooks and the panel checks</dd>
+        <dt>flow.py</dt><dd>The CrewAI Flow, prompts, memory and moves</dd>
+        <dt>library.py</dt><dd>Playbooks, the panel and quote checks</dd>
         <dt>grounding.py</dt><dd>You.com search and the agent's tool</dd>
         <dt>parasail.py</dt><dd>Model client and CrewAI LLM</dd>
       </dl></div>
       <div class="folder"><h3>server/</h3><dl>
-        <dt>station.ts</dt><dd>Runs the Flow, streams to every viewer</dd>
+        <dt>station.ts</dt><dd>Runs the Flow, reads earlier steps, streams to every viewer</dd>
         <dt>one.ts</dt><dd>One CLI: find, execute, log</dd>
         <dt>pager.ts · speech.ts</dt><dd>PagerDuty call, ElevenLabs voice</dd>
         <dt>sky.ts</dt><dd>Sunset and moonrise, offline and live</dd>
       </dl></div>
       <div class="folder"><h3>web/src/</h3><dl>
-        <dt>App.tsx · layout.ts</dt><dd>The station and its 12-column grid</dd>
+        <dt>App.tsx · layout.ts</dt><dd>The station, panel sizes to columns</dd>
         <dt>components.tsx</dt><dd>Every panel the model can pick</dd>
-        <dt>floorplan.tsx · route.ts</dt><dd>Floor and area maps, safe routes</dd>
+        <dt>report.tsx · evidence.tsx</dt><dd>The incident report and its highlights</dd>
+        <dt>floorplan.tsx · route.ts</dt><dd>Maps, markers and safe routes</dd>
+        <dt>actions.tsx · experts.tsx</dt><dd>Quick actions and expert calls</dd>
       </dl></div>
-      <div class="folder"><h3>shared · data · proof</h3><dl>
-        <dt>shared/library.json</dt><dd>Panels, sectors, playbooks, icons</dd>
-        <dt>fixtures/nightfall/</dt><dd>24 steps and the eval's answer key</dd>
+      <div class="folder"><h3>shared · fixtures · art</h3><dl>
+        <dt>shared/protocol.ts</dt><dd>Messages, panel props, moves, findings</dd>
+        <dt>shared/library.json</dt><dd>Panels, sectors, playbooks, map tokens</dd>
+        <dt>fixtures/</dt><dd>Three scenarios, each with its answer key</dd>
+        <dt>art/station/</dt><dd>Every scenario's art and its manifest</dd>
+      </dl></div>
+      <div class="folder"><h3>eval · proof · guides</h3><dl>
+        <dt>eval/run.py</dt><dd>Runs a scenario through the real pipeline, scores it</dd>
         <dt>proof/</dt><dd>Every partner call, keys redacted</dd>
+        <dt>AGENTS.md</dt><dd>A guide at the root and in each main folder</dd>
       </dl></div>
     </div>
     <div class="two">
-<pre><code># run the station: http://127.0.0.1:8666
+<pre><code># run the station: http://127.0.0.1:8674
 pnpm install
 uv venv --python 3.13 .venv
-uv pip install -r requirements.txt
-pnpm start             # add --offline to replay</code></pre>
+uv pip install --python .venv/bin/python \
+  -r requirements.txt
+PAGING=off pnpm start --port 8674 --no-browser
+# add --offline to replay saved runs</code></pre>
 <pre><code># check it
-pnpm check                         # types, build
-node --test web/src/route.test.ts  # 14 of 14
-PAGING=off .venv/bin/python eval/run.py</code></pre>
+pnpm check   # types, unit tests, build
+PAGING=off .venv/bin/python eval/run.py \
+  --label mine \
+  --scenario fixtures/zombies/scenario.json \
+  --key fixtures/zombies/answer-key.json</code></pre>
     </div>
   </section>
 
