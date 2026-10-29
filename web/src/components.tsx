@@ -114,8 +114,7 @@ export function IncidentHead({ incident, ctx, action, directive }: { incident: I
 export function Card({ index, component, ctx, span, tall }: { index: number; component: Component; ctx: Ctx; span: number; tall: boolean }) {
     // The model's title for this incident, else the panel's own name; the area map is always "Around the tower".
     const title = component.type === 'FloorPlan' && mapView(component.props, ctx) === 'area' ? 'Around the tower' : component.props?.title || TITLES[component.type];
-    const extra =
-        component.type === 'ThreatBanner' ? `threat sev-${component.props?.severity}` : component.type === 'FloorPlan' ? 'floor' : component.type === 'EMFGauge' ? 'gauge' : '';
+    const extra = component.type === 'ThreatBanner' ? `threat sev-${component.props.severity}` : '';
     return (
         <article className={`card ${extra}`} style={{ gridColumn: `span ${span}`, gridRow: tall ? 'span 2' : undefined }}>
             {/* The incident headline is the panel's own title, so its frame header is for screen readers only. */}
@@ -195,7 +194,7 @@ function Gauge(p: Props<'EMFGauge'>) {
     const [tx, ty] = pt(th, 96);
     const arrow = { rising: '▲', falling: '▼', steady: '▶' }[p.trend];
     return (
-        <div className={`status-${p.status}`}>
+        <div className={`gauge status-${p.status}`}>
             <svg viewBox="0 0 200 112" role="img" aria-label={`EMF ${p.value_mg} milligauss, danger above ${p.threshold_mg}`}>
                 {arc(0, th * 0.5, 'var(--dim)')}
                 {arc(th * 0.5, th, 'var(--amber)')}

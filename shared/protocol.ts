@@ -165,7 +165,7 @@ export interface Floor {
      */
     blocks: { id: string; aws_name: string; polygon: [number, number][]; sectors: string[]; label_at: [number, number]; label_anchor: 'start' | 'middle' | 'end'; walkable?: boolean }[];
     open_middle?: [number, number][];
-    features: { id: string; type: string; label: string; at: [number, number]; polygon?: [number, number][]; line?: [number, number][]; zone: string | null; exit?: boolean }[];
+    features: { id: string; type: string; label: string; at: [number, number]; polygon?: [number, number][]; zone: string | null; exit?: boolean }[];
     connections: { a: string; b: string; via: string | null }[];
 }
 

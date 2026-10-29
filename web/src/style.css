@@ -257,7 +257,6 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .floor .feature { fill: var(--dim); stroke: none; }
 .floor .feature.stage { fill: rgba(255, 138, 31, 0.12); stroke: var(--dim); stroke-width: 0.3; }
 .floor .feature.exit { fill: var(--hi); }
-.floor .window { fill: none; stroke: var(--spook); stroke-width: 0.6; stroke-dasharray: 1.5 0.8; opacity: 0.8; }
 .floor .route { fill: none; stroke: var(--hi); stroke-width: 0.9; stroke-dasharray: 2.5 2; animation: march 1s linear infinite; }
 .floor .route-start { fill: var(--hi); }
 .floor .route.blocked { stroke: var(--red); }
