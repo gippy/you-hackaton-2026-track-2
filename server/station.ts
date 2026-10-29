@@ -65,7 +65,7 @@ export class Station {
     private clients = new Set<WebSocket>();
     /** Every message of the current run, for pages that connect mid-run. */
     private history: ServerMessage[] = [];
-    run: SavedRun | null = null;
+    private run: SavedRun | null = null;
     private busy = false;
     private readonly opts: StationOptions;
     private readonly outDir: string;

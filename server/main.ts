@@ -22,7 +22,6 @@ import { Station } from './station.ts';
 const ROOT = resolve(import.meta.dirname, '..');
 const DIST = join(ROOT, 'web', 'dist');
 const FIXTURES = join(ROOT, 'fixtures');
-const OFFICIAL = 'haunted-dashboard.json';
 const ART = join(ROOT, 'art', 'station'); // the only part of art/ the page may load
 const MAP = join(ROOT, 'data', 'map');
 const SPEECH = join(ROOT, 'out', 'speech');
@@ -39,9 +38,8 @@ const { values: args } = parseArgs({
     options: {
         offline: { type: 'boolean', default: false },
         incident: { type: 'string' },
-        // Apify Standby sets ACTOR_WEB_SERVER_PORT; the server then listens on every interface.
-        host: { type: 'string', default: process.env.HOST ?? (process.env.ACTOR_WEB_SERVER_PORT ? '0.0.0.0' : '127.0.0.1') },
-        port: { type: 'string', default: process.env.ACTOR_WEB_SERVER_PORT ?? process.env.PORT ?? '8666' },
+        host: { type: 'string', default: '127.0.0.1' },
+        port: { type: 'string', default: '8666' },
         'no-browser': { type: 'boolean', default: false },
     },
 });
@@ -63,11 +61,11 @@ function readTicks(path: string, scenario?: string): FixtureIncident[] {
     }));
 }
 
-/** Single incidents: every fixtures/*.json, the official fixture first. */
+/** Single incidents: every fixtures/*.json, by file name. */
 function loadIncidents(): FixtureIncident[] {
     return readdirSync(FIXTURES)
         .filter((f) => f.endsWith('.json'))
-        .sort((a, b) => Number(b === OFFICIAL) - Number(a === OFFICIAL) || a.localeCompare(b))
+        .sort()
         .flatMap((file) => readTicks(join(FIXTURES, file)));
 }
 
@@ -80,7 +78,7 @@ function loadScenarios(): Scenario[] {
             const { title, sky } = readJson<{ title?: string; sky?: boolean }>(path);
             return { id: d.name, title: title ?? d.name[0].toUpperCase() + d.name.slice(1), sky: sky === true, steps: readTicks(path, d.name) };
         })
-        .sort((a, b) => Number(b.id === 'nightfall') - Number(a.id === 'nightfall') || a.title.localeCompare(b.title)); // the demo scenario first
+        .sort((a, b) => a.title.localeCompare(b.title));
 }
 
 /** The art library's entries the page needs: file, kind, alt text and a content hash. Empty when there is no art. */
@@ -105,7 +103,6 @@ function fileIn(dir: string, urlPath: string): string | null {
 }
 
 /**
- * - /manifest.json: the current run's state
  * - /speech/<hash>.mp3: a spoken call from out/speech/
  * - /data/map/area.geojson: the venue's map
  * - /art/station/...: the art the page shows
@@ -113,11 +110,6 @@ function fileIn(dir: string, urlPath: string): string | null {
  */
 function handle(req: IncomingMessage, res: ServerResponse): void {
     const path = (req.url ?? '/').split('?')[0];
-    if (path === '/manifest.json') {
-        res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
-        res.end(JSON.stringify(station.run?.state ?? {}, null, 2));
-        return;
-    }
     const speech = path.match(/^\/speech\/([^/]+)$/)?.[1];
     if (speech && SPEECH_FILE.test(speech) && existsSync(join(SPEECH, speech))) {
         return sendFile(res, join(SPEECH, speech), 'audio/mpeg', 'max-age=31536000, immutable');
@@ -139,15 +131,8 @@ function handle(req: IncomingMessage, res: ServerResponse): void {
 
 // --- start ------------------------------------------------------------------------------
 
-/** The One CLI refuses Node older than 22.23.4, 24.22.1 or 26.12.1, so say so at start, not at dispatch time. */
-function checkNode(): void {
-    const [major, minor] = process.versions.node.split('.').map(Number);
-    const ok = (major === 22 && minor >= 23) || (major === 24 && minor >= 22) || major >= 26;
-    if (!ok) console.warn(`warning: Node ${process.version}; the One CLI needs 22.23.4+, 24.22.1+ or 26.12.1+, so calling an expert will fail`);
-}
-
 function openBrowser(url: string): void {
-    const cmd = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'explorer' : 'xdg-open';
+    const cmd = process.platform === 'darwin' ? 'open' : 'xdg-open';
     execFile(cmd, [url], () => {});
 }
 
@@ -159,7 +144,7 @@ if (!existsSync(join(DIST, 'index.html'))) {
 const incidents = loadIncidents();
 const scenarios = loadScenarios();
 const known = [...scenarios.flatMap((s) => s.steps), ...incidents];
-const firstIncident = args.incident ?? (known.some((i) => i.incident_id === DEMO_INCIDENT) ? DEMO_INCIDENT : known[0].incident_id);
+const firstIncident = args.incident ?? DEMO_INCIDENT;
 if (!known.some((i) => i.incident_id === firstIncident)) {
     console.error(`No incident with id ${firstIncident}. Known ids: ${known.map((i) => i.incident_id).join(', ')}`);
     process.exit(1);
@@ -188,7 +173,6 @@ server.listen(Number(args.port), args.host, () => {
     const mode = args.offline ? 'OFFLINE (replaying the last saved run)' : 'live';
     const paging = args.offline ? 'off (offline)' : station.pager.enabled ? 'on (PagerDuty)' : 'off (PAGING=off)';
     console.log(`Haunted Command Station on ${url}  mode: ${mode}  paging: ${paging}`);
-    if (!args.offline) checkNode();
     if (!args['no-browser']) openBrowser(url);
     station.compileIncident(firstIncident);
 });

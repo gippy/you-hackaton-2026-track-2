@@ -10,7 +10,7 @@ import SunCalc from 'suncalc';
 
 import type { Sky, SkyEvent } from '../shared/protocol.ts';
 
-const LOFT = { lat: 37.7904, lon: -122.3993, place: 'AWS Builder Loft, San Francisco' };
+const LOFT = { lat: 37.7904, lon: -122.3993 }; // AWS Builder Loft, San Francisco
 const WTTR_URL = 'https://wttr.in/San+Francisco?format=j1';
 const TZ = 'America/Los_Angeles';
 
@@ -83,7 +83,7 @@ export async function skyFor(clock: string, outDir: string): Promise<Sky> {
     // An event at wttr.in's time when it has one, else at suncalc's.
     const event = (id: SkyEvent['id'], label: string, computed: Date | undefined, wttrTime?: string): SkyEvent => {
         const local = wttrTime || (computed ? hhmm(computed) : '');
-        return { id, label, local, at: local ? at(day, local) : '', source: wttrTime ? 'wttr.in' : 'suncalc', computed: computed ? hhmm(computed) : '' };
+        return { id, label, local, at: local ? at(day, local) : '', source: wttrTime ? 'wttr.in' : 'suncalc' };
     };
     const events = [
         event('sunset', 'Sunset', sun.sunset, wttr?.sunset),
@@ -95,7 +95,6 @@ export async function skyFor(clock: string, outDir: string): Promise<Sky> {
     const reference = clock ? new Date(at(day, clock)) : new Date();
     return {
         day,
-        place: LOFT.place,
         clock,
         clock_at: clock ? at(day, clock) : '',
         events,
@@ -103,7 +102,6 @@ export async function skyFor(clock: string, outDir: string): Promise<Sky> {
         moon: {
             phase: wttr?.moon_phase || phaseName(illumination.phase),
             illumination: wttr?.moon_illumination ?? Math.round(illumination.fraction * 100),
-            source: wttr ? 'wttr.in' : 'suncalc',
         },
         live_source: wttr ? { url: WTTR_URL, summary: `Sunset ${wttr.sunset}, moonrise ${wttr.moonrise}, ${wttr.moon_phase}, ${wttr.moon_illumination}% lit` } : null,
     };
