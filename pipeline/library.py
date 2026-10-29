@@ -70,11 +70,14 @@ def sector_id(name: str) -> str:
 
 
 def entity_class(incident: dict) -> str:
-    """The playbook for an incident: named creatures decide (a vampire is corporeal), else the model's own class."""
+    """The playbook for an incident: named creatures decide (a vampire is corporeal), else the model's own class.
+
+    A creature's word counts only at the start of a word, so "switch" does not name a witch.
+    """
     for text in (incident.get("entity", ""), incident.get("summary", "")):
         low = text.lower()
         for label, words in ENTITY_CLASSES.items():
-            if any(w in low for w in words):
+            if any(re.search(rf"\b{re.escape(w)}", low) for w in words):
                 return label
     label = incident.get("entity_class")
     return label if label in PLAYBOOKS else "anomalous"
