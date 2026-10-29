@@ -24,7 +24,6 @@ Standard library only.
 from __future__ import annotations
 
 import argparse
-import concurrent.futures as cf
 import hashlib
 import json
 import os
@@ -41,7 +40,7 @@ ROOT = Path(__file__).resolve().parent.parent
 EVAL = Path(__file__).resolve().parent
 LIB = json.loads((ROOT / "shared" / "library.json").read_text())
 BASELINE = EVAL / "baseline" / "results.jsonl"  # the first full run, kept to compare later runs against
-SECTOR_ALIASES = {**(LIB.get("sector_aliases") or {}), "catering_coffee_bar": "catering", "coffee_bar": "catering"}
+SECTOR_ALIASES = LIB["sector_aliases"]
 ACTS = ["observe", "contain", "evacuate"]
 RANK = {a: i for i, a in enumerate(ACTS)}
 TIER_SEVERITY = {"LOW_HAUNT": "low", "ELEVATED_HAUNT": "elevated", "CRITICAL_HAUNT": "critical"}  # UNVERIFIED maps to nothing
@@ -51,19 +50,9 @@ CRITERIA = ["action", "dispatch", "hot", "recall", "no_discouraged", "no_failure
 
 # --- inputs ------------------------------------------------------------------------------------------
 
-def find_input(kind: str, override: str | None) -> Path:
-    """Prefer the copies in fixtures/ (the build session puts them there), else scenarios/pitches/nightfall."""
-    if override:
-        return Path(override)
-    want = "answer-key" if kind == "key" else "scenario"
-    hits = sorted(p for p in (ROOT / "fixtures").rglob("*.json")
-                  if "nightfall" in str(p.relative_to(ROOT / "fixtures")).lower() and want in p.name.lower()
-                  and (kind == "key" or "answer" not in p.name.lower()))
-    return hits[0] if hits else ROOT / "scenarios" / "pitches" / "nightfall" / f"{want}.json"
-
-
-def load_scenario(path: Path) -> list[dict]:
-    return json.loads(path.read_text())["ticks"]
+def load_scenario(path: Path) -> dict:
+    """The scenario: its `title`, whether the server gives it a `sky`, and its `ticks`."""
+    return json.loads(path.read_text())
 
 
 def load_key(path: Path) -> dict[str, dict]:
@@ -84,29 +73,30 @@ def parse_steps(spec: str | None, total: int) -> list[int]:
 
 
 def pipeline_hash(variant: str | None = None) -> str:
-    """A short hash of the code a step runs: pipeline/, the library, the sky, and for a variant the worker and variants."""
+    """A short hash of what a step runs on.
+
+    - pipeline/, the library and the floor, map and art files it names, and the server's sky code
+    - the model names set in the environment
+    - for a variant, the worker and that variant's file
+    """
     h = hashlib.sha256()
     files = sorted((ROOT / "pipeline").glob("*.py")) + [ROOT / "shared" / "library.json", ROOT / "server" / "sky.ts"]
+    files += [ROOT / LIB[k] for k in ("floor_plan", "area_map", "art_manifest")]
     if variant:
-        files += [EVAL / "worker.py", *sorted((EVAL / "variants").glob("*.py"))]
+        files += [EVAL / "worker.py", EVAL / "variants" / f"{variant}.py"]
     for p in files:
         h.update(p.name.encode())
         h.update(p.read_bytes() if p.exists() else b"")
+    for name in ("HAUNT_MODEL", "HAUNT_FALLBACK_MODEL"):
+        h.update(os.environ.get(name, "").encode())
     return h.hexdigest()[:10]
 
 
-def load_skies(scenario: Path) -> dict[str, dict] | None:
-    """The sky the server adds to a scenario step, computed by the server's own server/sky.ts through Node.
-
-    None when Node or the helper fails; the steps then run without a sky, as a pasted report does."""
-    node = os.environ.get("NODE") or "node"
-    try:
-        out = subprocess.run([node, str(EVAL / "sky.ts"), str(scenario), str(EVAL / "cache")], cwd=ROOT, capture_output=True,
-                             text=True, timeout=60, check=True).stdout
-        return json.loads(out)
-    except (OSError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
-        print(f"warning: could not compute the sky ({type(exc).__name__}); steps run without SkyClock", file=sys.stderr)
-        return None
+def load_skies(scenario: Path) -> dict[str, dict]:
+    """The sky the server adds to each step of a scenario, computed by the server's own server/sky.ts through Node."""
+    out = subprocess.run(["node", str(EVAL / "sky.ts"), str(scenario), str(EVAL / "cache")], cwd=ROOT, capture_output=True,
+                         text=True, timeout=60, check=True).stdout
+    return json.loads(out)
 
 
 def norm_sector(s: str | None) -> str | None:
@@ -177,8 +167,7 @@ def run_worker(cmd: list[str], payload: dict, env: dict, log, timeout: float) ->
     return code, result, fatal, events
 
 
-def run_step(tick: dict, timeout: float, sky: dict | None = None, variant: str | None = None, label: str | None = None,
-             earlier: list[dict] | None = None) -> dict:
+def run_step(tick: dict, name: str, variant: str | None, timeout: float, sky: dict | None, earlier: list[dict]) -> dict:
     """Run the pipeline worker on one incident. Never raises: a failure is a row with ok=False."""
     step = tick["step"]
     payload = {"raw": tick["raw_incident_stream"], "incident_id": tick["incident_id"], "severity_tier": tick["severity_tier"]}
@@ -190,10 +179,10 @@ def run_step(tick: dict, timeout: float, sky: dict | None = None, variant: str |
     cmd = [python, str(EVAL / "worker.py"), variant] if variant else [python, "-m", "pipeline"]
     # The pipeline tags its proof-ledger lines with PROOF_CONTEXT, so eval runs can be told from demo runs.
     env = {**os.environ, "PROOF_CONTEXT": os.environ.get("PROOF_CONTEXT") or "eval"}
-    tag = f"-{label or variant}" if (label or variant) else ""
+    tag = f"-{name}"
     row: dict = {"step": step, "incident_id": tick["incident_id"], "ok": False, "error": None,
                  "pipeline_hash": pipeline_hash(variant),
-                 "sky": bool(sky), "variant": variant, "label": label,
+                 "sky": bool(sky), "variant": variant, "label": name,
                  "started": datetime.now(timezone.utc).isoformat(timespec="seconds")}
 
     (EVAL / "logs").mkdir(exist_ok=True)
@@ -477,11 +466,8 @@ def render(rows: list[dict], keys: dict[str, dict], meta: dict, baseline: list[d
     L += per_step_table(rows, keys)
     L += lost_points(rows)
 
-    fixes = EVAL / "fixes.md"
     if baseline:
         L += against_baseline(baseline, rows, keys)
-    elif not meta.get("variant") and not meta.get("label"):
-        w(fixes.read_text().rstrip() + "\n" if fixes.exists() else "## Top fixes\n\n_Not written yet (eval/fixes.md)._\n")
     return "\n".join(L)
 
 
@@ -572,9 +558,8 @@ def against_baseline(base: list[dict], rows: list[dict], keys: dict[str, dict]) 
 
 # --- report across passes ----------------------------------------------------------------------------
 
-def combine(labels: list[str], args) -> int:
+def combine(labels: list[str], scen_path: Path, key_path: Path) -> int:
     """report.md for several named passes of the current code, side by side with the baseline."""
-    scen_path, key_path = find_input("scenario", args.scenario), find_input("key", args.key)
     keys = load_key(key_path)
     base = load_scored(BASELINE, keys)
     passes = {lab: load_scored(EVAL / f"results-{lab}.jsonl", keys) for lab in labels}
@@ -681,7 +666,7 @@ def combine(labels: list[str], args) -> int:
     w("Notes: what I fixed and rejected after the first passes is in [fixes.md](fixes.md). The guard experiments are in "
       "[archive/report-guards.md](archive/report-guards.md), [archive/report-guards-live.md](archive/report-guards-live.md) "
       "and [archive/guards-fixes.md](archive/guards-fixes.md).\n")
-    out = Path(args.report) if args.report else EVAL / "report.md"
+    out = EVAL / "report.md"
     out.write_text("\n".join(L))
     print(f"wrote {out.name}: " + "; ".join(f"{n} {sm[n]['points']:.2f}" for n in names))
     return 0
@@ -689,27 +674,28 @@ def combine(labels: list[str], args) -> int:
 
 # --- CLI ---------------------------------------------------------------------------------------------
 
-def run_pass(args, ticks: list[dict], keys: dict[str, dict], scen_path: Path, results: Path, old: dict[int, dict],
+def run_pass(args, name: str, scenario: dict, keys: dict[str, dict], results: Path, old: dict[int, dict],
              current_hash: str) -> dict[int, dict]:
-    """Run the selected steps and write results after each one. Returns every row by step, run or kept."""
+    """Run the selected steps one at a time and write results after each one. Returns every row by step, run or kept."""
+    ticks = scenario["ticks"]
     wanted = parse_steps(args.steps, len(ticks))
     todo = [t for t in ticks if t["step"] in wanted]
     times = {t["step"]: t.get("time", "") for t in ticks}
     keep: dict[int, dict] = {}
     if args.resume:
         # A row is kept only if it succeeded on the pipeline that is on disk now.
-        fresh = lambda r: r.get("ok") and r.get("pipeline_hash") == current_hash and r.get("sky") == (not args.no_sky)
+        fresh = lambda r: r.get("ok") and r.get("pipeline_hash") == current_hash and r.get("sky") == scenario["sky"]
         todo = [t for t in todo if not fresh(old.get(t["step"]) or {})]
         keep = {s: r for s, r in old.items() if s in wanted and fresh(r)}
     # A fresh run replaces only the selected steps; rows for other steps stay (use --steps to extend a run).
     rows_by_step = {s: r for s, r in old.items() if s not in wanted} | keep
-    print(f"scenario {rel(scen_path)}, key {find_input('key', args.key).name}; "
-          f"{len(todo)} step(s) to run, {args.workers} worker(s), timeout {args.timeout:.0f}s, pipeline {current_hash}", flush=True)
-    skies = None if args.no_sky else load_skies(scen_path)
-    lock = threading.Lock()
+    print(f"scenario {rel(args.scenario)}, key {args.key.name}; "
+          f"{len(todo)} step(s) to run, timeout {args.timeout:.0f}s, pipeline {current_hash}", flush=True)
+    # As on the server, only a scenario marked with a sky gets one.
+    skies = load_skies(args.scenario) if scenario["sky"] else {}
 
     def earlier_findings(t: dict) -> list[dict]:
-        """What this pass's earlier steps found, oldest first, the way the server sends it. Needs one worker to be complete."""
+        """What this pass's earlier steps found, oldest first, the way the server sends it."""
         out = []
         for step in sorted(s for s in rows_by_step if s < t["step"]):
             found = ((rows_by_step[step].get("state") or {}).get("incident")) or {}
@@ -718,71 +704,62 @@ def run_pass(args, ticks: list[dict], keys: dict[str, dict], scen_path: Path, re
                             "entity_class": found.get("entity_class"), "verdict": found.get("verdict"), "summary": found.get("summary", "")})
         return out
 
-    def job(t: dict) -> None:
-        with lock:
-            earlier = earlier_findings(t)
-        row = run_step(t, args.timeout, (skies or {}).get(t["incident_id"]), args.variant, args.label, earlier)
+    for t in todo:
+        row = run_step(t, name, args.variant, args.timeout, skies.get(t["incident_id"]), earlier_findings(t))
         row["score"] = score(row, keys[t["incident_id"]])
-        with lock:
-            rows_by_step[t["step"]] = row
-            write_rows(results, list(rows_by_step.values()))  # a crash keeps every finished step
-            s = row["score"]
-            state = "FAILED: " + str(row.get("error")) if s["failed"] else \
-                f"{s['action']:<8} exp {s['expected_action']:<8} hot {s['hot']} {mark(s['hot_ok'])} panels {','.join(s['panels'])}"
-            print(f"step {t['step']:>2} {row['latency_s']:6.1f}s  {s['total']:g}/{s['max']:g}  {state}", flush=True)
-
-    with cf.ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:
-        list(pool.map(job, todo))
+        rows_by_step[t["step"]] = row
+        write_rows(results, list(rows_by_step.values()))  # a crash keeps every finished step
+        s = row["score"]
+        state = "FAILED: " + str(row.get("error")) if s["failed"] else \
+            f"{s['action']:<8} exp {s['expected_action']:<8} hot {s['hot']} {mark(s['hot_ok'])} panels {','.join(s['panels'])}"
+        print(f"step {t['step']:>2} {row['latency_s']:6.1f}s  {s['total']:g}/{s['max']:g}  {state}", flush=True)
     return rows_by_step
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--label", help="name this run: results-<label>.jsonl, report-<label>.md, and -<label> on its raw/ and logs/ files")
+    ap.add_argument("--variant", help="run eval/variants/<name>.py's in-memory changes through eval/worker.py; names the run when there is no --label")
     ap.add_argument("--steps", help='steps to run, e.g. "1-5" or "1,4,7-9" (default: all)')
-    ap.add_argument("--workers", type=int, default=1, help="steps in parallel (default 1; Parasail uses the event key)")
     ap.add_argument("--timeout", type=float, default=150, help="seconds before a step is killed and counted as failed")
-    ap.add_argument("--no-sky", action="store_true", help="do not add the scenario sky (the server adds it for every scenario step)")
-    ap.add_argument("--resume", action="store_true", help="keep rows in results.jsonl that succeeded on the pipeline now on disk; run the rest")
-    ap.add_argument("--report-only", action="store_true", help="re-score results.jsonl and rewrite report.md; no pipeline runs")
-    ap.add_argument("--scenario", help="scenario.json (default: fixtures/ copy, else scenarios/pitches/nightfall)")
-    ap.add_argument("--key", help="answer-key.json (default: fixtures/ copy, else scenarios/pitches/nightfall)")
-    ap.add_argument("--label", help="name this run: results-<label>.jsonl, report-<label>.md, raw/ and logs/ files tagged -<label>")
-    ap.add_argument("--combine", help="comma-separated labels (a,b): rewrite report.md from their results, against eval/baseline/; no pipeline runs")
-    ap.add_argument("--variant", help="run eval/variants/<name>.py's in-memory changes instead of the pipeline as it is")
-    ap.add_argument("--results", help="default eval/results.jsonl, or results-<variant>.jsonl")
-    ap.add_argument("--report", help="default eval/report.md, or report-<variant>.md")
+    ap.add_argument("--resume", action="store_true", help="keep rows in the results file that succeeded on the pipeline now on disk; run the rest")
+    ap.add_argument("--report-only", action="store_true", help="re-score the results file and rewrite the run's report; no pipeline runs")
+    ap.add_argument("--results", type=Path, help="the results file (default eval/results-<label>.jsonl); with --report-only, re-scores an archived pass in place")
+    ap.add_argument("--scenario", type=Path, default=ROOT / "fixtures" / "nightfall" / "scenario.json", help="scenario.json (default: Nightfall)")
+    ap.add_argument("--key", type=Path, default=ROOT / "fixtures" / "nightfall" / "answer-key.json", help="answer-key.json (default: Nightfall)")
+    ap.add_argument("--combine", help="comma-separated labels (a,b): write report.md from their results, against eval/baseline/; no pipeline runs")
     args = ap.parse_args()
     if args.combine:
-        return combine(args.combine.split(","), args)
-    suffix = f"-{args.label or args.variant}" if (args.label or args.variant) else ""
-    results = Path(args.results or EVAL / f"results{suffix}.jsonl")
-    report = Path(args.report or EVAL / f"report{suffix}.md")
+        return combine(args.combine.split(","), args.scenario, args.key)
+    name = args.label or args.variant
+    if not name:
+        ap.error("a run needs --label (or --variant)")
+    results = args.results or EVAL / f"results-{name}.jsonl"
+    report = EVAL / f"report-{name}.md"
 
-    scen_path, key_path = find_input("scenario", args.scenario), find_input("key", args.key)
-    ticks, keys = load_scenario(scen_path), load_key(key_path)
+    scenario, keys = load_scenario(args.scenario), load_key(args.key)
     rows_by_step = {r["step"]: r for r in read_rows(results)}
     run_hashes: set[str] = set()
     if not args.report_only:
         before = pipeline_hash(args.variant)
-        rows_by_step = run_pass(args, ticks, keys, scen_path, results, rows_by_step, before)
+        rows_by_step = run_pass(args, name, scenario, keys, results, rows_by_step, before)
         run_hashes = {before, pipeline_hash(args.variant)}
 
     rows = [{**rows_by_step[s], "score": score(rows_by_step[s], keys[rows_by_step[s]["incident_id"]])} for s in sorted(rows_by_step)]
     if not rows:
         print("no results yet", file=sys.stderr)
         return 1
-    write_rows(results, rows)
     hashes = sorted({r["pipeline_hash"] for r in rows} | run_hashes)
     disk_now = pipeline_hash(args.variant)
-    meta = {"variant": args.variant, "label": args.label, "generated": datetime.now().strftime("%Y-%m-%d %H:%M"),
+    meta = {"variant": args.variant, "label": name, "generated": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "hash": hashes[-1], "hashes": hashes, "disk_changed": None if args.variant or disk_now in hashes else disk_now,
-            "sky": all(r.get("sky") for r in rows), "scenario": rel(scen_path), "key": rel(key_path)}
+            "sky": all(r.get("sky") for r in rows), "scenario": rel(args.scenario), "key": rel(args.key)}
     # The baseline is a Nightfall run, so another scenario's report has no baseline column.
-    baseline_ids = {r["incident_id"] for r in read_rows(BASELINE)} if (args.variant or args.label) else set()
-    base = load_scored(BASELINE, keys) if baseline_ids and baseline_ids <= keys.keys() else None
+    baseline_ids = {r["incident_id"] for r in read_rows(BASELINE)}
+    base = load_scored(BASELINE, keys) if baseline_ids <= keys.keys() else None
     report.write_text(render(rows, keys, meta, base))
     s = summarize(rows, keys)
-    print(f"\n{s['points']:g}/{s['points_max']:g} points, {s['failed']} failed; wrote {results.name} and {report.name}")
+    print(f"\n{s['points']:g}/{s['points_max']:g} points, {s['failed']} failed; wrote {rel(report)}")
     if len(meta["hashes"]) > 1:
         print("warning: the pipeline changed while rows were collected; re-run (--resume reruns the stale steps) for a consistent report", file=sys.stderr)
     return 0
