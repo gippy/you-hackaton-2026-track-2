@@ -263,7 +263,8 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .glyph.people { fill: var(--text); }
 .glyph.countermeasure { fill: var(--hi); }
 .glyph.hazard { fill: var(--spook); }
-.legend-glyph { width: 18px; height: 18px; margin-right: 4px; vertical-align: -4px; overflow: visible; }
+.floor .marker { cursor: help; outline: none; }
+.floor .marker:focus-visible .token-ring { stroke-width: 0.9; }
 .token-bg { fill: #000; }
 .token-ring { fill: none; stroke-width: 0.5; }
 .token-ring.threat { stroke: var(--red); }

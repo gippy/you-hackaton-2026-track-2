@@ -69,11 +69,10 @@ function walk(floor: Floor, aliases: Record<string, string>, route: string[], se
 type Box = [number, number, number, number]; // x0, y0, x1, y1
 interface Placed {
     marker: Marker;
-    at: Point; // the glyph's centre
-    side: 1 | -1; // the label runs to the glyph's right (1) or left (-1)
+    at: Point; // the picture's centre
 }
 
-const MARK_SIZE = 3.4; // the label's height, the same as the zone labels
+const MARK_SIZE = 3.4; // the hover label's height, the same as the zone labels
 const CHAR_W = 0.42; // VT323's advance in ems, with a little room
 const GLYPH = 2.6; // the radius of a marker's picture, and half the width of its fallback shape
 const KIND_NAME: Record<Marker['kind'], string> = { threat: 'threat', people: 'people', countermeasure: 'countermeasure', hazard: 'hazard' };
@@ -108,8 +107,8 @@ function along(path: Point[]): Point[] {
 }
 
 /**
- * A spot for each marker:
- * - the glyph sits inside the marker's sector, with the label to its right or left, all on the floor
+ * A spot for each marker's picture (its label shows only on hover):
+ * - the picture sits inside the marker's sector
  * - the spot overlaps the zone and block labels, the route, the exits and earlier markers the least
  * - among equal spots, the one nearest the sector's label wins
  */
@@ -126,27 +125,22 @@ function placeMarkers(floor: Floor, markers: Marker[], idOf: (slug: string) => s
     for (const marker of markers) {
         const zone = floor.zones.find((z) => idOf(z.slug) === marker.sector);
         if (!zone) continue;
-        const w = 2 * GLYPH + 0.8 + marker.label.length * CHAR_W * MARK_SIZE;
         const xs = zone.polygon.map((q) => q[0]);
         const ys = zone.polygon.map((q) => q[1]);
-        let best: { score: number; at: Point; side: 1 | -1; box: Box } | null = null;
+        let best: { score: number; at: Point; box: Box } | null = null;
         for (let x = Math.min(...xs) + GLYPH; x <= Math.max(...xs) - GLYPH; x += 1) {
             for (let y = Math.min(...ys) + GLYPH; y <= Math.max(...ys) - GLYPH; y += 1) {
                 if (!inside([x, y], zone.polygon)) continue;
-                for (const side of [1, -1] as const) {
-                    const [x0, x1] = side === 1 ? [x - GLYPH, x - GLYPH + w] : [x + GLYPH - w, x + GLYPH];
-                    const half = Math.max(MARK_SIZE / 2, GLYPH); // the picture is taller than the label
-                    const box: Box = [x0 - 0.3, y - half - 0.3, x1 + 0.3, y + half + 0.3];
-                    if (box[0] < 0 || box[1] < 0 || box[2] > width || box[3] > height) continue;
-                    const hit = taken.reduce((sum, b) => sum + overlap(box, b), 0);
-                    const score = hit * 100 + Math.hypot(x - zone.label_at[0], y - zone.label_at[1]);
-                    if (!best || score < best.score) best = { score, at: [x, y], side, box };
-                }
+                const box = around([x, y], GLYPH + 0.3);
+                if (box[0] < 0 || box[1] < 0 || box[2] > width || box[3] > height) continue;
+                const hit = taken.reduce((sum, b) => sum + overlap(box, b), 0);
+                const score = hit * 100 + Math.hypot(x - zone.label_at[0], y - zone.label_at[1]);
+                if (!best || score < best.score) best = { score, at: [x, y], box };
             }
         }
         if (best) {
             taken.push(best.box);
-            placed.push({ marker, at: best.at, side: best.side });
+            placed.push({ marker, at: best.at });
         }
     }
     return placed;
@@ -196,6 +190,7 @@ function Token({ marker, at: [x, y], ctx, clip }: { marker: Marker; at: Point; c
 
 function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
     const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
+    const [hover, setHover] = useState<number | null>(null); // the marker whose label shows
     const floor = ctx.library && ctx.floor;
     const sealed = ctx.operator.sealed;
     const route = useMemo(() => (floor ? walk(floor, ctx.library.sector_aliases, p.safe_route, sealed) : null), [floor, ctx.library, p.safe_route, sealed]);
@@ -215,6 +210,9 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
     const end = path[path.length - 1];
     const exit = route && !route.blocked && end ? floor.features.find((f) => f.exit && Math.hypot(f.at[0] - end[0], f.at[1] - end[1]) < 2) : undefined;
     const { width, height } = floor.space;
+    const shown = hover === null ? undefined : marks[hover];
+    // The hover label runs to the picture's right, or to its left where the floor ends.
+    const labelRight = !shown || shown.at[0] + GLYPH + 0.8 + shown.marker.label.length * CHAR_W * MARK_SIZE <= width;
     return (
         <div>
             <svg viewBox={`-2 -2 ${width + 4} ${height + 4}`} role="group" aria-label={`Floor schematic, hot sector ${sectors[p.hot_sector] ?? p.hot_sector}`} className="floor-svg">
@@ -283,15 +281,33 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                         <title>{`Exit: ${exit.label}`}</title>
                     </rect>
                 )}
-                {/* The legend lists the markers for screen readers. */}
-                {marks.map(({ marker, at, side }, i) => (
-                    <g key={i} className="marker" aria-hidden="true">
+                {marks.map(({ marker, at }, i) => (
+                    <g
+                        key={i}
+                        className="marker"
+                        role="img"
+                        tabIndex={0}
+                        aria-label={`${KIND_NAME[marker.kind]} in ${name(marker.sector)}: ${marker.label}`}
+                        onMouseEnter={() => setHover(i)}
+                        onMouseLeave={() => setHover(null)}
+                        onFocus={() => setHover(i)}
+                        onBlur={() => setHover(null)}
+                    >
                         <Token marker={marker} at={at} ctx={ctx} clip={`${uid}-map-${i}`} />
-                        <text x={at[0] + side * (GLYPH + 0.8)} y={at[1] + MARK_SIZE * 0.3} textAnchor={side === 1 ? 'start' : 'end'} className="marker-label">
-                            {marker.label}
-                        </text>
                     </g>
                 ))}
+                {/* Drawn last, so the label sits on top of everything it crosses. */}
+                {shown && (
+                    <text
+                        x={shown.at[0] + (labelRight ? 1 : -1) * (GLYPH + 0.8)}
+                        y={shown.at[1] + MARK_SIZE * 0.3}
+                        textAnchor={labelRight ? 'start' : 'end'}
+                        className="marker-label"
+                        aria-hidden="true"
+                    >
+                        {shown.marker.label}
+                    </text>
+                )}
             </svg>
             <div className="legend">
                 <span>
@@ -313,14 +329,6 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                           : `safe route: ${[...route.zones.map(name), ...(exit ? [exit.label] : [])].join(' → ')}`}
                     {route?.skipped.length ? ` (round sealed ${names(route.skipped)})` : ''}
                 </span>
-                {marks.map(({ marker }, i) => (
-                    <span key={i}>
-                        <svg viewBox={`${-GLYPH - 0.3} ${-GLYPH - 0.3} ${2 * GLYPH + 0.6} ${2 * GLYPH + 0.6}`} className="legend-glyph" aria-hidden="true">
-                            <Token marker={marker} at={[0, 0]} ctx={ctx} clip={`${uid}-legend-${i}`} />
-                        </svg>
-                        {`${KIND_NAME[marker.kind]} in ${name(marker.sector)}: ${marker.label}`}
-                    </span>
-                ))}
                 <span title={floor.notice}>Schematic, not to scale</span>
             </div>
             <div className="muted small seal-label">Seal sectors (or click one on the plan)</div>
