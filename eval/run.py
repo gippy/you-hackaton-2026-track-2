@@ -6,8 +6,7 @@
     .venv/bin/python eval/run.py --report-only      re-score results.jsonl and rewrite report.md, no model calls
     .venv/bin/python eval/run.py --label a          a named run: results-a.jsonl, report-a.md, raw/ and logs/ tagged -a
     .venv/bin/python eval/run.py --combine a,b      rewrite report.md from results-a.jsonl and results-b.jsonl, against eval/baseline/
-    .venv/bin/python eval/run.py --variant v1       run eval/variants/v1.py's in-memory prompt changes (results-v1.jsonl, report-v1.md)
-    .venv/bin/python eval/run.py --compare "a,b|v4a,v4b"   variant passes against control passes (report-guards.md)
+    .venv/bin/python eval/run.py --variant v3       run eval/variants/v3.py's in-memory prompt changes (results-v3.jsonl, report-v3.md)
 
 Each step is run exactly the way server/station.ts runs it: `.venv/bin/python -m pipeline` from the repo
 root, one JSON object {raw, incident_id, severity_tier, sky} on stdin, NDJSON events on stdout. The sky comes
@@ -48,7 +47,6 @@ RANK = {a: i for i, a in enumerate(ACTS)}
 TIER_SEVERITY = {"LOW_HAUNT": "low", "ELEVATED_HAUNT": "elevated", "CRITICAL_HAUNT": "critical"}  # UNVERIFIED maps to nothing
 # One point each per step, so a perfect run scores 6 per step. Panel recall counts fractionally.
 CRITERIA = ["action", "dispatch", "hot", "recall", "no_discouraged", "no_failure"]
-GUARD_SNAPSHOT = "23b5233007"  # the frozen pipeline the guard variants ran on (eval/snap-<hash>/)
 
 
 # --- inputs ------------------------------------------------------------------------------------------
@@ -85,11 +83,10 @@ def parse_steps(spec: str | None, total: int) -> list[int]:
     return sorted(set(out))
 
 
-def pipeline_hash(variant: str | None = None, base: Path | None = None) -> str:
+def pipeline_hash(variant: str | None = None) -> str:
     """A short hash of the code a step runs: pipeline/, the library, the sky, and for a variant the worker and variants."""
     h = hashlib.sha256()
-    base = base or ROOT
-    files = sorted((base / "pipeline").glob("*.py")) + [base / "shared" / "library.json", ROOT / "server" / "sky.ts"]
+    files = sorted((ROOT / "pipeline").glob("*.py")) + [ROOT / "shared" / "library.json", ROOT / "server" / "sky.ts"]
     if variant:
         files += [EVAL / "worker.py", *sorted((EVAL / "variants").glob("*.py"))]
     for p in files:
@@ -181,7 +178,7 @@ def run_worker(cmd: list[str], payload: dict, env: dict, log, timeout: float) ->
 
 
 def run_step(tick: dict, timeout: float, sky: dict | None = None, variant: str | None = None, label: str | None = None,
-             snapshot: Path | None = None, earlier: list[dict] | None = None) -> dict:
+             earlier: list[dict] | None = None) -> dict:
     """Run the pipeline worker on one incident. Never raises: a failure is a row with ok=False."""
     step = tick["step"]
     payload = {"raw": tick["raw_incident_stream"], "incident_id": tick["incident_id"], "severity_tier": tick["severity_tier"]}
@@ -193,11 +190,9 @@ def run_step(tick: dict, timeout: float, sky: dict | None = None, variant: str |
     cmd = [python, str(EVAL / "worker.py"), variant] if variant else [python, "-m", "pipeline"]
     # The pipeline tags its proof-ledger lines with PROOF_CONTEXT, so eval runs can be told from demo runs.
     env = {**os.environ, "PROOF_CONTEXT": os.environ.get("PROOF_CONTEXT") or "eval"}
-    if snapshot:
-        env["EVAL_SNAPSHOT"] = str(snapshot)
     tag = f"-{label or variant}" if (label or variant) else ""
     row: dict = {"step": step, "incident_id": tick["incident_id"], "ok": False, "error": None,
-                 "pipeline_hash": pipeline_hash(variant, snapshot), "base_hash": pipeline_hash(None, snapshot),
+                 "pipeline_hash": pipeline_hash(variant),
                  "sky": bool(sky), "variant": variant, "label": label,
                  "started": datetime.now(timezone.utc).isoformat(timespec="seconds")}
 
@@ -683,106 +678,19 @@ def combine(labels: list[str], args) -> int:
           f"over-escalations {steps_where(rows, 'over_escalation') or 'none'}; contain/evacuate mismatches {steps_where(rows, 'under_call', 'over_call') or 'none'}; "
           f"discouraged panels " + ("; ".join(f"{p} {v}" for p, v in dis.items()) or "none") + "; pipeline notes " + ("; ".join(f"{k} ×{v}" for k, v in notes.items()) or "none"))
     w("")
-    fixes = EVAL / "fixes.md"
-    if fixes.exists():
-        w(fixes.read_text().rstrip() + "\n")
-    for name in ("report-guards.md", "report-guards-live.md"):  # the guard-variant experiments, appended when they exist
-        part = EVAL / name
-        if part.exists():
-            w("\n---\n")
-            w(part.read_text().replace("# Guard variants against the control", "# Part 2: guard variants against the control" + (" (live code)" if "live" in name else ""), 1).rstrip() + "\n")
+    w("Notes: what I fixed and rejected after the first passes is in [fixes.md](fixes.md). The guard experiments are in "
+      "[archive/report-guards.md](archive/report-guards.md), [archive/report-guards-live.md](archive/report-guards-live.md) "
+      "and [archive/guards-fixes.md](archive/guards-fixes.md).\n")
     out = Path(args.report) if args.report else EVAL / "report.md"
     out.write_text("\n".join(L))
     print(f"wrote {out.name}: " + "; ".join(f"{n} {sm[n]['points']:.2f}" for n in names))
     return 0
 
 
-def compare_variants(spec: str, args) -> int:
-    """report-guards.md: variant passes against the control passes, e.g. --compare "a,b|v4a,v4b|v5a,v5b".
-
-    The first group is the control. Each later group is one variant. Misses and false alarms are listed by step,
-    with the fields a guard reads (`creature_countered`, `aftermath`) so a guard's firing can be checked."""
-    keys = load_key(find_input("key", args.key))
-    groups = [g.split(",") for g in spec.split("|")]
-    cols = {lab: load_scored(EVAL / f"results-{lab}.jsonl", keys) for g in groups for lab in g}
-    sm = {n: summarize(r, keys) for n, r in cols.items()}
-    names = list(cols)
-    L: list[str] = []
-    w = L.append
-    def line(label, f):
-        w(metric_row(label, f, sm, names))
-
-    w("# Guard variants against the control\n")
-    w(f"Generated {datetime.now().strftime('%Y-%m-%d %H:%M')}. Control = labels {', '.join(groups[0])} (pipeline `{GUARD_SNAPSHOT}`). "
-      f"Variants run on a frozen copy of that pipeline (`eval/snap-{GUARD_SNAPSHOT}`) with `PROOF_CONTEXT=eval`.\n")
-    hashes = {n: sorted({r.get("base_hash", r["pipeline_hash"]) for r in rows}) for n, rows in cols.items()}
-    w("Base pipeline hash per column: " + ", ".join(f"{n} `{'/'.join(h)}`" for n, h in hashes.items()) + "\n")
-    w("## Metrics\n")
-    w(table_head("Metric", names))
-    line("**Points / 144**", lambda m: f"**{m['points']:.2f}**")
-    line("**Misses** (key contain/evacuate, model observed)", lambda m: f"**{m['misses']}/{m['act_n']}**")
-    line("False alarms (harmless, acted)", lambda m: f"{m['false_alarms']}/{m['harmless_n']}")
-    line("Harmless handled calmly", lambda m: f"{m['harmless_calm']}/{m['harmless_n']}")
-    line("Over-escalations", lambda m: f"{m['over_escalations']}/{m['watch_n']}")
-    line("Evacuate matches", lambda m: f"{m['confusion']['evacuate']['evacuate']}/{sum(m['confusion']['evacuate'].values())}")
-    line("Action match", lambda m: f"{m['action_ok']}/{m['steps']}")
-    line("Dispatch match", lambda m: f"{m['dispatch_ok']}/{m['steps']}")
-    line("Panel recall", lambda m: f"{100 * m['recall_mean']:.0f}%")
-    line("Steps with a discouraged panel", lambda m: f"{m['discouraged_steps']}/{m['steps']}")
-    line("Failures", lambda m: f"{m['failed']}")
-    w("")
-
-    w("## Mean points per group\n")
-    w("| Group | Passes | Mean points | Delta to control | Misses per pass |\n|---|---|---|---|---|")
-    ctrl = statistics.mean(sm[lab]["points"] for lab in groups[0])
-    for g in groups:
-        mean = statistics.mean(sm[lab]["points"] for lab in g)
-        w(f"| {'control' if g is groups[0] else g[0].rstrip('ab')} | {', '.join(f'{sm[lab]['points']:.2f}' for lab in g)} | {mean:.2f} | {mean - ctrl:+.2f} | "
-          + ", ".join(f"{sm[lab]['misses']}/{sm[lab]['act_n']}" for lab in g) + " |")
-    w("")
-
-    w("## Steps that differ\n")
-    by = {n: {r["step"]: r for r in rows} for n, rows in cols.items()}
-    w("Cells are `action points`; `*` marks an action different from the key.\n")
-    w("| # | Truth | Key | " + " | ".join(names) + " |\n|---|---|---|" + "---|" * len(names))
-    for step in sorted({s for rows in by.values() for s in rows}):
-        scores = [by[n][step]["score"] if step in by[n] else None for n in names]
-        acts = {s.get("action") if s and not s["failed"] else "FAILED" for s in scores}
-        pts = {s["total"] for s in scores if s}
-        if len(acts) > 1 or len(pts) > 1:
-            k = keys[next(by[n][step]["incident_id"] for n in names if step in by[n])]
-            cells = ["–" if not s else ("FAILED" if s["failed"] else action_cell(s)) for s in scores]
-            w(f"| {step} | {k['truth'][0].upper()} | {k['expected_action']} | " + " | ".join(cells) + " |")
-    w("")
-
-    w("## What the guards saw\n")
-    for n in names:
-        rows = cols[n]
-        inc = lambda r: r["state"]["incident"] if r.get("ok") else {}
-        tail = f"misses at {steps_where(rows, 'miss') or 'none'}; false alarms at {steps_where(rows, 'false_alarm') or 'none'}"
-        if any("creature_countered" in inc(r) for r in rows):
-            counter = [(r["step"], r["score"]["truth"][0].upper()) for r in rows if inc(r).get("creature_countered")]
-            after = [(r["step"], r["score"]["truth"][0].upper()) for r in rows if inc(r).get("aftermath")]
-            fired = [r["step"] for r in rows if r.get("ok") and any("aftermath" in x for x in r["state"]["notes"])]
-            w(f"- **{n}**: `creature_countered` true on {', '.join(f'{s}({t})' for s, t in counter) or 'none'}"
-              + (f"; `aftermath` true on {', '.join(f'{s}({t})' for s, t in after) or 'none'}; aftermath rule fired on {fired or 'none'}" if any('aftermath' in inc(r) for r in rows) else "")
-              + f"; {tail}")
-        else:
-            w(f"- **{n}** (control): {tail}")
-    w("")
-    out = Path(args.report) if args.report else EVAL / "report-guards.md"
-    notes_file = EVAL / "guards-fixes.md"
-    if notes_file.exists() and "live" not in out.name:
-        w(notes_file.read_text().rstrip() + "\n")
-    out.write_text("\n".join(L))
-    print(f"wrote {out.name}: " + "; ".join(f"{n} {sm[n]['points']:.2f} ({sm[n]['misses']} miss)" for n in names))
-    return 0
-
-
 # --- CLI ---------------------------------------------------------------------------------------------
 
 def run_pass(args, ticks: list[dict], keys: dict[str, dict], scen_path: Path, results: Path, old: dict[int, dict],
-             snapshot: Path | None, current_hash: str) -> dict[int, dict]:
+             current_hash: str) -> dict[int, dict]:
     """Run the selected steps and write results after each one. Returns every row by step, run or kept."""
     wanted = parse_steps(args.steps, len(ticks))
     todo = [t for t in ticks if t["step"] in wanted]
@@ -813,7 +721,7 @@ def run_pass(args, ticks: list[dict], keys: dict[str, dict], scen_path: Path, re
     def job(t: dict) -> None:
         with lock:
             earlier = earlier_findings(t)
-        row = run_step(t, args.timeout, (skies or {}).get(t["incident_id"]), args.variant, args.label, snapshot, earlier)
+        row = run_step(t, args.timeout, (skies or {}).get(t["incident_id"]), args.variant, args.label, earlier)
         row["score"] = score(row, keys[t["incident_id"]])
         with lock:
             rows_by_step[t["step"]] = row
@@ -839,30 +747,25 @@ def main() -> int:
     ap.add_argument("--scenario", help="scenario.json (default: fixtures/ copy, else scenarios/pitches/nightfall)")
     ap.add_argument("--key", help="answer-key.json (default: fixtures/ copy, else scenarios/pitches/nightfall)")
     ap.add_argument("--label", help="name this run: results-<label>.jsonl, report-<label>.md, raw/ and logs/ files tagged -<label>")
-    ap.add_argument("--compare", help='labels as "ctrl_a,ctrl_b|v4a,v4b|v5a,v5b": variant passes against the control; writes report-guards.md')
     ap.add_argument("--combine", help="comma-separated labels (a,b): rewrite report.md from their results, against eval/baseline/; no pipeline runs")
-    ap.add_argument("--snapshot", help="a frozen copy of the pipeline (eval/snap-<hash>/) for the worker to import; needs --variant")
     ap.add_argument("--variant", help="run eval/variants/<name>.py's in-memory changes instead of the pipeline as it is")
     ap.add_argument("--results", help="default eval/results.jsonl, or results-<variant>.jsonl")
     ap.add_argument("--report", help="default eval/report.md, or report-<variant>.md")
     args = ap.parse_args()
     if args.combine:
         return combine(args.combine.split(","), args)
-    if args.compare:
-        return compare_variants(args.compare, args)
     suffix = f"-{args.label or args.variant}" if (args.label or args.variant) else ""
     results = Path(args.results or EVAL / f"results{suffix}.jsonl")
     report = Path(args.report or EVAL / f"report{suffix}.md")
 
     scen_path, key_path = find_input("scenario", args.scenario), find_input("key", args.key)
     ticks, keys = load_scenario(scen_path), load_key(key_path)
-    snapshot = Path(args.snapshot).resolve() if args.snapshot else None
     rows_by_step = {r["step"]: r for r in read_rows(results)}
     run_hashes: set[str] = set()
     if not args.report_only:
-        before = pipeline_hash(args.variant, snapshot)
-        rows_by_step = run_pass(args, ticks, keys, scen_path, results, rows_by_step, snapshot, before)
-        run_hashes = {before, pipeline_hash(args.variant, snapshot)}
+        before = pipeline_hash(args.variant)
+        rows_by_step = run_pass(args, ticks, keys, scen_path, results, rows_by_step, before)
+        run_hashes = {before, pipeline_hash(args.variant)}
 
     rows = [{**rows_by_step[s], "score": score(rows_by_step[s], keys[rows_by_step[s]["incident_id"]])} for s in sorted(rows_by_step)]
     if not rows:
@@ -870,7 +773,7 @@ def main() -> int:
         return 1
     write_rows(results, rows)
     hashes = sorted({r["pipeline_hash"] for r in rows} | run_hashes)
-    disk_now = pipeline_hash(args.variant, snapshot)
+    disk_now = pipeline_hash(args.variant)
     meta = {"variant": args.variant, "label": args.label, "generated": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "hash": hashes[-1], "hashes": hashes, "disk_changed": None if args.variant or disk_now in hashes else disk_now,
             "sky": all(r.get("sky") for r in rows), "scenario": rel(scen_path), "key": rel(key_path)}
