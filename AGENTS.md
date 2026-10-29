@@ -29,7 +29,7 @@ The contract between all three sits in `shared/`: `protocol.ts` (messages and pa
 | `scripts/` | Art, sound and proof tools, plus the partner preflight | `scripts/art.ts` |
 | `docs/` | Component guide, deploy notes, a judges' explainer | `docs/README.md` |
 | `scenarios/` | Venue research and lore notes used while writing the scenarios | |
-| `.actor/`, `Dockerfile` | Packaging as an Apify Standby Actor | `docs/deploy.md` |
+| `.actor/`, `Dockerfile` | Packaging as an Apify Standby Actor, built automatically from every commit to `main` | `docs/deploy.md` |
 
 ## Run, check, evaluate
 

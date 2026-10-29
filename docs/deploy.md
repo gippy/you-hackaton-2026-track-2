@@ -54,6 +54,8 @@ docker run --rm -e K="$PARASAIL_API_KEY" --entrypoint sh haunted-command-station
 
 ## Deploy
 
+The Actor builds from GitHub: every commit to `main` of https://github.com/gippy/you-hackaton-2026-track-2 starts a build on its own, so deploying is pushing to `main`. The keys stay on the Actor version as secret environment variables, set by the first deploys below. The steps below are the manual path with the Apify CLI, which those first deploys used.
+
 ### 1. Add the secrets (run these yourself)
 
 They carry your keys, so they are not scripted. In a shell where the keys are set, they never show on screen (use `$YOU_API_KEY` for the second one if that is the name your shell has):
