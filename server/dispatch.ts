@@ -6,11 +6,13 @@
 // - DISPATCH=off posts nothing, for tests and the eval: a click then records an "off" dispatch.
 // - Each incident is posted at most once, and the channel at most once every two minutes, because the station
 //   is public and the whole venue shares the channel.
-import type { DispatchInfo } from '../shared/protocol.ts';
+import library from '../shared/library.json' with { type: 'json' };
+import type { DispatchInfo, RunState } from '../shared/protocol.ts';
+import { short } from './pager.ts';
 import { record } from './proof.ts';
 
 /** The team handle every post starts with; the webhook cannot tell teams apart on its own. */
-export const TEAM = 'jarda-haunted-station';
+const TEAM = 'jarda-haunted-station';
 
 const GAP_MS = 120_000;
 const TIMEOUT_MS = 15_000;
@@ -19,8 +21,9 @@ export class Dispatcher {
     private sent = new Map<string, DispatchInfo>();
     private last = 0;
     private readonly onChange: (dispatches: DispatchInfo[]) => void;
+    private readonly off = process.env.DISPATCH?.trim().toLowerCase() === 'off';
     private readonly url = process.env.LOFT_WEBHOOK_URL?.trim() ?? '';
-    readonly enabled = process.env.DISPATCH?.trim().toLowerCase() !== 'off' && this.url.startsWith('https://');
+    readonly enabled = !this.off && this.url.startsWith('https://');
 
     constructor(onChange: (dispatches: DispatchInfo[]) => void) {
         this.onChange = onChange;
@@ -44,6 +47,7 @@ export class Dispatcher {
 
     async post(incidentId: string, text: string): Promise<void> {
         const set = (d: DispatchInfo) => {
+            this.sent.delete(incidentId); // a retry moves to the end, so list() stays newest first
             this.sent.set(incidentId, d);
             this.onChange(this.list());
         };
@@ -51,7 +55,7 @@ export class Dispatcher {
         const entry = { partner: 'discord', platform: 'discord', action: 'Venue webhook post to #loft-incident', purpose: 'dispatch the station', dry_run: !this.enabled, request: { content: text } };
         if (!this.enabled) {
             set({ ...base, status: 'off' });
-            record('partners', { ...entry, response: { skipped: process.env.DISPATCH?.trim().toLowerCase() === 'off' ? 'DISPATCH=off' : 'no LOFT_WEBHOOK_URL' } });
+            record('partners', { ...entry, response: { skipped: this.off ? 'DISPATCH=off' : 'no LOFT_WEBHOOK_URL' } });
             return;
         }
         this.last = Date.now();
@@ -74,4 +78,16 @@ export class Dispatcher {
             record('partners', { ...entry, error, latency_ms: Date.now() - t0 });
         }
     }
+}
+
+/**
+ * The #loft-incident post for a run, in the venue's format: "<team> · <sector> · <action> · <rationale>". Every part
+ * comes from the run itself: the intake's sector, the model's action and its dispatch rationale.
+ */
+export function dispatchText(state: RunState): string {
+    const sectors = library.sectors as Record<string, string>;
+    const sector = sectors[state.incident.sector] ?? state.incident.sector;
+    const why = short(state.manifest.dispatch_rationale || state.incident.summary || '', 220);
+    const ref = state.incident_id ? ` (${state.incident_id}, simulated)` : ' (pasted report)';
+    return `${TEAM} · ${sector} · ${state.manifest.recommended_action} · ${why}${ref}`;
 }

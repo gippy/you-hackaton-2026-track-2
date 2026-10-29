@@ -11,9 +11,9 @@ import { createInterface } from 'node:readline';
 import type { RawData, WebSocket, WebSocketServer } from 'ws';
 
 import library from '../shared/library.json' with { type: 'json' };
-import type { ArtAsset, ClientMessage, Expert, Finding, FixtureIncident, Floor, FlowEvent, Library, OperatorMoves, PageInfo, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
-import { Dispatcher, TEAM } from './dispatch.ts';
-import { Pager, pageRequest } from './pager.ts';
+import type { ArtAsset, ClientMessage, Expert, Finding, FixtureIncident, Floor, FlowEvent, Library, OperatorMoves, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
+import { Dispatcher, dispatchText } from './dispatch.ts';
+import { OPEN_PAGE, Pager, pageRequest } from './pager.ts';
 import { skyFor } from './sky.ts';
 import { speak } from './speech.ts';
 
@@ -70,7 +70,7 @@ export class Station {
     private readonly opts: StationOptions;
     private readonly outDir: string;
     readonly pager: Pager;
-    readonly dispatcher: Dispatcher;
+    private readonly dispatcher: Dispatcher;
 
     constructor(opts: StationOptions) {
         this.opts = opts;
@@ -118,10 +118,7 @@ export class Station {
         else if (msg.type === 'compile') void this.compile({ raw_incident_stream: String(msg.raw ?? '').slice(0, 4000), incident_id: '', severity_tier: '' });
         else if (msg.type === 'call_expert') this.callExpert(ws, msg);
         else if (msg.type === 'dispatch') this.dispatch(ws);
-        else if (msg.type === 'resolve_page') {
-            const page = this.pager.list().find((p) => p.key === msg.key);
-            if (page) void this.pager.resolve(page);
-        }
+        else if (msg.type === 'resolve_page') void this.pager.resolve(String(msg.key));
     }
 
     /** Send to every page and keep it in the run's history, for pages that connect later. */
@@ -348,18 +345,6 @@ export class Station {
     }
 }
 
-/**
- * The #loft-incident post for a run, in the venue's format: "<team> · <sector> · <action> · <rationale>". Every part
- * comes from the run itself: the intake's sector, the model's action and its dispatch rationale.
- */
-export function dispatchText(state: RunState): string {
-    const sector = library.sectors[state.incident.sector as keyof typeof library.sectors] ?? state.incident.sector;
-    const oneLine = (text: string) => text.replace(/\s+/g, ' ').trim();
-    const why = oneLine(state.manifest.dispatch_rationale || state.incident.summary || '').slice(0, 220);
-    const ref = state.incident_id ? ` (${state.incident_id}, simulated)` : ' (pasted report)';
-    return `${TEAM} · ${sector} · ${state.manifest.recommended_action} · ${why}${ref}`;
-}
-
 /** The operator's moves from a page, kept only where they name the library's countermeasures and sectors. */
 function checkMoves(raw: unknown): OperatorMoves | undefined {
     if (!raw || typeof raw !== 'object') return undefined;
@@ -372,12 +357,10 @@ function checkMoves(raw: unknown): OperatorMoves | undefined {
         sealed: Array.isArray(m.sealed) ? [...new Set(m.sealed.filter((id) => has(library.sectors, id)))] : [],
         people_out: count(m.people_out) ?? 0,
         people: count(m.people),
+        // Calls that still stand: the expert is on the way or, with paging off, would be.
         experts: (Array.isArray(m.experts) ? m.experts : [])
-            .filter((e) => e && typeof e === 'object' && has(library.experts, e.expert) && OPEN_CALLS.includes(e.status))
+            .filter((e) => e && typeof e === 'object' && has(library.experts, e.expert) && [...OPEN_PAGE, 'off'].includes(e.status))
             .slice(0, 2)
             .map((e) => ({ expert: e.expert, status: e.status, by: (Array.isArray(e.by) ? e.by : []).map((name) => String(name).slice(0, 40)).slice(0, 3) })),
     };
 }
-
-/** Calls that still stand: the expert is on the way or, with paging off, would be. */
-const OPEN_CALLS: PageInfo['status'][] = ['sending', 'triggered', 'acknowledged', 'off'];
