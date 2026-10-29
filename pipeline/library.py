@@ -54,6 +54,12 @@ MAX_MARKERS = 6
 MAP_TOKENS: dict[str, str] = _LIB["map_tokens"]  # the pictures a floor plan marker can show, besides the arsenal icons
 DOT_COLORS: list[str] = list(_LIB["dot_colors"])  # a marker that no picture fits is a dot in one of these
 SIZES = ["hero", "standard", "compact"]  # how much room a panel asks for; layout.ts sets the widths
+CONDITIONS = ["pinned", "trapped", "injured", "evacuating", "safe", "unknown"]  # the state of the people in a report
+SYSTEM_STATUSES = ["online", "degraded", "offline"]  # a facility system's state
+LEVELS = ["nominal", "elevated", "danger"]  # how a reading compares with its normal
+QUOTE_KINDS = ["threat", "harmless", "people"]  # how the report panel colors an evidence quote
+QUICK_KINDS = ["seal", "unseal", "countermeasure", "extract", "call_expert"]  # the operator moves a quick action runs
+PEOPLE_SHARES = ["all", "half"]  # how many of the tracked people an extract action marks out
 # Minutes to the next sky event beyond which an unhurt crowd is watched, not contained yet.
 QUIET_LEAD_MIN = 100
 
@@ -98,9 +104,6 @@ def opening_cue(cue: str | None, harmless: bool) -> str:
     return cue if cue in CUES and cue != "all_clear" else "alert_chime"
 
 
-QUOTE_KINDS = ["threat", "harmless", "people"]  # how the report panel colors an evidence quote
-
-
 def clean_quotes(quotes: list[dict] | None, raw: str) -> tuple[list[dict], int]:
     """The intake's evidence quotes that occur in the report, each as the report's own text. Returns them and how many went.
 
@@ -119,12 +122,10 @@ def clean_quotes(quotes: list[dict] | None, raw: str) -> tuple[list[dict], int]:
     return kept, len(quotes or []) - len(kept)
 
 
-def sector_spots(sector: str) -> list[str]:
-    """Landmarks inside a sector, from data/map/floor.json, for the intake's sector choice."""
-    for zone in FLOOR["zones"]:
-        if sector_id(zone["slug"]) == sector:
-            return zone.get("spots", [])
-    return []
+def sectors_with_landmarks() -> dict[str, str]:
+    """Each sector's name with the landmarks inside it, from data/map/floor.json, for the intake's sector choice."""
+    spots = {sector_id(zone["slug"]): zone.get("spots", []) for zone in FLOOR["zones"]}
+    return {k: name + (f"; landmarks: {', '.join(spots[k])}" if spots.get(k) else "") for k, name in SECTORS.items()}
 
 
 def exit_sectors() -> set[str]:
@@ -164,21 +165,6 @@ def components_for(sky: bool) -> dict[str, str]:
     return {k: v for k, v in COMPONENTS.items() if sky or k != "SkyClock"}
 
 
-def token_listing() -> str:
-    """The pictures a floor plan marker can show, for the compose prompt."""
-    return "\n".join(f"- {k}: {v}" for k, v in MAP_TOKENS.items())
-
-
-def art_listing() -> str:
-    """The images the model may choose from, for the compose prompt."""
-    lines = [f"- {k}: {alt}" for k, alt in {**ENTITY_IMAGES, **SCENE_IMAGES}.items()]
-    return "\n".join(lines) or "- none"
-
-
-QUICK_KINDS = ["seal", "unseal", "countermeasure", "extract", "call_expert"]  # the operator moves a quick action runs
-PEOPLE_SHARES = ["all", "half"]  # how many of the tracked people an extract action marks out
-
-
 def manifest_schema(arsenal: list[str], source_count: int, sky: bool) -> dict:
     """The strict json_schema for one manifest. Arsenal, sources and the sky are per run, so the schema is too."""
     source_ref = {"type": "integer", "minimum": 0, "maximum": source_count,
@@ -187,13 +173,13 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool) -> dict:
         _component("ThreatBanner", {"severity": _enum(SEVERITIES), "directive": {"type": "string"}}),
         _component("EMFGauge", {"value_mg": {"type": "number"}, "threshold_mg": {"type": "number"},
                                 "trend": _enum(["rising", "steady", "falling"]),
-                                "status": _enum(["nominal", "elevated", "danger"])}),
+                                "status": _enum(LEVELS)}),
         _component("ThermalReadout", {
             "temperature_c": {"type": "number", "description": "The temperature the report gives"},
             "baseline_c": {"type": ["number", "null"],
                            "description": ("The normal for what was measured: the room temperature the report states for an air reading, "
                                            "37 for a body or fever reading, 33 for skin. null when the report states no room temperature")},
-            "status": _enum(["nominal", "elevated", "danger"])}),
+            "status": _enum(LEVELS)}),
         _component("FloorPlan", {
             "hot_sector": _enum(SECTORS),
             "seal": {"type": "array", "items": _enum(SECTORS), "description": "Distinct sectors to lock down"},
@@ -212,7 +198,7 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool) -> dict:
                                                   "description": "The picture: a map token, the countermeasure's arsenal id, or other"},
                                        "color": {**_enum(DOT_COLORS), "description": "The dot's color when entity is other"}})}}),
         _component("CivilianTracker", {"count": {"type": "integer"}, "location": {"type": "string"},
-                                       "condition": _enum(["pinned", "trapped", "injured", "evacuating", "safe", "unknown"]),
+                                       "condition": _enum(CONDITIONS),
                                        "priority": _enum(["immediate", "high", "routine"])}),
         _component("CountermeasurePicker", {
             "target_entity": {"type": "string", "description": ("Who the countermeasures are aimed at, as the report names them "
@@ -223,7 +209,7 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool) -> dict:
                 "rationale": {"type": "string", "description": "Under 20 words"}, "source": source_ref})},
             "recommended": _enum(arsenal)}),
         _component("SystemsBoard", {"systems": {"type": "array", "items": _obj({
-            "name": {"type": "string"}, "status": _enum(["online", "degraded", "offline"])})}}),
+            "name": {"type": "string"}, "status": _enum(SYSTEM_STATUSES)})}}),
         _component("SourceLedger", {"cited": {"type": "array", "items": source_ref}}),
         _component("EntityCard", {
             "image": {**_enum(ENTITY_IMAGES), "description": "The entity image that matches the report"},
