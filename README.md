@@ -12,6 +12,8 @@ The model reads the report, decides whether the threat is real, and builds the s
 - **[docs/](docs/README.md)**: the component guide, the deploy notes and the explainers.
 - **[eval/](eval/README.md)**: how the station is scored against hand-written answer keys, and what that found.
 
+![The incident report at moonrise, Nightfall step 21: the model's quoted evidence highlighted in the report, what the station remembers and builds on, and the step controls](docs/components/report-panel.webp)
+
 ## The problem
 
 Incident logs arrive as messy text, and the severity label on them is often wrong. A console that shows every panel for every alert buries the one control that matters, and it cannot tell a real threat from a look-alike.
@@ -47,6 +49,8 @@ The model decides:
 - **The facts on the map:** up to 4 markers, each a small picture of a creature, a crowd, an object or a countermeasure in its sector, plus the hot sector, the sectors to seal and the route out. The page walks the route through real doors and round sealed sectors.
 - **The next moves:** 1 to 3 quick actions, such as "Seal the lounge" or "Switch to UV floods".
 - **The rest:** the art, the opening sound, the recommended action (observe, contain or evacuate) and the directive.
+
+![The floor plan the model marked up for Nightfall step 21: small pictures of the vampires, the turning werewolves, the hurt and the crowd in the main stage, the stage sealed, and the walked route out through the lounge](docs/components/floor-plan.webp)
 
 The code holds the line:
 
