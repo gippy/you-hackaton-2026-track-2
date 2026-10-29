@@ -471,51 +471,30 @@ class HauntFlow(Flow[HauntState]):
 
 # ---- streaming helpers for compose
 
+SEPARATOR = re.compile(r"[\s,]*")
+DECODER = json.JSONDecoder()
+
+
 class ComponentStream:
     """Finds each complete component object in a streaming manifest, as soon as its JSON closes."""
 
     def __init__(self):
-        self.pos = -1  # index just after the components array's "[", once found
-        self.depth = 0
-        self.start = -1
-        self.in_str = False
-        self.escape = False
-        self.done = False
+        self.pos = None  # index just after the components array's "[", once found
 
     def feed(self, text: str) -> list[dict]:
         """The components that closed since the last call. `text` is the whole reply so far."""
         found = []
-        if self.pos < 0:
+        if self.pos is None:
             m = re.search(r'"components"\s*:\s*\[', text)
             if not m:
                 return found
             self.pos = m.end()
-        while self.pos < len(text) and not self.done:
-            ch = text[self.pos]
-            if self.in_str:
-                if self.escape:
-                    self.escape = False
-                elif ch == "\\":
-                    self.escape = True
-                elif ch == '"':
-                    self.in_str = False
-            elif ch == '"':
-                self.in_str = True
-            elif ch in "{[":
-                if self.depth == 0 and ch == "{":
-                    self.start = self.pos
-                self.depth += 1
-            elif ch in "}]":
-                if self.depth == 0:  # the components array itself closed
-                    self.done = True
-                else:
-                    self.depth -= 1
-                    if self.depth == 0 and ch == "}":
-                        try:
-                            found.append(json.loads(text[self.start:self.pos + 1]))
-                        except json.JSONDecodeError:
-                            pass
-            self.pos += 1
+        while text.startswith("{", start := SEPARATOR.match(text, self.pos).end()):
+            try:
+                comp, self.pos = DECODER.raw_decode(text, start)
+            except json.JSONDecodeError:
+                break  # this object has not closed yet
+            found.append(comp)
         return found
 
 
