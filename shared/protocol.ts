@@ -82,11 +82,14 @@ export type Component =
 
 export type ComponentType = Component['type'];
 
-/** A short note the model pins on the floor view, in one sector. */
+/** Something the model puts on the floor view, in one sector, with a short note. */
 export interface Marker {
     sector: string;
     label: string;
     kind: 'threat' | 'people' | 'countermeasure' | 'hazard';
+    /** The picture: a map token, an arsenal id, or 'other' for a dot in `color`. Saved runs from before have none. */
+    entity?: string;
+    color?: string;
 }
 
 export interface SkyEvent {
@@ -167,7 +170,7 @@ export interface Floor {
 /** One image from art/station/manifest.json. `file` is relative to the repo root. */
 export interface ArtAsset {
     file: string;
-    kind: 'entity' | 'sector' | 'hero' | 'icon';
+    kind: 'entity' | 'sector' | 'hero' | 'icon' | 'token';
     alt: string;
     /** A short hash of the file's content, so a re-rendered image under the same name is not served from a cache. */
     v?: string;
@@ -178,6 +181,9 @@ export interface Library {
     sector_aliases: Record<string, string>;
     arsenal: Record<string, string>;
     arsenal_icons: Record<string, string>;
+    /** The pictures a floor plan marker can show (art id `token_<id>`), and the colors of a dot when none fits. */
+    map_tokens: Record<string, string>;
+    dot_colors: Record<string, string>;
     playbooks: Record<string, { label: string; arsenal: string[]; lore_focus: string }>;
     components: Record<ComponentType, string>;
     actions: Action[];

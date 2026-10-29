@@ -1,9 +1,10 @@
 // The FloorPlan component's two views: the Loft's floor (a schematic from data/map/floor.json) and the
 // blocks around the tower (OpenStreetMap, data/map/area.geojson). The model's manifest places every
-// marker: the hot sector or outdoor spot, the sealed sectors, the route out and short notes on the floor.
-import { useEffect, useMemo, useState } from 'react';
+// marker: the hot sector or outdoor spot, the sealed sectors, the route out, and what is where on the
+// floor as small pictures (creatures, people, objects, countermeasures) with short notes.
+import { useEffect, useId, useMemo, useState } from 'react';
 
-import type { Component, Floor, Marker } from '../../shared/protocol.ts';
+import type { ArtAsset, Component, Floor, Marker } from '../../shared/protocol.ts';
 import type { Ctx } from './components.tsx';
 import { routeThrough, type ThroughRoute } from './route.ts';
 import { artUrl, withToken } from './url.ts';
@@ -74,7 +75,7 @@ interface Placed {
 
 const MARK_SIZE = 3.4; // the label's height, the same as the zone labels
 const CHAR_W = 0.42; // VT323's advance in ems, with a little room
-const GLYPH = 1.4; // half the glyph's width
+const GLYPH = 2.6; // the radius of a marker's picture, and half the width of its fallback shape
 const KIND_NAME: Record<Marker['kind'], string> = { threat: 'threat', people: 'people', countermeasure: 'countermeasure', hazard: 'hazard' };
 
 const overlap = (a: Box, b: Box) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
@@ -134,7 +135,8 @@ function placeMarkers(floor: Floor, markers: Marker[], idOf: (slug: string) => s
                 if (!inside([x, y], zone.polygon)) continue;
                 for (const side of [1, -1] as const) {
                     const [x0, x1] = side === 1 ? [x - GLYPH, x - GLYPH + w] : [x + GLYPH - w, x + GLYPH];
-                    const box: Box = [x0 - 0.3, y - MARK_SIZE / 2 - 0.3, x1 + 0.3, y + MARK_SIZE / 2 + 0.3];
+                    const half = Math.max(MARK_SIZE / 2, GLYPH); // the picture is taller than the label
+                    const box: Box = [x0 - 0.3, y - half - 0.3, x1 + 0.3, y + half + 0.3];
                     if (box[0] < 0 || box[1] < 0 || box[2] > width || box[3] > height) continue;
                     const hit = taken.reduce((sum, b) => sum + overlap(box, b), 0);
                     const score = hit * 100 + Math.hypot(x - zone.label_at[0], y - zone.label_at[1]);
@@ -152,14 +154,48 @@ function placeMarkers(floor: Floor, markers: Marker[], idOf: (slug: string) => s
 
 /** The marker's shape: a diamond for a threat, a circle for people, a square for a countermeasure, a triangle for a hazard. */
 function Glyph({ kind, at: [x, y] }: { kind: Marker['kind']; at: Point }) {
-    const r = GLYPH;
+    const r = GLYPH * 0.6;
     if (kind === 'people') return <circle cx={x} cy={y} r={r} className={`glyph ${kind}`} />;
     if (kind === 'countermeasure') return <rect x={x - r * 0.85} y={y - r * 0.85} width={r * 1.7} height={r * 1.7} className={`glyph ${kind}`} />;
     const d = kind === 'threat' ? `M${x},${y - r}L${x + r},${y}L${x},${y + r}L${x - r},${y}Z` : `M${x},${y - r}L${x + r},${y + r * 0.8}L${x - r},${y + r * 0.8}Z`;
     return <path d={d} className={`glyph ${kind}`} />;
 }
 
+/** The art for a marker's entity: its map token, or the icon of the countermeasure it names. */
+function entityArt(entity: string | undefined, ctx: Ctx): ArtAsset | undefined {
+    if (!entity) return undefined;
+    return ctx.art[`token_${entity}`] ?? ctx.art[ctx.library.arsenal_icons[entity]];
+}
+
+/**
+ * What a marker shows, in a ring colored by its kind:
+ * - the picture of its entity
+ * - a dot in the model's color when no picture fits (entity 'other', or art not rendered yet)
+ * - the kind's shape for a saved run from before markers had an entity
+ * `clip` is a page-unique id for the picture's round crop.
+ */
+function Token({ marker, at: [x, y], ctx, clip }: { marker: Marker; at: Point; ctx: Ctx; clip: string }) {
+    const art = entityArt(marker.entity, ctx);
+    const r = GLYPH;
+    if (art) {
+        return (
+            <g>
+                <clipPath id={clip}>
+                    <circle cx={x} cy={y} r={r} />
+                </clipPath>
+                <circle cx={x} cy={y} r={r} className="token-bg" />
+                <image href={artUrl(art)} x={x - r * 1.1} y={y - r * 1.1} width={r * 2.2} height={r * 2.2} clipPath={`url(#${clip})`} />
+                <circle cx={x} cy={y} r={r} className={`token-ring ${marker.kind}`} />
+            </g>
+        );
+    }
+    if (!marker.entity) return <Glyph kind={marker.kind} at={[x, y]} />;
+    const fill = ctx.library.dot_colors[marker.color ?? ''] ?? 'var(--text)';
+    return <circle cx={x} cy={y} r={r * 0.7} className={`token-ring ${marker.kind}`} style={{ fill }} />;
+}
+
 function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
+    const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
     const floor = ctx.library && ctx.floor;
     const sealed = ctx.operator.sealed;
     const route = useMemo(() => (floor ? walk(floor, ctx.library.sector_aliases, p.safe_route, sealed) : null), [floor, ctx.library, p.safe_route, sealed]);
@@ -250,7 +286,7 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                 {/* The legend lists the markers for screen readers. */}
                 {marks.map(({ marker, at, side }, i) => (
                     <g key={i} className="marker" aria-hidden="true">
-                        <Glyph kind={marker.kind} at={at} />
+                        <Token marker={marker} at={at} ctx={ctx} clip={`${uid}-map-${i}`} />
                         <text x={at[0] + side * (GLYPH + 0.8)} y={at[1] + MARK_SIZE * 0.3} textAnchor={side === 1 ? 'start' : 'end'} className="marker-label">
                             {marker.label}
                         </text>
@@ -279,8 +315,8 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                 </span>
                 {marks.map(({ marker }, i) => (
                     <span key={i}>
-                        <svg viewBox={`${-GLYPH} ${-GLYPH} ${2 * GLYPH} ${2 * GLYPH}`} className="legend-glyph" aria-hidden="true">
-                            <Glyph kind={marker.kind} at={[0, 0]} />
+                        <svg viewBox={`${-GLYPH - 0.3} ${-GLYPH - 0.3} ${2 * GLYPH + 0.6} ${2 * GLYPH + 0.6}`} className="legend-glyph" aria-hidden="true">
+                            <Token marker={marker} at={[0, 0]} ctx={ctx} clip={`${uid}-legend-${i}`} />
                         </svg>
                         {`${KIND_NAME[marker.kind]} in ${name(marker.sector)}: ${marker.label}`}
                     </span>

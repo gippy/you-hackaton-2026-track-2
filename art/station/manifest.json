@@ -376,5 +376,149 @@
         "seed": 4722,
         "width": 256,
         "height": 256
+    },
+    "token_vampire": {
+        "file": "art/station/tokens/token_vampire.webp",
+        "kind": "token",
+        "alt": "Map token: a vampire",
+        "prompt": "A cartoon icon of a vampire's head and shoulders, slicked-back hair with a sharp widow's peak, pointed ears, two white fangs and a tall upturned cape collar, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_werewolf": {
+        "file": "art/station/tokens/token_werewolf.webp",
+        "kind": "token",
+        "alt": "Map token: a werewolf",
+        "prompt": "A cartoon icon of a snarling werewolf's head, pointed ears, a long snout, bared fangs and shaggy angular fur tufts, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_wolf": {
+        "file": "art/station/tokens/token_wolf.webp",
+        "kind": "token",
+        "alt": "Map token: a wolf or a wolf pack",
+        "prompt": "A cartoon icon of a single wolf in side profile, head low, mid-stride on four legs, bushy tail, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_zombie": {
+        "file": "art/station/tokens/token_zombie.webp",
+        "kind": "token",
+        "alt": "Map token: a zombie or a shambling horde",
+        "prompt": "A cartoon icon of a zombie's head and shoulders, grey sunken face, a stitched cheek, one drooping eye, slack open jaw and a torn shirt collar, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_ghost": {
+        "file": "art/station/tokens/token_ghost.webp",
+        "kind": "token",
+        "alt": "Map token: a ghost, phantom or apparition",
+        "prompt": "A cartoon icon of a floating ghost with a hollow-eyed human face and wild hair, its body trailing off into jagged wisps of smoke, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_figure": {
+        "file": "art/station/tokens/token_figure.webp",
+        "kind": "token",
+        "alt": "Map token: an unidentified figure or creature",
+        "prompt": "A cartoon icon of a tall faceless hooded figure in a long dark cloak, only two small glowing eyes under the hood, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_people": {
+        "file": "art/station/tokens/token_people.webp",
+        "kind": "token",
+        "alt": "Map token: attendees, guests or a crowd",
+        "prompt": "A cartoon icon of three people in hoodies standing shoulder to shoulder, simple faceless heads, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_staff": {
+        "file": "art/station/tokens/token_staff.webp",
+        "kind": "token",
+        "alt": "Map token: staff, guards, volunteers or medics",
+        "prompt": "A cartoon icon of a security guard's head and shoulders with a peaked cap, a reflective safety vest and a handheld radio, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_injured": {
+        "file": "art/station/tokens/token_injured.webp",
+        "kind": "token",
+        "alt": "Map token: hurt, bitten, collapsed or pinned people",
+        "prompt": "A cartoon icon of a first-aid kit box with a large blood-red cross on its lid, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_crate": {
+        "file": "art/station/tokens/token_crate.webp",
+        "kind": "token",
+        "alt": "Map token: crates, coffins or boxes of soil",
+        "prompt": "A cartoon icon of a long wooden shipping crate with its lid nailed shut and dark soil spilling out from the cracks between its planks, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_fog": {
+        "file": "art/station/tokens/token_fog.webp",
+        "kind": "token",
+        "alt": "Map token: fog, mist or dry ice",
+        "prompt": "A cartoon icon of a thick low bank of rolling fog, jagged billowing puffs, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_fire": {
+        "file": "art/station/tokens/token_fire.webp",
+        "kind": "token",
+        "alt": "Map token: fire or smoke",
+        "prompt": "A cartoon icon of a single tall jagged flame with black smoke rising above it, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_costume": {
+        "file": "art/station/tokens/token_costume.webp",
+        "kind": "token",
+        "alt": "Map token: a costume or prop taken for a creature",
+        "prompt": "A cartoon icon of a cheap plastic Halloween monster party mask with an elastic strap and empty eye holes, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_speaker": {
+        "file": "art/station/tokens/token_speaker.webp",
+        "kind": "token",
+        "alt": "Map token: a speaker, subwoofer or sound rig",
+        "prompt": "A cartoon icon of a big subwoofer speaker cabinet with one large cone and jagged sound waves coming out of it, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_sparks": {
+        "file": "art/station/tokens/token_sparks.webp",
+        "kind": "token",
+        "alt": "Map token: sparking cables, tripped power or failing electrics",
+        "prompt": "A cartoon icon of a torn electrical cable end throwing a jagged burst of sparks, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
+    },
+    "token_espresso": {
+        "file": "art/station/tokens/token_espresso.webp",
+        "kind": "token",
+        "alt": "Map token: the espresso machine or coffee bar gear",
+        "prompt": "A cartoon icon of an old espresso machine with a round pressure gauge and a steam wand, on a pure black background, front view, bold readable silhouette centered in frame. Flat orange and amber fills with hard-edged shadow shapes and thick bold black outlines. Cartoon comic-book illustration, cel shaded, sharp jagged angular shapes, no rounded forms, no gradients, no textures, no photo, no realism, mostly black background, small blood red accents only, single centered icon, emblem, bold silhouette, nothing else in frame.",
+        "seed": 4701,
+        "width": 160,
+        "height": 160
     }
 }
