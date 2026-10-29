@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import type { ClientMessage } from '../../shared/protocol.ts';
 import type { SoundBoard } from './audio.ts';
-import { EXPERTS, callExpert, isOpen, pageFor, pageStatus } from './experts.tsx';
+import { EXPERTS, callExpert, canCall, isOpen, pageFor, pageStatus } from './experts.tsx';
 import type { State } from './station.ts';
 
 export function TopBar({ state, subtitle, sound, post }: { state: State; subtitle: string; sound: SoundBoard; post: (msg: ClientMessage) => void }) {
@@ -69,7 +69,7 @@ export function TopBar({ state, subtitle, sound, post }: { state: State; subtitl
                                     <button
                                         type="button"
                                         className={expert === recommended ? '' : 'ghost'}
-                                        aria-disabled={!state.manifest || offline || open}
+                                        aria-disabled={!canCall(state, expert)}
                                         title={offline ? 'Offline: no expert can be paged' : `Pages ${library.experts[expert].label.toLowerCase()} on call through PagerDuty`}
                                         onClick={() => callExpert(state, expert, sound, post)}
                                     >

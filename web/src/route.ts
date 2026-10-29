@@ -4,20 +4,9 @@
 // borders as walls that can only be crossed at the doors the `connections` name, runs A* with a small
 // extra cost near walls, and smooths the result with line-of-sight so a route reads as a few clean
 // segments through the doors. It never cuts through a wall or across the open middle of AWS's C.
+import type { Floor } from '../../shared/protocol.ts';
 
 export type Point = [number, number];
-
-/** The part of data/map/floor.json this module reads. The page's `Floor` type satisfies it. */
-export interface RouteFloor {
-    space: { width: number; height: number };
-    outline: Point[];
-    open_middle?: Point[];
-    /** AWS's blocks. A block's cells that no sector covers (the Reception hall) are walkable unless `walkable` is false. */
-    blocks?: { id: string; polygon: Point[]; walkable?: boolean }[];
-    zones: { slug: string; polygon: Point[]; aliases?: string[]; route_at?: Point }[];
-    features: { id: string; at: Point; zone?: string | null; exit?: boolean }[];
-    connections: { a: string; b: string; via: string | null }[];
-}
 
 export interface RouteRequest {
     /** A zone slug (or alias), a feature id, a block id such as `reception`, or a point on the floor. */
@@ -43,8 +32,8 @@ export interface Route {
 
 export interface ThroughOptions {
     avoid?: string[];
-    /** Finish by walking out: an exit feature id, or true for the first exit in the last sector. */
-    exit?: string | true;
+    /** Finish by walking out of the last sector's first exit. */
+    exit?: boolean;
 }
 
 export interface ThroughRoute extends Route {
@@ -54,18 +43,9 @@ export interface ThroughRoute extends Route {
     skipped: string[];
 }
 
-export interface Tuning {
-    /** Grid cell size in floor units. Default 0.5. */
-    cell?: number;
-    /** Half the width of a door opening, in floor units. Default 1.7. */
-    doorRadius?: number;
-    /** How close smoothing lets a shortcut pass a wall, in floor units. Default 0.7. */
-    clearance?: number;
-}
-
-const DEFAULT_CELL = 0.5;
-const DOOR_RADIUS = 1.7;
-const CLEARANCE = 0.7;
+const CELL = 0.5; // grid cell size in floor units
+const DOOR_RADIUS = 1.7; // half the width of a door opening, in floor units
+const CLEARANCE = 0.7; // how close smoothing lets a shortcut pass a wall, in floor units
 const WALL_RANGE = 3; // floor units over which walls add cost
 const WALL_COST = 3; // extra cost multiplier right at a wall
 const MIN_BLOCK_CELLS = 6; // unzoned block slivers smaller than this are dropped
@@ -86,16 +66,20 @@ function shape(poly: Point[]): Shape {
     return { poly, x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) };
 }
 
-function inside(s: Shape, x: number, y: number): boolean {
-    if (x < s.x0 || x > s.x1 || y < s.y0 || y > s.y1) return false;
+/** Whether the point (x, y) lies inside a polygon, by the even-odd rule. */
+export function inPolygon(x: number, y: number, poly: Point[]): boolean {
     let hit = false;
-    const p = s.poly;
-    for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
-        const [xi, yi] = p[i];
-        const [xj, yj] = p[j];
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const [xi, yi] = poly[i];
+        const [xj, yj] = poly[j];
         if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) hit = !hit;
     }
     return hit;
+}
+
+/** `inPolygon` with the shape's bounding box checked first, for the grid's many tests. */
+function inside(s: Shape, x: number, y: number): boolean {
+    return x >= s.x0 && x <= s.x1 && y >= s.y0 && y <= s.y1 && inPolygon(x, y, s.poly);
 }
 
 // --- the grid -----------------------------------------------------------------------------------
@@ -123,27 +107,24 @@ interface Grid {
     cost: Float32Array;
     openings: Map<number, Opening[]>;
     doorPoints: Opening[];
-    clearance: number;
 }
 
-const grids = new WeakMap<object, Map<string, Grid>>();
+const grids = new WeakMap<Floor, Grid>();
 
-function gridFor(floor: RouteFloor, tune: Tuning = {}): Grid {
-    const key = `${tune.cell ?? DEFAULT_CELL}|${tune.doorRadius ?? DOOR_RADIUS}|${tune.clearance ?? CLEARANCE}`;
-    let byKey = grids.get(floor);
-    if (!byKey) grids.set(floor, (byKey = new Map()));
-    let g = byKey.get(key);
-    if (!g) byKey.set(key, (g = buildGrid(floor, tune.cell ?? DEFAULT_CELL, tune.doorRadius ?? DOOR_RADIUS, tune.clearance ?? CLEARANCE)));
+function gridFor(floor: Floor): Grid {
+    let g = grids.get(floor);
+    if (!g) grids.set(floor, (g = buildGrid(floor)));
     return g;
 }
 
-function buildGrid(floor: RouteFloor, cell: number, doorRadius: number, clearance: number): Grid {
+function buildGrid(floor: Floor): Grid {
+    const cell = CELL;
     const nx = Math.ceil(floor.space.width / cell);
     const ny = Math.ceil(floor.space.height / cell);
     const outline = shape(floor.outline);
     const middle = floor.open_middle ? shape(floor.open_middle) : null;
     const zones = floor.zones.map((z) => shape(z.polygon));
-    const blocks = (floor.blocks ?? []).map((b) => ({ id: b.id, s: shape(b.polygon), walkable: b.walkable !== false }));
+    const blocks = floor.blocks.map((b) => ({ id: b.id, s: shape(b.polygon), walkable: b.walkable !== false }));
 
     const names = floor.zones.map((z) => z.slug);
     const index = new Map<string, number>();
@@ -199,7 +180,7 @@ function buildGrid(floor: RouteFloor, cell: number, doorRadius: number, clearanc
         const rb = index.get(c.b);
         if (ra === undefined || rb === undefined) continue;
         const via = c.via === null ? undefined : floor.features.find((f) => f.id === c.via);
-        const o: Opening = via ? { x: via.at[0], y: via.at[1], r: doorRadius } : { x: 0, y: 0, r: Infinity };
+        const o: Opening = via ? { x: via.at[0], y: via.at[1], r: DOOR_RADIUS } : { x: 0, y: 0, r: Infinity };
         if (via) doorPoints.push(o);
         for (const key of [ra * 256 + rb, rb * 256 + ra]) {
             const list = openings.get(key);
@@ -208,7 +189,7 @@ function buildGrid(floor: RouteFloor, cell: number, doorRadius: number, clearanc
         }
     }
 
-    const g: Grid = { cell, nx, ny, region, names, index, wall: new Float32Array(nx * ny), cost: new Float32Array(nx * ny), openings, doorPoints, clearance };
+    const g: Grid = { cell, nx, ny, region, names, index, wall: new Float32Array(nx * ny), cost: new Float32Array(nx * ny), openings, doorPoints };
     computeWalls(g);
     return g;
 }
@@ -226,6 +207,16 @@ function canStep(g: Grid, a: number, b: number): boolean {
     const my = ((((a / nx) | 0) + ((b / nx) | 0)) / 2 + 0.5) * cell;
     for (const o of list) if (o.r === Infinity || Math.hypot(mx - o.x, my - o.y) <= o.r) return true;
     return false;
+}
+
+/** Can a walker move to a neighbouring cell? A diagonal move needs both corner cells open and not avoided. */
+function canMove(g: Grid, a: number, b: number, avoided: Set<number>): boolean {
+    const dx = (b % g.nx) - (a % g.nx);
+    const dy = ((b / g.nx) | 0) - ((a / g.nx) | 0);
+    if (dx === 0 || dy === 0) return canStep(g, a, b);
+    const n1 = a + dx;
+    const n2 = a + dy * g.nx;
+    return !avoided.has(g.region[n1]) && !avoided.has(g.region[n2]) && canStep(g, a, n1) && canStep(g, n1, b) && canStep(g, a, n2) && canStep(g, n2, b);
 }
 
 function computeWalls(g: Grid): void {
@@ -347,7 +338,7 @@ function regionAnchor(g: Grid, r: number): number {
     return pick;
 }
 
-function resolve(g: Grid, floor: RouteFloor, spec: string | Point): Place {
+function resolve(g: Grid, floor: Floor, spec: string | Point): Place {
     let point: Point | undefined;
     let cell = -1;
     if (Array.isArray(spec)) {
@@ -466,11 +457,7 @@ function search(g: Grid, start: number, goal: number, avoided: Set<number>): Sea
     let closestH = h(start);
     while (heap.size) {
         const c = heap.pop();
-        if (c === goal) {
-            const path: number[] = [];
-            for (let p = goal; p !== -1; p = parent[p]) path.push(p);
-            return { path: path.reverse(), closest: goal, parent };
-        }
+        if (c === goal) return { path: pathTo(parent, goal), closest: goal, parent };
         const hc = h(c);
         if (hc < closestH) {
             closestH = hc;
@@ -483,18 +470,8 @@ function search(g: Grid, start: number, goal: number, avoided: Set<number>): Sea
             const j = cj + dy;
             if (i < 0 || j < 0 || i >= nx || j >= ny) continue;
             const b = j * nx + i;
-            const rb = region[b];
-            if (rb < 0 || avoided.has(rb)) continue;
-            let len = 1;
-            if (dx !== 0 && dy !== 0) {
-                const n1 = cj * nx + i;
-                const n2 = j * nx + ci;
-                if (avoided.has(region[n1]) || avoided.has(region[n2])) continue;
-                if (!canStep(g, c, n1) || !canStep(g, n1, b) || !canStep(g, c, n2) || !canStep(g, n2, b)) continue;
-                len = Math.SQRT2;
-            } else if (!canStep(g, c, b)) {
-                continue;
-            }
+            if (region[b] < 0 || avoided.has(region[b]) || !canMove(g, c, b, avoided)) continue;
+            const len = dx !== 0 && dy !== 0 ? Math.SQRT2 : 1;
             const d = dist[c] + (len * (cost[c] + cost[b])) / 2;
             if (d < dist[b]) {
                 dist[b] = d;
@@ -532,30 +509,36 @@ function lineClear(g: Grid, p: Point, q: Point, avoided: Set<number>): boolean {
         const c = cellAt(g, x, y);
         if (c < 0 || g.region[c] < 0 || avoided.has(g.region[c])) return false;
         if (c !== prev) {
-            const dx = (c % g.nx) - (prev % g.nx);
-            const dy = ((c / g.nx) | 0) - ((prev / g.nx) | 0);
-            if (dx !== 0 && dy !== 0) {
-                const n1 = prev + dx;
-                const n2 = prev + dy * g.nx;
-                if (avoided.has(g.region[n1]) || avoided.has(g.region[n2])) return false;
-                if (!canStep(g, prev, n1) || !canStep(g, n1, c) || !canStep(g, prev, n2) || !canStep(g, n2, c)) return false;
-            } else if (!canStep(g, prev, c)) {
-                return false;
-            }
+            if (!canMove(g, prev, c, avoided)) return false;
             prev = c;
         }
-        if (g.wall[c] < g.clearance && Math.hypot(x - p[0], y - p[1]) > slack && Math.hypot(x - q[0], y - q[1]) > slack && !nearDoor(g, x, y)) return false;
+        if (g.wall[c] < CLEARANCE && Math.hypot(x - p[0], y - p[1]) > slack && Math.hypot(x - q[0], y - q[1]) > slack && !nearDoor(g, x, y)) return false;
     }
     return true;
 }
 
-function smooth(g: Grid, pts: Point[], avoided: Set<number>): Point[] {
+/** Does the segment p to q pass through the region? */
+function touches(g: Grid, p: Point, q: Point, region: number): boolean {
+    const steps = Math.max(1, Math.ceil(Math.hypot(q[0] - p[0], q[1] - p[1]) / (g.cell * 0.5)));
+    for (let s = 0; s <= steps; s++) {
+        const c = cellAt(g, p[0] + ((q[0] - p[0]) * s) / steps, p[1] + ((q[1] - p[1]) * s) / steps);
+        if (c >= 0 && g.region[c] === region) return true;
+    }
+    return false;
+}
+
+/**
+ * Straightens a route with line-of-sight shortcuts. `named` marks where a route joined from legs ends in a
+ * sector the model named: a walker only has to pass through it, so a shortcut may drop that point as long as
+ * it still goes through the sector.
+ */
+function straighten(g: Grid, pts: Point[], named: { at: number; region: number }[], avoided: Set<number>): Point[] {
     if (pts.length <= 2) return pts;
     const out: Point[] = [pts[0]];
     let i = 0;
     while (i < pts.length - 1) {
         let j = pts.length - 1;
-        while (j > i + 1 && !lineClear(g, pts[i], pts[j], avoided)) j--;
+        while (j > i + 1 && !(lineClear(g, pts[i], pts[j], avoided) && named.every((n) => n.at <= i || n.at >= j || touches(g, pts[i], pts[j], n.region)))) j--;
         out.push(pts[j]);
         i = j;
     }
@@ -623,7 +606,7 @@ function finish(g: Grid, cells: number[], from: Place, to: Place | null, avoided
     let pts: Point[] = cells.map((c) => centerOf(g, c));
     pts[0] = from.point;
     if (to) pts[pts.length - 1] = to.point;
-    pts = throughDoors(g, smooth(g, pts, avoided));
+    pts = throughDoors(g, straighten(g, pts, [], avoided));
     const { zones, length } = describe(g, pts);
     return { points: pts.map(([x, y]) => [round2(x), round2(y)] as Point), zones, blocked: blockedBy.length > 0 || to === null, blockedBy, length: round2(length) };
 }
@@ -633,8 +616,8 @@ function finish(g: Grid, cells: number[], from: Place, to: Place | null, avoided
  * When the goal cannot be reached without entering an avoided zone, `blocked` is true and `points` is the
  * part of the direct route that can be walked safely.
  */
-export function findRoute(floor: RouteFloor, req: RouteRequest, tune?: Tuning): Route {
-    const g = gridFor(floor, tune);
+export function findRoute(floor: Floor, req: RouteRequest): Route {
+    const g = gridFor(floor);
     const from = resolve(g, floor, req.from);
     const to = resolve(g, floor, req.to);
     const avoided = new Set<number>();
@@ -657,37 +640,10 @@ export function findRoute(floor: RouteFloor, req: RouteRequest, tune?: Tuning): 
             const name = g.names[g.region[c]];
             if (avoided.has(g.region[c]) && !by.includes(name)) by.push(name);
         }
-        if (cut > 0) return { ...finish(g, direct.path.slice(0, cut), from, null, avoided, by), blocked: true };
+        if (cut > 0) return finish(g, direct.path.slice(0, cut), from, null, avoided, by);
     }
     // No route at all: the reachable cell nearest the goal.
-    return { ...finish(g, pathTo(safe.parent, safe.closest), from, null, avoided, []), blocked: true };
-}
-
-/** Does the segment p to q pass through the region? */
-function touches(g: Grid, p: Point, q: Point, region: number): boolean {
-    const steps = Math.max(1, Math.ceil(Math.hypot(q[0] - p[0], q[1] - p[1]) / (g.cell * 0.5)));
-    for (let s = 0; s <= steps; s++) {
-        const c = cellAt(g, p[0] + ((q[0] - p[0]) * s) / steps, p[1] + ((q[1] - p[1]) * s) / steps);
-        if (c >= 0 && g.region[c] === region) return true;
-    }
-    return false;
-}
-
-/**
- * Straightens a route joined from legs. The legs end at the middle of each named sector; a walker only has to
- * pass through it, so a shortcut may drop that point as long as it still goes through the sector.
- */
-function straighten(g: Grid, pts: Point[], named: { at: number; region: number }[], avoided: Set<number>): Point[] {
-    if (pts.length <= 2) return pts;
-    const out: Point[] = [pts[0]];
-    let i = 0;
-    while (i < pts.length - 1) {
-        let j = pts.length - 1;
-        while (j > i + 1 && !(lineClear(g, pts[i], pts[j], avoided) && named.every((n) => n.at <= i || n.at >= j || touches(g, pts[i], pts[j], n.region)))) j--;
-        out.push(pts[j]);
-        i = j;
-    }
-    return out;
+    return finish(g, pathTo(safe.parent, safe.closest), from, null, avoided, []);
 }
 
 /**
@@ -695,7 +651,7 @@ function straighten(g: Grid, pts: Point[], named: { at: number; region: number }
  * sealed is left out of the sequence (the route goes round it) and listed in `skipped`; if the start or the
  * last sector is sealed, or a leg cannot be walked, the route is blocked and ends where the walking stops.
  */
-export function routeThrough(floor: RouteFloor, slugs: string[], opts: ThroughOptions = {}): ThroughRoute {
+export function routeThrough(floor: Floor, slugs: string[], opts: ThroughOptions = {}): ThroughRoute {
     const avoid = opts.avoid ?? [];
     const g = gridFor(floor);
     const sealed = new Set(avoid.map((s) => g.index.get(s)).filter((r): r is number => r !== undefined));
@@ -710,7 +666,7 @@ export function routeThrough(floor: RouteFloor, slugs: string[], opts: ThroughOp
     if (opts.exit && stops.length) {
         const last = stops[stops.length - 1];
         const zone = floor.zones.find((z) => z.slug === last || z.aliases?.includes(last));
-        const exit = typeof opts.exit === 'string' ? opts.exit : floor.features.find((f) => f.exit && f.zone === zone?.slug)?.id;
+        const exit = floor.features.find((f) => f.exit && f.zone === zone?.slug)?.id;
         if (exit) stops.push(exit);
     }
     const legs: Route[] = [];
@@ -747,19 +703,14 @@ export function routeThrough(floor: RouteFloor, slugs: string[], opts: ThroughOp
 }
 
 /** The zone (or unzoned block) a point lies in, or null when it is not on the walkable floor. */
-export function zoneAt(floor: RouteFloor, point: Point): string | null {
+export function zoneAt(floor: Floor, point: Point): string | null {
     const g = gridFor(floor);
     const c = cellAt(g, point[0], point[1]);
     return c >= 0 && g.region[c] >= 0 ? g.names[g.region[c]] : null;
 }
 
-/** Whether a point lies on the walkable floor: inside a zone or an open block, not in the open middle, not outside the outline. */
-export function isWalkable(floor: RouteFloor, point: Point): boolean {
-    return zoneAt(floor, point) !== null;
-}
-
 /** Where a route to or from a zone starts and ends: the zone's `route_at`, or its roomiest spot. */
-export function zoneAnchor(floor: RouteFloor, slug: string): Point | null {
+export function zoneAnchor(floor: Floor, slug: string): Point | null {
     const g = gridFor(floor);
     const r = g.index.get(slug);
     if (r === undefined) return null;

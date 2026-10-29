@@ -18,10 +18,15 @@ export function pageFor(state: State, expert: Expert): PageInfo | undefined {
     return state.pages.find((p) => p.expert === expert && (id ? p.incident_id === id : p.incident_id.startsWith('pasted-')));
 }
 
+/** Whether the expert's page for the incident on screen is still open. */
+export function isPaged(state: State, expert: Expert): boolean {
+    const page = pageFor(state, expert);
+    return Boolean(page && isOpen(page));
+}
+
 /** Whether an expert can be paged now: the station is built, the server is live, and no page of theirs for it is open. */
 export function canCall(state: State, expert: Expert): boolean {
-    const page = pageFor(state, expert);
-    return Boolean(state.manifest) && state.mode !== 'offline' && !(page && isOpen(page));
+    return Boolean(state.manifest) && state.mode !== 'offline' && !isPaged(state, expert);
 }
 
 /** Page an expert with the operator's countermeasure, when `canCall` allows it. */

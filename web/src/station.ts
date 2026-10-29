@@ -1,7 +1,7 @@
 // The page's state: everything the server has streamed for the current run, plus the operator's choices.
 // Every server message goes through `reduce`, so a late joiner that gets the history replayed ends up
 // in the same state as a page that watched the run live.
-import type { ArtAsset, Component, DispatchInfo, FixtureIncident, Floor, Incident, Library, Manifest, OperatorMoves, PageInfo, Scenario, ServerMessage, Sky, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
+import type { ArtAsset, Component, DispatchInfo, FixtureIncident, Floor, Incident, Library, Manifest, OperatorMoves, PageInfo, Scenario, ScenarioStep, ServerMessage, Sky, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
 interface Step {
     state?: StepState;
@@ -13,7 +13,7 @@ export interface Operator {
     countermeasure: string | null;
     sealed: string[];
     extracted: number[]; // indexes of people marked extracted
-    map: 'floor' | 'area' | null; // the FloorPlan's view: the model's, until the operator switches it
+    map: 'floor' | 'area' | null; // the FloorPlan view the operator picked, or null for the model's
 }
 
 export interface State {
@@ -87,46 +87,38 @@ export const initial: State = {
     notice: null,
 };
 
-/** The model sometimes opens its title with the fixture id ("SIM NIGHTFALL 21 — …"); the step shows elsewhere. */
+/** The model sometimes opens its title with the fixture id ("SIM NIGHTFALL 21 — …", "SIM-PHANTOM-02: …"); the step shows elsewhere. */
 const cleanTitle = (title: string) =>
-    title.replace(/^\s*sim[- ]nightfall[- ]\d+\s*[—–:-]\s*/i, '').replace(/\s*(?:[—–-]\s*|\()sim[- ]nightfall[- ]\d+\)?\s*$/i, '').trim() || title;
+    title.replace(/^\s*sim[- ][a-z]+[- ]\d+\s*[—–:-]\s*/i, '').replace(/\s*(?:[—–-]\s*|\()sim[- ][a-z]+[- ]\d+\)?\s*$/i, '').trim() || title;
 
 const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
 
-/**
- * A component with every list and text prop present. Saved runs from older versions, or a model that
- * skipped a field, would otherwise hand a panel `undefined` where it expects an array.
- */
-function withDefaults(c: Component): Component {
-    const p: any = { ...(c.props ?? {}) };
-    const lists: Partial<Record<Component['type'], string[]>> = {
-        SourceLedger: ['cited'],
-        SkyClock: ['cited'],
-        CountermeasurePicker: ['options'],
-        SystemsBoard: ['systems'],
-        FloorPlan: ['seal', 'safe_route'],
-    };
-    for (const key of lists[c.type] ?? []) if (!Array.isArray(p[key])) p[key] = [];
-    if (c.type === 'CountermeasurePicker') p.options = p.options.filter((o: any) => o && typeof o.id === 'string');
-    return { ...c, why: c.why ?? '', props: p } as Component;
-}
-
-/** The operator's starting point is the model's: its recommended countermeasure, its sealed sectors and its map view. */
+/** The operator's starting point is the model's: its recommended countermeasure and its sealed sectors. */
 function adopt(operator: Operator, comp: Component): Operator {
     if (comp.type === 'CountermeasurePicker' && !operator.countermeasure) return { ...operator, countermeasure: comp.props.recommended };
-    if (comp.type === 'FloorPlan') {
-        return { ...operator, sealed: operator.sealed.length ? operator.sealed : comp.props.seal, map: operator.map ?? (comp.props.view === 'area' ? 'area' : 'floor') };
-    }
+    if (comp.type === 'FloorPlan') return { ...operator, sealed: operator.sealed.length ? operator.sealed : comp.props.seal };
     return operator;
 }
 
-/** "step 21 (20:02)", an incident id, or "a pasted incident", for the notice about another viewer's run. */
-function runLabel(state: State, id: string): string {
-    for (const scenario of state.scenarios) {
+/** The CivilianTracker's head count, or null when the station has no tracker. */
+export function peopleCount(components: Component[]): number | null {
+    const tracker = components.find((c) => c.type === 'CivilianTracker');
+    return tracker?.type === 'CivilianTracker' ? tracker.props.count : null;
+}
+
+/** The scenario and step an incident id belongs to, when it is a scenario step. */
+export function findStep(scenarios: Scenario[], id: string | null | undefined): { scenario: Scenario; step: ScenarioStep } | undefined {
+    for (const scenario of scenarios) {
         const step = scenario.steps.find((s) => s.incident_id === id);
-        if (step) return `${scenario.title} step ${step.step} (${step.time})`;
+        if (step) return { scenario, step };
     }
-    return id || 'a pasted incident';
+    return undefined;
+}
+
+/** "Nightfall step 21 (20:02)", an incident id, or "a pasted incident", for the notice about another viewer's run. */
+function runLabel(state: State, id: string): string {
+    const at = findStep(state.scenarios, id);
+    return at ? `${at.scenario.title} step ${at.step.step} (${at.step.time})` : id || 'a pasted incident';
 }
 
 function applyServerMessage(state: State, msg: ServerMessage, foreign = false): State {
@@ -169,11 +161,11 @@ function applyServerMessage(state: State, msg: ServerMessage, foreign = false): 
             return { ...state, title: msg.title ? cleanTitle(msg.title) : state.title, theme: msg.theme ?? state.theme };
         case 'component': {
             const components = [...state.components];
-            components[msg.index] = withDefaults(msg.component);
-            return { ...state, components, operator: adopt(state.operator, components[msg.index]) };
+            components[msg.index] = msg.component;
+            return { ...state, components, operator: adopt(state.operator, msg.component) };
         }
         case 'run_end': {
-            const manifest = { ...msg.manifest, components: (msg.manifest.components ?? []).map(withDefaults) };
+            const { manifest } = msg;
             const operator = manifest.components.reduce(adopt, state.operator);
             const notes = msg.notes?.length && msg.source === 'live' ? { text: `Pipeline notes: ${msg.notes.join('; ')}`, kind: 'info' as const } : state.banner;
             return { ...state, manifest, components: manifest.components, title: manifest.title ? cleanTitle(manifest.title) : state.title, theme: manifest.theme, operator, banner: notes };

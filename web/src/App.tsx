@@ -6,13 +6,13 @@ import { useEffect, useReducer, useRef, useState } from 'react';
 import type { ClientMessage, Incident, ServerMessage } from '../../shared/protocol.ts';
 import { SoundBoard } from './audio.ts';
 import { Card, IncidentHead, PanelBoundary, type Ctx } from './components.tsx';
-import { EXPERTS, ExpertCalls, callExpert, isOpen, pageFor, pageStatus } from './experts.tsx';
+import { EXPERTS, ExpertCalls, callExpert, isPaged, pageFor, pageStatus } from './experts.tsx';
 import { FloorPlan } from './floorplan.tsx';
 import { layout } from './layout.ts';
 import { BuildProgress } from './progress.tsx';
 import { Rail } from './rail.tsx';
 import { ReportPanel, type CompileRequest } from './report.tsx';
-import { initial, reduce, type Event, type State } from './station.ts';
+import { findStep, initial, peopleCount, reduce, type Event, type State } from './station.ts';
 import { TopBar } from './topbar.tsx';
 import { artUrl, withToken } from './url.ts';
 
@@ -144,27 +144,19 @@ export function App() {
 
     const { incident, library } = state;
     // Where the station on screen sits in a scenario, when it is one of its steps.
-    const scenario = state.scenarios.find((s) => s.steps.some((step) => step.incident_id === incident?.incident_id)) ?? state.scenarios[0];
-    const current = scenario?.steps.find((step) => step.incident_id === incident?.incident_id);
+    const at = findStep(state.scenarios, incident?.incident_id);
+    const scenario = at?.scenario ?? state.scenarios[0];
+    const current = at?.step;
     const running = Boolean(state.source) && !state.manifest;
 
-    const cited = new Set<number>();
-    for (const c of state.components) {
-        if (c?.type === 'SourceLedger' || c?.type === 'SkyClock') (c.props.cited ?? []).forEach((n) => cited.add(n));
-        if (c?.type === 'CountermeasurePicker') (c.props.options ?? []).forEach((o) => o.source && cited.add(o.source));
-    }
-    const tracker = state.components.find((c) => c?.type === 'CivilianTracker');
     const quick: Ctx['quick'] = {
         actions: state.manifest?.quick_actions ?? [],
-        people: tracker?.type === 'CivilianTracker' ? tracker.props.count : null,
+        people: peopleCount(state.components),
         call: (expert) => callExpert(state, expert, sound.current, post),
-        paged: (expert) => {
-            const page = pageFor(state, expert);
-            return Boolean(page && isOpen(page));
-        },
+        paged: (expert) => isPaged(state, expert),
     };
     const ctx: Ctx | null = library && {
-        library, art: state.art, floor: state.floor, sources: state.sources, cited, sky: state.sky,
+        library, art: state.art, floor: state.floor, sources: state.sources, sky: state.sky,
         incident: incident?.incident ?? null, clock: current?.time ?? '', action: state.manifest?.recommended_action ?? null, operator: state.operator, send, quick,
     };
 
@@ -196,7 +188,7 @@ export function App() {
                     {running
                         ? `Building the station for ${current ? `step ${current.step}` : 'the incident'}…`
                         : state.manifest && incident
-                          ? `Station ready: ${state.components.filter(Boolean).length} panels. ${incident.incident.entity} in ${library?.sectors[incident.incident.sector] ?? incident.incident.sector}. Recommended: ${state.manifest.recommended_action}.`
+                          ? `Station ready: ${state.components.length} panels. ${incident.incident.entity} in ${library?.sectors[incident.incident.sector] ?? incident.incident.sector}. Recommended: ${state.manifest.recommended_action}.`
                           : ''}
                     {EXPERTS.map((expert) => pageFor(state, expert))
                         .filter(Boolean)

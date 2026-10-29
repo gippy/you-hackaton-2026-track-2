@@ -140,13 +140,13 @@ export class Station {
         const scenario = this.opts.scenarios.find((s) => s.id === step.scenario);
         if (!scenario || !step.step) return [];
         return scenario.steps
-            .filter((s) => s.step! < step.step!)
+            .filter((s) => s.step < step.step!)
             .flatMap((s) => {
                 const saved = this.loadOwn(s.incident_id);
                 const found = saved?.state.incident;
                 if (!found) return [];
                 const { sector, entity, entity_class, verdict, summary } = found;
-                return [{ time: s.time ?? '', sector, entity, entity_class, verdict: verdict ?? null, summary }];
+                return [{ time: s.time, sector, entity, entity_class, verdict: verdict ?? null, summary }];
             });
     }
 

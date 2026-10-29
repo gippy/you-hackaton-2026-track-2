@@ -13,8 +13,6 @@ export interface Ctx {
     art: Record<string, ArtAsset>;
     floor: Floor | null;
     sources: Source[];
-    /** Numbers of the sources the plan relies on: cited by the ledger, a countermeasure or the sky clock. */
-    cited: Set<number>;
     sky: Sky | null;
     /** The intake's incident, the step's clock ("19:33", or empty) and the model's recommended action. */
     incident: Incident | null;
@@ -116,8 +114,7 @@ export function IncidentHead({ incident, ctx, action, directive }: { incident: I
 export function Card({ index, component, ctx, span, tall }: { index: number; component: Component; ctx: Ctx; span: number; tall: boolean }) {
     // The model's title for this incident, else the panel's own name; the area map is always "Around the tower".
     const title = component.type === 'FloorPlan' && mapView(component.props, ctx) === 'area' ? 'Around the tower' : component.props?.title || TITLES[component.type];
-    const extra =
-        component.type === 'ThreatBanner' ? `threat sev-${component.props?.severity}` : component.type === 'FloorPlan' ? 'floor' : component.type === 'EMFGauge' ? 'gauge' : '';
+    const extra = component.type === 'ThreatBanner' ? `threat sev-${component.props.severity}` : '';
     return (
         <article className={`card ${extra}`} style={{ gridColumn: `span ${span}`, gridRow: tall ? 'span 2' : undefined }}>
             {/* The incident headline is the panel's own title, so its frame header is for screen readers only. */}
@@ -143,13 +140,7 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
         case 'ThreatBanner':
             return (
                 <>
-                    {ctx.incident ? (
-                        <IncidentHead incident={ctx.incident} ctx={ctx} action={ctx.action} directive={c.props.directive} />
-                    ) : (
-                        <div className="incident-head">
-                            <p className="directive">{c.props.directive}</p>
-                        </div>
-                    )}
+                    {ctx.incident && <IncidentHead incident={ctx.incident} ctx={ctx} action={ctx.action} directive={c.props.directive} />}
                     <QuickActions ctx={ctx} />
                 </>
             );
@@ -183,7 +174,7 @@ function Body({ component: c, ctx }: { component: Component; ctx: Ctx }) {
             );
         }
         case 'SourceLedger':
-            return <Ledger cited={new Set([...c.props.cited, ...ctx.cited])} sources={ctx.sources} />;
+            return <Ledger cited={new Set(c.props.cited)} sources={ctx.sources} />;
     }
 }
 
@@ -203,7 +194,7 @@ function Gauge(p: Props<'EMFGauge'>) {
     const [tx, ty] = pt(th, 96);
     const arrow = { rising: '▲', falling: '▼', steady: '▶' }[p.trend];
     return (
-        <div className={`status-${p.status}`}>
+        <div className={`gauge status-${p.status}`}>
             <svg viewBox="0 0 200 112" role="img" aria-label={`EMF ${p.value_mg} milligauss, danger above ${p.threshold_mg}`}>
                 {arc(0, th * 0.5, 'var(--dim)')}
                 {arc(th * 0.5, th, 'var(--amber)')}
@@ -265,11 +256,11 @@ export function squares(count: number, extracted: number[]) {
     const total = Math.ceil(count / per);
     const size = (i: number) => Math.min(per, count - i * per);
     const out = extracted.filter((i) => i < total);
-    return { per, total, size, out, people: out.reduce((sum, i) => sum + size(i), 0) };
+    return { per, total, size, extracted: out, peopleOut: out.reduce((sum, i) => sum + size(i), 0) };
 }
 
 function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
-    const { per, total, size, out: extracted, people: out } = squares(p.count, ctx.operator.extracted);
+    const { per, total, size, extracted, peopleOut } = squares(p.count, ctx.operator.extracted);
     return (
         <div>
             <div className="muted small">{per > 1 ? `Each square is ${per} people. Click one when they are out.` : 'Click a person when they are out.'}</div>
@@ -302,7 +293,7 @@ function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
                 <dd className={p.priority === 'immediate' ? 'status-danger' : ''}>{p.priority}</dd>
                 <dt>Extracted</dt>
                 <dd>
-                    <b>{out}</b> of {p.count}
+                    <b>{peopleOut}</b> of {p.count}
                 </dd>
             </dl>
         </div>

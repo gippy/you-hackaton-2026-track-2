@@ -6,7 +6,7 @@ import { useEffect, useId, useMemo, useState } from 'react';
 
 import type { ArtAsset, Component, Floor, Marker } from '../../shared/protocol.ts';
 import type { Ctx } from './components.tsx';
-import { routeThrough, type ThroughRoute } from './route.ts';
+import { inPolygon, routeThrough, type ThroughRoute } from './route.ts';
 import { artUrl, withToken } from './url.ts';
 
 type Props = Extract<Component, { type: 'FloorPlan' }>['props'];
@@ -51,13 +51,12 @@ const points = (poly: Point[]) => poly.map(([x, y]) => `${x},${y}`).join(' ');
 /**
  * The model's route through its sectors as a walkable line (route.ts): through the doors, round sealed
  * sectors, then out the last sector's exit. The start is where people are now, so it is never avoided.
+ * Station sector ids work as they are, since floor.json lists them as zone aliases.
  */
-function walk(floor: Floor, aliases: Record<string, string>, route: string[], sealed: string[]): ThroughRoute | null {
+function walk(floor: Floor, route: string[], sealed: string[]): ThroughRoute | null {
     if (!route.length) return null;
-    const slugOf = (id: string) => Object.entries(aliases).find(([, v]) => v === id)?.[0] ?? id;
-    const slugs = route.map(slugOf);
     try {
-        return routeThrough(floor, slugs, { avoid: sealed.map(slugOf).filter((s) => s !== slugs[0]), exit: true });
+        return routeThrough(floor, route, { avoid: sealed.filter((s) => s !== route[0]), exit: true });
     } catch (err) {
         console.error('Could not walk the safe route', err);
         return null;
@@ -75,7 +74,6 @@ interface Placed {
 const MARK_SIZE = 3.4; // the hover label's height, the same as the zone labels
 const CHAR_W = 0.42; // VT323's advance in ems, with a little room
 const GLYPH = 2.6; // the radius of a marker's picture, and half the width of its fallback shape
-const KIND_NAME: Record<Marker['kind'], string> = { threat: 'threat', people: 'people', countermeasure: 'countermeasure', hazard: 'hazard' };
 
 const overlap = (a: Box, b: Box) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
 const around = ([x, y]: Point, r: number): Box => [x - r, y - r, x + r, y + r];
@@ -84,16 +82,6 @@ function textBox([x, y]: Point, text: string, size: number, anchor: 'start' | 'm
     const w = text.length * CHAR_W * size;
     const x0 = anchor === 'start' ? x : anchor === 'middle' ? x - w / 2 : x - w;
     return [x0, y - 0.8 * size, x0 + w, y + 0.2 * size];
-}
-
-function inside([x, y]: Point, poly: Point[]): boolean {
-    let hit = false;
-    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-        const [xi, yi] = poly[i];
-        const [xj, yj] = poly[j];
-        if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) hit = !hit;
-    }
-    return hit;
 }
 
 /** Points every unit along the route, so a marker can keep off the line between its corners. */
@@ -130,7 +118,7 @@ function placeMarkers(floor: Floor, markers: Marker[], idOf: (slug: string) => s
         let best: { score: number; at: Point; box: Box } | null = null;
         for (let x = Math.min(...xs) + GLYPH; x <= Math.max(...xs) - GLYPH; x += 1) {
             for (let y = Math.min(...ys) + GLYPH; y <= Math.max(...ys) - GLYPH; y += 1) {
-                if (!inside([x, y], zone.polygon)) continue;
+                if (!inPolygon(x, y, zone.polygon)) continue;
                 const box = around([x, y], GLYPH + 0.3);
                 if (box[0] < 0 || box[1] < 0 || box[2] > width || box[3] > height) continue;
                 const hit = taken.reduce((sum, b) => sum + overlap(box, b), 0);
@@ -191,19 +179,14 @@ function Token({ marker, at: [x, y], ctx, clip }: { marker: Marker; at: Point; c
 function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
     const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
     const [hover, setHover] = useState<number | null>(null); // the marker whose label shows
-    const floor = ctx.library && ctx.floor;
-    const sealed = ctx.operator.sealed;
-    const route = useMemo(() => (floor ? walk(floor, ctx.library.sector_aliases, p.safe_route, sealed) : null), [floor, ctx.library, p.safe_route, sealed]);
-    const marks = useMemo(() => {
-        // A streaming manifest can hold a marker that is still being written.
-        const markers = (p.markers ?? []).filter((m) => m?.sector && m.label && m.kind in KIND_NAME);
-        const aliases = ctx.library?.sector_aliases ?? {};
-        return floor ? placeMarkers(floor, markers, (slug) => aliases[slug] ?? slug, route?.points ?? []) : [];
-    }, [floor, ctx.library, p.markers, route]);
-    if (!floor) return <p className="muted">No floor plan available.</p>;
+    const { floor } = ctx;
     const { sectors, sector_aliases } = ctx.library;
+    const sealed = ctx.operator.sealed;
     // floor.json names sectors with the official slugs; the station's id for catering_coffee_bar is catering.
     const idOf = (slug: string) => sector_aliases[slug] ?? slug;
+    const route = useMemo(() => (floor ? walk(floor, p.safe_route, sealed) : null), [floor, p.safe_route, sealed]);
+    const marks = useMemo(() => (floor ? placeMarkers(floor, p.markers ?? [], idOf, route?.points ?? []) : []), [floor, ctx.library, p.markers, route]);
+    if (!floor) return <p className="muted">No floor plan available.</p>;
     const name = (slug: string) => sectors[idOf(slug)] ?? floor.blocks.find((b) => b.id === slug)?.aws_name ?? slug;
     const names = (slugs: string[]) => slugs.map(name).join(', ');
     const path = route?.points ?? [];
@@ -256,11 +239,7 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                     );
                 })}
                 {floor.features.map((f) =>
-                    f.type === 'window' && f.line ? (
-                        <polyline key={f.id} points={points(f.line)} className="window">
-                            <title>{f.label}</title>
-                        </polyline>
-                    ) : f.polygon ? (
+                    f.polygon ? (
                         <polygon key={f.id} points={points(f.polygon)} className={`feature ${f.type}`}>
                             <title>{f.label}</title>
                         </polygon>
@@ -287,7 +266,7 @@ function FloorView({ p, ctx }: { p: Props; ctx: Ctx }) {
                         className="marker"
                         role="img"
                         tabIndex={0}
-                        aria-label={`${KIND_NAME[marker.kind]} in ${name(marker.sector)}: ${marker.label}`}
+                        aria-label={`${marker.kind} in ${name(marker.sector)}: ${marker.label}`}
                         onMouseEnter={() => setHover(i)}
                         onMouseLeave={() => setHover(null)}
                         onFocus={() => setHover(i)}
@@ -355,13 +334,20 @@ interface Area {
 }
 
 let areaLoad: Promise<Area> | null = null;
-const loadArea = () => (areaLoad ??= fetch(withToken('./data/map/area.geojson')).then((r) => r.json() as Promise<Area>));
+
+/** The area map, fetched once. A failed fetch is forgotten, so the next time the view opens it tries again. */
+function loadArea(): Promise<Area> {
+    areaLoad ??= fetch(withToken('./data/map/area.geojson')).then((r) => (r.ok ? (r.json() as Promise<Area>) : Promise.reject(new Error(`HTTP ${r.status}`))));
+    areaLoad.catch(() => (areaLoad = null));
+    return areaLoad;
+}
 
 function AreaView({ anchor }: { anchor: string | null }) {
-    const [area, setArea] = useState<Area | null>(null);
+    const [area, setArea] = useState<Area | 'failed' | null>(null);
     useEffect(() => {
-        loadArea().then(setArea, () => setArea(null));
+        loadArea().then(setArea, () => setArea('failed'));
     }, []);
+    if (area === 'failed') return <p className="muted">The map could not be loaded.</p>;
     if (!area) return <p className="muted">Loading the map…</p>;
     const { lat0, lon0, x_m_per_deg_lon: kx, y_m_per_deg_lat: ky } = area.projection_hint;
     // Local equirectangular metres around the tower: x east, y north (flipped for SVG).
@@ -369,12 +355,11 @@ function AreaView({ anchor }: { anchor: string | null }) {
     const ring = (coords: number[][]) => `M${coords.map((c) => xy(c).join(',')).join('L')}Z`;
     const path = (g: Feature['geometry']) => {
         if (g.type === 'Polygon') return g.coordinates.map(ring).join('');
-        if (g.type === 'MultiPolygon') return g.coordinates.flat().map(ring).join('');
         if (g.type === 'LineString') return `M${g.coordinates.map((c: number[]) => xy(c).join(',')).join('L')}`;
         if (g.type === 'MultiLineString') return g.coordinates.map((line: number[][]) => `M${line.map((c) => xy(c).join(',')).join('L')}`).join('');
         return '';
     };
-    const pin = area.features.find((f) => (anchor ? f.properties.kind === 'anchor' && f.properties.id === anchor : f.properties.kind === 'venue_pin'));
+    const pin = anchor ? area.features.find((f) => f.properties.kind === 'anchor' && f.properties.id === anchor) : undefined;
     const pinAt = pin && xy(pin.geometry.coordinates);
     const venue = area.features.find((f) => f.properties.kind === 'venue_pin');
     const venueAt = venue && xy(venue.geometry.coordinates);

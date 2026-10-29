@@ -4,10 +4,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
-import { findRoute, isWalkable, routeThrough, zoneAnchor, zoneAt } from './route.ts';
-import type { Point, RouteFloor } from './route.ts';
+import type { Floor } from '../../shared/protocol.ts';
+import { findRoute, routeThrough, zoneAnchor, zoneAt } from './route.ts';
+import type { Point } from './route.ts';
 
-const load = () => JSON.parse(readFileSync(new URL('../../data/map/floor.json', import.meta.url), 'utf8')) as RouteFloor;
+const load = () => JSON.parse(readFileSync(new URL('../../data/map/floor.json', import.meta.url), 'utf8')) as Floor;
 const floor = load();
 
 const inPoly = (poly: Point[], [x, y]: Point): boolean => {
@@ -79,7 +80,7 @@ test('without the Training Rooms door, sealing Registration traps the stage hall
     assert.equal(route.blocked, true);
     assert.deepEqual(route.blockedBy, ['registration']);
     assert.equal(route.zones.at(-1), 'main_stage');
-    assert.ok(route.points.every((p) => isWalkable(closed, p)));
+    assert.ok(route.points.every((p) => zoneAt(closed, p) !== null));
 });
 
 test('with every way out sealed the route is blocked and stops before the sealed zones', () => {
@@ -88,7 +89,7 @@ test('with every way out sealed the route is blocked and stops before the sealed
     assert.ok(route.blockedBy.length > 0);
     assert.ok(route.points.length >= 1);
     for (const z of route.zones) assert.ok(!['registration', 'hack_floor_west'].includes(z), `entered ${z}`);
-    assert.ok(route.points.every((p) => isWalkable(floor, p)));
+    assert.ok(route.points.every((p) => zoneAt(floor, p) !== null));
 });
 
 test('a sealed goal is blocked, and the start zone is exempt from avoid', () => {
@@ -108,8 +109,8 @@ test('every point of every route between sectors and exits is inside a walkable 
             const route = findRoute(floor, { from, to });
             routes++;
             assert.equal(route.blocked, false, `${from} to ${to}`);
-            for (const p of route.points) assert.ok(isWalkable(floor, p), `${from} to ${to}: ${p} is not walkable`);
-            for (const p of sample(route.points)) assert.ok(isWalkable(floor, p), `${from} to ${to}: ${p} is not walkable`);
+            for (const p of route.points) assert.ok(zoneAt(floor, p) !== null, `${from} to ${to}: ${p} is not walkable`);
+            for (const p of sample(route.points)) assert.ok(zoneAt(floor, p) !== null, `${from} to ${to}: ${p} is not walkable`);
             assertOnlyThroughConnections(route.points);
         }
     }
@@ -148,7 +149,7 @@ test('routeThrough passes through a named sector without walking to its middle',
     assert.deepEqual(r.zones.slice(0, 3), ['main_stage', 'hack_floor_east', 'registration']);
     const joined = r.legs.reduce((sum, leg) => sum + leg.length, 0);
     assert.ok(r.length < joined - 10, `a straightened route (${r.length}) is shorter than its legs end to end (${joined})`);
-    for (const p of sample(r.points)) assert.ok(isWalkable(floor, p));
+    for (const p of sample(r.points)) assert.ok(zoneAt(floor, p) !== null);
     assertOnlyThroughConnections(r.points);
 });
 

@@ -3,10 +3,11 @@
 // a standalone incident or opens a box to paste a new report.
 import { useEffect, useRef, useState } from 'react';
 
-import type { ClientMessage, FixtureIncident, OperatorMoves, Scenario } from '../../shared/protocol.ts';
+import type { ClientMessage, Library, OperatorMoves, Scenario, ScenarioStep } from '../../shared/protocol.ts';
 import { squares } from './components.tsx';
 import { EvidenceLegend, EvidenceText } from './evidence.tsx';
-import type { State } from './station.ts';
+import { isOpen } from './experts.tsx';
+import { findStep, peopleCount, type State } from './station.ts';
 
 export type CompileRequest = Omit<Extract<ClientMessage, { type: 'compile' }>, 'type'>;
 
@@ -26,22 +27,33 @@ function stepLabel(raw: string): string {
 }
 
 /** What the operator did on the step on screen. It is sent on with the next step, so that step's station builds on it. */
-function movesOn(state: State, current: FixtureIncident): OperatorMoves {
+function movesOn(state: State, current: ScenarioStep): OperatorMoves {
     const { operator } = state;
-    const tracker = state.components.find((c) => c?.type === 'CivilianTracker');
-    const count = tracker?.type === 'CivilianTracker' ? tracker.props.count : null;
+    const count = peopleCount(state.components);
     return {
         step: current.incident_id,
-        time: current.time ?? '',
+        time: current.time,
         countermeasure: operator.countermeasure,
         sealed: operator.sealed,
-        people_out: count === null ? 0 : squares(count, operator.extracted).people,
+        people_out: count === null ? 0 : squares(count, operator.extracted).peopleOut,
         people: count,
         // Every call still standing, from any step: the expert is on the way, so the next station knows.
         experts: state.pages
-            .filter((p) => ['sending', 'triggered', 'acknowledged', 'off'].includes(p.status))
+            .filter((p) => isOpen(p) || p.status === 'off')
             .map((p) => ({ expert: p.expert, status: p.status, by: p.acknowledged_by })),
     };
+}
+
+/** The moves a run builds on, as one line: "Holy water · sealed Entrance · 3 of 12 people out". */
+function movesLine(moves: OperatorMoves, library: Library): string {
+    return [
+        moves.countermeasure ? (library.arsenal[moves.countermeasure] ?? moves.countermeasure) : 'no countermeasure picked',
+        moves.sealed.length ? `sealed ${moves.sealed.map((id) => library.sectors[id] ?? id).join(', ')}` : 'nothing sealed',
+        moves.people !== null ? `${moves.people_out} of ${moves.people} people out` : '',
+        ...moves.experts.map((e) => `${library.experts[e.expert].label} called (${e.status === 'off' ? 'paging off' : e.status})`),
+    ]
+        .filter(Boolean)
+        .join(' · ');
 }
 
 /**
@@ -57,7 +69,7 @@ export function ReportPanel({
 }: {
     state: State;
     scenario: Scenario | undefined;
-    current: FixtureIncident | undefined;
+    current: ScenarioStep | undefined;
     running: boolean;
     compile: (request: CompileRequest) => void;
 }) {
@@ -75,14 +87,12 @@ export function ReportPanel({
     // The panel shows the step or incident this tab picked, from the fixtures, so its text is there before the run.
     const picked = cursor ?? incident?.incident_id ?? ''; // '' after a paste, which has no incident id
     const pickedFixture = [...state.scenarios.flatMap((s) => s.steps), ...state.incidents].find((x) => x.incident_id === picked);
-    // The scenario of the picked step, so picking a step of another scenario switches the stepper at once.
-    const shown = state.scenarios.find((s) => s.steps.some((step) => step.incident_id === picked)) ?? scenario;
-    const pickedStep = shown?.steps.find((step) => step.incident_id === picked);
-    // This tab's own place in the scenario: the step it last asked for, else the step on screen.
-    const mine = pickedStep ?? current;
+    // The picked step and its scenario, so picking a step of another scenario switches the stepper at once.
+    const pickedAt = findStep(state.scenarios, picked);
+    const shown = pickedAt?.scenario;
+    const pickedStep = pickedAt?.step;
     // From a single incident or a pasted report, Back returns to the scenario step this tab was last on.
-    const backTo = state.scenarios.flatMap((s) => s.steps).find((step) => step.incident_id === lastStep) ?? scenario?.steps[0];
-    const backScenario = state.scenarios.find((s) => s.steps.includes(backTo!));
+    const back = findStep(state.scenarios, lastStep) ?? (scenario && { scenario, step: scenario.steps[0] });
 
     useEffect(() => {
         if (current) setLastStep(current.incident_id);
@@ -106,7 +116,7 @@ export function ReportPanel({
         setCursor(id);
         // Only a step later in the same scenario builds on the moves; going back or elsewhere starts clean.
         const target = scenario?.steps.find((step) => step.incident_id === id);
-        const moves = target && current && state.manifest && target.step! > current.step! ? movesOn(state, current) : undefined;
+        const moves = target && current && state.manifest && target.step > current.step ? movesOn(state, current) : undefined;
         compile({ incident_id: id, moves });
     };
 
@@ -127,7 +137,7 @@ export function ReportPanel({
                       : 'Waiting for an incident',
               pickedFixture ? ` · feed tier ${tier(pickedFixture.severity_tier)}` : '',
               pickedFixture?.source === 'simulated' ? ' · simulated' : '',
-              current && mine && mine !== current ? ` · on screen: step ${current.step}` : '',
+              current && pickedStep && pickedStep !== current ? ` · on screen: step ${current.step}` : '',
           ].join('');
 
     return (
@@ -143,15 +153,7 @@ export function ReportPanel({
             )}
             {state.moves && library && (
                 <p className="moves small">
-                    Building on your moves at {state.moves.time}:{' '}
-                    {[
-                        state.moves.countermeasure ? (library.arsenal[state.moves.countermeasure] ?? state.moves.countermeasure) : 'no countermeasure picked',
-                        state.moves.sealed.length ? `sealed ${state.moves.sealed.map((id) => library.sectors[id] ?? id).join(', ')}` : 'nothing sealed',
-                        state.moves.people !== null ? `${state.moves.people_out} of ${state.moves.people} people out` : '',
-                        ...(state.moves.experts ?? []).map((e) => `${library.experts[e.expert]?.label ?? e.expert} called (${e.status === 'off' ? 'paging off' : e.status})`),
-                    ]
-                        .filter(Boolean)
-                        .join(' · ')}
+                    Building on your moves at {state.moves.time}: {movesLine(state.moves, library)}
                 </p>
             )}
             <div className="report-nav">
@@ -160,9 +162,9 @@ export function ReportPanel({
                         <button
                             type="button"
                             className="ghost"
-                            disabled={!mine || mine.step === 1}
+                            disabled={pickedStep.step === 1}
                             aria-disabled={running}
-                            onClick={() => !running && mine && compileId(shown.steps[mine.step! - 2].incident_id)}
+                            onClick={() => !running && compileId(shown.steps[pickedStep.step - 2].incident_id)}
                         >
                             ◀ Previous
                         </button>
@@ -180,15 +182,14 @@ export function ReportPanel({
                         <button
                             type="button"
                             className="next"
-                            aria-disabled={running || mine?.step === shown.steps.length}
-                            onClick={() => !running && mine?.step !== shown.steps.length && compileId(shown.steps[mine ? mine.step! : 0].incident_id)}
+                            aria-disabled={running || pickedStep.step === shown.steps.length}
+                            onClick={() => !running && pickedStep.step !== shown.steps.length && compileId(shown.steps[pickedStep.step].incident_id)}
                         >
                             Next step ▶
                         </button>
                     </>
                 ) : (
-                    backScenario &&
-                    backTo && (
+                    back && (
                         <button
                             type="button"
                             className="back"
@@ -196,10 +197,10 @@ export function ReportPanel({
                             onClick={() => {
                                 if (running) return;
                                 setComposing(false);
-                                compileId(backTo.incident_id);
+                                compileId(back.step.incident_id);
                             }}
                         >
-                            ◀ Back to {backScenario.title}, step {backTo.step}
+                            ◀ Back to {back.scenario.title}, step {back.step.step}
                         </button>
                     )
                 )}

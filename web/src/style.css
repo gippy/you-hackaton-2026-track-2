@@ -77,15 +77,12 @@ a:hover { color: var(--amber); }
 .page-status { font-size: 13px; color: var(--hi); }
 .page-status.page-triggered { color: var(--red); }
 .page-status.page-failed, .page-status.page-off { color: var(--muted); }
-.page-status.dispatch-sent { color: var(--hi); }
 .page-status.dispatch-failed, .page-status.dispatch-off { color: var(--muted); }
 .experts .cm { flex-basis: 100%; text-align: right; font-size: 13px; color: var(--hi); }
 .state { font: 16px/1 var(--display); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .state::before { content: '● '; }
 .state.live { color: var(--hi); }
 .state.snapshot { color: var(--spook); }
-fieldset.options { border: 0; margin: 0; padding: 0; min-width: 0; }
-.option label { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; cursor: pointer; }
 
 select, textarea, button, input { font: inherit; color: var(--text); }
 select, textarea { background: var(--bg); border: 1px solid var(--dim); padding: 5px 8px; outline: none; }
@@ -188,7 +185,7 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 }
 .compile { display: flex; flex-direction: column; gap: 8px; }
 .compile textarea { width: 100%; resize: vertical; }
-.report-text { margin: 0; padding: 10px 12px; border-left: 2px solid var(--amber); background: var(--bg); font-size: 16px; line-height: 1.5; color: var(--text); }
+.report-text { position: relative; margin: 0; padding: 10px 12px; border-left: 2px solid var(--amber); background: var(--bg); font-size: 16px; line-height: 1.5; color: var(--text); }
 .stage-head { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; border-bottom: 1px dashed var(--dim); padding-bottom: 6px; }
 .stage-head button.link { margin-left: auto; }
 .stage-head h2 { margin: 0; }
@@ -203,8 +200,9 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .card header h3 { font-size: 20px; text-transform: uppercase; white-space: nowrap; }
 .card .order { font-size: 13px; color: var(--muted); }
 .card .why { margin: 6px 0 12px; color: var(--muted); font-size: 13px; }
-/* The model's reason for each panel and the panel's type: hidden until "Show reasoning", and on hover as a tooltip. */
-.components:not(.reasoning) .card .why, .components:not(.reasoning) .card .order { display: none; }
+/* The model's reason for each panel and the panel's type: hidden until "Show reasoning", and on hover as a tooltip.
+   The provisional cards' "intake only" label stays visible. */
+.components:not(.reasoning) .card .why, .components:not(.reasoning) .card:not(.provisional) .order { display: none; }
 .card .why::before { content: '// '; color: var(--dim); }
 
 /* A critical threat gets a red frame and nothing else; low and elevated keep the normal frame. */
@@ -257,7 +255,6 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .floor .feature { fill: var(--dim); stroke: none; }
 .floor .feature.stage { fill: rgba(255, 138, 31, 0.12); stroke: var(--dim); stroke-width: 0.3; }
 .floor .feature.exit { fill: var(--hi); }
-.floor .window { fill: none; stroke: var(--spook); stroke-width: 0.6; stroke-dasharray: 1.5 0.8; opacity: 0.8; }
 .floor .route { fill: none; stroke: var(--hi); stroke-width: 0.9; stroke-dasharray: 2.5 2; animation: march 1s linear infinite; }
 .floor .route-start { fill: var(--hi); }
 .floor .route.blocked { stroke: var(--red); }
@@ -311,7 +308,8 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .kv dt { color: var(--muted); text-transform: uppercase; font-size: 13px; letter-spacing: 0.06em; }
 .kv dd { margin: 0; }
 
-.options { display: flex; flex-direction: column; gap: 8px; }
+.options { display: flex; flex-direction: column; gap: 8px; border: 0; margin: 0; padding: 0; min-width: 0; }
+.option label { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; cursor: pointer; }
 .option { display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 1px solid var(--line); background: var(--bg); clip-path: var(--cut); }
 .option:has(input:checked) { border-color: var(--hi); box-shadow: inset 0 0 0 1px var(--hi); }
 .option input { margin-top: 3px; accent-color: var(--amber); }
@@ -349,7 +347,7 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .ledger li.cited .domain { color: var(--amber); }
 .ledger details { margin-top: 10px; }
 .ledger summary { cursor: pointer; color: var(--muted); font-size: 13px; }
-.ledger-all { display: flex; flex-direction: column; gap: 8px; margin-top: 8px !important; }
+.ledger .ledger-all { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .ledger-all .domain { margin-left: 8px; }
 .ledger .snippet { margin: 2px 0 0; color: var(--muted); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
@@ -441,7 +439,6 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 mark.evidence { cursor: help; }
 mark.evidence:focus-visible { outline: 2px dashed var(--hi); outline-offset: 2px; }
 /* The reason opens under the highlighted line, across the report box, so it never runs past the panel's edge. */
-.report-text { position: relative; }
 .ev-why { display: none; position: absolute; left: 12px; right: 12px; margin-top: 2px; z-index: 5; padding: 4px 8px; background: var(--panel-2); border: 1px solid var(--amber); color: var(--text); font-size: 13px; line-height: 1.4; }
 mark.evidence:hover .ev-why, mark.evidence:focus .ev-why { display: block; }
 .ev-legend { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 6px 0 0; }

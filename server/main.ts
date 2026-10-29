@@ -15,7 +15,7 @@ import { parseArgs } from 'node:util';
 
 import { WebSocketServer } from 'ws';
 
-import type { ArtAsset, FixtureIncident, Floor, Scenario } from '../shared/protocol.ts';
+import type { ArtAsset, FixtureIncident, Floor, Scenario, ScenarioStep } from '../shared/protocol.ts';
 import { SPEECH_FILE } from './speech.ts';
 import { Station } from './station.ts';
 
@@ -81,7 +81,7 @@ function loadScenarios(): Scenario[] {
         .map((d) => {
             const path = join(FIXTURES, d.name, 'scenario.json');
             const { title, sky } = readJson<{ title?: string; sky?: boolean }>(path);
-            return { id: d.name, title: title ?? d.name[0].toUpperCase() + d.name.slice(1), sky: sky === true, steps: readTicks(path, d.name) };
+            return { id: d.name, title: title ?? d.name[0].toUpperCase() + d.name.slice(1), sky: sky === true, steps: readTicks(path, d.name) as ScenarioStep[] };
         })
         .sort((a, b) => Number(b.id === 'nightfall') - Number(a.id === 'nightfall') || a.title.localeCompare(b.title)); // the demo scenario first
 }
