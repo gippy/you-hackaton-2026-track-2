@@ -48,6 +48,8 @@ type WorkerLine = FlowEvent | { type: 'result'; state: RunState } | { type: 'fat
 /** When a run was saved, in the venue's time ("6:42 PM"), for the replay notice. */
 const savedAt = (iso: string) => new Date(iso).toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit' });
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+/** Whether `key` is one of the table's own keys, not an inherited name such as "toString". */
+const has = (table: object, key: unknown): key is string => typeof key === 'string' && Object.hasOwn(table, key);
 
 export class Station {
     private clients = new Set<WebSocket>();
@@ -321,13 +323,13 @@ export class Station {
     /** Page the vampire hunter or the ghostbuster about the station on screen, and say so aloud. */
     private callExpert(ws: WebSocket, msg: Extract<ClientMessage, { type: 'call_expert' }>): void {
         const tell = (detail: string) => ws.send(JSON.stringify({ type: 'error', detail } satisfies ServerMessage));
-        const expert = msg.expert in library.experts ? msg.expert : null;
-        if (!expert) return;
+        if (!has(library.experts, msg.expert)) return;
+        const { expert } = msg;
         if (this.opts.offline) return tell('Offline: no expert can be paged.');
         if (!this.run || this.busy) return tell('Wait for the station to finish building before calling an expert.');
         const wait = this.pager.cooldown(expert);
         if (wait) return tell(`The ${library.experts[expert].label.toLowerCase()} was just paged. Wait ${wait} seconds before paging again.`);
-        const countermeasure = typeof msg.countermeasure === 'string' && msg.countermeasure in library.arsenal ? msg.countermeasure : null;
+        const countermeasure = has(library.arsenal, msg.countermeasure) ? msg.countermeasure : null;
         void this.pager.open(pageRequest(this.run.state, expert, countermeasure));
         void this.speakCall(expert);
     }
@@ -377,12 +379,12 @@ function checkMoves(raw: unknown): OperatorMoves | undefined {
     return {
         step: String(m.step ?? '').slice(0, 80),
         time: String(m.time ?? '').slice(0, 5),
-        countermeasure: typeof m.countermeasure === 'string' && m.countermeasure in library.arsenal ? m.countermeasure : null,
-        sealed: Array.isArray(m.sealed) ? [...new Set(m.sealed.filter((id): id is string => typeof id === 'string' && id in library.sectors))] : [],
+        countermeasure: has(library.arsenal, m.countermeasure) ? m.countermeasure : null,
+        sealed: Array.isArray(m.sealed) ? [...new Set(m.sealed.filter((id) => has(library.sectors, id)))] : [],
         people_out: count(m.people_out) ?? 0,
         people: count(m.people),
         experts: (Array.isArray(m.experts) ? m.experts : [])
-            .filter((e) => e && typeof e === 'object' && e.expert in library.experts && OPEN_CALLS.includes(e.status))
+            .filter((e) => e && typeof e === 'object' && has(library.experts, e.expert) && OPEN_CALLS.includes(e.status))
             .slice(0, 2)
             .map((e) => ({ expert: e.expert, status: e.status, by: (Array.isArray(e.by) ? e.by : []).map((name) => String(name).slice(0, 40)).slice(0, 3) })),
     };

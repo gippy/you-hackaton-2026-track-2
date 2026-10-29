@@ -30,9 +30,6 @@ const SPEECH = join(ROOT, 'out', 'speech');
 const DEMO_INCIDENT = 'sim-nightfall-20';
 const TYPES: Record<string, string> = {
     '.html': 'text/html; charset=utf-8',
-    '.js': 'text/javascript',
-    '.css': 'text/css',
-    '.svg': 'image/svg+xml',
     '.json': 'application/json',
     '.mp3': 'audio/mpeg',
     '.webp': 'image/webp',
@@ -101,6 +98,12 @@ function sendFile(res: ServerResponse, file: string, type: string, cache: string
     res.end(readFileSync(file));
 }
 
+/** The file under `dir` for a URL path, or null when it is outside `dir`, missing or of a type not served. */
+function fileIn(dir: string, urlPath: string): string | null {
+    const file = normalize(join(dir, urlPath));
+    return file.startsWith(`${dir}/`) && existsSync(file) && TYPES[extname(file)] ? file : null;
+}
+
 /**
  * - /manifest.json: the current run's state
  * - /speech/<hash>.mp3: a spoken call from out/speech/
@@ -123,17 +126,15 @@ function handle(req: IncomingMessage, res: ServerResponse): void {
         return sendFile(res, join(MAP, 'area.geojson'), 'application/geo+json', 'max-age=3600');
     }
     if (path.startsWith('/art/station/')) {
-        const art = normalize(join(ROOT, decodeURIComponent(path)));
-        const type = TYPES[extname(art)];
-        if (art.startsWith(`${ART}/`) && existsSync(art) && type && extname(art) !== '.json') return sendFile(res, art, type, 'max-age=3600');
+        const art = fileIn(ART, path.slice('/art/station'.length));
+        if (art && extname(art) !== '.json') return sendFile(res, art, TYPES[extname(art)], 'max-age=3600');
     }
-    const file = normalize(join(DIST, path === '/' ? 'index.html' : path));
-    const type = TYPES[extname(file)];
-    if (!file.startsWith(`${DIST}/`) || !existsSync(file) || !type) {
+    const file = fileIn(DIST, path === '/' ? 'index.html' : path);
+    if (!file) {
         res.writeHead(404, { 'content-type': 'text/plain' }).end('not found');
         return;
     }
-    sendFile(res, file, type, 'no-store');
+    sendFile(res, file, TYPES[extname(file)], 'no-store');
 }
 
 // --- start ------------------------------------------------------------------------------
