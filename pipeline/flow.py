@@ -184,7 +184,7 @@ def chat_json(schema: dict, name: str, system: str, user: str, on_text: Callable
     `on_text` gets the whole reply so far after every streamed piece. Each attempt is one line in the proof ledger.
     """
     errors = []
-    source, purpose = CALLS.get(name, ("pipeline", name))
+    source, purpose = CALLS[name]
     for model in (MODEL, FALLBACK_MODEL):
         request = {"temperature": temperature, "stream": True, "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
                    "response_format": {"type": "json_schema", "json_schema": {"name": name, "strict": True, "schema": schema}}}
@@ -358,10 +358,11 @@ class HauntFlow(Flow[HauntState]):
     @listen(ground)
     def compose(self):
         self.step("compose", "running", "Parasail is choosing and ordering components")
-        arsenal, source_count, has_sky = library.PLAYBOOKS[self.state.playbook]["arsenal"], len(self.state.sources), bool(self.state.sky)
+        arsenal = library.PLAYBOOKS[self.state.playbook]["arsenal"]
+        source_count = len(self.state.sources)
+        has_sky = bool(self.state.sky)
         # Decided before streaming, because recommended_action is the last field the model writes.
         lead = library.far_from_sky(self.state.incident, self.state.sky)
-        quiet = bool(lead)
         system = COMPOSE_SYSTEM.replace("{components}", bullets(library.components_for(has_sky)))
         parser, sent, frame = ComponentStream(), [], {}
 
@@ -379,7 +380,8 @@ class HauntFlow(Flow[HauntState]):
                 self._emit({"type": "frame", "sound_cue": cue})
             for comp in parser.feed(text):
                 # Clean the components so far plus this one: it is sent only if the cleaning keeps it.
-                cleaned, _ = library.clean_manifest({"components": sent + [comp]}, source_count, self.state.incident, quiet)
+                cleaned, _ = library.clean_manifest({"components": sent + [comp]}, source_count, self.state.incident,
+                                                    lead is not None)
                 if len(cleaned["components"]) > len(sent):
                     sent.append(comp)
                     self._emit({"type": "component", "index": len(sent) - 1, "component": cleaned["components"][-1]})
@@ -387,7 +389,7 @@ class HauntFlow(Flow[HauntState]):
 
         raw, model = chat_json(library.manifest_schema(arsenal, source_count, has_sky), "manifest",
                                system, self._compose_prompt(lead), on_text)
-        manifest, notes = library.clean_manifest(raw, source_count, self.state.incident, quiet)
+        manifest, notes = library.clean_manifest(raw, source_count, self.state.incident, lead is not None)
         if not manifest["components"]:
             raise FlowFailed("the model returned a manifest with no usable components")
         self.state.manifest = manifest
@@ -395,7 +397,6 @@ class HauntFlow(Flow[HauntState]):
         self.state.models.append(model)
         self.step("compose", "done", f"{len(manifest['components'])} components: "
                   + ", ".join(c["type"] for c in manifest["components"]) + f" ({model})")
-        return manifest
 
     def _compose_prompt(self, lead: int | None) -> str:
         """The compose call's user message: the incident, playbook, sources and notes, then the sky and the operator's moves."""
@@ -415,9 +416,11 @@ class HauntFlow(Flow[HauntState]):
 
     def _earlier_facts(self) -> str:
         """What earlier steps of this scenario established, for a report that refers back to them. Empty otherwise."""
-        lines = [f"- {f.get('time') or '?'}, {library.SECTORS.get(f.get('sector'), f.get('sector') or '?')}: "
-                 f"{f.get('entity') or 'unknown'} ({f.get('entity_class') or '?'}, {f.get('verdict') or '?'}). {f.get('summary') or ''}".rstrip()
-                 for f in self.state.earlier[-EARLIER_STEPS:]]
+        lines = []
+        for f in self.state.earlier[-EARLIER_STEPS:]:
+            sector = library.SECTORS.get(f.get("sector"), f.get("sector") or "?")
+            found = f"{f.get('entity') or 'unknown'} ({f.get('entity_class') or '?'}, {f.get('verdict') or '?'})"
+            lines.append(f"- {f.get('time') or '?'}, {sector}: {found}. {f.get('summary') or ''}".rstrip())
         if not lines:
             return ""
         return ("\n\nWhat earlier reports in this scenario established, oldest first:\n" + "\n".join(lines) +
@@ -450,10 +453,13 @@ class HauntFlow(Flow[HauntState]):
                  f"sealed {', '.join(sealed)}" if sealed else "sealed nothing"]
         if moves.get("people") is not None:
             parts.append(f"got {moves.get('people_out', 0)} of {moves['people']} people out")
-        called = [f"{library.EXPERTS.get(e.get('expert'), {}).get('label', e.get('expert'))} "
-                  + (f"(acknowledged by {', '.join(e['by'])}, on the way)" if e.get("status") == "acknowledged" and e.get("by")
-                     else "(paged, not yet acknowledged)")
-                  for e in moves.get("experts") or []]
+        called = []
+        for e in moves.get("experts") or []:
+            name = library.EXPERTS.get(e.get("expert"), {}).get("label", e.get("expert"))
+            if e.get("status") == "acknowledged" and e.get("by"):
+                called.append(f"{name} (acknowledged by {', '.join(e['by'])}, on the way)")
+            else:
+                called.append(f"{name} (paged, not yet acknowledged)")
         if called:
             parts.append(f"called the {' and the '.join(called)}")
         return (f"\n\nWhat the operator did at the previous step ({moves.get('time') or 'earlier'}): {'; '.join(parts)}. "
