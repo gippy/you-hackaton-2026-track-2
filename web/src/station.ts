@@ -120,6 +120,12 @@ function adopt(operator: Operator, comp: Component): Operator {
     return operator;
 }
 
+/** The CivilianTracker's head count, or null when the station has no tracker. */
+export function peopleCount(components: Component[]): number | null {
+    const tracker = components.find((c) => c.type === 'CivilianTracker');
+    return tracker?.type === 'CivilianTracker' ? tracker.props.count : null;
+}
+
 /** The scenario and step an incident id belongs to, when it is a scenario step. */
 export function findStep(scenarios: Scenario[], id: string | null | undefined): { scenario: Scenario; step: ScenarioStep } | undefined {
     for (const scenario of scenarios) {

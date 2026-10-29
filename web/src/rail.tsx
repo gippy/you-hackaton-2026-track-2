@@ -22,6 +22,7 @@ function systemsSummary(systems: { status: string }[] = []): string {
 
 export function Rail({ state }: { state: State }) {
     const { incident, library } = state;
+    const intake = incident?.incident;
     return (
         <aside className="rail">
             <section className="panel">
@@ -52,27 +53,27 @@ export function Rail({ state }: { state: State }) {
 
             <section className="panel">
                 <h2>Intake</h2>
-                {!incident && <p className="muted small">The facts the model reads from the report appear here.</p>}
-                {incident && library && (
+                {!intake && <p className="muted small">The facts the model reads from the report appear here.</p>}
+                {intake && library && (
                     <dl className="facts">
                         <dt>Verdict</dt>
-                        <dd>{incident.incident.verdict ? VERDICT_WORD[incident.incident.verdict] : '—'}</dd>
+                        <dd>{intake.verdict ? VERDICT_WORD[intake.verdict] : '—'}</dd>
                         <dt>Entity</dt>
-                        <dd>{incident.incident.entity}</dd>
+                        <dd>{intake.entity}</dd>
                         <dt>Sector</dt>
-                        <dd>{library.sectors[incident.incident.sector] ?? incident.incident.sector}</dd>
+                        <dd>{library.sectors[intake.sector] ?? intake.sector}</dd>
                         <dt>People</dt>
                         <dd>
-                            {incident.incident.people_in_reach ?? incident.incident.civilians?.count ?? '—'}
-                            {incident.incident.people_hurt ? ` · ${incident.incident.people_hurt} hurt` : ''}
+                            {intake.people_in_reach ?? intake.civilians?.count ?? '—'}
+                            {intake.people_hurt ? ` · ${intake.people_hurt} hurt` : ''}
                         </dd>
                         <dt>EMF</dt>
-                        <dd>{incident.incident.emf_mg == null ? '—' : `${incident.incident.emf_mg} mG`}</dd>
+                        <dd>{intake.emf_mg == null ? '—' : `${intake.emf_mg} mG`}</dd>
                         <dt>Temp</dt>
-                        <dd>{incident.incident.temperature_c == null ? '—' : `${incident.incident.temperature_c} °C`}</dd>
+                        <dd>{intake.temperature_c == null ? '—' : `${intake.temperature_c} °C`}</dd>
                         <dt>Systems</dt>
-                        <dd>{systemsSummary(incident.incident.systems)}</dd>
-                        {incident.severity_tier && (
+                        <dd>{systemsSummary(intake.systems)}</dd>
+                        {incident?.severity_tier && (
                             <>
                                 <dt>Feed tier</dt>
                                 <dd>{tier(incident.severity_tier)}</dd>

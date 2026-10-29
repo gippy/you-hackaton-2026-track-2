@@ -6,7 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import type { ClientMessage, Library, OperatorMoves, Scenario, ScenarioStep } from '../../shared/protocol.ts';
 import { squares } from './components.tsx';
 import { EvidenceLegend, EvidenceText } from './evidence.tsx';
-import { findStep, type State } from './station.ts';
+import { isOpen } from './experts.tsx';
+import { findStep, peopleCount, type State } from './station.ts';
 
 export type CompileRequest = Omit<Extract<ClientMessage, { type: 'compile' }>, 'type'>;
 
@@ -28,18 +29,17 @@ function stepLabel(raw: string): string {
 /** What the operator did on the step on screen. It is sent on with the next step, so that step's station builds on it. */
 function movesOn(state: State, current: ScenarioStep): OperatorMoves {
     const { operator } = state;
-    const tracker = state.components.find((c) => c?.type === 'CivilianTracker');
-    const count = tracker?.type === 'CivilianTracker' ? tracker.props.count : null;
+    const count = peopleCount(state.components);
     return {
         step: current.incident_id,
         time: current.time,
         countermeasure: operator.countermeasure,
         sealed: operator.sealed,
-        people_out: count === null ? 0 : squares(count, operator.extracted).people,
+        people_out: count === null ? 0 : squares(count, operator.extracted).peopleOut,
         people: count,
         // Every call still standing, from any step: the expert is on the way, so the next station knows.
         experts: state.pages
-            .filter((p) => ['sending', 'triggered', 'acknowledged', 'off'].includes(p.status))
+            .filter((p) => isOpen(p) || p.status === 'off')
             .map((p) => ({ expert: p.expert, status: p.status, by: p.acknowledged_by })),
     };
 }

@@ -6,13 +6,13 @@ import { useEffect, useReducer, useRef, useState } from 'react';
 import type { ClientMessage, Incident, ServerMessage } from '../../shared/protocol.ts';
 import { SoundBoard } from './audio.ts';
 import { Card, IncidentHead, PanelBoundary, type Ctx } from './components.tsx';
-import { EXPERTS, ExpertCalls, callExpert, isOpen, pageFor, pageStatus } from './experts.tsx';
+import { EXPERTS, ExpertCalls, callExpert, isPaged, pageFor, pageStatus } from './experts.tsx';
 import { FloorPlan } from './floorplan.tsx';
 import { layout } from './layout.ts';
 import { BuildProgress } from './progress.tsx';
 import { Rail } from './rail.tsx';
 import { ReportPanel, type CompileRequest } from './report.tsx';
-import { findStep, initial, reduce, type Event, type State } from './station.ts';
+import { findStep, initial, peopleCount, reduce, type Event, type State } from './station.ts';
 import { TopBar } from './topbar.tsx';
 import { artUrl, withToken } from './url.ts';
 
@@ -154,15 +154,11 @@ export function App() {
         if (c?.type === 'SourceLedger' || c?.type === 'SkyClock') (c.props.cited ?? []).forEach((n) => cited.add(n));
         if (c?.type === 'CountermeasurePicker') (c.props.options ?? []).forEach((o) => o.source && cited.add(o.source));
     }
-    const tracker = state.components.find((c) => c?.type === 'CivilianTracker');
     const quick: Ctx['quick'] = {
         actions: state.manifest?.quick_actions ?? [],
-        people: tracker?.type === 'CivilianTracker' ? tracker.props.count : null,
+        people: peopleCount(state.components),
         call: (expert) => callExpert(state, expert, sound.current, post),
-        paged: (expert) => {
-            const page = pageFor(state, expert);
-            return Boolean(page && isOpen(page));
-        },
+        paged: (expert) => isPaged(state, expert),
     };
     const ctx: Ctx | null = library && {
         library, art: state.art, floor: state.floor, sources: state.sources, cited, sky: state.sky,

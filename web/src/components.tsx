@@ -265,11 +265,11 @@ export function squares(count: number, extracted: number[]) {
     const total = Math.ceil(count / per);
     const size = (i: number) => Math.min(per, count - i * per);
     const out = extracted.filter((i) => i < total);
-    return { per, total, size, out, people: out.reduce((sum, i) => sum + size(i), 0) };
+    return { per, total, size, extracted: out, peopleOut: out.reduce((sum, i) => sum + size(i), 0) };
 }
 
 function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
-    const { per, total, size, out: extracted, people: out } = squares(p.count, ctx.operator.extracted);
+    const { per, total, size, extracted, peopleOut } = squares(p.count, ctx.operator.extracted);
     return (
         <div>
             <div className="muted small">{per > 1 ? `Each square is ${per} people. Click one when they are out.` : 'Click a person when they are out.'}</div>
@@ -302,7 +302,7 @@ function Civilians({ p, ctx }: { p: Props<'CivilianTracker'>; ctx: Ctx }) {
                 <dd className={p.priority === 'immediate' ? 'status-danger' : ''}>{p.priority}</dd>
                 <dt>Extracted</dt>
                 <dd>
-                    <b>{out}</b> of {p.count}
+                    <b>{peopleOut}</b> of {p.count}
                 </dd>
             </dl>
         </div>
