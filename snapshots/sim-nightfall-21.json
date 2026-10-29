@@ -1,0 +1,1260 @@
+{
+  "saved_at": "2026-10-28T23:38:52Z",
+  "state": {
+    "incident_id": "sim-nightfall-21",
+    "severity_tier": "CRITICAL_HAUNT",
+    "raw": "ALERT 20:02 moonrise at azimuth 54, 93% lit. Three teammates collapsed at the foot of the stage between 20:02 and 20:03, now on all fours; hair along the neck, jaws elongating, heart rate 188. Temp at floor level 31C in the front rows. Howling at 112 dB. 158 attendees in the hall stand and surge to the doors; the rear door R2 and the SW stairwell are jammed. Two vampire subjects still at row 16, 3 more attendees bitten. House lights at 4 percent, floor lux 12. Staff shout the wolves' badge names. Silver netting on the stage-left cart, 2 reels. The AV cage holds 6 cans of expanding barricade foam.",
+    "incident": {
+      "entity": "werewolves (three teammates transforming at the foot of the main stage)",
+      "entity_class": "corporeal",
+      "threat_level": 3,
+      "sector": "main_stage",
+      "location_detail": "foot of the main stage, front rows",
+      "emf_mg": null,
+      "emf_trend": "unknown",
+      "temperature_c": 31,
+      "civilians": {
+        "count": 158,
+        "condition": "injured",
+        "location": "hall"
+      },
+      "systems": [
+        {
+          "name": "rear door R2",
+          "status": "degraded"
+        },
+        {
+          "name": "SW stairwell",
+          "status": "degraded"
+        }
+      ],
+      "evidence_of_threat": "Three teammates collapsed at the foot of the stage and are now on all fours with hair standing along the neck, jaws elongating and heart rate 188; howling at 112 dB; 31C at floor level in the front rows; two vampire subjects still at row 16 with 3 more attendees bitten; staff shouting the wolves' badge names.",
+      "ordinary_explanation": null,
+      "deliberate_act": true,
+      "creature_countered": false,
+      "verdict": "real_threat",
+      "people_in_reach": 158,
+      "people_hurt": 3,
+      "severity": "critical",
+      "summary": "Three teammates at the foot of the main stage are undergoing an active werewolf transformation (all fours, jaws elongating, hair standing, heart rate 188, 112 dB howling, 31C floor-level heat) while the two vampire subjects from the 19:46/19:55 incidents remain at row 16 and have bitten 3 more attendees. 158 attendees are surging to the doors, but rear door R2 and the SW stairwell are jammed, trapping the hall. Silver netting (2 reels) and 6 cans of expanding barricade foam are on hand in the AV cage but no countermeasure has been applied yet.",
+      "evidence_quotes": [
+        {
+          "quote": "now on all fours",
+          "kind": "threat",
+          "why": "Three teammates collapsed and are on all fours at the foot of the stage, showing a physical transformation in progress."
+        },
+        {
+          "quote": "jaws elongating",
+          "kind": "threat",
+          "why": "Active werewolf transformation of the three teammates."
+        },
+        {
+          "quote": "heart rate 188",
+          "kind": "threat",
+          "why": "Physiological reading consistent with a creature mid-transformation."
+        },
+        {
+          "quote": "Howling at 112 dB",
+          "kind": "threat",
+          "why": "Creature vocalization at a level that adds to the hall's noise and panic."
+        },
+        {
+          "quote": "Temp at floor level 31C",
+          "kind": "threat",
+          "why": "Abnormal heat signature at floor level in the front rows, consistent with transforming bodies."
+        }
+      ]
+    },
+    "playbook": "corporeal",
+    "sources": [
+      {
+        "title": "Silver bullet - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Silver_bullet",
+        "description": "In folklore, a silver bullet is often one of the few weapons that are effective against a werewolf, vampire, witch, or other supernatural being.",
+        "snippet": "In folklore, a silver bullet is often one of the few weapons that are effective against a werewolf, vampire, witch, or other supernatural being. The term silver bullet is also sometimes used similarly to \"magic bullet\" as a metaphor for a simple, seemingly magical, solution to a difficult problem: ...",
+        "n": 1,
+        "query": "werewolf folklore silver bullet weakness kill"
+      },
+      {
+        "title": "Silver – Maegan A. Stebbins – Maverick-Werewolf's Den",
+        "url": "https://maverickwerewolf.com/werewolf-facts/silver/",
+        "description": "Werewolves didn’t have their silver bullet. In fact, they had absolutely nothing. All of that comes from later popular culture. Specifically, it was popluarlized (but did not exclusively originate in) the The Wolf Man (1941) movie and its writer, Curt Siodmak. There’s not a scrap of folkloric roots in the idea that only silver can kill a werewolf, because werewolves had no catchall weaknesses...",
+        "snippet": "Werewolves didn’t have their silver bullet. In fact, they had absolutely nothing. All of that comes from later popular culture. Specifically, it was popluarlized (but did not exclusively originate in) the The Wolf Man (1941) movie and its writer, Curt Siodmak. There’s not a scrap of folkloric roots in the idea that only silver can kill a werewolf, because werewolves had no catchall weaknesses, and they certainly had no problem with silver.",
+        "n": 2,
+        "query": "werewolf folklore silver bullet weakness kill"
+      },
+      {
+        "title": "Tales of werewolves and their susceptibility to silver | Provident",
+        "url": "https://blog.providentmetals.com/a-spooky-tale-of-wolves-and-silver.htm",
+        "description": "Explore the lore of the werewolf and the commonly accepted trope that they have a weakness to silver, particularly silver bullets.",
+        "snippet": "What could be spookier than coming face to face with a werewolf? These mythical creatures maintain a human form, except during a full moon when they transform into large, bloodthirsty wolves that h…",
+        "n": 3,
+        "query": "werewolf folklore silver bullet weakness kill"
+      },
+      {
+        "title": "Why is it silver that kills a werewolf? - Science Fiction & Fantasy ...",
+        "url": "https://scifi.stackexchange.com/questions/9929/why-is-it-silver-that-kills-a-werewolf",
+        "description": "It was only after Jean killed the beast with his legendary silver bullet that the idea of werewolves being weak to silver was brought about. To this day, the beast's true identity or what it was remains a mystery. But during the time, it was considered to be a werewolf and was treated as such.",
+        "snippet": "Aside from just the idea that it has to be \"something\" (maybe lead, steel, whatever), what is it about silver that makes it so special that it can kill a werewolf where other bullets or a stake to the heart can't?",
+        "n": 4,
+        "query": "werewolf folklore silver bullet weakness kill"
+      },
+      {
+        "title": "Crowd Crush and Surge Prevention: How Barricade Layout, Density, ...",
+        "url": "https://www.crowdcontrolwarehouse.com/blogs/blog/crowd-crush-and-surge-prevention-how-barricade-layout-density-and-exits-reduce-risk",
+        "description": "What crowd-safety research says about density, and how to plan barriers and egress that keep people safe Short answer: Most crowd-disaster injuries and deaths are caused by compressive asphyxia from dangerous crowd density, not by panic or trampling. Preventing a crush comes down to controlling ...",
+        "snippet": "What crowd-safety research says about density, and how to plan barriers and egress that keep people safe Short answer: Most crowd-disaster injuries and deaths are caused by compressive asphyxia from dangerous crowd density, not by panic or trampling. Preventing a crush comes down to controlling density and flow, keepin",
+        "n": 5,
+        "query": "crowd safety barricade exit jam crush prevention venue"
+      },
+      {
+        "title": "r/stagehands on Reddit: Crowd crush solutions",
+        "url": "https://www.reddit.com/r/stagehands/comments/qo52xb/crowd_crush_solutions/",
+        "description": "Posted by u/windinghighway - 6 votes and 25 comments",
+        "snippet": "With the recent terrible crowd crush, I was wondering how we can better protect the fans so this won’t happen again I know that many venues have…",
+        "n": 6,
+        "query": "crowd safety barricade exit jam crush prevention venue"
+      },
+      {
+        "title": "Crush-Proofing Your Venue in 2026: Preventing Crowd Surges and ...",
+        "url": "https://www.ticketfairy.com/blog/crush-proofing-your-venue-in-2026-preventing-crowd-surges-and-ensuring-fan-safety",
+        "description": "Introduction: A New Urgency for Crowd Safety Live event history has delivered some hard lessons, and 2026 finds venue operators more focused than ever on “...",
+        "snippet": "Some festivals design barrier layouts almost like a city grid, ensuring no point in the crowd is too far from a clear path out. Corner exits from pens should be well-marked and staffed so people know where they can break away if they’re feeling crushed. Rigid vs. Soft Barriers: In some scenarios, flexible “soft” barricades (like robust fencing that can bend or security staff with linked arms) might be used to accommodate crowd movement – for example, moving barriers to expand an area if it’s getting too full.",
+        "n": 7,
+        "query": "crowd safety barricade exit jam crush prevention venue"
+      },
+      {
+        "title": "Barriers - Crowd management through physical safety barriers and ...",
+        "url": "https://queuesolutions.com/barriers-crowd-management-through-physical-safety-barriers-and-barricades/",
+        "description": "The Role of Barriers and Barricades in Crowd Management The dangers inherent in large crowds are now widely recognized. Crowd surge has resulted in death and injury at events as wide ranging as sporting events, concerts, religious festivals and retail sales. Managing large crowds safely requires ...",
+        "snippet": "The Role of Barriers and Barricades in Crowd Management The dangers inherent in large crowds are now widely recognized. Crowd surge has resulted in death and injury at events as wide ranging as sporting events, concerts, religious festivals and retail sales. Managing large crowds safely requires a comprehensive management approach that falls outside the scope [...]Read More... from Barriers – Crowd management through physical safety barriers and barricades",
+        "n": 8,
+        "query": "crowd safety barricade exit jam crush prevention venue"
+      },
+      {
+        "title": "wttr.in astronomy for San Francisco (live)",
+        "url": "https://wttr.in/San+Francisco?format=j1",
+        "description": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+        "snippet": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+        "n": 9,
+        "query": "wttr.in astronomy"
+      },
+      {
+        "title": "Moonrise, Moonset, and Moon Phase in San Francisco",
+        "url": "https://www.timeanddate.com/moon/usa/san-francisco",
+        "description": "Moonrise and moonset time, Moon direction, and Moon phase in San Francisco – California – USA for October 2026. When and where does the Moon rise and set?",
+        "snippet": "Home Sun, Moon & Space Moonrise and moonset USA San Francisco ... Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Sunrise and sunset times for San Francisco",
+        "n": 10,
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+      },
+      {
+        "title": "Sun & moon times today, San Francisco, California, USA",
+        "url": "https://www.timeanddate.com/astronomy/usa/san-francisco",
+        "description": "Time for sunrise, sunset, moonrise, and moonset in San Francisco – California – USA. Dawn and dusk (twilight) times and Sun and Moon position. Takes into account Daylight Saving Time (DST).",
+        "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. ... The Moon's path in San Francisco today. The horizontal line signifies the horizon, the vertical lines show times and headings of moonrise and moonset.",
+        "n": 11,
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+      },
+      {
+        "title": "Sunrise and sunset times in San Francisco",
+        "url": "https://www.timeanddate.com/sun/usa/san-francisco",
+        "description": "Calculations of sunrise and sunset in San Francisco – California – USA for October 2026. Generic astronomy calculator to calculate times for sunrise, sunset, moonrise, moonset for many cities, with daylight saving time and time zones taken in account.",
+        "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Moonrise and moonset times for San Francisco Phases of the Moon for San Francisco",
+        "n": 12,
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+      }
+    ],
+    "research": "**Search note:** Two queries run (werewolf folklore silver weakness; crowd-safety barricading/exit flow). Findings below; several arsenal items have no supporting source.\n\n- **Silver netting — partially supported, with a caveat.** Silver is the classic counter to the transformed wolf form in folklore/pop-culture: a silver bullet is described as one of the few weapons effective against a werewolf [1], and werewolf tales keep the creature in wolf form at full moon with silver as the killing agent [3]. However, the strongest source on this topic argues the silver bullet has *no* folkloric roots and was popularized by *The Wolf Man* (1941) [2]. Treat silver netting as containment/handling of the transformed body, not a proven \"kill\" — and note it is netting, not a projectile, so it restrains rather than kills.\n\n- **Rapid barricade foam — supported, for the crowd, not the entity.** Crowd-disaster research attributes most injuries and deaths to compressive asphyxia from dangerous density rather than panic or trampling, so the priority is controlling density and keeping egress clear [5]. Rigid vs. soft barrier choice is an explicit design decision in surge scenarios [7], and physical barriers/barricades are the standard tool for managing surges at concerts and festivals [8]. Expanding foam is a soft barrier: use it to hold the 158-person surge off the transforming teammates and off the row-16 vampires, not as a weapon.\n\n- **Exit/egress priority over barriers — supported.** The hall is trapped by a jammed rear door R2 and SW stairwell; barrier layout should ensure no point in the crowd is far from a clear path out, with corner exits well-marked and *staffed* so people know where to break away when compressed [7]. Barricade layout, density limits and exit count are the levers that reduce crush risk [5][8]. Physically clearing R2 and the SW stairwell is the highest-value action in this incident; foam alone does not create egress.\n\n- **Magnesium flare line — no source supports it** against werewolves or for crowd control in these results.\n- **UV floodlights, infrasound cannon, sector power cut — no source supports** any of these against this entity; the infrasound cannon in particular risks adding to the 112 dB howling/stress load on the crowd and the 188 bpm heart rates.\n- **Garlic line, do-not-invite, poppy seed scatter, call-by-badge-name, raise blinds — no source supports** these against werewolves. Garlic is a vampire counter in folklore, not a werewolf one, and the two vampire subjects at row 16 are a separate class from the three transforming teammates; no retrieved source covers them either.\n\n**Bottom line for the commander:** sources support silver as the only lore-backed material against the transformed form [1][3] (with [2] undercutting its folkloric status), and support foam barriers plus restored, staffed egress as the crush mitigation [5][7][8]. Everything else in the arsenal is unsupported by the retrieved evidence.",
+    "manifest": {
+      "title": "Werewolf transformation at the main stage",
+      "theme": "crypt-dark",
+      "sound_cue": "sting_werewolf",
+      "components": [
+        {
+          "type": "ThreatBanner",
+          "why": "Headline and one directive for the floor, including whether silver netting still fits and what to hand over to the paged expert.",
+          "props": {
+            "severity": "critical",
+            "directive": "Silver netting still fits the three transforming teammates; clear R2 and SW stairwell now, hold the seal, brief the vampire hunter on arrival.",
+            "size": "hero",
+            "title": ""
+          }
+        },
+        {
+          "type": "FloorPlan",
+          "why": "158 people are surging in a hall with two jammed exits; the operator already sealed the main stage, so the plan must show that seal and a workable route out.",
+          "props": {
+            "hot_sector": "main_stage",
+            "seal": [
+              "main_stage"
+            ],
+            "safe_route": [
+              "main_stage",
+              "lounge",
+              "entrance"
+            ],
+            "view": "floor",
+            "anchor": "none",
+            "scene": "sector_main_stage",
+            "markers": [
+              {
+                "sector": "main_stage",
+                "label": "Three teammates transforming",
+                "kind": "threat"
+              },
+              {
+                "sector": "main_stage",
+                "label": "Two vampires at row 16",
+                "kind": "threat"
+              },
+              {
+                "sector": "lounge",
+                "label": "158 surging toward doors",
+                "kind": "people"
+              },
+              {
+                "sector": "entrance",
+                "label": "Rear door R2 jammed",
+                "kind": "hazard"
+              }
+            ],
+            "size": "standard",
+            "title": ""
+          }
+        },
+        {
+          "type": "CivilianTracker",
+          "why": "158 attendees are in the hall, 3 already hurt, and only 0 have been extracted; the tracker must show who is still inside and the extraction priority.",
+          "props": {
+            "count": 158,
+            "location": "main stage hall",
+            "condition": "injured",
+            "priority": "immediate",
+            "size": "standard",
+            "title": "Who's still in the hall"
+          }
+        },
+        {
+          "type": "CountermeasurePicker",
+          "why": "Real threat with people in reach; the operator already picked silver netting, so the picker must rank the remaining supported options with sources.",
+          "props": {
+            "target_entity": "werewolves",
+            "options": [
+              {
+                "id": "barricade_foam",
+                "support": "strong",
+                "rationale": "Soft barrier holds the 158-person surge off the transforming teammates and row-16 vampires.",
+                "source": 5
+              },
+              {
+                "id": "silver_netting",
+                "support": "strong",
+                "rationale": "Restrains the transformed bodies; silver is the lore-backed material against wolf form.",
+                "source": 1
+              },
+              {
+                "id": "flare_line",
+                "support": "weak",
+                "rationale": "No retrieved source supports flares against werewolves; use only as a visible crowd line.",
+                "source": 5
+              }
+            ],
+            "recommended": "barricade_foam",
+            "size": "standard",
+            "title": "Containment options, ranked"
+          }
+        },
+        {
+          "type": "SystemsBoard",
+          "why": "R2 and the SW stairwell are degraded and are the reason nobody got out; the board must show them as the priority.",
+          "props": {
+            "systems": [
+              {
+                "name": "rear door R2",
+                "status": "degraded"
+              },
+              {
+                "name": "SW stairwell",
+                "status": "degraded"
+              }
+            ],
+            "size": "compact",
+            "title": "Doors and stairwell status"
+          }
+        },
+        {
+          "type": "ThermalReadout",
+          "why": "The report gives 31C at floor level in the front rows, an abnormal heat signature tied to the transforming bodies.",
+          "props": {
+            "temperature_c": 31,
+            "baseline_c": null,
+            "status": "elevated",
+            "size": "compact",
+            "title": "Floor heat at the front rows"
+          }
+        },
+        {
+          "type": "SkyClock",
+          "why": "Moonrise is now and the moon is 95% lit, which bears on the werewolf form; the operator needs the remaining sky timeline.",
+          "props": {
+            "focus": "moonrise",
+            "warning": "",
+            "cited": [
+              9,
+              10,
+              11,
+              12
+            ],
+            "size": "compact",
+            "title": "Moon is up over the Loft"
+          }
+        },
+        {
+          "type": "EntityCard",
+          "why": "The art library has a werewolf image matching the described transformation, so the card can show the entity with a verdict.",
+          "props": {
+            "image": "entity_werewolf",
+            "verdict": "real",
+            "caption": "Mid-transformation, torn hoodie, moonlit through a tall window.",
+            "size": "standard",
+            "title": "The transforming teammate"
+          }
+        }
+      ],
+      "recommended_action": "evacuate",
+      "dispatch_rationale": "People are already hurt and pinned by jammed exits with a loose threat among a surging crowd, so getting 158 attendees out is the safe move.",
+      "quick_actions": [
+        {
+          "label": "Unseal lounge for egress",
+          "kind": "unseal",
+          "target": "lounge"
+        },
+        {
+          "label": "Switch to silver netting",
+          "kind": "countermeasure",
+          "target": "silver_netting"
+        },
+        {
+          "label": "Extract all 158",
+          "kind": "extract",
+          "target": "all"
+        }
+      ]
+    },
+    "notes": [
+      "dropped a ThreatBanner title over 6 words or 32 characters",
+      "dropped a FloorPlan title over 6 words or 32 characters",
+      "dropped a sky warning that states times instead of an order"
+    ],
+    "models": [
+      "parasail-minimax-m31-flash",
+      "parasail-minimax-m31-flash"
+    ],
+    "sky": {
+      "day": "2026-10-28",
+      "place": "AWS Builder Loft, San Francisco",
+      "clock": "20:02",
+      "clock_at": "2026-10-29T03:02:00.000Z",
+      "events": [
+        {
+          "id": "sunset",
+          "label": "Sunset",
+          "local": "18:15",
+          "at": "2026-10-29T01:15:00.000Z",
+          "source": "wttr.in",
+          "computed": "18:17"
+        },
+        {
+          "id": "civil_dusk",
+          "label": "Civil dusk",
+          "local": "18:44",
+          "at": "2026-10-29T01:44:00.000Z",
+          "source": "suncalc",
+          "computed": "18:44"
+        },
+        {
+          "id": "full_dark",
+          "label": "Full dark",
+          "local": "19:45",
+          "at": "2026-10-29T02:45:00.000Z",
+          "source": "suncalc",
+          "computed": "19:45"
+        },
+        {
+          "id": "moonrise",
+          "label": "Moonrise",
+          "local": "20:02",
+          "at": "2026-10-29T03:02:00.000Z",
+          "source": "wttr.in",
+          "computed": "19:52"
+        }
+      ],
+      "minutes_to": {
+        "sunset": -107,
+        "civil_dusk": -78,
+        "full_dark": -17,
+        "moonrise": 0
+      },
+      "moon": {
+        "phase": "Waning Gibbous",
+        "illumination": 95,
+        "source": "wttr.in"
+      },
+      "live_source": {
+        "url": "https://wttr.in/San+Francisco?format=j1",
+        "summary": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit"
+      }
+    },
+    "moves": {
+      "step": "sim-nightfall-20",
+      "time": "19:55",
+      "countermeasure": "silver_netting",
+      "sealed": [
+        "main_stage"
+      ],
+      "people_out": 0,
+      "people": 158,
+      "experts": [
+        {
+          "expert": "vampire_hunter",
+          "status": "off",
+          "by": []
+        }
+      ]
+    },
+    "earlier": [
+      {
+        "time": "11:20",
+        "sector": "entrance",
+        "entity": "vampire",
+        "entity_class": "corporeal",
+        "verdict": "harmless",
+        "summary": "A costumed attendee in a vampire outfit (badge B-0061, cape, face paint, plastic fangs) was waved through the entrance security desk by the guard. IR skin reading 33.8C matches a living person standing in direct sun; EMF 2 mG is normal background. No supernatural indicators, no deliberate action, no countermeasure needed. The line does not need to be held; the guard's normal ID check should be applied to badge B-0061 as with any arrival."
+      },
+      {
+        "time": "12:10",
+        "sector": "lounge",
+        "entity": "spectral",
+        "entity_class": "spectral",
+        "verdict": null,
+        "summary": "A courier delivered three wooden crates (2.1 m) addressed to 'Evening Shift Events, stage plinths' via the freight lift to the 2nd floor. Weights were 241 kg, 38 kg and 36 kg against a manifest of 35 kg each, so the heavy crate is grossly overweight. Black wax on the lids, dark soil sifting from the seams of the heavy crate onto the lift floor (pH 7.9), and the heavy crate's skin at 9C against a 21C corridor. EMF 3 mG (normal). The porter reports it 'smells like a cellar in there' and plans to park all three crates in the lounge because the stage is not ready. The delivery slip signature is a smudge. Window wall at 21,300 lux with sunset in 365 min."
+      },
+      {
+        "time": "12:50",
+        "sector": "lounge",
+        "entity": "unknown",
+        "entity_class": "spectral",
+        "verdict": "unclear",
+        "summary": "In the lounge, three closed heavy crates along the back wall produced two sets of soft knocks from inside (12:47 and 12:49) while the lid reads 8.7C against a 21C room and the cold spreads 40 cm over the carpet. All three window blinds were lowered at 12:41 with no staff admission. 28 attendees sit near the door, laptops open, and no one has touched the crates. A volunteer is deciding whether to open the lid or call the venue manager."
+      },
+      {
+        "time": "13:05",
+        "sector": "catering",
+        "entity": "vampire (claimed/rumored, unconfirmed)",
+        "entity_class": "corporeal",
+        "verdict": "harmless",
+        "summary": "At the catering counter, nine guests complained within 10 minutes of lunch service that the garlic smell carried toward the lounge door and hack floor. Kitchen confirmed 3 kg of garlic in the dough and 12 bowls of aioli, which accounts for the odor. One attendee in a hoodie, citing a phone-read claim that garlic is hung against vampires, strung a braid of bulbs over the coffee bar and asked staff to leave it there; the barista asked whether the braid can stay by the espresso machine. No creature was observed and no anomalous readings were recorded. Classified as a harmless odor complaint with a folklore-motivated decoration request; the garlic braid is a catering fixture question, not a containment matter."
+      },
+      {
+        "time": "18:40",
+        "sector": "catering",
+        "entity": "Erzsi B.",
+        "entity_class": "corporeal",
+        "verdict": "unclear",
+        "summary": "Erzsi B. crouched over spilled poppy seed bagels at the catering counter, counting seeds one by one for 22 minutes without other motion, 3 m from garlic naan and the braid over the coffee bar. Max S. was stopped from entering the staff-only kitchen by a radio voice shouting 'do not invite'. 140 guests in the dinner line, 4 kitchen staff, 1 propane range, 24C near the range, window lux 0, sunset 25 min prior. No EMF data. No injuries reported; guests at the far end of the line continue eating."
+      },
+      {
+        "time": "19:20",
+        "sector": "entrance",
+        "entity": "Four unidentified individuals in dark coats, standing outside the entrance glass doors, repeatedly asking exiting attendees to 'let us in'",
+        "entity_class": "corporeal",
+        "verdict": "real_threat",
+        "summary": "Four unregistered, non-crossing individuals in dark coats are loitering 3 m outside the entrance glass doors and pressuring exiting attendees to let them in (11 refusals logged since 19:09, 0 crossings). Registry shows no match; they hold advance registration only. IR reads 14C skin for all four, consistent with cold exposure outside in near-darkness rather than any anomalous reading. The real and immediate risk is physical: a smoker propped the left door open with a stand at 19:18 (40 cm ajar) and the guard is re-closing it, so the door is the weak point through which the group could enter without a refusal being logged. 45 attendees are inside (36 queued for the demo block, 9 at the doors). Guard has asked whether to lock down; no containment action has been taken yet."
+      },
+      {
+        "time": "19:33",
+        "sector": "main_stage",
+        "entity": "wolf",
+        "entity_class": "corporeal",
+        "verdict": "harmless",
+        "summary": "During a main-stage demo block with 160 attendees, a guest reported 'a wolf on the stage!' The howl was traced to mic 3 in the monitor wedge; team 12 wore wolf-ear headbands and howled on cue. Fog machine, strobes, and crowd noise/heat (27C, EMF 3 mG, 1,420 motion events) explain the confusion. No creature present; no injuries reported."
+      },
+      {
+        "time": "19:46",
+        "sector": "main_stage",
+        "entity": "unknown",
+        "entity_class": "anomalous",
+        "verdict": "real_threat",
+        "summary": "Two subjects entered the main stage through the open rear door R2 at 19:41 and took seats in rows 14-16. Attendee B-0522 is down in row 15 with two neck marks while three neighbours move away, and rear-row skin temperatures read 15-16C. The house lighting breaker is dead and the house light slider is missing, leaving the stage at 4 percent house lights and 12 lux with 160 attendees seated. Astronomical dusk has passed and moonrise is in 16 minutes, and the rear exit door remains open to the hall by the SW stairwell. Two neck marks plus a downed attendee and abnormally cold readings in the rows the subjects just occupied point to a deliberate attack by a corporeal entity that entered from outside via R2; the dead breaker and missing slider are consistent with deliberate disabling of lighting rather than an ordinary fault. Containment priority: immediate, with evacuation of rows 14-16 and closure of rear door R2."
+      },
+      {
+        "time": "19:55",
+        "sector": "main_stage",
+        "entity": "the two vampire subjects at row 16",
+        "entity_class": "corporeal",
+        "verdict": "real_threat",
+        "summary": "Team Full Moon Labs (table 22) walked into the main stage hall for their 20:05 slot and are undergoing an active vampiric transformation: IR gate temperatures of 40.2C, 40.4C and 40.6C, jaw skin rippling, nails growing 1 cm in roughly an hour, and breathing at 40 per minute. Two vampire subjects are seated at row 16, 158 attendees remain seated in the hall, and 5 civilians are injured at the foot of the stairs. The hall is at 12 lux with the moon 93% lit and rising in 7 minutes, and the SW stairwell is held by silver ring owner B-0356 with 4 sets of silver cutlery, but no countermeasure has yet been applied to the subjects. This continues the 19:46 main-stage incident: the same two subjects that entered through rear door R2 and took rows 14-16, where they left a downed attendee with two neck marks and 15-16C rear-row readings, are now confirmed as vampires and are transforming in front of the audience. Containment priority: immediate - the demo should be cancelled, rows 14-16 and the foot of the stairs cleared, and the two subjects at row 16 countered with the silver on hand."
+      }
+    ],
+    "id": "a873e7dd-4b16-4a58-8975-bd7fce819c33"
+  },
+  "events": [
+    {
+      "t": 0.002,
+      "msg": {
+        "type": "sky",
+        "sky": {
+          "day": "2026-10-28",
+          "place": "AWS Builder Loft, San Francisco",
+          "clock": "20:02",
+          "clock_at": "2026-10-29T03:02:00.000Z",
+          "events": [
+            {
+              "id": "sunset",
+              "label": "Sunset",
+              "local": "18:15",
+              "at": "2026-10-29T01:15:00.000Z",
+              "source": "wttr.in",
+              "computed": "18:17"
+            },
+            {
+              "id": "civil_dusk",
+              "label": "Civil dusk",
+              "local": "18:44",
+              "at": "2026-10-29T01:44:00.000Z",
+              "source": "suncalc",
+              "computed": "18:44"
+            },
+            {
+              "id": "full_dark",
+              "label": "Full dark",
+              "local": "19:45",
+              "at": "2026-10-29T02:45:00.000Z",
+              "source": "suncalc",
+              "computed": "19:45"
+            },
+            {
+              "id": "moonrise",
+              "label": "Moonrise",
+              "local": "20:02",
+              "at": "2026-10-29T03:02:00.000Z",
+              "source": "wttr.in",
+              "computed": "19:52"
+            }
+          ],
+          "minutes_to": {
+            "sunset": -107,
+            "civil_dusk": -78,
+            "full_dark": -17,
+            "moonrise": 0
+          },
+          "moon": {
+            "phase": "Waning Gibbous",
+            "illumination": 95,
+            "source": "wttr.in"
+          },
+          "live_source": {
+            "url": "https://wttr.in/San+Francisco?format=j1",
+            "summary": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit"
+          }
+        }
+      }
+    },
+    {
+      "t": 0.981,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "running",
+        "detail": "Parasail is structuring the raw report",
+        "ms": 0
+      }
+    },
+    {
+      "t": 5.184,
+      "msg": {
+        "type": "incident",
+        "incident": {
+          "entity": "werewolves (three teammates transforming at the foot of the main stage)",
+          "entity_class": "corporeal",
+          "threat_level": 3,
+          "sector": "main_stage",
+          "location_detail": "foot of the main stage, front rows",
+          "emf_mg": null,
+          "emf_trend": "unknown",
+          "temperature_c": 31,
+          "civilians": {
+            "count": 158,
+            "condition": "injured",
+            "location": "hall"
+          },
+          "systems": [
+            {
+              "name": "rear door R2",
+              "status": "degraded"
+            },
+            {
+              "name": "SW stairwell",
+              "status": "degraded"
+            }
+          ],
+          "evidence_of_threat": "Three teammates collapsed at the foot of the stage and are now on all fours with hair standing along the neck, jaws elongating and heart rate 188; howling at 112 dB; 31C at floor level in the front rows; two vampire subjects still at row 16 with 3 more attendees bitten; staff shouting the wolves' badge names.",
+          "ordinary_explanation": null,
+          "deliberate_act": true,
+          "creature_countered": false,
+          "verdict": "real_threat",
+          "people_in_reach": 158,
+          "people_hurt": 3,
+          "severity": "critical",
+          "summary": "Three teammates at the foot of the main stage are undergoing an active werewolf transformation (all fours, jaws elongating, hair standing, heart rate 188, 112 dB howling, 31C floor-level heat) while the two vampire subjects from the 19:46/19:55 incidents remain at row 16 and have bitten 3 more attendees. 158 attendees are surging to the doors, but rear door R2 and the SW stairwell are jammed, trapping the hall. Silver netting (2 reels) and 6 cans of expanding barricade foam are on hand in the AV cage but no countermeasure has been applied yet.",
+          "evidence_quotes": [
+            {
+              "quote": "now on all fours",
+              "kind": "threat",
+              "why": "Three teammates collapsed and are on all fours at the foot of the stage, showing a physical transformation in progress."
+            },
+            {
+              "quote": "jaws elongating",
+              "kind": "threat",
+              "why": "Active werewolf transformation of the three teammates."
+            },
+            {
+              "quote": "heart rate 188",
+              "kind": "threat",
+              "why": "Physiological reading consistent with a creature mid-transformation."
+            },
+            {
+              "quote": "Howling at 112 dB",
+              "kind": "threat",
+              "why": "Creature vocalization at a level that adds to the hall's noise and panic."
+            },
+            {
+              "quote": "Temp at floor level 31C",
+              "kind": "threat",
+              "why": "Abnormal heat signature at floor level in the front rows, consistent with transforming bodies."
+            }
+          ]
+        },
+        "incident_id": "sim-nightfall-21",
+        "severity_tier": "CRITICAL_HAUNT",
+        "raw": "ALERT 20:02 moonrise at azimuth 54, 93% lit. Three teammates collapsed at the foot of the stage between 20:02 and 20:03, now on all fours; hair along the neck, jaws elongating, heart rate 188. Temp at floor level 31C in the front rows. Howling at 112 dB. 158 attendees in the hall stand and surge to the doors; the rear door R2 and the SW stairwell are jammed. Two vampire subjects still at row 16, 3 more attendees bitten. House lights at 4 percent, floor lux 12. Staff shout the wolves' badge names. Silver netting on the stage-left cart, 2 reels. The AV cage holds 6 cans of expanding barricade foam."
+      }
+    },
+    {
+      "t": 5.184,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "done",
+        "detail": "werewolves (three teammates transforming at the foot of the main stage) in main_stage (parasail-minimax-m31-flash)",
+        "ms": 4203
+      }
+    },
+    {
+      "t": 5.191,
+      "msg": {
+        "type": "route",
+        "label": "corporeal",
+        "playbook": "Corporeal (zombies, werewolves, vampires, cryptids)",
+        "arsenal": [
+          {
+            "id": "silver_netting",
+            "name": "Silver netting"
+          },
+          {
+            "id": "barricade_foam",
+            "name": "Rapid barricade foam"
+          },
+          {
+            "id": "flare_line",
+            "name": "Magnesium flare line"
+          },
+          {
+            "id": "uv_floodlights",
+            "name": "UV floodlights"
+          },
+          {
+            "id": "sound_cannon",
+            "name": "Infrasound cannon"
+          },
+          {
+            "id": "power_cut",
+            "name": "Sector power cut"
+          },
+          {
+            "id": "garlic_line",
+            "name": "Garlic line at the threshold"
+          },
+          {
+            "id": "no_invitation",
+            "name": "Do not invite: revoke invitations"
+          },
+          {
+            "id": "seed_scatter",
+            "name": "Poppy seed scatter"
+          },
+          {
+            "id": "name_calling",
+            "name": "Call by badge name"
+          },
+          {
+            "id": "raise_blinds",
+            "name": "Raise the blinds"
+          }
+        ]
+      }
+    },
+    {
+      "t": 5.191,
+      "msg": {
+        "type": "step",
+        "id": "triage",
+        "state": "done",
+        "detail": "routed to the corporeal playbook",
+        "ms": 4210
+      }
+    },
+    {
+      "t": 5.193,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "running",
+        "detail": "Lore Researcher is searching You.com",
+        "ms": 0
+      }
+    },
+    {
+      "t": 7.503,
+      "msg": {
+        "type": "search",
+        "query": "werewolf folklore silver bullet weakness kill",
+        "hits": [
+          {
+            "n": 1,
+            "title": "Silver bullet - Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/Silver_bullet"
+          },
+          {
+            "n": 2,
+            "title": "Silver – Maegan A. Stebbins – Maverick-Werewolf's Den",
+            "url": "https://maverickwerewolf.com/werewolf-facts/silver/"
+          },
+          {
+            "n": 3,
+            "title": "Tales of werewolves and their susceptibility to silver | Provident",
+            "url": "https://blog.providentmetals.com/a-spooky-tale-of-wolves-and-silver.htm"
+          },
+          {
+            "n": 4,
+            "title": "Why is it silver that kills a werewolf? - Science Fiction & Fantasy ...",
+            "url": "https://scifi.stackexchange.com/questions/9929/why-is-it-silver-that-kills-a-werewolf"
+          }
+        ]
+      }
+    },
+    {
+      "t": 7.506,
+      "msg": {
+        "type": "search",
+        "query": "crowd safety barricade exit jam crush prevention venue",
+        "hits": [
+          {
+            "n": 5,
+            "title": "Crowd Crush and Surge Prevention: How Barricade Layout, Density, ...",
+            "url": "https://www.crowdcontrolwarehouse.com/blogs/blog/crowd-crush-and-surge-prevention-how-barricade-layout-density-and-exits-reduce-risk"
+          },
+          {
+            "n": 6,
+            "title": "r/stagehands on Reddit: Crowd crush solutions",
+            "url": "https://www.reddit.com/r/stagehands/comments/qo52xb/crowd_crush_solutions/"
+          },
+          {
+            "n": 7,
+            "title": "Crush-Proofing Your Venue in 2026: Preventing Crowd Surges and ...",
+            "url": "https://www.ticketfairy.com/blog/crush-proofing-your-venue-in-2026-preventing-crowd-surges-and-ensuring-fan-safety"
+          },
+          {
+            "n": 8,
+            "title": "Barriers - Crowd management through physical safety barriers and ...",
+            "url": "https://queuesolutions.com/barriers-crowd-management-through-physical-safety-barriers-and-barricades/"
+          }
+        ]
+      }
+    },
+    {
+      "t": 12.233,
+      "msg": {
+        "type": "search",
+        "query": "wttr.in astronomy",
+        "hits": [
+          {
+            "n": 9,
+            "title": "wttr.in astronomy for San Francisco (live)",
+            "url": "https://wttr.in/San+Francisco?format=j1"
+          }
+        ]
+      }
+    },
+    {
+      "t": 12.536,
+      "msg": {
+        "type": "search",
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate",
+        "hits": [
+          {
+            "n": 10,
+            "title": "Moonrise, Moonset, and Moon Phase in San Francisco",
+            "url": "https://www.timeanddate.com/moon/usa/san-francisco"
+          },
+          {
+            "n": 11,
+            "title": "Sun & moon times today, San Francisco, California, USA",
+            "url": "https://www.timeanddate.com/astronomy/usa/san-francisco"
+          },
+          {
+            "n": 12,
+            "title": "Sunrise and sunset times in San Francisco",
+            "url": "https://www.timeanddate.com/sun/usa/san-francisco"
+          }
+        ]
+      }
+    },
+    {
+      "t": 12.536,
+      "msg": {
+        "type": "sources",
+        "sources": [
+          {
+            "title": "Silver bullet - Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/Silver_bullet",
+            "description": "In folklore, a silver bullet is often one of the few weapons that are effective against a werewolf, vampire, witch, or other supernatural being.",
+            "snippet": "In folklore, a silver bullet is often one of the few weapons that are effective against a werewolf, vampire, witch, or other supernatural being. The term silver bullet is also sometimes used similarly to \"magic bullet\" as a metaphor for a simple, seemingly magical, solution to a difficult problem: ...",
+            "n": 1,
+            "query": "werewolf folklore silver bullet weakness kill"
+          },
+          {
+            "title": "Silver – Maegan A. Stebbins – Maverick-Werewolf's Den",
+            "url": "https://maverickwerewolf.com/werewolf-facts/silver/",
+            "description": "Werewolves didn’t have their silver bullet. In fact, they had absolutely nothing. All of that comes from later popular culture. Specifically, it was popluarlized (but did not exclusively originate in) the The Wolf Man (1941) movie and its writer, Curt Siodmak. There’s not a scrap of folkloric roots in the idea that only silver can kill a werewolf, because werewolves had no catchall weaknesses...",
+            "snippet": "Werewolves didn’t have their silver bullet. In fact, they had absolutely nothing. All of that comes from later popular culture. Specifically, it was popluarlized (but did not exclusively originate in) the The Wolf Man (1941) movie and its writer, Curt Siodmak. There’s not a scrap of folkloric roots in the idea that only silver can kill a werewolf, because werewolves had no catchall weaknesses, and they certainly had no problem with silver.",
+            "n": 2,
+            "query": "werewolf folklore silver bullet weakness kill"
+          },
+          {
+            "title": "Tales of werewolves and their susceptibility to silver | Provident",
+            "url": "https://blog.providentmetals.com/a-spooky-tale-of-wolves-and-silver.htm",
+            "description": "Explore the lore of the werewolf and the commonly accepted trope that they have a weakness to silver, particularly silver bullets.",
+            "snippet": "What could be spookier than coming face to face with a werewolf? These mythical creatures maintain a human form, except during a full moon when they transform into large, bloodthirsty wolves that h…",
+            "n": 3,
+            "query": "werewolf folklore silver bullet weakness kill"
+          },
+          {
+            "title": "Why is it silver that kills a werewolf? - Science Fiction & Fantasy ...",
+            "url": "https://scifi.stackexchange.com/questions/9929/why-is-it-silver-that-kills-a-werewolf",
+            "description": "It was only after Jean killed the beast with his legendary silver bullet that the idea of werewolves being weak to silver was brought about. To this day, the beast's true identity or what it was remains a mystery. But during the time, it was considered to be a werewolf and was treated as such.",
+            "snippet": "Aside from just the idea that it has to be \"something\" (maybe lead, steel, whatever), what is it about silver that makes it so special that it can kill a werewolf where other bullets or a stake to the heart can't?",
+            "n": 4,
+            "query": "werewolf folklore silver bullet weakness kill"
+          },
+          {
+            "title": "Crowd Crush and Surge Prevention: How Barricade Layout, Density, ...",
+            "url": "https://www.crowdcontrolwarehouse.com/blogs/blog/crowd-crush-and-surge-prevention-how-barricade-layout-density-and-exits-reduce-risk",
+            "description": "What crowd-safety research says about density, and how to plan barriers and egress that keep people safe Short answer: Most crowd-disaster injuries and deaths are caused by compressive asphyxia from dangerous crowd density, not by panic or trampling. Preventing a crush comes down to controlling ...",
+            "snippet": "What crowd-safety research says about density, and how to plan barriers and egress that keep people safe Short answer: Most crowd-disaster injuries and deaths are caused by compressive asphyxia from dangerous crowd density, not by panic or trampling. Preventing a crush comes down to controlling density and flow, keepin",
+            "n": 5,
+            "query": "crowd safety barricade exit jam crush prevention venue"
+          },
+          {
+            "title": "r/stagehands on Reddit: Crowd crush solutions",
+            "url": "https://www.reddit.com/r/stagehands/comments/qo52xb/crowd_crush_solutions/",
+            "description": "Posted by u/windinghighway - 6 votes and 25 comments",
+            "snippet": "With the recent terrible crowd crush, I was wondering how we can better protect the fans so this won’t happen again I know that many venues have…",
+            "n": 6,
+            "query": "crowd safety barricade exit jam crush prevention venue"
+          },
+          {
+            "title": "Crush-Proofing Your Venue in 2026: Preventing Crowd Surges and ...",
+            "url": "https://www.ticketfairy.com/blog/crush-proofing-your-venue-in-2026-preventing-crowd-surges-and-ensuring-fan-safety",
+            "description": "Introduction: A New Urgency for Crowd Safety Live event history has delivered some hard lessons, and 2026 finds venue operators more focused than ever on “...",
+            "snippet": "Some festivals design barrier layouts almost like a city grid, ensuring no point in the crowd is too far from a clear path out. Corner exits from pens should be well-marked and staffed so people know where they can break away if they’re feeling crushed. Rigid vs. Soft Barriers: In some scenarios, flexible “soft” barricades (like robust fencing that can bend or security staff with linked arms) might be used to accommodate crowd movement – for example, moving barriers to expand an area if it’s getting too full.",
+            "n": 7,
+            "query": "crowd safety barricade exit jam crush prevention venue"
+          },
+          {
+            "title": "Barriers - Crowd management through physical safety barriers and ...",
+            "url": "https://queuesolutions.com/barriers-crowd-management-through-physical-safety-barriers-and-barricades/",
+            "description": "The Role of Barriers and Barricades in Crowd Management The dangers inherent in large crowds are now widely recognized. Crowd surge has resulted in death and injury at events as wide ranging as sporting events, concerts, religious festivals and retail sales. Managing large crowds safely requires ...",
+            "snippet": "The Role of Barriers and Barricades in Crowd Management The dangers inherent in large crowds are now widely recognized. Crowd surge has resulted in death and injury at events as wide ranging as sporting events, concerts, religious festivals and retail sales. Managing large crowds safely requires a comprehensive management approach that falls outside the scope [...]Read More... from Barriers – Crowd management through physical safety barriers and barricades",
+            "n": 8,
+            "query": "crowd safety barricade exit jam crush prevention venue"
+          },
+          {
+            "title": "wttr.in astronomy for San Francisco (live)",
+            "url": "https://wttr.in/San+Francisco?format=j1",
+            "description": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+            "snippet": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+            "n": 9,
+            "query": "wttr.in astronomy"
+          },
+          {
+            "title": "Moonrise, Moonset, and Moon Phase in San Francisco",
+            "url": "https://www.timeanddate.com/moon/usa/san-francisco",
+            "description": "Moonrise and moonset time, Moon direction, and Moon phase in San Francisco – California – USA for October 2026. When and where does the Moon rise and set?",
+            "snippet": "Home Sun, Moon & Space Moonrise and moonset USA San Francisco ... Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Sunrise and sunset times for San Francisco",
+            "n": 10,
+            "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+          },
+          {
+            "title": "Sun & moon times today, San Francisco, California, USA",
+            "url": "https://www.timeanddate.com/astronomy/usa/san-francisco",
+            "description": "Time for sunrise, sunset, moonrise, and moonset in San Francisco – California – USA. Dawn and dusk (twilight) times and Sun and Moon position. Takes into account Daylight Saving Time (DST).",
+            "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. ... The Moon's path in San Francisco today. The horizontal line signifies the horizon, the vertical lines show times and headings of moonrise and moonset.",
+            "n": 11,
+            "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+          },
+          {
+            "title": "Sunrise and sunset times in San Francisco",
+            "url": "https://www.timeanddate.com/sun/usa/san-francisco",
+            "description": "Calculations of sunrise and sunset in San Francisco – California – USA for October 2026. Generic astronomy calculator to calculate times for sunrise, sunset, moonrise, moonset for many cities, with daylight saving time and time zones taken in account.",
+            "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Moonrise and moonset times for San Francisco Phases of the Moon for San Francisco",
+            "n": 12,
+            "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+          }
+        ],
+        "research": "**Search note:** Two queries run (werewolf folklore silver weakness; crowd-safety barricading/exit flow). Findings below; several arsenal items have no supporting source.\n\n- **Silver netting — partially supported, with a caveat.** Silver is the classic counter to the transformed wolf form in folklore/pop-culture: a silver bullet is described as one of the few weapons effective against a werewolf [1], and werewolf tales keep the creature in wolf form at full moon with silver as the killing agent [3]. However, the strongest source on this topic argues the silver bullet has *no* folkloric roots and was popularized by *The Wolf Man* (1941) [2]. Treat silver netting as containment/handling of the transformed body, not a proven \"kill\" — and note it is netting, not a projectile, so it restrains rather than kills.\n\n- **Rapid barricade foam — supported, for the crowd, not the entity.** Crowd-disaster research attributes most injuries and deaths to compressive asphyxia from dangerous density rather than panic or trampling, so the priority is controlling density and keeping egress clear [5]. Rigid vs. soft barrier choice is an explicit design decision in surge scenarios [7], and physical barriers/barricades are the standard tool for managing surges at concerts and festivals [8]. Expanding foam is a soft barrier: use it to hold the 158-person surge off the transforming teammates and off the row-16 vampires, not as a weapon.\n\n- **Exit/egress priority over barriers — supported.** The hall is trapped by a jammed rear door R2 and SW stairwell; barrier layout should ensure no point in the crowd is far from a clear path out, with corner exits well-marked and *staffed* so people know where to break away when compressed [7]. Barricade layout, density limits and exit count are the levers that reduce crush risk [5][8]. Physically clearing R2 and the SW stairwell is the highest-value action in this incident; foam alone does not create egress.\n\n- **Magnesium flare line — no source supports it** against werewolves or for crowd control in these results.\n- **UV floodlights, infrasound cannon, sector power cut — no source supports** any of these against this entity; the infrasound cannon in particular risks adding to the 112 dB howling/stress load on the crowd and the 188 bpm heart rates.\n- **Garlic line, do-not-invite, poppy seed scatter, call-by-badge-name, raise blinds — no source supports** these against werewolves. Garlic is a vampire counter in folklore, not a werewolf one, and the two vampire subjects at row 16 are a separate class from the three transforming teammates; no retrieved source covers them either.\n\n**Bottom line for the commander:** sources support silver as the only lore-backed material against the transformed form [1][3] (with [2] undercutting its folkloric status), and support foam barriers plus restored, staffed egress as the crush mitigation [5][7][8]. Everything else in the arsenal is unsupported by the retrieved evidence."
+      }
+    },
+    {
+      "t": 12.538,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "done",
+        "detail": "4 search(es), 12 source(s)",
+        "ms": 7342
+      }
+    },
+    {
+      "t": 12.54,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "running",
+        "detail": "Parasail is choosing and ordering components",
+        "ms": 0
+      }
+    },
+    {
+      "t": 13.114,
+      "msg": {
+        "type": "frame",
+        "title": "Werewolf transformation at the main stage",
+        "theme": "crypt-dark"
+      }
+    },
+    {
+      "t": 13.138,
+      "msg": {
+        "type": "frame",
+        "sound_cue": "sting_werewolf"
+      }
+    },
+    {
+      "t": 13.679,
+      "msg": {
+        "type": "component",
+        "index": 0,
+        "component": {
+          "type": "ThreatBanner",
+          "why": "Headline and one directive for the floor, including whether silver netting still fits and what to hand over to the paged expert.",
+          "props": {
+            "severity": "critical",
+            "directive": "Silver netting still fits the three transforming teammates; clear R2 and SW stairwell now, hold the seal, brief the vampire hunter on arrival.",
+            "size": "hero",
+            "title": ""
+          }
+        }
+      }
+    },
+    {
+      "t": 13.68,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "1 component(s) placed",
+        "ms": 1138
+      }
+    },
+    {
+      "t": 14.268,
+      "msg": {
+        "type": "component",
+        "index": 1,
+        "component": {
+          "type": "FloorPlan",
+          "why": "158 people are surging in a hall with two jammed exits; the operator already sealed the main stage, so the plan must show that seal and a workable route out.",
+          "props": {
+            "hot_sector": "main_stage",
+            "seal": [
+              "main_stage"
+            ],
+            "safe_route": [
+              "main_stage",
+              "lounge",
+              "entrance"
+            ],
+            "view": "floor",
+            "anchor": "none",
+            "scene": "sector_main_stage",
+            "markers": [
+              {
+                "sector": "main_stage",
+                "label": "Three teammates transforming",
+                "kind": "threat"
+              },
+              {
+                "sector": "main_stage",
+                "label": "Two vampires at row 16",
+                "kind": "threat"
+              },
+              {
+                "sector": "lounge",
+                "label": "158 surging toward doors",
+                "kind": "people"
+              },
+              {
+                "sector": "entrance",
+                "label": "Rear door R2 jammed",
+                "kind": "hazard"
+              }
+            ],
+            "size": "standard",
+            "title": ""
+          }
+        }
+      }
+    },
+    {
+      "t": 14.269,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "2 component(s) placed",
+        "ms": 1727
+      }
+    },
+    {
+      "t": 14.508,
+      "msg": {
+        "type": "component",
+        "index": 2,
+        "component": {
+          "type": "CivilianTracker",
+          "why": "158 attendees are in the hall, 3 already hurt, and only 0 have been extracted; the tracker must show who is still inside and the extraction priority.",
+          "props": {
+            "count": 158,
+            "location": "main stage hall",
+            "condition": "injured",
+            "priority": "immediate",
+            "size": "standard",
+            "title": "Who's still in the hall"
+          }
+        }
+      }
+    },
+    {
+      "t": 14.508,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "3 component(s) placed",
+        "ms": 1967
+      }
+    },
+    {
+      "t": 15.139,
+      "msg": {
+        "type": "component",
+        "index": 3,
+        "component": {
+          "type": "CountermeasurePicker",
+          "why": "Real threat with people in reach; the operator already picked silver netting, so the picker must rank the remaining supported options with sources.",
+          "props": {
+            "target_entity": "werewolves",
+            "options": [
+              {
+                "id": "barricade_foam",
+                "support": "strong",
+                "rationale": "Soft barrier holds the 158-person surge off the transforming teammates and row-16 vampires.",
+                "source": 5
+              },
+              {
+                "id": "silver_netting",
+                "support": "strong",
+                "rationale": "Restrains the transformed bodies; silver is the lore-backed material against wolf form.",
+                "source": 1
+              },
+              {
+                "id": "flare_line",
+                "support": "weak",
+                "rationale": "No retrieved source supports flares against werewolves; use only as a visible crowd line.",
+                "source": 5
+              }
+            ],
+            "recommended": "barricade_foam",
+            "size": "standard",
+            "title": "Containment options, ranked"
+          }
+        }
+      }
+    },
+    {
+      "t": 15.139,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "4 component(s) placed",
+        "ms": 2598
+      }
+    },
+    {
+      "t": 15.402,
+      "msg": {
+        "type": "component",
+        "index": 4,
+        "component": {
+          "type": "SystemsBoard",
+          "why": "R2 and the SW stairwell are degraded and are the reason nobody got out; the board must show them as the priority.",
+          "props": {
+            "systems": [
+              {
+                "name": "rear door R2",
+                "status": "degraded"
+              },
+              {
+                "name": "SW stairwell",
+                "status": "degraded"
+              }
+            ],
+            "size": "compact",
+            "title": "Doors and stairwell status"
+          }
+        }
+      }
+    },
+    {
+      "t": 15.403,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "5 component(s) placed",
+        "ms": 2861
+      }
+    },
+    {
+      "t": 15.598,
+      "msg": {
+        "type": "component",
+        "index": 5,
+        "component": {
+          "type": "ThermalReadout",
+          "why": "The report gives 31C at floor level in the front rows, an abnormal heat signature tied to the transforming bodies.",
+          "props": {
+            "temperature_c": 31,
+            "baseline_c": null,
+            "status": "elevated",
+            "size": "compact",
+            "title": "Floor heat at the front rows"
+          }
+        }
+      }
+    },
+    {
+      "t": 15.599,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "6 component(s) placed",
+        "ms": 3057
+      }
+    },
+    {
+      "t": 15.926,
+      "msg": {
+        "type": "component",
+        "index": 6,
+        "component": {
+          "type": "SkyClock",
+          "why": "Moonrise is now and the moon is 95% lit, which bears on the werewolf form; the operator needs the remaining sky timeline.",
+          "props": {
+            "focus": "moonrise",
+            "warning": "",
+            "cited": [
+              9,
+              10,
+              11,
+              12
+            ],
+            "size": "compact",
+            "title": "Moon is up over the Loft"
+          }
+        }
+      }
+    },
+    {
+      "t": 15.926,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "7 component(s) placed",
+        "ms": 3385
+      }
+    },
+    {
+      "t": 16.123,
+      "msg": {
+        "type": "component",
+        "index": 7,
+        "component": {
+          "type": "EntityCard",
+          "why": "The art library has a werewolf image matching the described transformation, so the card can show the entity with a verdict.",
+          "props": {
+            "image": "entity_werewolf",
+            "verdict": "real",
+            "caption": "Mid-transformation, torn hoodie, moonlit through a tall window.",
+            "size": "standard",
+            "title": "The transforming teammate"
+          }
+        }
+      }
+    },
+    {
+      "t": 16.124,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "8 component(s) placed",
+        "ms": 3582
+      }
+    },
+    {
+      "t": 16.458,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "done",
+        "detail": "8 components: ThreatBanner, FloorPlan, CivilianTracker, CountermeasurePicker, SystemsBoard, ThermalReadout, SkyClock, EntityCard (parasail-minimax-m31-flash)",
+        "ms": 3917
+      }
+    }
+  ]
+}

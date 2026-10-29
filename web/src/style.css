@@ -77,6 +77,8 @@ a:hover { color: var(--amber); }
 .page-status { font-size: 13px; color: var(--hi); }
 .page-status.page-triggered { color: var(--red); }
 .page-status.page-failed, .page-status.page-off { color: var(--muted); }
+.page-status.dispatch-sent { color: var(--hi); }
+.page-status.dispatch-failed, .page-status.dispatch-off { color: var(--muted); }
 .experts .cm { flex-basis: 100%; text-align: right; font-size: 13px; color: var(--hi); }
 .state { font: 16px/1 var(--display); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .state::before { content: '● '; }

@@ -1,0 +1,809 @@
+{
+  "saved_at": "2026-10-28T23:57:33Z",
+  "state": {
+    "incident_id": "sim-phantom-02",
+    "severity_tier": "ELEVATED_HAUNT",
+    "raw": "SEC DESK, Reyes. Doors open 25 min, line down the stairs to the street, about 150 guests waiting on photo ID. Fog machine at the photo wall on a 10 s burst timer, whole stairwell smells like grape. Three bedsheet ghosts, one plague doctor, one guy in a skeleton onesie. A guest at the top step says a tall white figure stood still in the mist and then was gone, asks if somebody can check. Sensor E-1: emf 3 mG, temp 18.4C on the stairs (street door keeps opening), motion events 212, badge scanners 6 of 6 online. Civilians: 150 in line, calm, taking photos. No injuries.",
+    "incident": {
+      "entity": "spectral",
+      "entity_class": "spectral",
+      "threat_level": 3,
+      "sector": "entrance",
+      "location_detail": "SEC DESK / entrance stairwell, photo wall, top step",
+      "emf_mg": 3,
+      "emf_trend": "unknown",
+      "temperature_c": 18.4,
+      "civilians": {
+        "count": 150,
+        "condition": "injured",
+        "location": "entrance stairwell and Market St sidewalk"
+      },
+      "systems": [
+        {
+          "name": "badge scanners",
+          "status": "online"
+        },
+        {
+          "name": "fog machine",
+          "status": "online"
+        }
+      ],
+      "evidence_of_threat": "A guest at the top step reports a tall white figure standing still in the mist and then vanishing.",
+      "ordinary_explanation": "Fog machine on a 10 s burst timer at the photo wall explains the grape-scented mist filling the stairwell; the 'tall white figure' may be a costumed attendee (bedsheet ghosts, plague doctor, skeleton onesie) standing in the fog.",
+      "deliberate_act": false,
+      "creature_countered": false,
+      "verdict": "unclear",
+      "people_in_reach": 150,
+      "people_hurt": 0,
+      "severity": "low",
+      "summary": "At the entrance stairwell, a fog machine on a 10-second burst timer filled the stairs with grape-scented mist while 150 guests queued for photo ID. Costumed attendees (three bedsheet ghosts, a plague doctor, a skeleton onesie) were present. A guest reported a tall white figure standing still in the mist and then being gone. Sensors read emf 3 mG, temp 18.4C, 212 motion events, all 6 badge scanners online. No injuries; crowd calm.",
+      "evidence_quotes": [
+        {
+          "quote": "a tall white figure stood still in the mist and then was gone",
+          "kind": "threat",
+          "why": "guest's direct report of a figure appearing and vanishing in the mist"
+        },
+        {
+          "quote": "Fog machine at the photo wall on a 10 s burst timer",
+          "kind": "harmless",
+          "why": "ordinary source of the mist and the grape smell"
+        },
+        {
+          "quote": "emf 3 mG",
+          "kind": "harmless",
+          "why": "low EMF reading, no paranormal signature"
+        },
+        {
+          "quote": "150 guests waiting on photo ID",
+          "kind": "people",
+          "why": "headcount of civilians exposed"
+        },
+        {
+          "quote": "No injuries",
+          "kind": "people",
+          "why": "no harm to the crowd"
+        }
+      ]
+    },
+    "playbook": "spectral",
+    "sources": [
+      {
+        "title": "Protection against Ghosts",
+        "url": "http://gomanzanillo.com/features/ghosts/protection.htm",
+        "description": "Folklore offers many remedies for \"hauntings,\" and here are a few: 1) Chalcedony and Obsidian worn on the person will protect against ghosts. Cetain metals such as silver are also protective. 2) Salt carried in your pocket will keep ghosts at bay. ... Placing an iron rod on a grave will prevent ...",
+        "snippet": "Folklore offers many remedies for \"hauntings,\" and here are a few: 1) Chalcedony and Obsidian worn on the person will protect against ghosts. Cetain metals such as silver are also protective. 2) Salt carried in your pocket will keep ghosts at bay. ... Placing an iron rod on a grave will prevent a ghost from rising out of the ground.",
+        "n": 1,
+        "query": "ghost apparition countermeasures salt iron filings folklore"
+      },
+      {
+        "title": "Salt, Iron, and Superstition: The Old Rules That Still Protect ...",
+        "url": "https://ihorror.com/salt-iron-and-superstition-the-old-rules-that-still-protect-you-from-evil/",
+        "description": "Salt, iron and other ancient rules for keeping evil at bay, where they come from, and why they still show up in horror films long before Scream had rules.",
+        "snippet": "Salt was used for all of this while maintaining a status as the preferred currency at different points and time, salt has always been important. Running water carries the same protective logic. The belief that supernatural entities cannot cross moving water runs through vampire mythology, ghost traditions, and sea folklore worldwide.",
+        "n": 2,
+        "query": "ghost apparition countermeasures salt iron filings folklore"
+      },
+      {
+        "title": "Does Salt Repel Ghosts? | SpiritShack",
+        "url": "https://www.spiritshack.co.uk/blog/ghost-hunting/does-salt-repel-ghosts/",
+        "description": "Have spooky sights and sounds got you up at night? Wondering what to do about an unwanted otherworldly visitor? Well, before you hire a paranormal investigator, you might want to try a humble pinch of salt. That’s right—salt can repel ghosts. In fact, it’s been used for this purpose for ...",
+        "snippet": "Have spooky sights and sounds got you up at night? Wondering what to do about an unwanted otherworldly visitor? Well, before you hire a paranormal investigator, you might want to try a humble pinch of salt. That’s right—salt can repel ghosts. In fact, it’s been used for this purpose for centuries.",
+        "n": 3,
+        "query": "ghost apparition countermeasures salt iron filings folklore"
+      },
+      {
+        "title": "Iron - Super-wiki",
+        "url": "https://supernaturalwiki.com/Iron",
+        "description": "Iron used to repel spirits · In theory, if ghosts do exist and they do use electromagnetic energy to manifest, then hypothetically one could use a conductor of electricity, such as iron to drain or ground out the energy from the spirit. Therefore, touching a grounded, iron object to the spirit ...",
+        "snippet": "Sam, Dean and Ellen build a bomb from propane, salt, and iron nails at Jo's insistence to destroy the hellhounds surrounding them. Sam shoots the leprechaun Wayne Whittaker with iron buckshot, weakening him. The phoenix Elias Finch was unable to escape from the jail or handcuffs because they were made of iron. When Melanie Golden and Camille Thibodeaux are being attacked by the ghost of Margaret Fox, Sam tells Melanie to find some iron.",
+        "n": 4,
+        "query": "ghost apparition countermeasures salt iron filings folklore"
+      },
+      {
+        "title": "EMF in Ghost Hunting: How It Works, False Positives and Field Tests ...",
+        "url": "https://ghostlyactivities.com/ghost-hunting-with-electromagnetic-fields/",
+        "description": "EMF meters can light up for spirits or for wiring. Learn what EMF is, what causes spikes, and simple field tests to reduce false positives.",
+        "snippet": "The use of electromagnetic fields in ghost hunting is a relatively recent development in the long history of paranormal investigation. To understand why EMF meters have become a staple in ghost hunters’ toolkits, it helps to look at how and when this practice began. The idea of using technology to detect ghosts gained popularity during the spiritualist movement of the late 19th and early 20th centuries, a time when people were fascinated by séances, mediums, and the spirit world.",
+        "n": 5,
+        "query": "paranormal investigation ghost EMF UV light detection field practice"
+      },
+      {
+        "title": "EMF and Ghost Detection: A Technical Guide for Serious Investigators ...",
+        "url": "https://ukpx.org/2025/10/12/emf-and-ghost-detection-a-technical-guide-for-serious-investigators/",
+        "description": "This article is written for teams who want to bring rigor to paranormal fieldwork. It explains what electromagnetic fields (EMF) are, why some ghost-hunting tools mislead, what instruments are genuinely useful, and how to design investigations that can withstand scrutiny.",
+        "snippet": "This article is written for teams who want to bring rigor to paranormal fieldwork. It explains what electromagnetic fields (EMF) are, why some ghost-hunting tools mislead, what instruments are genuinely useful, and how to design investigations that can withstand scrutiny. Electromagnetic fields (EMF) arise wherever electric charges are present or moving. In practice you’ll encounter three practically distinct categories in the field:",
+        "n": 6,
+        "query": "paranormal investigation ghost EMF UV light detection field practice"
+      },
+      {
+        "title": "Does Ghost-Hunting Gear Work? We Tested Some in a Haunted Place ...",
+        "url": "https://www.nytimes.com/wirecutter/reviews/testing-ghost-hunting-gear/",
+        "description": "Wirecutter’s senior editor for smart-home and audio/video (who is also a casual “Paranormal Activity” fan) put some of the most common ghost tech to the test.",
+        "snippet": "I set my second sight on three tools commonly used on paranormal shows, like Ghost Adventures and Ghost Hunters, as well as on popular ghost-hunting YouTube channels: EMF meters, REM pods, and spirit boxes. All three are supposed to detect unseen presences and provide visual or audible feedback. ... Many of the devices that paranormal investigators employ are used in a variety of professions, but the versions marketed specifically for ghosting are often modified or have a toy-like build quality.",
+        "n": 7,
+        "query": "paranormal investigation ghost EMF UV light detection field practice"
+      },
+      {
+        "title": "EMF Readers for Ghost Hunting | GhostStop",
+        "url": "https://www.ghoststop.com/emf-meter/",
+        "description": "Find EMF readers and all kinds of ghost hunting equipment for your paranormal investigations. Browse through our products now!",
+        "snippet": "Theories, from within the branch of paranormal investigations, suggest that ghosts have the ability to manipulate these fields. An EMF meter is a staple piece of equipment used to detect sources of EMFs, or possible manipulation, in order to document and promote potential communication with these entities.",
+        "n": 8,
+        "query": "paranormal investigation ghost EMF UV light detection field practice"
+      }
+    ],
+    "research": "**Arsenal support for spectral class — findings**\n\n- **salt_ring — supported.** Folklore consistently treats salt as a boundary/ward against ghosts: carried salt keeps spirits at bay, and salt lines are the classic perimeter defense [1][2][3]. Note the field caveat: a salt ring at a stairwell head with 150 queued guests is a slip hazard; deploy it as a narrow threshold line at the stair base, not a full perimeter.\n- **iron_filings — supported, with a caveat.** Iron is the second pillar of the same folklore corpus (iron rods on graves, iron nails, iron as a spirit-binding material) [1][2]. The strongest \"iron vs. ghost\" source found is a fictional-TV wiki entry, so treat it as pop-culture corroboration, not field practice [4]. Scatter filings on the landing, not on the queue line.\n- **emf_disruptor — not supported as a countermeasure.** The literature treats EMF as a *detection* instrument, not a repulsion tool [5][8], and the more rigorous technical writeups stress that EMF meters mislead and need instrument-grade discipline [6]; independent testing of TV-style gear found it unreliable [7]. Nothing found supports pulsing EMF to disperse an apparition. The 3 mG reading here is ambient-level and consistent with badge scanners, HVAC, and fog-machine electronics — all 6 scanners online [6][7].\n- **uv_floodlights, sage_smoke, faraday_mesh, thermal_lances — no source supports any of these** for spectral entities. No folklore or field-practice source found for UV flood, sage smoke, Faraday mesh, or thermal lances as ghost countermeasures. Do not spend the window on them.\n- **Read of the incident before you escalate.** The tall white figure in grape-scented mist is most parsimoniously a costumed attendee (plague doctor / bedsheet ghost) plus fog-machine backscatter; 212 motion events is what a 10-second mist burst in a crowded stairwell produces. Fog and mist are known false-positive generators for both motion and thermal/EMF readings [5][6]. Recommend: hold fire on the full arsenal, log the figure's appearance against the costume roster, and re-scan with the fog machine off before committing countermeasures.\n\n**Bottom line:** only salt_ring and iron_filings have any source backing for this entity class; everything else in the arsenal is unsupported by the searched literature.",
+    "manifest": {
+      "title": "Phantom at the Photo Wall",
+      "theme": "fog-bank",
+      "sound_cue": "sting_ghost",
+      "components": [
+        {
+          "type": "ThreatBanner",
+          "why": "Headline and one floor directive for the incident",
+          "props": {
+            "severity": "low",
+            "directive": "Hold fire: fog machine and costumes explain the figure. Log appearances, re-scan with mist off.",
+            "size": "hero",
+            "title": ""
+          }
+        },
+        {
+          "type": "SourceLedger",
+          "why": "Grounds the station in the You.com sources",
+          "props": {
+            "cited": [],
+            "size": "standard",
+            "title": "Sources on salt, iron and EMF"
+          }
+        },
+        {
+          "type": "ThermalReadout",
+          "why": "Incident reports 18.4C air temperature",
+          "props": {
+            "temperature_c": 18.4,
+            "baseline_c": null,
+            "status": "nominal",
+            "size": "standard",
+            "title": "Stairwell air temperature"
+          }
+        },
+        {
+          "type": "FloorPlan",
+          "why": "150 guests queued at the entrance stairwell",
+          "props": {
+            "hot_sector": "entrance",
+            "seal": [],
+            "safe_route": [
+              "entrance"
+            ],
+            "view": "floor",
+            "anchor": "none",
+            "scene": "sector_entrance",
+            "markers": [
+              {
+                "sector": "entrance",
+                "label": "Fog machine, photo wall",
+                "kind": "threat"
+              },
+              {
+                "sector": "entrance",
+                "label": "150 queued for photo ID",
+                "kind": "people"
+              }
+            ],
+            "size": "standard",
+            "title": "Entrance stairwell layout"
+          }
+        },
+        {
+          "type": "CivilianTracker",
+          "why": "150 guests in the stairwell and on Market St",
+          "props": {
+            "count": 150,
+            "location": "entrance stairwell and Market St sidewalk",
+            "condition": "unknown",
+            "priority": "high",
+            "size": "standard",
+            "title": "Who's in the queue"
+          }
+        },
+        {
+          "type": "SystemsBoard",
+          "why": "Badge scanners and fog machine both online",
+          "props": {
+            "systems": [
+              {
+                "name": "badge scanners",
+                "status": "online"
+              },
+              {
+                "name": "fog machine",
+                "status": "online"
+              }
+            ],
+            "size": "standard",
+            "title": "Entrance systems status"
+          }
+        },
+        {
+          "type": "EntityCard",
+          "why": "Bedsheet ghost costume matches the white figure report",
+          "props": {
+            "image": "entity_costume_bedsheet_ghost",
+            "verdict": "unconfirmed",
+            "caption": "Bedsheet ghost costume in fog: likely the white figure",
+            "size": "standard",
+            "title": "The white figure"
+          }
+        }
+      ],
+      "recommended_action": "observe",
+      "dispatch_rationale": "Verdict unclear but no injuries, calm crowd, ambient EMF; observe and log against the costume roster.",
+      "quick_actions": [
+        {
+          "label": "Seal photo wall",
+          "kind": "seal",
+          "target": "entrance"
+        }
+      ]
+    },
+    "notes": [
+      "dropped a ThreatBanner title over 6 words or 32 characters",
+      "dropped an EMFGauge showing an ordinary reading",
+      "dropped a quick action this station cannot run: call_expert sage_smoke"
+    ],
+    "models": [
+      "parasail-minimax-m31-flash",
+      "parasail-minimax-m31-flash"
+    ],
+    "sky": {},
+    "moves": {},
+    "earlier": [],
+    "id": "2c4501f5-c198-49f9-b983-d15559812d02"
+  },
+  "events": [
+    {
+      "t": 1.047,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "running",
+        "detail": "Parasail is structuring the raw report",
+        "ms": 0
+      }
+    },
+    {
+      "t": 3.214,
+      "msg": {
+        "type": "incident",
+        "incident": {
+          "entity": "spectral",
+          "entity_class": "spectral",
+          "threat_level": 3,
+          "sector": "entrance",
+          "location_detail": "SEC DESK / entrance stairwell, photo wall, top step",
+          "emf_mg": 3,
+          "emf_trend": "unknown",
+          "temperature_c": 18.4,
+          "civilians": {
+            "count": 150,
+            "condition": "injured",
+            "location": "entrance stairwell and Market St sidewalk"
+          },
+          "systems": [
+            {
+              "name": "badge scanners",
+              "status": "online"
+            },
+            {
+              "name": "fog machine",
+              "status": "online"
+            }
+          ],
+          "evidence_of_threat": "A guest at the top step reports a tall white figure standing still in the mist and then vanishing.",
+          "ordinary_explanation": "Fog machine on a 10 s burst timer at the photo wall explains the grape-scented mist filling the stairwell; the 'tall white figure' may be a costumed attendee (bedsheet ghosts, plague doctor, skeleton onesie) standing in the fog.",
+          "deliberate_act": false,
+          "creature_countered": false,
+          "verdict": "unclear",
+          "people_in_reach": 150,
+          "people_hurt": 0,
+          "severity": "low",
+          "summary": "At the entrance stairwell, a fog machine on a 10-second burst timer filled the stairs with grape-scented mist while 150 guests queued for photo ID. Costumed attendees (three bedsheet ghosts, a plague doctor, a skeleton onesie) were present. A guest reported a tall white figure standing still in the mist and then being gone. Sensors read emf 3 mG, temp 18.4C, 212 motion events, all 6 badge scanners online. No injuries; crowd calm.",
+          "evidence_quotes": [
+            {
+              "quote": "a tall white figure stood still in the mist and then was gone",
+              "kind": "threat",
+              "why": "guest's direct report of a figure appearing and vanishing in the mist"
+            },
+            {
+              "quote": "Fog machine at the photo wall on a 10 s burst timer",
+              "kind": "harmless",
+              "why": "ordinary source of the mist and the grape smell"
+            },
+            {
+              "quote": "emf 3 mG",
+              "kind": "harmless",
+              "why": "low EMF reading, no paranormal signature"
+            },
+            {
+              "quote": "150 guests waiting on photo ID",
+              "kind": "people",
+              "why": "headcount of civilians exposed"
+            },
+            {
+              "quote": "No injuries",
+              "kind": "people",
+              "why": "no harm to the crowd"
+            }
+          ]
+        },
+        "incident_id": "sim-phantom-02",
+        "severity_tier": "ELEVATED_HAUNT",
+        "raw": "SEC DESK, Reyes. Doors open 25 min, line down the stairs to the street, about 150 guests waiting on photo ID. Fog machine at the photo wall on a 10 s burst timer, whole stairwell smells like grape. Three bedsheet ghosts, one plague doctor, one guy in a skeleton onesie. A guest at the top step says a tall white figure stood still in the mist and then was gone, asks if somebody can check. Sensor E-1: emf 3 mG, temp 18.4C on the stairs (street door keeps opening), motion events 212, badge scanners 6 of 6 online. Civilians: 150 in line, calm, taking photos. No injuries."
+      }
+    },
+    {
+      "t": 3.214,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "done",
+        "detail": "spectral in entrance (parasail-minimax-m31-flash)",
+        "ms": 2167
+      }
+    },
+    {
+      "t": 3.22,
+      "msg": {
+        "type": "route",
+        "label": "spectral",
+        "playbook": "Spectral (apparitions, phantoms, poltergeists)",
+        "arsenal": [
+          {
+            "id": "salt_ring",
+            "name": "Salt ring perimeter"
+          },
+          {
+            "id": "iron_filings",
+            "name": "Iron filing scatter"
+          },
+          {
+            "id": "uv_floodlights",
+            "name": "UV floodlights"
+          },
+          {
+            "id": "sage_smoke",
+            "name": "Sage smoke purge"
+          },
+          {
+            "id": "emf_disruptor",
+            "name": "EMF disruptor pulse"
+          },
+          {
+            "id": "faraday_mesh",
+            "name": "Faraday mesh drop"
+          },
+          {
+            "id": "thermal_lances",
+            "name": "Thermal lances"
+          }
+        ]
+      }
+    },
+    {
+      "t": 3.22,
+      "msg": {
+        "type": "step",
+        "id": "triage",
+        "state": "done",
+        "detail": "routed to the spectral playbook",
+        "ms": 2172
+      }
+    },
+    {
+      "t": 3.221,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "running",
+        "detail": "Lore Researcher is searching You.com",
+        "ms": 0
+      }
+    },
+    {
+      "t": 4.029,
+      "msg": {
+        "type": "search",
+        "query": "ghost apparition countermeasures salt iron filings folklore",
+        "hits": [
+          {
+            "n": 1,
+            "title": "Protection against Ghosts",
+            "url": "http://gomanzanillo.com/features/ghosts/protection.htm"
+          },
+          {
+            "n": 2,
+            "title": "Salt, Iron, and Superstition: The Old Rules That Still Protect ...",
+            "url": "https://ihorror.com/salt-iron-and-superstition-the-old-rules-that-still-protect-you-from-evil/"
+          },
+          {
+            "n": 3,
+            "title": "Does Salt Repel Ghosts? | SpiritShack",
+            "url": "https://www.spiritshack.co.uk/blog/ghost-hunting/does-salt-repel-ghosts/"
+          },
+          {
+            "n": 4,
+            "title": "Iron - Super-wiki",
+            "url": "https://supernaturalwiki.com/Iron"
+          }
+        ]
+      }
+    },
+    {
+      "t": 4.574,
+      "msg": {
+        "type": "search",
+        "query": "paranormal investigation ghost EMF UV light detection field practice",
+        "hits": [
+          {
+            "n": 5,
+            "title": "EMF in Ghost Hunting: How It Works, False Positives and Field Tests ...",
+            "url": "https://ghostlyactivities.com/ghost-hunting-with-electromagnetic-fields/"
+          },
+          {
+            "n": 6,
+            "title": "EMF and Ghost Detection: A Technical Guide for Serious Investigators ...",
+            "url": "https://ukpx.org/2025/10/12/emf-and-ghost-detection-a-technical-guide-for-serious-investigators/"
+          },
+          {
+            "n": 7,
+            "title": "Does Ghost-Hunting Gear Work? We Tested Some in a Haunted Place ...",
+            "url": "https://www.nytimes.com/wirecutter/reviews/testing-ghost-hunting-gear/"
+          },
+          {
+            "n": 8,
+            "title": "EMF Readers for Ghost Hunting | GhostStop",
+            "url": "https://www.ghoststop.com/emf-meter/"
+          }
+        ]
+      }
+    },
+    {
+      "t": 8.226,
+      "msg": {
+        "type": "sources",
+        "sources": [
+          {
+            "title": "Protection against Ghosts",
+            "url": "http://gomanzanillo.com/features/ghosts/protection.htm",
+            "description": "Folklore offers many remedies for \"hauntings,\" and here are a few: 1) Chalcedony and Obsidian worn on the person will protect against ghosts. Cetain metals such as silver are also protective. 2) Salt carried in your pocket will keep ghosts at bay. ... Placing an iron rod on a grave will prevent ...",
+            "snippet": "Folklore offers many remedies for \"hauntings,\" and here are a few: 1) Chalcedony and Obsidian worn on the person will protect against ghosts. Cetain metals such as silver are also protective. 2) Salt carried in your pocket will keep ghosts at bay. ... Placing an iron rod on a grave will prevent a ghost from rising out of the ground.",
+            "n": 1,
+            "query": "ghost apparition countermeasures salt iron filings folklore"
+          },
+          {
+            "title": "Salt, Iron, and Superstition: The Old Rules That Still Protect ...",
+            "url": "https://ihorror.com/salt-iron-and-superstition-the-old-rules-that-still-protect-you-from-evil/",
+            "description": "Salt, iron and other ancient rules for keeping evil at bay, where they come from, and why they still show up in horror films long before Scream had rules.",
+            "snippet": "Salt was used for all of this while maintaining a status as the preferred currency at different points and time, salt has always been important. Running water carries the same protective logic. The belief that supernatural entities cannot cross moving water runs through vampire mythology, ghost traditions, and sea folklore worldwide.",
+            "n": 2,
+            "query": "ghost apparition countermeasures salt iron filings folklore"
+          },
+          {
+            "title": "Does Salt Repel Ghosts? | SpiritShack",
+            "url": "https://www.spiritshack.co.uk/blog/ghost-hunting/does-salt-repel-ghosts/",
+            "description": "Have spooky sights and sounds got you up at night? Wondering what to do about an unwanted otherworldly visitor? Well, before you hire a paranormal investigator, you might want to try a humble pinch of salt. That’s right—salt can repel ghosts. In fact, it’s been used for this purpose for ...",
+            "snippet": "Have spooky sights and sounds got you up at night? Wondering what to do about an unwanted otherworldly visitor? Well, before you hire a paranormal investigator, you might want to try a humble pinch of salt. That’s right—salt can repel ghosts. In fact, it’s been used for this purpose for centuries.",
+            "n": 3,
+            "query": "ghost apparition countermeasures salt iron filings folklore"
+          },
+          {
+            "title": "Iron - Super-wiki",
+            "url": "https://supernaturalwiki.com/Iron",
+            "description": "Iron used to repel spirits · In theory, if ghosts do exist and they do use electromagnetic energy to manifest, then hypothetically one could use a conductor of electricity, such as iron to drain or ground out the energy from the spirit. Therefore, touching a grounded, iron object to the spirit ...",
+            "snippet": "Sam, Dean and Ellen build a bomb from propane, salt, and iron nails at Jo's insistence to destroy the hellhounds surrounding them. Sam shoots the leprechaun Wayne Whittaker with iron buckshot, weakening him. The phoenix Elias Finch was unable to escape from the jail or handcuffs because they were made of iron. When Melanie Golden and Camille Thibodeaux are being attacked by the ghost of Margaret Fox, Sam tells Melanie to find some iron.",
+            "n": 4,
+            "query": "ghost apparition countermeasures salt iron filings folklore"
+          },
+          {
+            "title": "EMF in Ghost Hunting: How It Works, False Positives and Field Tests ...",
+            "url": "https://ghostlyactivities.com/ghost-hunting-with-electromagnetic-fields/",
+            "description": "EMF meters can light up for spirits or for wiring. Learn what EMF is, what causes spikes, and simple field tests to reduce false positives.",
+            "snippet": "The use of electromagnetic fields in ghost hunting is a relatively recent development in the long history of paranormal investigation. To understand why EMF meters have become a staple in ghost hunters’ toolkits, it helps to look at how and when this practice began. The idea of using technology to detect ghosts gained popularity during the spiritualist movement of the late 19th and early 20th centuries, a time when people were fascinated by séances, mediums, and the spirit world.",
+            "n": 5,
+            "query": "paranormal investigation ghost EMF UV light detection field practice"
+          },
+          {
+            "title": "EMF and Ghost Detection: A Technical Guide for Serious Investigators ...",
+            "url": "https://ukpx.org/2025/10/12/emf-and-ghost-detection-a-technical-guide-for-serious-investigators/",
+            "description": "This article is written for teams who want to bring rigor to paranormal fieldwork. It explains what electromagnetic fields (EMF) are, why some ghost-hunting tools mislead, what instruments are genuinely useful, and how to design investigations that can withstand scrutiny.",
+            "snippet": "This article is written for teams who want to bring rigor to paranormal fieldwork. It explains what electromagnetic fields (EMF) are, why some ghost-hunting tools mislead, what instruments are genuinely useful, and how to design investigations that can withstand scrutiny. Electromagnetic fields (EMF) arise wherever electric charges are present or moving. In practice you’ll encounter three practically distinct categories in the field:",
+            "n": 6,
+            "query": "paranormal investigation ghost EMF UV light detection field practice"
+          },
+          {
+            "title": "Does Ghost-Hunting Gear Work? We Tested Some in a Haunted Place ...",
+            "url": "https://www.nytimes.com/wirecutter/reviews/testing-ghost-hunting-gear/",
+            "description": "Wirecutter’s senior editor for smart-home and audio/video (who is also a casual “Paranormal Activity” fan) put some of the most common ghost tech to the test.",
+            "snippet": "I set my second sight on three tools commonly used on paranormal shows, like Ghost Adventures and Ghost Hunters, as well as on popular ghost-hunting YouTube channels: EMF meters, REM pods, and spirit boxes. All three are supposed to detect unseen presences and provide visual or audible feedback. ... Many of the devices that paranormal investigators employ are used in a variety of professions, but the versions marketed specifically for ghosting are often modified or have a toy-like build quality.",
+            "n": 7,
+            "query": "paranormal investigation ghost EMF UV light detection field practice"
+          },
+          {
+            "title": "EMF Readers for Ghost Hunting | GhostStop",
+            "url": "https://www.ghoststop.com/emf-meter/",
+            "description": "Find EMF readers and all kinds of ghost hunting equipment for your paranormal investigations. Browse through our products now!",
+            "snippet": "Theories, from within the branch of paranormal investigations, suggest that ghosts have the ability to manipulate these fields. An EMF meter is a staple piece of equipment used to detect sources of EMFs, or possible manipulation, in order to document and promote potential communication with these entities.",
+            "n": 8,
+            "query": "paranormal investigation ghost EMF UV light detection field practice"
+          }
+        ],
+        "research": "**Arsenal support for spectral class — findings**\n\n- **salt_ring — supported.** Folklore consistently treats salt as a boundary/ward against ghosts: carried salt keeps spirits at bay, and salt lines are the classic perimeter defense [1][2][3]. Note the field caveat: a salt ring at a stairwell head with 150 queued guests is a slip hazard; deploy it as a narrow threshold line at the stair base, not a full perimeter.\n- **iron_filings — supported, with a caveat.** Iron is the second pillar of the same folklore corpus (iron rods on graves, iron nails, iron as a spirit-binding material) [1][2]. The strongest \"iron vs. ghost\" source found is a fictional-TV wiki entry, so treat it as pop-culture corroboration, not field practice [4]. Scatter filings on the landing, not on the queue line.\n- **emf_disruptor — not supported as a countermeasure.** The literature treats EMF as a *detection* instrument, not a repulsion tool [5][8], and the more rigorous technical writeups stress that EMF meters mislead and need instrument-grade discipline [6]; independent testing of TV-style gear found it unreliable [7]. Nothing found supports pulsing EMF to disperse an apparition. The 3 mG reading here is ambient-level and consistent with badge scanners, HVAC, and fog-machine electronics — all 6 scanners online [6][7].\n- **uv_floodlights, sage_smoke, faraday_mesh, thermal_lances — no source supports any of these** for spectral entities. No folklore or field-practice source found for UV flood, sage smoke, Faraday mesh, or thermal lances as ghost countermeasures. Do not spend the window on them.\n- **Read of the incident before you escalate.** The tall white figure in grape-scented mist is most parsimoniously a costumed attendee (plague doctor / bedsheet ghost) plus fog-machine backscatter; 212 motion events is what a 10-second mist burst in a crowded stairwell produces. Fog and mist are known false-positive generators for both motion and thermal/EMF readings [5][6]. Recommend: hold fire on the full arsenal, log the figure's appearance against the costume roster, and re-scan with the fog machine off before committing countermeasures.\n\n**Bottom line:** only salt_ring and iron_filings have any source backing for this entity class; everything else in the arsenal is unsupported by the searched literature."
+      }
+    },
+    {
+      "t": 8.227,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "done",
+        "detail": "2 search(es), 8 source(s)",
+        "ms": 5006
+      }
+    },
+    {
+      "t": 8.229,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "running",
+        "detail": "Parasail is choosing and ordering components",
+        "ms": 0
+      }
+    },
+    {
+      "t": 8.876,
+      "msg": {
+        "type": "frame",
+        "title": "Phantom at the Photo Wall",
+        "theme": "fog-bank"
+      }
+    },
+    {
+      "t": 8.886,
+      "msg": {
+        "type": "frame",
+        "sound_cue": "sting_ghost"
+      }
+    },
+    {
+      "t": 9.636,
+      "msg": {
+        "type": "component",
+        "index": 0,
+        "component": {
+          "type": "ThreatBanner",
+          "why": "Headline and one floor directive for the incident",
+          "props": {
+            "severity": "low",
+            "directive": "Hold fire: fog machine and costumes explain the figure. Log appearances, re-scan with mist off.",
+            "size": "hero",
+            "title": ""
+          }
+        }
+      }
+    },
+    {
+      "t": 9.636,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "1 component(s) placed",
+        "ms": 1406
+      }
+    },
+    {
+      "t": 9.806,
+      "msg": {
+        "type": "component",
+        "index": 1,
+        "component": {
+          "type": "SourceLedger",
+          "why": "Grounds the station in the You.com sources",
+          "props": {
+            "cited": [],
+            "size": "standard",
+            "title": "Sources on salt, iron and EMF"
+          }
+        }
+      }
+    },
+    {
+      "t": 9.806,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "2 component(s) placed",
+        "ms": 1576
+      }
+    },
+    {
+      "t": 10.13,
+      "msg": {
+        "type": "component",
+        "index": 2,
+        "component": {
+          "type": "ThermalReadout",
+          "why": "Incident reports 18.4C air temperature",
+          "props": {
+            "temperature_c": 18.4,
+            "baseline_c": null,
+            "status": "nominal",
+            "size": "standard",
+            "title": "Stairwell air temperature"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.13,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "3 component(s) placed",
+        "ms": 1900
+      }
+    },
+    {
+      "t": 10.373,
+      "msg": {
+        "type": "component",
+        "index": 3,
+        "component": {
+          "type": "FloorPlan",
+          "why": "150 guests queued at the entrance stairwell",
+          "props": {
+            "hot_sector": "entrance",
+            "seal": [],
+            "safe_route": [
+              "entrance"
+            ],
+            "view": "floor",
+            "anchor": "none",
+            "scene": "sector_entrance",
+            "markers": [
+              {
+                "sector": "entrance",
+                "label": "Fog machine, photo wall",
+                "kind": "threat"
+              },
+              {
+                "sector": "entrance",
+                "label": "150 queued for photo ID",
+                "kind": "people"
+              }
+            ],
+            "size": "standard",
+            "title": "Entrance stairwell layout"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.373,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "4 component(s) placed",
+        "ms": 2144
+      }
+    },
+    {
+      "t": 10.645,
+      "msg": {
+        "type": "component",
+        "index": 4,
+        "component": {
+          "type": "CivilianTracker",
+          "why": "150 guests in the stairwell and on Market St",
+          "props": {
+            "count": 150,
+            "location": "entrance stairwell and Market St sidewalk",
+            "condition": "unknown",
+            "priority": "high",
+            "size": "standard",
+            "title": "Who's in the queue"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.645,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "5 component(s) placed",
+        "ms": 2415
+      }
+    },
+    {
+      "t": 10.735,
+      "msg": {
+        "type": "component",
+        "index": 5,
+        "component": {
+          "type": "SystemsBoard",
+          "why": "Badge scanners and fog machine both online",
+          "props": {
+            "systems": [
+              {
+                "name": "badge scanners",
+                "status": "online"
+              },
+              {
+                "name": "fog machine",
+                "status": "online"
+              }
+            ],
+            "size": "standard",
+            "title": "Entrance systems status"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.736,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "6 component(s) placed",
+        "ms": 2506
+      }
+    },
+    {
+      "t": 10.899,
+      "msg": {
+        "type": "component",
+        "index": 6,
+        "component": {
+          "type": "EntityCard",
+          "why": "Bedsheet ghost costume matches the white figure report",
+          "props": {
+            "image": "entity_costume_bedsheet_ghost",
+            "verdict": "unconfirmed",
+            "caption": "Bedsheet ghost costume in fog: likely the white figure",
+            "size": "standard",
+            "title": "The white figure"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.899,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "7 component(s) placed",
+        "ms": 2670
+      }
+    },
+    {
+      "t": 11.277,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "done",
+        "detail": "7 components: ThreatBanner, SourceLedger, ThermalReadout, FloorPlan, CivilianTracker, SystemsBoard, EntityCard (parasail-minimax-m31-flash)",
+        "ms": 3048
+      }
+    }
+  ]
+}

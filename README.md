@@ -33,9 +33,9 @@ Only Nightfall gets the real sky, because only there does time of day drive the 
 1. **Intake (Parasail).** `parasail-minimax-m31-flash` turns the raw text into a structured incident under a strict `json_schema`, at temperature 0. It writes down the evidence of a threat, any ordinary explanation and whether someone acted on purpose before it rates severity, and it quotes the few phrases that drove its reading. The report panel highlights them a few seconds in: threat in red, people at risk in amber, a harmless explanation in white.
 2. **Memory.** A scenario step's intake also reads what the earlier steps found. Zombie Rush's later reports only say "the figures", so this is what lets the station know what they are. A report's own checks can still clear it.
 3. **Route (CrewAI Flow).** A `@router` picks a playbook: spectral, corporeal or anomalous. A named creature decides it in code (a vampire is corporeal), and the model's class is the fallback. Each playbook has its own arsenal of countermeasures.
-4. **Ground (CrewAI agent and You.com).** A CrewAI Lore Researcher agent runs two You.com searches through a custom tool and writes short notes that cite the numbered sources. For a Nightfall step, the Flow also adds the live sky from wttr.in and a You.com search for the day's sunset and moonrise. If the agent skips its searches, the Flow runs them itself.
+4. **Ground (CrewAI agent and You.com).** A CrewAI Lore Researcher agent runs two You.com searches through a custom tool and writes short notes that cite the numbered sources. For a Nightfall step, the Flow also adds the live sky from wttr.in and a You.com search for the day's sunset and moonrise. If the agent skips its searches, the Flow runs them itself. Live search stands in for an indexed lore store, so every countermeasure cites a source a judge can open.
 5. **Compose (Parasail, streamed).** Parasail streams the station manifest under a strict `json_schema` built from the component library, the playbook's arsenal and the number of sources. The server sends each panel to the page the moment its JSON object closes, so the station assembles while the model is still writing.
-6. **Operate (One).** The operator works the station, and the next step builds on it (see below). "Call expert" pages a vampire hunter or a ghostbuster through PagerDuty with One.
+6. **Operate (One and Discord).** The operator works the station, and the next step builds on it (see below). "Call expert" pages a vampire hunter or a ghostbuster through PagerDuty with One. "Dispatch to #loft-incident" posts the escalation to the venue's Discord channel through the venue webhook, as `jarda-haunted-station · <sector> · <action> · <rationale>`, every part taken from the run. It posts once per incident, at most every two minutes, and never when the station says observe.
 
 A run takes about 15 seconds. When the model says observe, the station shows why and recommends calling nobody.
 
@@ -128,6 +128,8 @@ Put the keys in `.env`, which is gitignored:
 | `ONE_SECRET` | The One CLI, for PagerDuty and ElevenLabs |
 | `PAGERDUTY_SERVICE_ID`, `PAGERDUTY_FROM` | The service to page, which defaults to mine, so set your own. The From email defaults to the account owner's |
 | `PAGING` | Optional. `off` makes the "Call expert" buttons page nobody, for tests and the eval |
+| `LOFT_WEBHOOK_URL` | Optional. The venue's #loft-incident webhook, for "Dispatch to #loft-incident". Without it, nothing is posted |
+| `DISPATCH` | Optional. `off` posts nothing to #loft-incident, for tests |
 | `ONE_ELEVENLABS_CONNECTION_KEY` | Optional. Only needed with more than one ElevenLabs connection in One |
 | `ELEVENLABS_VOICE_ID` | Optional. The voice that announces a call |
 | `HAUNT_MODEL`, `HAUNT_FALLBACK_MODEL` | Optional. Default `parasail-minimax-m31-flash` and `parasail-deepseek-v41-flash` |
@@ -143,7 +145,7 @@ Calling an expert pages for real, so point `PAGERDUTY_SERVICE_ID` at a service w
 ```bash
 pnpm start --incident sim-zombies-12   # start on another step or incident
 pnpm start --port 8667 --no-browser    # another port, no browser
-PAGING=off pnpm start                  # the expert buttons page nobody, for tests
+PAGING=off DISPATCH=off pnpm start     # page nobody and post nothing, for tests
 pnpm check                             # type-check, unit tests, build the page
 ```
 

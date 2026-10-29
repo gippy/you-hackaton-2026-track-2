@@ -1,0 +1,854 @@
+{
+  "saved_at": "2026-10-29T00:29:16Z",
+  "state": {
+    "incident_id": "sim-zombies-12",
+    "severity_tier": "ELEVATED_HAUNT",
+    "raw": "FIRE PANEL (tower) 15:36:22: smoke detector in the lobby elevator vestibule, Phase I recall started, cars 1 to 20 sent to lobby, doors OPEN on arrival, door-hold and emergency stop disabled once a car leaves its landing. Lobby holds 60+ figures. Cars 7, 9, 11 are descending with 11 people from the Loft who left at 15:30 after a text said the street was clear: arrival at lobby in 40 s, 33 s, 52 s. Car 9 has a wheelchair user. Riser room can cut bank power, cars stop where they are. Lobby temp 12C. Loft entrance motion 77 events/min.",
+    "incident": {
+      "entity": "unknown",
+      "entity_class": "anomalous",
+      "threat_level": 2,
+      "sector": "entrance",
+      "location_detail": "lobby elevator vestibule, smoke detector; tower Phase I recall",
+      "emf_mg": null,
+      "emf_trend": "unknown",
+      "temperature_c": 12,
+      "civilians": {
+        "count": 60,
+        "condition": "unknown",
+        "location": "lobby"
+      },
+      "systems": [
+        {
+          "name": "fire panel (tower)",
+          "status": "offline"
+        },
+        {
+          "name": "elevator cars 1-20",
+          "status": "offline"
+        },
+        {
+          "name": "riser room bank power",
+          "status": "offline"
+        }
+      ],
+      "evidence_of_threat": "Smoke detector activation in the lobby elevator vestibule with a Phase I recall of cars 1 to 20; door-hold and emergency stop disabled once a car leaves its landing; cars 7, 9, 11 descending with 11 occupants from the Loft.",
+      "ordinary_explanation": "A fire alarm in the tower's lobby elevator vestibule plausibly explains the recall and the disabled door-hold/emergency stop (fire service mode), and the disabled stops are a documented fire-safety procedure rather than sabotage.",
+      "deliberate_act": false,
+      "creature_countered": false,
+      "verdict": "unclear",
+      "people_in_reach": 71,
+      "people_hurt": 0,
+      "severity": "elevated",
+      "summary": "A tower fire panel triggered a Phase I elevator recall, sending cars 1-20 to the lobby with door-hold and emergency stop disabled; 60+ people are held in the 12C lobby while cars 7, 9 and 11 descend with 11 Loft occupants, including a wheelchair user.",
+      "evidence_quotes": [
+        {
+          "quote": "smoke detector in the lobby elevator vestibule",
+          "kind": "threat",
+          "why": "alarm source indicating an actual hazard in the lobby"
+        },
+        {
+          "quote": "Phase I recall started",
+          "kind": "threat",
+          "why": "tower-wide recall of 20 cars"
+        },
+        {
+          "quote": "door-hold and emergency stop disabled once a car leaves its landing",
+          "kind": "threat",
+          "why": "safety interlocks off, cars running without door hold"
+        },
+        {
+          "quote": "Lobby holds 60+ figures",
+          "kind": "people",
+          "why": "headcount of those at risk"
+        },
+        {
+          "quote": "11 people from the Loft",
+          "kind": "people",
+          "why": "headcount of those descending to the lobby"
+        }
+      ]
+    },
+    "playbook": "anomalous",
+    "sources": [
+      {
+        "title": "Faraday cage - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Faraday_cage",
+        "description": "The shield of a screened cable, such as USB cables or the coaxial cable used for cable television, protects the internal conductors from external electrical noise and prevents the RF signals from leaking out. Electronic components in some music instruments, such as in an electric guitar, are protected by Faraday cages made from copper or aluminum foils that protect the instrument's electromagnetic pickups from interference ...",
+        "snippet": "The shield of a screened cable, such as USB cables or the coaxial cable used for cable television, protects the internal conductors from external electrical noise and prevents the RF signals from leaking out. Electronic components in some music instruments, such as in an electric guitar, are protected by Faraday cages made from copper or aluminum foils that protect the instrument's electromagnetic pickups from interference from speakers, amplifiers, stage lights, and other musical equipment.",
+        "n": 1,
+        "query": "Faraday cage mesh shielding electromagnetic interference electronics"
+      },
+      {
+        "title": "Copper Wire Mesh EMI-RFI Shielding & Faraday Cages",
+        "url": "https://www.twpinc.com/blog/copper-wire-mesh-for-emi-rfi-shielding-in-faraday-cages.html",
+        "description": "The waves can negatively impact other electronics, an effect known as radio frequency interference (RFI) or electromagnetic interference (EMI). Faraday cages are used to prevent electromagnetic disruptions. Invented by Michael Faraday in 1836, these shield-like enclosures are made with woven ...",
+        "snippet": "The waves can negatively impact other electronics, an effect known as radio frequency interference (RFI) or electromagnetic interference (EMI). Faraday cages are used to prevent electromagnetic disruptions. Invented by Michael Faraday in 1836, these shield-like enclosures are made with woven metal sheets to block radiant energy—specifically copper mesh.",
+        "n": 2,
+        "query": "Faraday cage mesh shielding electromagnetic interference electronics"
+      },
+      {
+        "title": "Faraday Cage: How It Works, Mesh Size & Shielding in dB",
+        "url": "https://www.emc-directory.com/community/what-is-a-faraday-cage",
+        "description": "The cage acts as a hollow conductor, ... shielding the interior from electromagnetic interference (EMI). The Faraday cages can be in any shape, such as a box, sphere, or cylinder, and in any size, from small to very large. They are commonly used in various sectors like data centers, laboratories, medical facilities, the communication industry, and the defense sector to protect sensitive electronic equipment ...",
+        "snippet": "The cage acts as a hollow conductor, ensuring that electrical charges remain on its external surface, thereby effectively shielding the interior from electromagnetic interference (EMI). The Faraday cages can be in any shape, such as a box, sphere, or cylinder, and in any size, from small to very large. They are commonly used in various sectors like data centers, laboratories, medical facilities, the communication industry, and the defense sector to protect sensitive electronic equipment from electromagnetic interference (EMI) or radio frequency interference (RFI).",
+        "n": 3,
+        "query": "Faraday cage mesh shielding electromagnetic interference electronics"
+      },
+      {
+        "title": "Thorlabs · Copper Mesh for Electromagnetic Shielding",
+        "url": "https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=7902",
+        "description": "This plain square weave copper mesh can be used to build a Faraday cage for electrophysiology and other sensitive application setups to minimize the influence o",
+        "snippet": "This plain square weave copper mesh can be used to build a Faraday cage for electrophysiology and other sensitive application setups to minimize the influence of external interferences such as electrostatic fields and high-frequency electromagnetic waves (e.g., AM/FM radio waves, CRT oscilloscopes, and fluorescent strip lights).",
+        "n": 4,
+        "query": "Faraday cage mesh shielding electromagnetic interference electronics"
+      },
+      {
+        "title": "The Elevator Game Urban Legend: A Ritual You Should Never Try -",
+        "url": "https://urbanlegendsmysteryandmyth.com/2025/07/the-elevator-game.html",
+        "description": "The Elevator Game urban legend claims a strange elevator ritual can transport players into a terrifying Otherworld that mirrors our own.",
+        "snippet": "The earliest known versions of the Elevator Game appeared on Japanese message boards like 2ch and Korean blogs in the early 2000s, where the ritual spread through anonymous paranormal discussions and urban legend forums. The idea fit naturally into existing East Asian ghost folklore.",
+        "n": 5,
+        "query": "folklore cursed elevator machine ghost legend"
+      },
+      {
+        "title": "The Heartbreaking Origin Of The Paranormal Elevator Game - Koreaboo",
+        "url": "https://www.koreaboo.com/stories/elevator-game-ritual-another-world-dimension-paranormal-urban-legend-japan-south-korea-minato-ward/",
+        "description": "The Elevator Game is a paranormal urban legend that suggests you can travel to another dimension simply by elevator. Here's the heartbreaking reality.",
+        "snippet": "Although the investigation suggested that faulty breaks, loose bolts, and poor maintenance were at fault for the accident, because the elevator was moving upward, unprompted, while its doors were still open, killing the student, the Elevator Game became an urban legend for society to try and cope with the accident. ... Certainly, rather than fearing that the elevator you were riding was poorly maintained, it is more palatable to believe that unless you follow a specific set of instructions, nothing paranormal or out of the ordinary will happen to you. Source: GHOST MACHINE, SNARLED, Draw The Life TikTak and Hide and go kill fandom Wiki",
+        "n": 6,
+        "query": "folklore cursed elevator machine ghost legend"
+      },
+      {
+        "title": "The Elevator Game – South Korea’s creepy urban legend - by ...",
+        "url": "https://www.korea.net/Events/Overseas/view?articleId=18358",
+        "description": "Have you ever heard of The Elevator Game? It’s one of Korea’s spookiest urban legends. If played correctly, it’s said to transport you to another eerie dimension · The Elevator Game is one of South Korea's creepiest, most popular urban legends. Do you dare to play",
+        "snippet": "This urban legend has gained a lot of popularity over the years. Where did it come from? And how do you play? Tracking down the origins of The Elevator Game is not an easy task. There is a lot of debate about where it all began.",
+        "n": 7,
+        "query": "folklore cursed elevator machine ghost legend"
+      },
+      {
+        "title": "The Elevator Game: A Complete History Of The Legend - The Ghost ...",
+        "url": "https://theghostinmymachine.com/2020/04/27/on-the-elevator-game-the-history-of-an-urban-legend-and-its-real-life-connections-consequences-japan-korea-2ch-minato-ward-elevator-accident-elisa-lam-stay-on-main-cecil-hotel/",
+        "description": "The history of the Elevator Game - a modern urban legend that's taken the world storm - is much deeper than you probably think.",
+        "snippet": "The legend of the Elevator Game lives on, though — passed around from forum to forum, from storyteller to storyteller, told around the digital versions of what was once an actual campfire. So go ahead — if you’re feeling daring. ... Follow The Ghost In My Machine on Twitter @GhostMachine13 and on Facebook @TheGhostInMyMachine.",
+        "n": 8,
+        "query": "folklore cursed elevator machine ghost legend"
+      }
+    ],
+    "research": "**Arsenal assessment — anomalous elevator entity (Phase I recall, disabled door-hold/e-stop)**\n\n- **faraday_mesh — supported, with a caveat.** Faraday cages block external EMI/RFI by keeping fields on the outer surface of a conductive enclosure [1][2][3], and copper mesh is a standard, scalable shielding material for exactly this purpose [2][4]. Since the entity's signature is *electronic* (recall triggered, door-hold and e-stop disabled), shielding the recall/control electronics is the only countermeasure with a real physical basis. Caveat: a mesh *drop* only protects what it encloses — it will shield a panel or car controller, not the 11 occupants in car 7/9/11 or the 60+ in the 12C lobby [3].\n- **emf_disruptor — no source supports it.** The shielding literature treats EMI as something to be *prevented* by enclosure, not something to be defeated by an active pulse [1][2][3]; nothing found supports an EMF disruptor against an anomalous entity, and an uncontrolled pulse risks further disrupting the very door-interlock and emergency-stop circuits the occupants depend on.\n- **power_cut — no source supports it, and it is operationally dangerous.** The one concrete real-world explanation for the underlying \"cursed elevator\" incidents is mechanical and maintenance failure — faulty brakes, loose bolts, poor maintenance [6][8] — not a power-supply anomaly. Cutting sector power with cars descending and 60+ people in a lobby removes the only means of controlling the cars and of running lobby lighting/communications.\n- **salt_ring — no source supports it.** The elevator folklore corpus (the Elevator Game and its East Asian ghost roots) contains no salt-perimeter tradition or protective rite [5][6][7][8]; salt is unsupported for this entity class.\n- **sound_cannon — no source supports it.** No source addresses infrasound or acoustic countermeasures against anomalous machinery; the folklore instead points to *behavioral* avoidance, not sonic attack [5][7].\n- **Folklore takeaway: the legend warns, it does not instruct.** The Elevator Game spread via Japanese and Korean message boards and paranormal forums as a ritual urban legend [5][7], and its real-world anchor is a student killed in an elevator that moved upward with doors open due to faulty brakes and loose bolts [6][8]. The practical field lesson is that the danger is riding or playing with the machine — so priority goes to isolating the recall circuit (faraday_mesh) and getting occupants out of the descending cars, not to ritual countermeasures [5][8].",
+    "manifest": {
+      "title": "Elevator recall in the lobby",
+      "theme": "crypt-dark",
+      "sound_cue": "sting_poltergeist",
+      "components": [
+        {
+          "type": "ThreatBanner",
+          "why": "Headline and one directive for the floor.",
+          "props": {
+            "severity": "elevated",
+            "directive": "Isolate the recall circuit and clear cars 7, 9, 11 to the lobby.",
+            "size": "hero",
+            "title": ""
+          }
+        },
+        {
+          "type": "FloorPlan",
+          "why": "71 people are in reach: 60+ in the lobby, 11 descending in cars 7, 9, 11.",
+          "props": {
+            "hot_sector": "entrance",
+            "seal": [
+              "registration"
+            ],
+            "safe_route": [
+              "entrance"
+            ],
+            "view": "floor",
+            "anchor": "none",
+            "scene": "sector_entrance",
+            "markers": [
+              {
+                "sector": "entrance",
+                "label": "Smoke detector, vestibule",
+                "kind": "hazard",
+                "entity": "sparks",
+                "color": "orange"
+              },
+              {
+                "sector": "entrance",
+                "label": "60+ held in lobby",
+                "kind": "people",
+                "entity": "people",
+                "color": "blue"
+              },
+              {
+                "sector": "entrance",
+                "label": "Cars 7, 9, 11 descending",
+                "kind": "threat",
+                "entity": "figure",
+                "color": "red"
+              },
+              {
+                "sector": "entrance",
+                "label": "11 occupants incl wheelchair",
+                "kind": "people",
+                "entity": "people",
+                "color": "blue"
+              }
+            ],
+            "size": "standard",
+            "title": "Lobby and car positions"
+          }
+        },
+        {
+          "type": "CivilianTracker",
+          "why": "60+ in the lobby plus 11 in descending cars, one a wheelchair user.",
+          "props": {
+            "count": 71,
+            "location": "Lobby elevator vestibule and cars 7, 9, 11",
+            "condition": "unknown",
+            "priority": "high",
+            "size": "compact",
+            "title": "Who's still in the lobby"
+          }
+        },
+        {
+          "type": "SystemsBoard",
+          "why": "Fire panel, elevator cars and riser power are all offline.",
+          "props": {
+            "systems": [
+              {
+                "name": "fire panel (tower)",
+                "status": "offline"
+              },
+              {
+                "name": "elevator cars 1-20",
+                "status": "offline"
+              },
+              {
+                "name": "riser room bank power",
+                "status": "offline"
+              }
+            ],
+            "size": "compact",
+            "title": "Systems down in the tower"
+          }
+        },
+        {
+          "type": "CountermeasurePicker",
+          "why": "Contain action with 71 people in reach; faraday_mesh is the only sourced option.",
+          "props": {
+            "target_entity": "anomalous",
+            "options": [
+              {
+                "id": "faraday_mesh",
+                "support": "strong",
+                "rationale": "Shield the recall and car controller electronics from external fields.",
+                "source": 3
+              },
+              {
+                "id": "power_cut",
+                "support": "weak",
+                "rationale": "Cut riser power; stops control of descending cars and lobby lighting.",
+                "source": 6
+              }
+            ],
+            "recommended": "faraday_mesh",
+            "size": "standard",
+            "title": "Countermeasures for the recall"
+          }
+        },
+        {
+          "type": "SourceLedger",
+          "why": "Grounding for the plan.",
+          "props": {
+            "cited": [
+              3,
+              6
+            ],
+            "size": "standard",
+            "title": "Sources behind this plan"
+          }
+        }
+      ],
+      "recommended_action": "contain",
+      "dispatch_rationale": "A real threat is active and 71 people are within reach, including 11 in descending cars with disabled interlocks.",
+      "quick_actions": [
+        {
+          "label": "Switch to power cut",
+          "kind": "countermeasure",
+          "target": "power_cut"
+        },
+        {
+          "label": "Extract lobby half",
+          "kind": "extract",
+          "target": "half"
+        }
+      ]
+    },
+    "notes": [
+      "dropped a ThreatBanner title over 6 words or 32 characters",
+      "dropped a quick action this station cannot run: seal registration"
+    ],
+    "models": [
+      "parasail-minimax-m31-flash",
+      "parasail-minimax-m31-flash"
+    ],
+    "sky": {},
+    "moves": {},
+    "earlier": [],
+    "id": "1db18354-0709-4c8b-a98e-f90a8984bc3a"
+  },
+  "events": [
+    {
+      "t": 1.2,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "running",
+        "detail": "Parasail is structuring the raw report",
+        "ms": 0
+      }
+    },
+    {
+      "t": 5.052,
+      "msg": {
+        "type": "incident",
+        "incident": {
+          "entity": "unknown",
+          "entity_class": "anomalous",
+          "threat_level": 2,
+          "sector": "entrance",
+          "location_detail": "lobby elevator vestibule, smoke detector; tower Phase I recall",
+          "emf_mg": null,
+          "emf_trend": "unknown",
+          "temperature_c": 12,
+          "civilians": {
+            "count": 60,
+            "condition": "unknown",
+            "location": "lobby"
+          },
+          "systems": [
+            {
+              "name": "fire panel (tower)",
+              "status": "offline"
+            },
+            {
+              "name": "elevator cars 1-20",
+              "status": "offline"
+            },
+            {
+              "name": "riser room bank power",
+              "status": "offline"
+            }
+          ],
+          "evidence_of_threat": "Smoke detector activation in the lobby elevator vestibule with a Phase I recall of cars 1 to 20; door-hold and emergency stop disabled once a car leaves its landing; cars 7, 9, 11 descending with 11 occupants from the Loft.",
+          "ordinary_explanation": "A fire alarm in the tower's lobby elevator vestibule plausibly explains the recall and the disabled door-hold/emergency stop (fire service mode), and the disabled stops are a documented fire-safety procedure rather than sabotage.",
+          "deliberate_act": false,
+          "creature_countered": false,
+          "verdict": "unclear",
+          "people_in_reach": 71,
+          "people_hurt": 0,
+          "severity": "elevated",
+          "summary": "A tower fire panel triggered a Phase I elevator recall, sending cars 1-20 to the lobby with door-hold and emergency stop disabled; 60+ people are held in the 12C lobby while cars 7, 9 and 11 descend with 11 Loft occupants, including a wheelchair user.",
+          "evidence_quotes": [
+            {
+              "quote": "smoke detector in the lobby elevator vestibule",
+              "kind": "threat",
+              "why": "alarm source indicating an actual hazard in the lobby"
+            },
+            {
+              "quote": "Phase I recall started",
+              "kind": "threat",
+              "why": "tower-wide recall of 20 cars"
+            },
+            {
+              "quote": "door-hold and emergency stop disabled once a car leaves its landing",
+              "kind": "threat",
+              "why": "safety interlocks off, cars running without door hold"
+            },
+            {
+              "quote": "Lobby holds 60+ figures",
+              "kind": "people",
+              "why": "headcount of those at risk"
+            },
+            {
+              "quote": "11 people from the Loft",
+              "kind": "people",
+              "why": "headcount of those descending to the lobby"
+            }
+          ]
+        },
+        "incident_id": "sim-zombies-12",
+        "severity_tier": "ELEVATED_HAUNT",
+        "raw": "FIRE PANEL (tower) 15:36:22: smoke detector in the lobby elevator vestibule, Phase I recall started, cars 1 to 20 sent to lobby, doors OPEN on arrival, door-hold and emergency stop disabled once a car leaves its landing. Lobby holds 60+ figures. Cars 7, 9, 11 are descending with 11 people from the Loft who left at 15:30 after a text said the street was clear: arrival at lobby in 40 s, 33 s, 52 s. Car 9 has a wheelchair user. Riser room can cut bank power, cars stop where they are. Lobby temp 12C. Loft entrance motion 77 events/min."
+      }
+    },
+    {
+      "t": 5.052,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "done",
+        "detail": "unknown in entrance (parasail-minimax-m31-flash)",
+        "ms": 3851
+      }
+    },
+    {
+      "t": 5.056,
+      "msg": {
+        "type": "route",
+        "label": "anomalous",
+        "playbook": "Anomalous (cursed tech, rifts, unknown signals)",
+        "arsenal": [
+          {
+            "id": "faraday_mesh",
+            "name": "Faraday mesh drop"
+          },
+          {
+            "id": "emf_disruptor",
+            "name": "EMF disruptor pulse"
+          },
+          {
+            "id": "power_cut",
+            "name": "Sector power cut"
+          },
+          {
+            "id": "salt_ring",
+            "name": "Salt ring perimeter"
+          },
+          {
+            "id": "sound_cannon",
+            "name": "Infrasound cannon"
+          }
+        ]
+      }
+    },
+    {
+      "t": 5.056,
+      "msg": {
+        "type": "step",
+        "id": "triage",
+        "state": "done",
+        "detail": "routed to the anomalous playbook",
+        "ms": 3855
+      }
+    },
+    {
+      "t": 5.058,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "running",
+        "detail": "Lore Researcher is searching You.com",
+        "ms": 0
+      }
+    },
+    {
+      "t": 6.561,
+      "msg": {
+        "type": "search",
+        "query": "Faraday cage mesh shielding electromagnetic interference electronics",
+        "hits": [
+          {
+            "n": 1,
+            "title": "Faraday cage - Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/Faraday_cage"
+          },
+          {
+            "n": 2,
+            "title": "Copper Wire Mesh EMI-RFI Shielding & Faraday Cages",
+            "url": "https://www.twpinc.com/blog/copper-wire-mesh-for-emi-rfi-shielding-in-faraday-cages.html"
+          },
+          {
+            "n": 3,
+            "title": "Faraday Cage: How It Works, Mesh Size & Shielding in dB",
+            "url": "https://www.emc-directory.com/community/what-is-a-faraday-cage"
+          },
+          {
+            "n": 4,
+            "title": "Thorlabs · Copper Mesh for Electromagnetic Shielding",
+            "url": "https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=7902"
+          }
+        ]
+      }
+    },
+    {
+      "t": 6.585,
+      "msg": {
+        "type": "search",
+        "query": "folklore cursed elevator machine ghost legend",
+        "hits": [
+          {
+            "n": 5,
+            "title": "The Elevator Game Urban Legend: A Ritual You Should Never Try -",
+            "url": "https://urbanlegendsmysteryandmyth.com/2025/07/the-elevator-game.html"
+          },
+          {
+            "n": 6,
+            "title": "The Heartbreaking Origin Of The Paranormal Elevator Game - Koreaboo",
+            "url": "https://www.koreaboo.com/stories/elevator-game-ritual-another-world-dimension-paranormal-urban-legend-japan-south-korea-minato-ward/"
+          },
+          {
+            "n": 7,
+            "title": "The Elevator Game – South Korea’s creepy urban legend - by ...",
+            "url": "https://www.korea.net/Events/Overseas/view?articleId=18358"
+          },
+          {
+            "n": 8,
+            "title": "The Elevator Game: A Complete History Of The Legend - The Ghost ...",
+            "url": "https://theghostinmymachine.com/2020/04/27/on-the-elevator-game-the-history-of-an-urban-legend-and-its-real-life-connections-consequences-japan-korea-2ch-minato-ward-elevator-accident-elisa-lam-stay-on-main-cecil-hotel/"
+          }
+        ]
+      }
+    },
+    {
+      "t": 11.576,
+      "msg": {
+        "type": "sources",
+        "sources": [
+          {
+            "title": "Faraday cage - Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/Faraday_cage",
+            "description": "The shield of a screened cable, such as USB cables or the coaxial cable used for cable television, protects the internal conductors from external electrical noise and prevents the RF signals from leaking out. Electronic components in some music instruments, such as in an electric guitar, are protected by Faraday cages made from copper or aluminum foils that protect the instrument's electromagnetic pickups from interference ...",
+            "snippet": "The shield of a screened cable, such as USB cables or the coaxial cable used for cable television, protects the internal conductors from external electrical noise and prevents the RF signals from leaking out. Electronic components in some music instruments, such as in an electric guitar, are protected by Faraday cages made from copper or aluminum foils that protect the instrument's electromagnetic pickups from interference from speakers, amplifiers, stage lights, and other musical equipment.",
+            "n": 1,
+            "query": "Faraday cage mesh shielding electromagnetic interference electronics"
+          },
+          {
+            "title": "Copper Wire Mesh EMI-RFI Shielding & Faraday Cages",
+            "url": "https://www.twpinc.com/blog/copper-wire-mesh-for-emi-rfi-shielding-in-faraday-cages.html",
+            "description": "The waves can negatively impact other electronics, an effect known as radio frequency interference (RFI) or electromagnetic interference (EMI). Faraday cages are used to prevent electromagnetic disruptions. Invented by Michael Faraday in 1836, these shield-like enclosures are made with woven ...",
+            "snippet": "The waves can negatively impact other electronics, an effect known as radio frequency interference (RFI) or electromagnetic interference (EMI). Faraday cages are used to prevent electromagnetic disruptions. Invented by Michael Faraday in 1836, these shield-like enclosures are made with woven metal sheets to block radiant energy—specifically copper mesh.",
+            "n": 2,
+            "query": "Faraday cage mesh shielding electromagnetic interference electronics"
+          },
+          {
+            "title": "Faraday Cage: How It Works, Mesh Size & Shielding in dB",
+            "url": "https://www.emc-directory.com/community/what-is-a-faraday-cage",
+            "description": "The cage acts as a hollow conductor, ... shielding the interior from electromagnetic interference (EMI). The Faraday cages can be in any shape, such as a box, sphere, or cylinder, and in any size, from small to very large. They are commonly used in various sectors like data centers, laboratories, medical facilities, the communication industry, and the defense sector to protect sensitive electronic equipment ...",
+            "snippet": "The cage acts as a hollow conductor, ensuring that electrical charges remain on its external surface, thereby effectively shielding the interior from electromagnetic interference (EMI). The Faraday cages can be in any shape, such as a box, sphere, or cylinder, and in any size, from small to very large. They are commonly used in various sectors like data centers, laboratories, medical facilities, the communication industry, and the defense sector to protect sensitive electronic equipment from electromagnetic interference (EMI) or radio frequency interference (RFI).",
+            "n": 3,
+            "query": "Faraday cage mesh shielding electromagnetic interference electronics"
+          },
+          {
+            "title": "Thorlabs · Copper Mesh for Electromagnetic Shielding",
+            "url": "https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=7902",
+            "description": "This plain square weave copper mesh can be used to build a Faraday cage for electrophysiology and other sensitive application setups to minimize the influence o",
+            "snippet": "This plain square weave copper mesh can be used to build a Faraday cage for electrophysiology and other sensitive application setups to minimize the influence of external interferences such as electrostatic fields and high-frequency electromagnetic waves (e.g., AM/FM radio waves, CRT oscilloscopes, and fluorescent strip lights).",
+            "n": 4,
+            "query": "Faraday cage mesh shielding electromagnetic interference electronics"
+          },
+          {
+            "title": "The Elevator Game Urban Legend: A Ritual You Should Never Try -",
+            "url": "https://urbanlegendsmysteryandmyth.com/2025/07/the-elevator-game.html",
+            "description": "The Elevator Game urban legend claims a strange elevator ritual can transport players into a terrifying Otherworld that mirrors our own.",
+            "snippet": "The earliest known versions of the Elevator Game appeared on Japanese message boards like 2ch and Korean blogs in the early 2000s, where the ritual spread through anonymous paranormal discussions and urban legend forums. The idea fit naturally into existing East Asian ghost folklore.",
+            "n": 5,
+            "query": "folklore cursed elevator machine ghost legend"
+          },
+          {
+            "title": "The Heartbreaking Origin Of The Paranormal Elevator Game - Koreaboo",
+            "url": "https://www.koreaboo.com/stories/elevator-game-ritual-another-world-dimension-paranormal-urban-legend-japan-south-korea-minato-ward/",
+            "description": "The Elevator Game is a paranormal urban legend that suggests you can travel to another dimension simply by elevator. Here's the heartbreaking reality.",
+            "snippet": "Although the investigation suggested that faulty breaks, loose bolts, and poor maintenance were at fault for the accident, because the elevator was moving upward, unprompted, while its doors were still open, killing the student, the Elevator Game became an urban legend for society to try and cope with the accident. ... Certainly, rather than fearing that the elevator you were riding was poorly maintained, it is more palatable to believe that unless you follow a specific set of instructions, nothing paranormal or out of the ordinary will happen to you. Source: GHOST MACHINE, SNARLED, Draw The Life TikTak and Hide and go kill fandom Wiki",
+            "n": 6,
+            "query": "folklore cursed elevator machine ghost legend"
+          },
+          {
+            "title": "The Elevator Game – South Korea’s creepy urban legend - by ...",
+            "url": "https://www.korea.net/Events/Overseas/view?articleId=18358",
+            "description": "Have you ever heard of The Elevator Game? It’s one of Korea’s spookiest urban legends. If played correctly, it’s said to transport you to another eerie dimension · The Elevator Game is one of South Korea's creepiest, most popular urban legends. Do you dare to play",
+            "snippet": "This urban legend has gained a lot of popularity over the years. Where did it come from? And how do you play? Tracking down the origins of The Elevator Game is not an easy task. There is a lot of debate about where it all began.",
+            "n": 7,
+            "query": "folklore cursed elevator machine ghost legend"
+          },
+          {
+            "title": "The Elevator Game: A Complete History Of The Legend - The Ghost ...",
+            "url": "https://theghostinmymachine.com/2020/04/27/on-the-elevator-game-the-history-of-an-urban-legend-and-its-real-life-connections-consequences-japan-korea-2ch-minato-ward-elevator-accident-elisa-lam-stay-on-main-cecil-hotel/",
+            "description": "The history of the Elevator Game - a modern urban legend that's taken the world storm - is much deeper than you probably think.",
+            "snippet": "The legend of the Elevator Game lives on, though — passed around from forum to forum, from storyteller to storyteller, told around the digital versions of what was once an actual campfire. So go ahead — if you’re feeling daring. ... Follow The Ghost In My Machine on Twitter @GhostMachine13 and on Facebook @TheGhostInMyMachine.",
+            "n": 8,
+            "query": "folklore cursed elevator machine ghost legend"
+          }
+        ],
+        "research": "**Arsenal assessment — anomalous elevator entity (Phase I recall, disabled door-hold/e-stop)**\n\n- **faraday_mesh — supported, with a caveat.** Faraday cages block external EMI/RFI by keeping fields on the outer surface of a conductive enclosure [1][2][3], and copper mesh is a standard, scalable shielding material for exactly this purpose [2][4]. Since the entity's signature is *electronic* (recall triggered, door-hold and e-stop disabled), shielding the recall/control electronics is the only countermeasure with a real physical basis. Caveat: a mesh *drop* only protects what it encloses — it will shield a panel or car controller, not the 11 occupants in car 7/9/11 or the 60+ in the 12C lobby [3].\n- **emf_disruptor — no source supports it.** The shielding literature treats EMI as something to be *prevented* by enclosure, not something to be defeated by an active pulse [1][2][3]; nothing found supports an EMF disruptor against an anomalous entity, and an uncontrolled pulse risks further disrupting the very door-interlock and emergency-stop circuits the occupants depend on.\n- **power_cut — no source supports it, and it is operationally dangerous.** The one concrete real-world explanation for the underlying \"cursed elevator\" incidents is mechanical and maintenance failure — faulty brakes, loose bolts, poor maintenance [6][8] — not a power-supply anomaly. Cutting sector power with cars descending and 60+ people in a lobby removes the only means of controlling the cars and of running lobby lighting/communications.\n- **salt_ring — no source supports it.** The elevator folklore corpus (the Elevator Game and its East Asian ghost roots) contains no salt-perimeter tradition or protective rite [5][6][7][8]; salt is unsupported for this entity class.\n- **sound_cannon — no source supports it.** No source addresses infrasound or acoustic countermeasures against anomalous machinery; the folklore instead points to *behavioral* avoidance, not sonic attack [5][7].\n- **Folklore takeaway: the legend warns, it does not instruct.** The Elevator Game spread via Japanese and Korean message boards and paranormal forums as a ritual urban legend [5][7], and its real-world anchor is a student killed in an elevator that moved upward with doors open due to faulty brakes and loose bolts [6][8]. The practical field lesson is that the danger is riding or playing with the machine — so priority goes to isolating the recall circuit (faraday_mesh) and getting occupants out of the descending cars, not to ritual countermeasures [5][8]."
+      }
+    },
+    {
+      "t": 11.576,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "done",
+        "detail": "2 search(es), 8 source(s)",
+        "ms": 6518
+      }
+    },
+    {
+      "t": 11.577,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "running",
+        "detail": "Parasail is choosing and ordering components",
+        "ms": 0
+      }
+    },
+    {
+      "t": 12.356,
+      "msg": {
+        "type": "frame",
+        "title": "Elevator recall in the lobby",
+        "theme": "crypt-dark"
+      }
+    },
+    {
+      "t": 12.391,
+      "msg": {
+        "type": "frame",
+        "sound_cue": "sting_poltergeist"
+      }
+    },
+    {
+      "t": 12.694,
+      "msg": {
+        "type": "component",
+        "index": 0,
+        "component": {
+          "type": "ThreatBanner",
+          "why": "Headline and one directive for the floor.",
+          "props": {
+            "severity": "elevated",
+            "directive": "Isolate the recall circuit and clear cars 7, 9, 11 to the lobby.",
+            "size": "hero",
+            "title": ""
+          }
+        }
+      }
+    },
+    {
+      "t": 12.694,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "1 component(s) placed",
+        "ms": 1116
+      }
+    },
+    {
+      "t": 13.261,
+      "msg": {
+        "type": "component",
+        "index": 1,
+        "component": {
+          "type": "FloorPlan",
+          "why": "71 people are in reach: 60+ in the lobby, 11 descending in cars 7, 9, 11.",
+          "props": {
+            "hot_sector": "entrance",
+            "seal": [
+              "registration"
+            ],
+            "safe_route": [
+              "entrance"
+            ],
+            "view": "floor",
+            "anchor": "none",
+            "scene": "sector_entrance",
+            "markers": [
+              {
+                "sector": "entrance",
+                "label": "Smoke detector, vestibule",
+                "kind": "hazard",
+                "entity": "sparks",
+                "color": "orange"
+              },
+              {
+                "sector": "entrance",
+                "label": "60+ held in lobby",
+                "kind": "people",
+                "entity": "people",
+                "color": "blue"
+              },
+              {
+                "sector": "entrance",
+                "label": "Cars 7, 9, 11 descending",
+                "kind": "threat",
+                "entity": "figure",
+                "color": "red"
+              },
+              {
+                "sector": "entrance",
+                "label": "11 occupants incl wheelchair",
+                "kind": "people",
+                "entity": "people",
+                "color": "blue"
+              }
+            ],
+            "size": "standard",
+            "title": "Lobby and car positions"
+          }
+        }
+      }
+    },
+    {
+      "t": 13.261,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "2 component(s) placed",
+        "ms": 1683
+      }
+    },
+    {
+      "t": 13.452,
+      "msg": {
+        "type": "component",
+        "index": 2,
+        "component": {
+          "type": "CivilianTracker",
+          "why": "60+ in the lobby plus 11 in descending cars, one a wheelchair user.",
+          "props": {
+            "count": 71,
+            "location": "Lobby elevator vestibule and cars 7, 9, 11",
+            "condition": "unknown",
+            "priority": "high",
+            "size": "compact",
+            "title": "Who's still in the lobby"
+          }
+        }
+      }
+    },
+    {
+      "t": 13.453,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "3 component(s) placed",
+        "ms": 1875
+      }
+    },
+    {
+      "t": 13.819,
+      "msg": {
+        "type": "component",
+        "index": 3,
+        "component": {
+          "type": "SystemsBoard",
+          "why": "Fire panel, elevator cars and riser power are all offline.",
+          "props": {
+            "systems": [
+              {
+                "name": "fire panel (tower)",
+                "status": "offline"
+              },
+              {
+                "name": "elevator cars 1-20",
+                "status": "offline"
+              },
+              {
+                "name": "riser room bank power",
+                "status": "offline"
+              }
+            ],
+            "size": "compact",
+            "title": "Systems down in the tower"
+          }
+        }
+      }
+    },
+    {
+      "t": 13.819,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "4 component(s) placed",
+        "ms": 2241
+      }
+    },
+    {
+      "t": 14.295,
+      "msg": {
+        "type": "component",
+        "index": 4,
+        "component": {
+          "type": "CountermeasurePicker",
+          "why": "Contain action with 71 people in reach; faraday_mesh is the only sourced option.",
+          "props": {
+            "target_entity": "anomalous",
+            "options": [
+              {
+                "id": "faraday_mesh",
+                "support": "strong",
+                "rationale": "Shield the recall and car controller electronics from external fields.",
+                "source": 3
+              },
+              {
+                "id": "power_cut",
+                "support": "weak",
+                "rationale": "Cut riser power; stops control of descending cars and lobby lighting.",
+                "source": 6
+              }
+            ],
+            "recommended": "faraday_mesh",
+            "size": "standard",
+            "title": "Countermeasures for the recall"
+          }
+        }
+      }
+    },
+    {
+      "t": 14.296,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "5 component(s) placed",
+        "ms": 2718
+      }
+    },
+    {
+      "t": 14.473,
+      "msg": {
+        "type": "component",
+        "index": 5,
+        "component": {
+          "type": "SourceLedger",
+          "why": "Grounding for the plan.",
+          "props": {
+            "cited": [
+              3,
+              6
+            ],
+            "size": "standard",
+            "title": "Sources behind this plan"
+          }
+        }
+      }
+    },
+    {
+      "t": 14.473,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "6 component(s) placed",
+        "ms": 2895
+      }
+    },
+    {
+      "t": 14.922,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "done",
+        "detail": "6 components: ThreatBanner, FloorPlan, CivilianTracker, SystemsBoard, CountermeasurePicker, SourceLedger (parasail-minimax-m31-flash)",
+        "ms": 3344
+      }
+    }
+  ]
+}

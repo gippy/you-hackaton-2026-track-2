@@ -1,0 +1,869 @@
+{
+  "saved_at": "2026-10-29T00:29:01Z",
+  "state": {
+    "incident_id": "sim-nightfall-18",
+    "severity_tier": "ELEVATED_HAUNT",
+    "raw": "LOG 19:33 main stage, demo block opened 19:30, 160 attendees in the room. Fog machine on a 20 s cycle, strobes on teams 11 and 12, and a wireless mic feeding back with a 4.1 kHz howl at 94 dB. Team 12 is wearing wolf-ear headbands and howled on cue. Guest report: 'a wolf on the stage!' One attendee ducked under a chair. Stage tech traces the howl to mic 3 in the monitor wedge, gain cut at 19:34. Room temp 27C from crowd heat, EMF 3 mG. Motion events 1,420 in 10 min as the crowd stands and cheers. Demo 13 is up next. Sunset was 78 min ago.",
+    "incident": {
+      "entity": "the wolf on the stage (Team 12's wolf-ear headbands and staged howl, plus the 4.1 kHz feedback howl from mic 3)",
+      "entity_class": "corporeal",
+      "threat_level": 2,
+      "sector": "main_stage",
+      "location_detail": "Main stage, demo block, 160 attendees in the room",
+      "emf_mg": 3,
+      "emf_trend": "unknown",
+      "temperature_c": 27,
+      "civilians": {
+        "count": 160,
+        "condition": "unknown",
+        "location": "main stage"
+      },
+      "systems": [
+        {
+          "name": "wireless mic / monitor wedge (mic 3)",
+          "status": "offline"
+        }
+      ],
+      "evidence_of_threat": "Guest report of 'a wolf on the stage!'; one attendee ducked under a chair; 4.1 kHz howl at 94 dB traced to mic 3 in the monitor wedge; Team 12 wearing wolf-ear headbands and howling on cue",
+      "ordinary_explanation": "The howl was traced to mic 3 in the monitor wedge (gain cut at 19:34) and Team 12's staged howl with wolf-ear headbands; fog machine and strobes plus crowd motion explain the rest",
+      "deliberate_act": false,
+      "creature_countered": false,
+      "verdict": "harmless",
+      "people_in_reach": 160,
+      "people_hurt": 0,
+      "severity": "low",
+      "summary": "At the 19:30 demo block on the main stage, a guest reported 'a wolf on the stage!' and one attendee ducked under a chair. The stage tech traced the 4.1 kHz howl at 94 dB to mic 3 in the monitor wedge and cut the gain at 19:34; Team 12 was wearing wolf-ear headbands and howling on cue. Fog machine on a 20 s cycle, strobes on teams 11 and 12, 27C room heat from the crowd, EMF 3 mG and 1,420 motion events in 10 min as the crowd stood and cheered are all consistent with a loud, foggy, crowded stage. No creature was observed and no anomalous readings were recorded, so this is a harmless stunt-and-feedback scare rather than a containment matter.",
+      "evidence_quotes": [
+        {
+          "quote": "a wolf on the stage!",
+          "kind": "threat",
+          "why": "the guest claim that drove the report"
+        },
+        {
+          "quote": "Team 12 is wearing wolf-ear headbands and howled on cue",
+          "kind": "harmless",
+          "why": "a named, staged source for the howl"
+        },
+        {
+          "quote": "traces the howl to mic 3 in the monitor wedge, gain cut at 19:34",
+          "kind": "harmless",
+          "why": "technical trace and fix for the 4.1 kHz howl"
+        },
+        {
+          "quote": "One attendee ducked under a chair",
+          "kind": "people",
+          "why": "the only person affected"
+        },
+        {
+          "quote": "160 attendees in the room",
+          "kind": "people",
+          "why": "headcount at risk"
+        }
+      ]
+    },
+    "playbook": "corporeal",
+    "sources": [
+      {
+        "title": "Vampire Fact #6 - Weaknesses – @maverick-werewolf on Tumblr",
+        "url": "https://www.tumblr.com/maverick-werewolf/648014889600892928/vampire-fact-6-weaknesses",
+        "description": "It’s time for a big one: let’s discuss what was and wasn’t a weakness for folkloric vampires. (I mean look I might use a lot of Lestat…",
+        "snippet": "💬 1 🔁 16 ❤️ 92 · Vampire Fact #6 - Weaknesses · It’s time for a big one: let’s discuss what was and wasn’t a weakness for folkloric vampires. (I mean look I might use a lot of Lestat gifs in the…",
+        "n": 1,
+        "query": "folklore weaknesses of werewolf silver fire garlic holy water"
+      },
+      {
+        "title": "Weaknesses – Maegan A. Stebbins – Maverick-Werewolf's Den",
+        "url": "https://maverickwerewolf.com/vampire-facts/weaknesses/",
+        "description": "Obsessive counting – Kind of funny ... fairly folklore-accurate: a lot of vampires in legend were obsessed with counting. Spill a bag of beans behind you as you run away from a vampire, and that vampire will just have to stop and count those beans. Can’t resist. Garlic – Yes, garlic – along with various other types of herbs and some types of wood – warded off vampires. This wasn’t a pop culture creation. It was, however, often the garlic flowers that warded them off. Holy symbols – ...",
+        "snippet": "Obsessive counting – Kind of funny that this makes Sesame Street fairly folklore-accurate: a lot of vampires in legend were obsessed with counting. Spill a bag of beans behind you as you run away from a vampire, and that vampire will just have to stop and count those beans. Can’t resist. Garlic – Yes, garlic – along with various other types of herbs and some types of wood – warded off vampires. This wasn’t a pop culture creation. It was, however, often the garlic flowers that warded them off. Holy symbols – Although some modern media backs off this one, but it was definitely a thing in folklore.",
+        "n": 2,
+        "query": "folklore weaknesses of werewolf silver fire garlic holy water"
+      },
+      {
+        "title": "How to Kill a Werewolf/Weaknesses – Maegan A. Stebbins – ...",
+        "url": "https://maverickwerewolf.com/werewolf-facts/how-to-kill-a-werewolf/",
+        "description": "Probably, yeah. Does it make for a good story? Well, yeah, it can! But, I’m sorry, it simply is not from any folklore anywhere that specifically werewolves are sensitive to, or can only be slain by, silver. Holy ground/holy artifacts – This is also not a thing.",
+        "snippet": "And listing it because fire scares animals is also silly because werewolves aren’t animals; they’re werewolves. Anyway, no, this wasn’t a thing in folklore, either. Running water – This is another undead/evil spirits/vampires thing, never once associated with werewolves, particularly as werewolves are not unholy. Loud noises/bright lights/whatnot – As you might imagine, no one in the days of actual werewolf beliefs was running around with flashbangs, so no, this never really happened either.",
+        "n": 3,
+        "query": "folklore weaknesses of werewolf silver fire garlic holy water"
+      },
+      {
+        "title": "Why is silver anathema to werewolves (as garlic and holy objects ...",
+        "url": "https://www.quora.com/Why-is-silver-anathema-to-werewolves-as-garlic-and-holy-objects-like-crucifixes-are-to-vampires",
+        "description": "Answer (1 of 16): It’s probably related to alchemy. Silver is associated with the moon and purity, as such, it was considered a purifying substance and thus able to overcome a curse, which is what lycanthropy was considered originally. It’s also why garlic and silver are often likewise ...",
+        "snippet": "Answer (1 of 16): It’s probably related to alchemy. Silver is associated with the moon and purity, as such, it was considered a purifying substance and thus able to overcome a curse, which is what lycanthropy was considered originally. It’s also why garlic and silver are often likewise associated...",
+        "n": 4,
+        "query": "folklore weaknesses of werewolf silver fire garlic holy water"
+      },
+      {
+        "title": "Stage Front Barrier: The Complete Guide to Stage-Edge Crowd Safety",
+        "url": "https://barrierhq.com/blogs/fos-barriers/stage-front-barrier-the-complete-guide-to-stage-edge-crowd-safety",
+        "description": "Everything you need to know about stage front barriers, their role in live-event safety, and how they integrate into professional FOS systems. A stage front barrier is the primary safety barricade installed directly along the edge of the concert stage to protect performers, crew, and the audience.",
+        "snippet": "Often referred to as a front-of-stage barrier (FOS barrier) or concert barricade, this structure forms a continuous, load-bearing line designed to withstand intense crowd pressure while giving security personnel a safe operational zone.",
+        "n": 5,
+        "query": "concert crowd safety barricade foam line stage front pit"
+      },
+      {
+        "title": "Front-of-Stage Barriers (FOS): Complete Guide to Concert Stage ...",
+        "url": "https://barrierhq.com/blogs/fos-barriers/front-of-stage-barriers-fos-complete-guide-to-concert-stage-protection",
+        "description": "The definitive guide to stage barriers, FOS systems, pit barriers, and professional concert crowd safety. Front-of-stage barriers (FOS barriers) are engineered barricade systems used to protect performers, crew, equipment, and audiences at concerts, festivals, and high-capacity live events.",
+        "snippet": "Both steel stage barriers and aluminum barriers have a place in professional event safety. The best choice depends on how and where your system will be used. For detailed buying guidance, see: Steel 4 ft Concert Front-of-Stage Barrier and Aluminum 4 ft Concert Front-of-Stage Barrier. Start with the total width of the stage and the distance to your first major crowd pinch-point (e.g., FOH position, mix tower, or barricade break).",
+        "n": 6,
+        "query": "concert crowd safety barricade foam line stage front pit"
+      },
+      {
+        "title": "Front-of-Stage Barriers & Stage Safety",
+        "url": "https://barrierhq.com/blogs/fos-barriers",
+        "description": "Barrier HQ specializes in innovative barrier solutions for enhanced safety, security, and efficiency. Explore our advanced barrier systems designed to meet the highest standards in various environments. Partner with us to create smarter, safer spaces with cutting-edge technology and exceptional ...",
+        "snippet": "Barrier HQ specializes in innovative barrier solutions for enhanced safety, security, and efficiency. Explore our advanced barrier systems designed to meet the highest standards in various environments. Partner with us to create smarter, safer spaces with cutting-edge technology and exceptional service.",
+        "n": 7,
+        "query": "concert crowd safety barricade foam line stage front pit"
+      },
+      {
+        "title": "Stage Barrier: Complete Guide to Modern Stage Barricades",
+        "url": "https://barrierhq.com/blogs/fos-barriers/stage-barrier-complete-guide-to-modern-stage-barricades",
+        "description": "A comprehensive guide to stage barriers, concert barricades, and front-of-stage safety systems. Stage barriers—also known as concert stage barricades, stage front barriers, or pit barriers—are engineered crowd-control structures used to protect performers, crew, and equipment at concerts, ...",
+        "snippet": "A comprehensive guide to stage barriers, concert barricades, and front-of-stage safety systems. Stage barriers—also known as concert stage barricades, stage front barriers, or pit barriers—are engineered crowd-control structures used to protect performers, crew, and equipment at concerts, festivals, and high-capacity events.",
+        "n": 8,
+        "query": "concert crowd safety barricade foam line stage front pit"
+      },
+      {
+        "title": "wttr.in astronomy for San Francisco (live)",
+        "url": "https://wttr.in/San+Francisco?format=j1",
+        "description": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+        "snippet": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+        "n": 9,
+        "query": "wttr.in astronomy"
+      },
+      {
+        "title": "Moonrise, Moonset, and Moon Phase in San Francisco",
+        "url": "https://www.timeanddate.com/moon/usa/san-francisco",
+        "description": "Moonrise and moonset time, Moon direction, and Moon phase in San Francisco – California – USA for October 2026. When and where does the Moon rise and set?",
+        "snippet": "Home Sun, Moon & Space Moonrise and moonset USA San Francisco ... Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Sunrise and sunset times for San Francisco",
+        "n": 10,
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+      },
+      {
+        "title": "Sun & moon times today, San Francisco, California, USA",
+        "url": "https://www.timeanddate.com/astronomy/usa/san-francisco",
+        "description": "Time for sunrise, sunset, moonrise, and moonset in San Francisco – California – USA. Dawn and dusk (twilight) times and Sun and Moon position. Takes into account Daylight Saving Time (DST).",
+        "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. ... The Moon's path in San Francisco today. The horizontal line signifies the horizon, the vertical lines show times and headings of moonrise and moonset.",
+        "n": 11,
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+      },
+      {
+        "title": "Sunrise and sunset times in San Francisco",
+        "url": "https://www.timeanddate.com/sun/usa/san-francisco",
+        "description": "Calculations of sunrise and sunset in San Francisco – California – USA for October 2026. Generic astronomy calculator to calculate times for sunrise, sunset, moonrise, moonset for many cities, with daylight saving time and time zones taken in account.",
+        "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Moonrise and moonset times for San Francisco Phases of the Moon for San Francisco",
+        "n": 12,
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+      }
+    ],
+    "research": "**Findings — \"wolf on the stage\" (Team 12 headband howl + 4.1 kHz mic-3 feedback howl)**\n\n- **barricade_foam — SUPPORTED.** Front-of-stage barriers are the standard engineered control for protecting performers, crew and equipment from crowd pressure at the stage edge, and are specified as continuous load-bearing lines with a safe security zone [5][6][8]. Given the 27 C crowd heat, standing/cheering surge and an attendee ducking under a chair, a rapid foam barrier line at the stage lip is the one item with direct field-practice backing for the actual hazard here (crowd compression, not a creature) [5][8].\n- **silver_netting — PARTIALLY SUPPORTED (lore only).** Silver is described as anathema to werewolves, historically framed via alchemical association with the moon, purity and the breaking of a lycanthropic curse [4]. This is folklore/film convention, not field practice, and it does not address a corporeal animal or a feedback howl; treat as symbolic containment only [4].\n- **flare_line — NOT SUPPORTED.** The folklore record explicitly rejects fire as a werewolf countermeasure: fire scares *animals*, but werewolves were never treated as animals in that tradition, so the \"burn it\" logic is not a documented weakness [3]. No source supports magnesium flares against this entity.\n- **garlic_line — NOT SUPPORTED for this entity.** The garlic evidence in the retrieved material is vampire-specific, not werewolf-specific [1][2]; the werewolf weakness list does not carry garlic as a documented counter [3]. Do not deploy garlic_line against a wolf-class entity on this basis.\n- **sound_cannon (infrasound), uv_floodlights, power_cut, no_invitation, seed_scatter, name_calling, raise_blinds — NO SOURCE SUPPORT.** Nothing retrieved addresses infrasound dispersal, UV aversion, electrical isolation, invitation revocation, poppy-seed scatter, badge-name calling, or blinds as countermeasures to a corporeal wolf or to a staged howl; the crowd-safety literature covers physical barrier systems only [5][6][7][8].\n- **Operational note.** The traced cause is a monitor-wedge feedback howl at 4.1 kHz/94 dB plus Team 12's cued headband howl, with fog, strobes, heat and crowd motion all consistent with a loud, foggy, packed stage and no anomalous readings — so the practical action is gain discipline on mic 3 and stage-front crowd control [5][8], not a folklore ritual.",
+    "manifest": {
+      "title": "Wolf Howl on the Main Stage",
+      "theme": "crypt-dark",
+      "sound_cue": "all_clear",
+      "components": [
+        {
+          "type": "ThreatBanner",
+          "why": "The incident headline plus one floor directive; verdict is harmless, so the directive explains why it is safe.",
+          "props": {
+            "severity": "low",
+            "directive": "Staged howl and mic-3 feedback, no creature observed. Hold the demo block, keep the stage lip clear.",
+            "size": "hero",
+            "title": "Wolf Howl on the Main Stage"
+          }
+        },
+        {
+          "type": "SourceLedger",
+          "why": "Every station lists the You.com sources the plan rests on, with the load-bearing ones marked.",
+          "props": {
+            "cited": [],
+            "size": "standard",
+            "title": "Sources Behind the Read"
+          }
+        },
+        {
+          "type": "EntityCard",
+          "why": "The art library has the matching look-alike: hackers in wolf-ear headbands, costumes, not wolves.",
+          "props": {
+            "image": "entity_costume_wolf_team",
+            "verdict": "look-alike",
+            "caption": "Team 12 in wolf-ear headbands, howling on cue. Costumes, not wolves.",
+            "size": "standard",
+            "title": "The Look-Alike"
+          }
+        }
+      ],
+      "recommended_action": "observe",
+      "dispatch_rationale": "Verdict is harmless: the howl traced to mic 3 feedback and Team 12's staged headband howl, with no creature observed and no anomalous readings, so watching the demo block is enough.",
+      "quick_actions": []
+    },
+    "notes": [
+      "dropped a quick action this station cannot run: unseal main_stage"
+    ],
+    "models": [
+      "parasail-minimax-m31-flash",
+      "parasail-minimax-m31-flash"
+    ],
+    "sky": {
+      "day": "2026-10-28",
+      "place": "AWS Builder Loft, San Francisco",
+      "clock": "19:33",
+      "clock_at": "2026-10-29T02:33:00.000Z",
+      "events": [
+        {
+          "id": "sunset",
+          "label": "Sunset",
+          "local": "18:15",
+          "at": "2026-10-29T01:15:00.000Z",
+          "source": "wttr.in",
+          "computed": "18:17"
+        },
+        {
+          "id": "civil_dusk",
+          "label": "Civil dusk",
+          "local": "18:44",
+          "at": "2026-10-29T01:44:00.000Z",
+          "source": "suncalc",
+          "computed": "18:44"
+        },
+        {
+          "id": "full_dark",
+          "label": "Full dark",
+          "local": "19:45",
+          "at": "2026-10-29T02:45:00.000Z",
+          "source": "suncalc",
+          "computed": "19:45"
+        },
+        {
+          "id": "moonrise",
+          "label": "Moonrise",
+          "local": "20:02",
+          "at": "2026-10-29T03:02:00.000Z",
+          "source": "wttr.in",
+          "computed": "19:52"
+        }
+      ],
+      "minutes_to": {
+        "sunset": -78,
+        "civil_dusk": -49,
+        "full_dark": 12,
+        "moonrise": 29
+      },
+      "moon": {
+        "phase": "Waning Gibbous",
+        "illumination": 95,
+        "source": "wttr.in"
+      },
+      "live_source": {
+        "url": "https://wttr.in/San+Francisco?format=j1",
+        "summary": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit"
+      }
+    },
+    "moves": {},
+    "earlier": [
+      {
+        "time": "11:20",
+        "sector": "entrance",
+        "entity": "vampire",
+        "entity_class": "corporeal",
+        "verdict": "harmless",
+        "summary": "A costumed attendee in a black cape, white face paint and plastic fangs (badge B-0061) was queueing at the entrance security desk among 41 other arrivals and was waved through by the guard. IR skin temperature of 33.8C in direct sunlight, background EMF of 2 mG, and 212 motion events in 10 minutes all read as ordinary human activity. No threat evidence, no deliberate act, no countermeasure required."
+      },
+      {
+        "time": "12:10",
+        "sector": "lounge",
+        "entity": "spectral",
+        "entity_class": "spectral",
+        "verdict": null,
+        "summary": "A courier delivered three wooden crates (2.1 m) addressed to 'Evening Shift Events, stage plinths' via the freight lift to the 2nd floor. Weights were 241 kg, 38 kg and 36 kg against a manifest of 35 kg each, so the heavy crate is grossly overweight. Black wax on the lids, dark soil sifting from the seams of the heavy crate onto the lift floor (pH 7.9), and the heavy crate's skin at 9C against a 21C corridor. EMF 3 mG (normal). The porter reports it 'smells like a cellar in there' and plans to park all three crates in the lounge because the stage is not ready. The delivery slip signature is a smudge. Window wall at 21,300 lux with sunset in 365 min."
+      },
+      {
+        "time": "12:50",
+        "sector": "lounge",
+        "entity": "unknown",
+        "entity_class": "spectral",
+        "verdict": "unclear",
+        "summary": "In the lounge, three closed heavy crates along the back wall produced two sets of soft knocks from inside (12:47 and 12:49) while the lid reads 8.7C against a 21C room and the cold spreads 40 cm over the carpet. All three window blinds were lowered at 12:41 with no staff admission. 28 attendees sit near the door, laptops open, and no one has touched the crates. A volunteer is deciding whether to open the lid or call the venue manager."
+      },
+      {
+        "time": "13:05",
+        "sector": "catering",
+        "entity": "vampire (claimed/rumored, unconfirmed)",
+        "entity_class": "corporeal",
+        "verdict": "harmless",
+        "summary": "At the catering counter, nine guests complained within 10 minutes of lunch service that the garlic smell carried toward the lounge door and hack floor. Kitchen confirmed 3 kg of garlic in the dough and 12 bowls of aioli, which accounts for the odor. One attendee in a hoodie, citing a phone-read claim that garlic is hung against vampires, strung a braid of bulbs over the coffee bar and asked staff to leave it there; the barista asked whether the braid can stay by the espresso machine. No creature was observed and no anomalous readings were recorded. Classified as a harmless odor complaint with a folklore-motivated decoration request; the garlic braid is a catering fixture question, not a containment matter."
+      },
+      {
+        "time": "18:40",
+        "sector": "catering",
+        "entity": "Erzsi B. (subject crouching over spilled poppy seed bagels, counting seeds)",
+        "entity_class": "corporeal",
+        "verdict": "unclear",
+        "summary": "At the catering counter during dinner service (140 in the line), a guest named Erzsi B. crouched 3 m from the garlic naan and the garlic-braid bulb string over the coffee bar and has been counting poppy seeds one by one from a spilled tray (1,812 so far) with no other motion for 22 minutes. Staff member Max S. asked the catering lead for permission to enter the staff-only kitchen and was nearly admitted before a radio voice shouted 'do not invite'. Kitchen has 4 staff and 1 propane range; temperature near the range is 24C, window lux 0, sunset 25 min ago. Guests at the far end of the line kept eating."
+      },
+      {
+        "time": "19:20",
+        "sector": "entrance",
+        "entity": "Four unidentified individuals in dark coats, standing outside the entrance glass doors, repeatedly asking exiting attendees to 'let us in'",
+        "entity_class": "corporeal",
+        "verdict": "real_threat",
+        "summary": "Four unregistered, non-crossing individuals in dark coats are loitering 3 m outside the entrance glass doors and pressuring exiting attendees to let them in (11 refusals logged since 19:09, 0 crossings). Registry shows no match; they hold advance registration only. IR reads 14C skin for all four, consistent with cold exposure outside in near-darkness rather than any anomalous reading. The real and immediate risk is physical: a smoker propped the left door open with a stand at 19:18 (40 cm ajar) and the guard is re-closing it, so the door is the weak point through which the group could enter without a refusal being logged. 45 attendees are inside (36 queued for the demo block, 9 at the doors). Guard has asked whether to lock down; no containment action has been taken yet."
+      }
+    ],
+    "id": "934d6f6b-f626-4da2-b332-901bea025169"
+  },
+  "events": [
+    {
+      "t": 0.001,
+      "msg": {
+        "type": "sky",
+        "sky": {
+          "day": "2026-10-28",
+          "place": "AWS Builder Loft, San Francisco",
+          "clock": "19:33",
+          "clock_at": "2026-10-29T02:33:00.000Z",
+          "events": [
+            {
+              "id": "sunset",
+              "label": "Sunset",
+              "local": "18:15",
+              "at": "2026-10-29T01:15:00.000Z",
+              "source": "wttr.in",
+              "computed": "18:17"
+            },
+            {
+              "id": "civil_dusk",
+              "label": "Civil dusk",
+              "local": "18:44",
+              "at": "2026-10-29T01:44:00.000Z",
+              "source": "suncalc",
+              "computed": "18:44"
+            },
+            {
+              "id": "full_dark",
+              "label": "Full dark",
+              "local": "19:45",
+              "at": "2026-10-29T02:45:00.000Z",
+              "source": "suncalc",
+              "computed": "19:45"
+            },
+            {
+              "id": "moonrise",
+              "label": "Moonrise",
+              "local": "20:02",
+              "at": "2026-10-29T03:02:00.000Z",
+              "source": "wttr.in",
+              "computed": "19:52"
+            }
+          ],
+          "minutes_to": {
+            "sunset": -78,
+            "civil_dusk": -49,
+            "full_dark": 12,
+            "moonrise": 29
+          },
+          "moon": {
+            "phase": "Waning Gibbous",
+            "illumination": 95,
+            "source": "wttr.in"
+          },
+          "live_source": {
+            "url": "https://wttr.in/San+Francisco?format=j1",
+            "summary": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit"
+          }
+        }
+      }
+    },
+    {
+      "t": 1.01,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "running",
+        "detail": "Parasail is structuring the raw report",
+        "ms": 0
+      }
+    },
+    {
+      "t": 5.207,
+      "msg": {
+        "type": "incident",
+        "incident": {
+          "entity": "the wolf on the stage (Team 12's wolf-ear headbands and staged howl, plus the 4.1 kHz feedback howl from mic 3)",
+          "entity_class": "corporeal",
+          "threat_level": 2,
+          "sector": "main_stage",
+          "location_detail": "Main stage, demo block, 160 attendees in the room",
+          "emf_mg": 3,
+          "emf_trend": "unknown",
+          "temperature_c": 27,
+          "civilians": {
+            "count": 160,
+            "condition": "unknown",
+            "location": "main stage"
+          },
+          "systems": [
+            {
+              "name": "wireless mic / monitor wedge (mic 3)",
+              "status": "offline"
+            }
+          ],
+          "evidence_of_threat": "Guest report of 'a wolf on the stage!'; one attendee ducked under a chair; 4.1 kHz howl at 94 dB traced to mic 3 in the monitor wedge; Team 12 wearing wolf-ear headbands and howling on cue",
+          "ordinary_explanation": "The howl was traced to mic 3 in the monitor wedge (gain cut at 19:34) and Team 12's staged howl with wolf-ear headbands; fog machine and strobes plus crowd motion explain the rest",
+          "deliberate_act": false,
+          "creature_countered": false,
+          "verdict": "harmless",
+          "people_in_reach": 160,
+          "people_hurt": 0,
+          "severity": "low",
+          "summary": "At the 19:30 demo block on the main stage, a guest reported 'a wolf on the stage!' and one attendee ducked under a chair. The stage tech traced the 4.1 kHz howl at 94 dB to mic 3 in the monitor wedge and cut the gain at 19:34; Team 12 was wearing wolf-ear headbands and howling on cue. Fog machine on a 20 s cycle, strobes on teams 11 and 12, 27C room heat from the crowd, EMF 3 mG and 1,420 motion events in 10 min as the crowd stood and cheered are all consistent with a loud, foggy, crowded stage. No creature was observed and no anomalous readings were recorded, so this is a harmless stunt-and-feedback scare rather than a containment matter.",
+          "evidence_quotes": [
+            {
+              "quote": "a wolf on the stage!",
+              "kind": "threat",
+              "why": "the guest claim that drove the report"
+            },
+            {
+              "quote": "Team 12 is wearing wolf-ear headbands and howled on cue",
+              "kind": "harmless",
+              "why": "a named, staged source for the howl"
+            },
+            {
+              "quote": "traces the howl to mic 3 in the monitor wedge, gain cut at 19:34",
+              "kind": "harmless",
+              "why": "technical trace and fix for the 4.1 kHz howl"
+            },
+            {
+              "quote": "One attendee ducked under a chair",
+              "kind": "people",
+              "why": "the only person affected"
+            },
+            {
+              "quote": "160 attendees in the room",
+              "kind": "people",
+              "why": "headcount at risk"
+            }
+          ]
+        },
+        "incident_id": "sim-nightfall-18",
+        "severity_tier": "ELEVATED_HAUNT",
+        "raw": "LOG 19:33 main stage, demo block opened 19:30, 160 attendees in the room. Fog machine on a 20 s cycle, strobes on teams 11 and 12, and a wireless mic feeding back with a 4.1 kHz howl at 94 dB. Team 12 is wearing wolf-ear headbands and howled on cue. Guest report: 'a wolf on the stage!' One attendee ducked under a chair. Stage tech traces the howl to mic 3 in the monitor wedge, gain cut at 19:34. Room temp 27C from crowd heat, EMF 3 mG. Motion events 1,420 in 10 min as the crowd stands and cheers. Demo 13 is up next. Sunset was 78 min ago."
+      }
+    },
+    {
+      "t": 5.208,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "done",
+        "detail": "the wolf on the stage (Team 12's wolf-ear headbands and staged howl, plus the 4.1 kHz feedback howl from mic 3) in main_stage (parasail-minimax-m31-flash)",
+        "ms": 4196
+      }
+    },
+    {
+      "t": 5.214,
+      "msg": {
+        "type": "route",
+        "label": "corporeal",
+        "playbook": "Corporeal (zombies, werewolves, vampires, cryptids)",
+        "arsenal": [
+          {
+            "id": "silver_netting",
+            "name": "Silver netting"
+          },
+          {
+            "id": "barricade_foam",
+            "name": "Rapid barricade foam"
+          },
+          {
+            "id": "flare_line",
+            "name": "Magnesium flare line"
+          },
+          {
+            "id": "uv_floodlights",
+            "name": "UV floodlights"
+          },
+          {
+            "id": "sound_cannon",
+            "name": "Infrasound cannon"
+          },
+          {
+            "id": "power_cut",
+            "name": "Sector power cut"
+          },
+          {
+            "id": "garlic_line",
+            "name": "Garlic line at the threshold"
+          },
+          {
+            "id": "no_invitation",
+            "name": "Do not invite: revoke invitations"
+          },
+          {
+            "id": "seed_scatter",
+            "name": "Poppy seed scatter"
+          },
+          {
+            "id": "name_calling",
+            "name": "Call by badge name"
+          },
+          {
+            "id": "raise_blinds",
+            "name": "Raise the blinds"
+          }
+        ]
+      }
+    },
+    {
+      "t": 5.214,
+      "msg": {
+        "type": "step",
+        "id": "triage",
+        "state": "done",
+        "detail": "routed to the corporeal playbook",
+        "ms": 4203
+      }
+    },
+    {
+      "t": 5.216,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "running",
+        "detail": "Lore Researcher is searching You.com",
+        "ms": 0
+      }
+    },
+    {
+      "t": 6.623,
+      "msg": {
+        "type": "search",
+        "query": "folklore weaknesses of werewolf silver fire garlic holy water",
+        "hits": [
+          {
+            "n": 1,
+            "title": "Vampire Fact #6 - Weaknesses – @maverick-werewolf on Tumblr",
+            "url": "https://www.tumblr.com/maverick-werewolf/648014889600892928/vampire-fact-6-weaknesses"
+          },
+          {
+            "n": 2,
+            "title": "Weaknesses – Maegan A. Stebbins – Maverick-Werewolf's Den",
+            "url": "https://maverickwerewolf.com/vampire-facts/weaknesses/"
+          },
+          {
+            "n": 3,
+            "title": "How to Kill a Werewolf/Weaknesses – Maegan A. Stebbins – ...",
+            "url": "https://maverickwerewolf.com/werewolf-facts/how-to-kill-a-werewolf/"
+          },
+          {
+            "n": 4,
+            "title": "Why is silver anathema to werewolves (as garlic and holy objects ...",
+            "url": "https://www.quora.com/Why-is-silver-anathema-to-werewolves-as-garlic-and-holy-objects-like-crucifixes-are-to-vampires"
+          }
+        ]
+      }
+    },
+    {
+      "t": 6.648,
+      "msg": {
+        "type": "search",
+        "query": "concert crowd safety barricade foam line stage front pit",
+        "hits": [
+          {
+            "n": 5,
+            "title": "Stage Front Barrier: The Complete Guide to Stage-Edge Crowd Safety",
+            "url": "https://barrierhq.com/blogs/fos-barriers/stage-front-barrier-the-complete-guide-to-stage-edge-crowd-safety"
+          },
+          {
+            "n": 6,
+            "title": "Front-of-Stage Barriers (FOS): Complete Guide to Concert Stage ...",
+            "url": "https://barrierhq.com/blogs/fos-barriers/front-of-stage-barriers-fos-complete-guide-to-concert-stage-protection"
+          },
+          {
+            "n": 7,
+            "title": "Front-of-Stage Barriers & Stage Safety",
+            "url": "https://barrierhq.com/blogs/fos-barriers"
+          },
+          {
+            "n": 8,
+            "title": "Stage Barrier: Complete Guide to Modern Stage Barricades",
+            "url": "https://barrierhq.com/blogs/fos-barriers/stage-barrier-complete-guide-to-modern-stage-barricades"
+          }
+        ]
+      }
+    },
+    {
+      "t": 12.204,
+      "msg": {
+        "type": "search",
+        "query": "wttr.in astronomy",
+        "hits": [
+          {
+            "n": 9,
+            "title": "wttr.in astronomy for San Francisco (live)",
+            "url": "https://wttr.in/San+Francisco?format=j1"
+          }
+        ]
+      }
+    },
+    {
+      "t": 12.361,
+      "msg": {
+        "type": "search",
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate",
+        "hits": [
+          {
+            "n": 10,
+            "title": "Moonrise, Moonset, and Moon Phase in San Francisco",
+            "url": "https://www.timeanddate.com/moon/usa/san-francisco"
+          },
+          {
+            "n": 11,
+            "title": "Sun & moon times today, San Francisco, California, USA",
+            "url": "https://www.timeanddate.com/astronomy/usa/san-francisco"
+          },
+          {
+            "n": 12,
+            "title": "Sunrise and sunset times in San Francisco",
+            "url": "https://www.timeanddate.com/sun/usa/san-francisco"
+          }
+        ]
+      }
+    },
+    {
+      "t": 12.362,
+      "msg": {
+        "type": "sources",
+        "sources": [
+          {
+            "title": "Vampire Fact #6 - Weaknesses – @maverick-werewolf on Tumblr",
+            "url": "https://www.tumblr.com/maverick-werewolf/648014889600892928/vampire-fact-6-weaknesses",
+            "description": "It’s time for a big one: let’s discuss what was and wasn’t a weakness for folkloric vampires. (I mean look I might use a lot of Lestat…",
+            "snippet": "💬 1 🔁 16 ❤️ 92 · Vampire Fact #6 - Weaknesses · It’s time for a big one: let’s discuss what was and wasn’t a weakness for folkloric vampires. (I mean look I might use a lot of Lestat gifs in the…",
+            "n": 1,
+            "query": "folklore weaknesses of werewolf silver fire garlic holy water"
+          },
+          {
+            "title": "Weaknesses – Maegan A. Stebbins – Maverick-Werewolf's Den",
+            "url": "https://maverickwerewolf.com/vampire-facts/weaknesses/",
+            "description": "Obsessive counting – Kind of funny ... fairly folklore-accurate: a lot of vampires in legend were obsessed with counting. Spill a bag of beans behind you as you run away from a vampire, and that vampire will just have to stop and count those beans. Can’t resist. Garlic – Yes, garlic – along with various other types of herbs and some types of wood – warded off vampires. This wasn’t a pop culture creation. It was, however, often the garlic flowers that warded them off. Holy symbols – ...",
+            "snippet": "Obsessive counting – Kind of funny that this makes Sesame Street fairly folklore-accurate: a lot of vampires in legend were obsessed with counting. Spill a bag of beans behind you as you run away from a vampire, and that vampire will just have to stop and count those beans. Can’t resist. Garlic – Yes, garlic – along with various other types of herbs and some types of wood – warded off vampires. This wasn’t a pop culture creation. It was, however, often the garlic flowers that warded them off. Holy symbols – Although some modern media backs off this one, but it was definitely a thing in folklore.",
+            "n": 2,
+            "query": "folklore weaknesses of werewolf silver fire garlic holy water"
+          },
+          {
+            "title": "How to Kill a Werewolf/Weaknesses – Maegan A. Stebbins – ...",
+            "url": "https://maverickwerewolf.com/werewolf-facts/how-to-kill-a-werewolf/",
+            "description": "Probably, yeah. Does it make for a good story? Well, yeah, it can! But, I’m sorry, it simply is not from any folklore anywhere that specifically werewolves are sensitive to, or can only be slain by, silver. Holy ground/holy artifacts – This is also not a thing.",
+            "snippet": "And listing it because fire scares animals is also silly because werewolves aren’t animals; they’re werewolves. Anyway, no, this wasn’t a thing in folklore, either. Running water – This is another undead/evil spirits/vampires thing, never once associated with werewolves, particularly as werewolves are not unholy. Loud noises/bright lights/whatnot – As you might imagine, no one in the days of actual werewolf beliefs was running around with flashbangs, so no, this never really happened either.",
+            "n": 3,
+            "query": "folklore weaknesses of werewolf silver fire garlic holy water"
+          },
+          {
+            "title": "Why is silver anathema to werewolves (as garlic and holy objects ...",
+            "url": "https://www.quora.com/Why-is-silver-anathema-to-werewolves-as-garlic-and-holy-objects-like-crucifixes-are-to-vampires",
+            "description": "Answer (1 of 16): It’s probably related to alchemy. Silver is associated with the moon and purity, as such, it was considered a purifying substance and thus able to overcome a curse, which is what lycanthropy was considered originally. It’s also why garlic and silver are often likewise ...",
+            "snippet": "Answer (1 of 16): It’s probably related to alchemy. Silver is associated with the moon and purity, as such, it was considered a purifying substance and thus able to overcome a curse, which is what lycanthropy was considered originally. It’s also why garlic and silver are often likewise associated...",
+            "n": 4,
+            "query": "folklore weaknesses of werewolf silver fire garlic holy water"
+          },
+          {
+            "title": "Stage Front Barrier: The Complete Guide to Stage-Edge Crowd Safety",
+            "url": "https://barrierhq.com/blogs/fos-barriers/stage-front-barrier-the-complete-guide-to-stage-edge-crowd-safety",
+            "description": "Everything you need to know about stage front barriers, their role in live-event safety, and how they integrate into professional FOS systems. A stage front barrier is the primary safety barricade installed directly along the edge of the concert stage to protect performers, crew, and the audience.",
+            "snippet": "Often referred to as a front-of-stage barrier (FOS barrier) or concert barricade, this structure forms a continuous, load-bearing line designed to withstand intense crowd pressure while giving security personnel a safe operational zone.",
+            "n": 5,
+            "query": "concert crowd safety barricade foam line stage front pit"
+          },
+          {
+            "title": "Front-of-Stage Barriers (FOS): Complete Guide to Concert Stage ...",
+            "url": "https://barrierhq.com/blogs/fos-barriers/front-of-stage-barriers-fos-complete-guide-to-concert-stage-protection",
+            "description": "The definitive guide to stage barriers, FOS systems, pit barriers, and professional concert crowd safety. Front-of-stage barriers (FOS barriers) are engineered barricade systems used to protect performers, crew, equipment, and audiences at concerts, festivals, and high-capacity live events.",
+            "snippet": "Both steel stage barriers and aluminum barriers have a place in professional event safety. The best choice depends on how and where your system will be used. For detailed buying guidance, see: Steel 4 ft Concert Front-of-Stage Barrier and Aluminum 4 ft Concert Front-of-Stage Barrier. Start with the total width of the stage and the distance to your first major crowd pinch-point (e.g., FOH position, mix tower, or barricade break).",
+            "n": 6,
+            "query": "concert crowd safety barricade foam line stage front pit"
+          },
+          {
+            "title": "Front-of-Stage Barriers & Stage Safety",
+            "url": "https://barrierhq.com/blogs/fos-barriers",
+            "description": "Barrier HQ specializes in innovative barrier solutions for enhanced safety, security, and efficiency. Explore our advanced barrier systems designed to meet the highest standards in various environments. Partner with us to create smarter, safer spaces with cutting-edge technology and exceptional ...",
+            "snippet": "Barrier HQ specializes in innovative barrier solutions for enhanced safety, security, and efficiency. Explore our advanced barrier systems designed to meet the highest standards in various environments. Partner with us to create smarter, safer spaces with cutting-edge technology and exceptional service.",
+            "n": 7,
+            "query": "concert crowd safety barricade foam line stage front pit"
+          },
+          {
+            "title": "Stage Barrier: Complete Guide to Modern Stage Barricades",
+            "url": "https://barrierhq.com/blogs/fos-barriers/stage-barrier-complete-guide-to-modern-stage-barricades",
+            "description": "A comprehensive guide to stage barriers, concert barricades, and front-of-stage safety systems. Stage barriers—also known as concert stage barricades, stage front barriers, or pit barriers—are engineered crowd-control structures used to protect performers, crew, and equipment at concerts, ...",
+            "snippet": "A comprehensive guide to stage barriers, concert barricades, and front-of-stage safety systems. Stage barriers—also known as concert stage barricades, stage front barriers, or pit barriers—are engineered crowd-control structures used to protect performers, crew, and equipment at concerts, festivals, and high-capacity events.",
+            "n": 8,
+            "query": "concert crowd safety barricade foam line stage front pit"
+          },
+          {
+            "title": "wttr.in astronomy for San Francisco (live)",
+            "url": "https://wttr.in/San+Francisco?format=j1",
+            "description": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+            "snippet": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+            "n": 9,
+            "query": "wttr.in astronomy"
+          },
+          {
+            "title": "Moonrise, Moonset, and Moon Phase in San Francisco",
+            "url": "https://www.timeanddate.com/moon/usa/san-francisco",
+            "description": "Moonrise and moonset time, Moon direction, and Moon phase in San Francisco – California – USA for October 2026. When and where does the Moon rise and set?",
+            "snippet": "Home Sun, Moon & Space Moonrise and moonset USA San Francisco ... Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Sunrise and sunset times for San Francisco",
+            "n": 10,
+            "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+          },
+          {
+            "title": "Sun & moon times today, San Francisco, California, USA",
+            "url": "https://www.timeanddate.com/astronomy/usa/san-francisco",
+            "description": "Time for sunrise, sunset, moonrise, and moonset in San Francisco – California – USA. Dawn and dusk (twilight) times and Sun and Moon position. Takes into account Daylight Saving Time (DST).",
+            "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. ... The Moon's path in San Francisco today. The horizontal line signifies the horizon, the vertical lines show times and headings of moonrise and moonset.",
+            "n": 11,
+            "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+          },
+          {
+            "title": "Sunrise and sunset times in San Francisco",
+            "url": "https://www.timeanddate.com/sun/usa/san-francisco",
+            "description": "Calculations of sunrise and sunset in San Francisco – California – USA for October 2026. Generic astronomy calculator to calculate times for sunrise, sunset, moonrise, moonset for many cities, with daylight saving time and time zones taken in account.",
+            "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Moonrise and moonset times for San Francisco Phases of the Moon for San Francisco",
+            "n": 12,
+            "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+          }
+        ],
+        "research": "**Findings — \"wolf on the stage\" (Team 12 headband howl + 4.1 kHz mic-3 feedback howl)**\n\n- **barricade_foam — SUPPORTED.** Front-of-stage barriers are the standard engineered control for protecting performers, crew and equipment from crowd pressure at the stage edge, and are specified as continuous load-bearing lines with a safe security zone [5][6][8]. Given the 27 C crowd heat, standing/cheering surge and an attendee ducking under a chair, a rapid foam barrier line at the stage lip is the one item with direct field-practice backing for the actual hazard here (crowd compression, not a creature) [5][8].\n- **silver_netting — PARTIALLY SUPPORTED (lore only).** Silver is described as anathema to werewolves, historically framed via alchemical association with the moon, purity and the breaking of a lycanthropic curse [4]. This is folklore/film convention, not field practice, and it does not address a corporeal animal or a feedback howl; treat as symbolic containment only [4].\n- **flare_line — NOT SUPPORTED.** The folklore record explicitly rejects fire as a werewolf countermeasure: fire scares *animals*, but werewolves were never treated as animals in that tradition, so the \"burn it\" logic is not a documented weakness [3]. No source supports magnesium flares against this entity.\n- **garlic_line — NOT SUPPORTED for this entity.** The garlic evidence in the retrieved material is vampire-specific, not werewolf-specific [1][2]; the werewolf weakness list does not carry garlic as a documented counter [3]. Do not deploy garlic_line against a wolf-class entity on this basis.\n- **sound_cannon (infrasound), uv_floodlights, power_cut, no_invitation, seed_scatter, name_calling, raise_blinds — NO SOURCE SUPPORT.** Nothing retrieved addresses infrasound dispersal, UV aversion, electrical isolation, invitation revocation, poppy-seed scatter, badge-name calling, or blinds as countermeasures to a corporeal wolf or to a staged howl; the crowd-safety literature covers physical barrier systems only [5][6][7][8].\n- **Operational note.** The traced cause is a monitor-wedge feedback howl at 4.1 kHz/94 dB plus Team 12's cued headband howl, with fog, strobes, heat and crowd motion all consistent with a loud, foggy, packed stage and no anomalous readings — so the practical action is gain discipline on mic 3 and stage-front crowd control [5][8], not a folklore ritual."
+      }
+    },
+    {
+      "t": 12.362,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "done",
+        "detail": "4 search(es), 12 source(s)",
+        "ms": 7145
+      }
+    },
+    {
+      "t": 12.364,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "running",
+        "detail": "Parasail is choosing and ordering components",
+        "ms": 0
+      }
+    },
+    {
+      "t": 13.363,
+      "msg": {
+        "type": "frame",
+        "title": "Wolf Howl on the Main Stage",
+        "theme": "crypt-dark"
+      }
+    },
+    {
+      "t": 13.377,
+      "msg": {
+        "type": "frame",
+        "sound_cue": "all_clear"
+      }
+    },
+    {
+      "t": 13.778,
+      "msg": {
+        "type": "component",
+        "index": 0,
+        "component": {
+          "type": "ThreatBanner",
+          "why": "The incident headline plus one floor directive; verdict is harmless, so the directive explains why it is safe.",
+          "props": {
+            "severity": "low",
+            "directive": "Staged howl and mic-3 feedback, no creature observed. Hold the demo block, keep the stage lip clear.",
+            "size": "hero",
+            "title": "Wolf Howl on the Main Stage"
+          }
+        }
+      }
+    },
+    {
+      "t": 13.778,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "1 component(s) placed",
+        "ms": 1413
+      }
+    },
+    {
+      "t": 14.023,
+      "msg": {
+        "type": "component",
+        "index": 1,
+        "component": {
+          "type": "SourceLedger",
+          "why": "Every station lists the You.com sources the plan rests on, with the load-bearing ones marked.",
+          "props": {
+            "cited": [],
+            "size": "standard",
+            "title": "Sources Behind the Read"
+          }
+        }
+      }
+    },
+    {
+      "t": 14.024,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "2 component(s) placed",
+        "ms": 1659
+      }
+    },
+    {
+      "t": 14.273,
+      "msg": {
+        "type": "component",
+        "index": 2,
+        "component": {
+          "type": "EntityCard",
+          "why": "The art library has the matching look-alike: hackers in wolf-ear headbands, costumes, not wolves.",
+          "props": {
+            "image": "entity_costume_wolf_team",
+            "verdict": "look-alike",
+            "caption": "Team 12 in wolf-ear headbands, howling on cue. Costumes, not wolves.",
+            "size": "standard",
+            "title": "The Look-Alike"
+          }
+        }
+      }
+    },
+    {
+      "t": 14.274,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "3 component(s) placed",
+        "ms": 1909
+      }
+    },
+    {
+      "t": 14.599,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "done",
+        "detail": "3 components: ThreatBanner, SourceLedger, EntityCard (parasail-minimax-m31-flash)",
+        "ms": 2234
+      }
+    }
+  ]
+}

@@ -12,6 +12,7 @@ import type { RawData, WebSocket, WebSocketServer } from 'ws';
 
 import library from '../shared/library.json' with { type: 'json' };
 import type { ArtAsset, ClientMessage, Expert, Finding, FixtureIncident, Floor, FlowEvent, Library, OperatorMoves, PageInfo, RunState, Scenario, ServerMessage } from '../shared/protocol.ts';
+import { Dispatcher, TEAM } from './dispatch.ts';
 import { Pager, pageRequest } from './pager.ts';
 import { skyFor } from './sky.ts';
 import { speak } from './speech.ts';
@@ -57,18 +58,24 @@ export class Station {
     private readonly opts: StationOptions;
     private readonly outDir: string;
     readonly pager: Pager;
+    readonly dispatcher: Dispatcher;
 
     constructor(opts: StationOptions) {
         this.opts = opts;
         this.outDir = join(opts.root, 'out');
         this.pager = new Pager((pages) => this.broadcast({ type: 'pages', pages }));
+        this.dispatcher = new Dispatcher((dispatches) => this.broadcast({ type: 'dispatches', dispatches }));
     }
 
     // --- pages ----------------------------------------------------------------------------
 
     attach(wss: WebSocketServer): void {
         wss.on('connection', (ws) => {
-            const status: ServerMessage[] = [{ type: 'pages', pages: this.pager.list() }, { type: 'synced' }];
+            const status: ServerMessage[] = [
+                { type: 'pages', pages: this.pager.list() },
+                { type: 'dispatches', dispatches: this.dispatcher.list() },
+                { type: 'synced' },
+            ];
             for (const msg of [this.hello(), ...this.history, ...status]) ws.send(JSON.stringify(msg));
             this.clients.add(ws);
             ws.on('close', () => this.clients.delete(ws));
@@ -98,6 +105,7 @@ export class Station {
         if (msg.type === 'compile' && msg.incident_id) this.compileIncident(String(msg.incident_id), checkMoves(msg.moves));
         else if (msg.type === 'compile') void this.compile({ raw_incident_stream: String(msg.raw ?? '').slice(0, 4000), incident_id: '', severity_tier: '' });
         else if (msg.type === 'call_expert') this.callExpert(ws, msg);
+        else if (msg.type === 'dispatch') this.dispatch(ws);
         else if (msg.type === 'resolve_page') {
             const page = this.pager.list().find((p) => p.key === msg.key);
             if (page) void this.pager.resolve(page);
@@ -324,6 +332,19 @@ export class Station {
         void this.speakCall(expert);
     }
 
+    /** Post the station on screen to #loft-incident, once per incident, and only when it says to act. */
+    private dispatch(ws: WebSocket): void {
+        const tell = (detail: string) => ws.send(JSON.stringify({ type: 'error', detail } satisfies ServerMessage));
+        if (this.opts.offline) return tell('Offline: nothing can be posted to #loft-incident.');
+        if (!this.run || this.busy) return tell('Wait for the station to finish building before dispatching.');
+        const { state } = this.run;
+        if (state.manifest.recommended_action === 'observe') return tell('The station says observe, so there is nothing to dispatch.');
+        if (this.dispatcher.has(state.incident_id)) return tell('This incident is already posted to #loft-incident.');
+        const wait = this.dispatcher.wait();
+        if (wait) return tell(`#loft-incident was just posted to. Wait ${wait} seconds before posting again.`);
+        void this.dispatcher.post(state.incident_id, dispatchText(state));
+    }
+
     /** Voice the call in the background; the page plays the expert's sting, then the line. A failure is only logged. */
     private async speakCall(expert: Expert): Promise<void> {
         const { spoken, sting } = library.experts[expert];
@@ -334,6 +355,18 @@ export class Station {
             console.warn(`Spoken call skipped: ${(err as Error).message}`);
         }
     }
+}
+
+/**
+ * The #loft-incident post for a run, in the venue's format: "<team> · <sector> · <action> · <rationale>". Every part
+ * comes from the run itself: the intake's sector, the model's action and its dispatch rationale.
+ */
+export function dispatchText(state: RunState): string {
+    const sector = library.sectors[state.incident.sector as keyof typeof library.sectors] ?? state.incident.sector;
+    const oneLine = (text: string) => text.replace(/\s+/g, ' ').trim();
+    const why = oneLine(state.manifest.dispatch_rationale || state.incident.summary || '').slice(0, 220);
+    const ref = state.incident_id ? ` (${state.incident_id}, simulated)` : ' (pasted report)';
+    return `${TEAM} · ${sector} · ${state.manifest.recommended_action} · ${why}${ref}`;
 }
 
 /** The operator's moves from a page, kept only where they name the library's countermeasures and sectors. */

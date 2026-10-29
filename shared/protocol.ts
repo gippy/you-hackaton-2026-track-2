@@ -257,6 +257,7 @@ export type ServerMessage =
     | { type: 'synced' }
     | { type: 'run_end'; manifest: Manifest; notes: string[]; models: string[]; saved_at: string; source: 'live' | 'snapshot' }
     | { type: 'pages'; pages: PageInfo[] }
+    | { type: 'dispatches'; dispatches: DispatchInfo[] }
     /** A spoken line to play after the `cue` sound, such as "Calling the vampire hunter". */
     | { type: 'speech'; url: string; cue?: string }
     | { type: 'error'; detail: string };
@@ -282,8 +283,19 @@ export interface OperatorMoves {
     experts: { expert: Expert; status: PageInfo['status']; by: string[] }[]; // experts called and not yet stood down
 }
 
+/** A post of the station's escalation to the venue's #loft-incident channel (server/dispatch.ts). */
+export interface DispatchInfo {
+    incident_id: string;
+    text: string; // "<team handle> · <sector> · <action> · <rationale>"
+    status: 'sending' | 'sent' | 'off' | 'failed'; // off: DISPATCH=off or no webhook, so nothing was posted
+    at: string;
+    error?: string;
+}
+
 export type ClientMessage =
     | { type: 'compile'; raw?: string; incident_id?: string; moves?: OperatorMoves }
     /** Page an expert about the station on screen, with the countermeasure the operator picked. */
     | { type: 'call_expert'; expert: Expert; countermeasure: string | null }
-    | { type: 'resolve_page'; key: string };
+    | { type: 'resolve_page'; key: string }
+    /** Post the station on screen to #loft-incident. */
+    | { type: 'dispatch' };

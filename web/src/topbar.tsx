@@ -88,6 +88,7 @@ export function TopBar({ state, subtitle, sound, post }: { state: State; subtitl
                                 </span>
                             );
                         })}
+                    <Dispatch state={state} post={post} />
                     <span className="cm">
                         {offline
                             ? 'Offline: no expert can be paged'
@@ -100,5 +101,34 @@ export function TopBar({ state, subtitle, sound, post }: { state: State; subtitl
                 </div>
             </div>
         </header>
+    );
+}
+
+const DISPATCH_STATUS = { sending: 'Posting…', sent: 'Posted', off: 'Not posted: dispatch is off', failed: 'Post failed' } as const;
+
+/** Posts the station on screen to the venue's #loft-incident channel; the server builds the message and limits it. */
+function Dispatch({ state, post }: { state: State; post: (msg: ClientMessage) => void }) {
+    const id = state.incident?.incident_id ?? '';
+    const done = state.dispatches.find((d) => d.incident_id === id && d.status !== 'failed');
+    const last = state.dispatches.find((d) => d.incident_id === id);
+    const observe = state.manifest?.recommended_action === 'observe';
+    const blocked = !state.manifest || state.mode === 'offline' || observe || Boolean(done);
+    return (
+        <span className="expert">
+            <button
+                type="button"
+                className="ghost"
+                aria-disabled={blocked}
+                title={observe ? 'The station says observe: nothing to dispatch' : 'Posts this station to #loft-incident on the venue Discord'}
+                onClick={() => !blocked && post({ type: 'dispatch' })}
+            >
+                Dispatch to #loft-incident
+            </button>
+            {last && (
+                <span className={`page-status dispatch-${last.status}`} title={last.error ?? last.text}>
+                    {DISPATCH_STATUS[last.status]}
+                </span>
+            )}
+        </span>
     );
 }

@@ -1,0 +1,1232 @@
+{
+  "saved_at": "2026-10-28T23:57:12Z",
+  "state": {
+    "incident_id": "sim-nightfall-20",
+    "severity_tier": "CRITICAL_HAUNT",
+    "raw": "RADIO 19:55 moonrise in 7 min. Team Full Moon Labs left table 22 and walked into the main stage hall, three abreast, 20:05 slot on the board. Fevers 40.2C, 40.4C, 40.6C on the hall IR gate. Skin rippling at the jaw, nails 1 cm longer than at 18:55, breathing 40 per minute. About 158 attendees still seated; 2 vampire subjects at row 16; 5 injured civilians at the foot of the stairs. Silver ring owner B-0356 stands by the SW stairwell with 4 sets of silver cutlery. Hall lux 12. Moon 93% lit, azimuth 54. Stage manager asks if the demo should be cancelled.",
+    "incident": {
+      "entity": "the two vampire subjects at row 16 (the figures who entered the main stage through rear door R2 at 19:41 and took seats in rows 14-16)",
+      "entity_class": "corporeal",
+      "threat_level": 5,
+      "sector": "main_stage",
+      "location_detail": "Main stage hall, rows 14-16 and the foot of the stairs; SW stairwell",
+      "emf_mg": null,
+      "emf_trend": "unknown",
+      "temperature_c": 40.2,
+      "civilians": {
+        "count": 158,
+        "condition": "injured",
+        "location": "main stage hall"
+      },
+      "systems": [
+        {
+          "name": "hall IR gate",
+          "status": "degraded"
+        },
+        {
+          "name": "silver ring owner B-0356",
+          "status": "degraded"
+        }
+      ],
+      "evidence_of_threat": "Fevers of 40.2C, 40.4C and 40.6C on the hall IR gate; skin rippling at the jaw; nails 1 cm longer than at 18:55; breathing 40 per minute; 2 vampire subjects at row 16; 5 injured civilians at the foot of the stairs; moon 93% lit at azimuth 54 with moonrise in 7 minutes",
+      "ordinary_explanation": "No ordinary cause is offered for the transformation signs: the 19:33 main-stage wolf scare was already traced to mic 3 and team 12's headbands, and the 19:46 report attributes the dead breaker and missing house-light slider to deliberate disabling rather than fault. The IR gate readings are elevated rather than cold, so they do not match the 15-16C rear-row readings from 19:46.",
+      "deliberate_act": true,
+      "creature_countered": false,
+      "verdict": "real_threat",
+      "people_in_reach": 158,
+      "people_hurt": 5,
+      "severity": "critical",
+      "summary": "Full Moon Labs' three members walked into the main stage hall and are transforming: IR gate temperatures of 40.2C, 40.4C and 40.6C, jaw skin rippling, nails 1 cm longer than at 18:55, breathing 40 per minute. Two vampire subjects sit at row 16, 158 attendees remain seated, and 5 civilians are injured at the foot of the stairs. Silver ring owner B-0356 stands by the SW stairwell with 4 sets of silver cutlery, but no countermeasure has been applied yet. Moon is 93% lit at azimuth 54 with moonrise in 7 minutes, and the stage manager is asking whether to cancel the demo.",
+      "evidence_quotes": [
+        {
+          "quote": "Fevers 40.2C, 40.4C, 40.6C",
+          "kind": "threat",
+          "why": "Elevated IR readings on the three subjects, consistent with the transformation signs rather than a normal reading"
+        },
+        {
+          "quote": "Skin rippling at the jaw",
+          "kind": "threat",
+          "why": "Active physical transformation in progress"
+        },
+        {
+          "quote": "nails 1 cm longer than at 18:55",
+          "kind": "threat",
+          "why": "Measured change over time, not a static condition"
+        },
+        {
+          "quote": "2 vampire subjects at row 16",
+          "kind": "threat",
+          "why": "Creature present in the seating block with the attendees"
+        },
+        {
+          "quote": "5 injured civilians at the foot of the stairs",
+          "kind": "people",
+          "why": "Headcount of injured people at the SW stairwell, the same weak point as the open rear door R2 from 19:46"
+        }
+      ]
+    },
+    "playbook": "corporeal",
+    "sources": [
+      {
+        "title": "r/AskScienceFiction on Reddit: [Vampires] why are they actually ...",
+        "url": "https://www.reddit.com/r/AskScienceFiction/comments/17r3qx8/vampires_why_are_they_actually_weak_against/",
+        "description": "I like to think the 'stake through the heart' bit is meant to be like an ironic punishment for Vlad the Impaler that makes him and his vampire 'bloodline' susceptible to the fate he subjected so many of his enemies to. ... Garlic, salt and silver are all associated with different warding from evil. Garlic has folkloric ...",
+        "snippet": "I like to think the 'stake through the heart' bit is meant to be like an ironic punishment for Vlad the Impaler that makes him and his vampire 'bloodline' susceptible to the fate he subjected so many of his enemies to. ... Garlic, salt and silver are all associated with different warding from evil. Garlic has folkloric use as a preservative and healing herb, keeping rot and putrefaction from spreading to or affecting things.",
+        "n": 1,
+        "query": "vampire folklore weaknesses silver garlic sunlight stake"
+      },
+      {
+        "title": "Weaknesses – Maegan A. Stebbins – Maverick-Werewolf's Den",
+        "url": "https://maverickwerewolf.com/vampire-facts/weaknesses/",
+        "description": "Please note that this post will ... ones. I’ll save the full list for when I publish my own book on vampires in folklore. So, like I did in my post on werewolf weaknesses, let’s break them down. Stake – The trusty stake, the old standby....",
+        "snippet": "Please note that this post will not include every vampire weakness as found in folklore and pop culture, as that would be absolutely massive; it will cover the most common ones. I’ll save the full list for when I publish my own book on vampires in folklore. So, like I did in my post on werewolf weaknesses, let’s break them down. Stake – The trusty stake, the old standby.",
+        "n": 2,
+        "query": "vampire folklore weaknesses silver garlic sunlight stake"
+      },
+      {
+        "title": "Weaknesses of the Vampire - Monstropedia",
+        "url": "https://www.monstropedia.org/index.php?title=Weaknesses_of_the_Vampire",
+        "description": "Once a stake had been driven through the heart and the body decapitated, garlic bulbs were used to stuff the mouth. The garlic’s anti-evil properties severed the bond between the inhabiting demonic spirit and the dead flesh. This ensured that, if it was decided not to burn the corpse, the Vampire would be unable to regenerate itself and return to take its vengeance. Silver is a relatively recent addition to Vampire folklore...",
+        "snippet": "If it pierces the heart, the Vampire dies. Since silver is too soft to make a serious weapon (with the exception being stakes, bullets, or projectile points), it is used in steel alloys and to plate steel blades (a process called silvering). The most popular choices for such applications are blades, especially swords, daggers, or knives. If a priest blesses the blades, then their efficacy is increased considerably. In folklore, one clear reference is found in Serbia.",
+        "n": 3,
+        "query": "vampire folklore weaknesses silver garlic sunlight stake"
+      },
+      {
+        "title": "Vampire Weaknesses: The Complete List - Optic Flux",
+        "url": "https://www.opticflux.com/vampire-weaknesses-the-complete-list/77518/",
+        "description": "In Eastern European folklore, vampires often fear garlic, holy symbols, and sunlight, reflecting local religious and environmental influences. Meanwhile, modern interpretations sometimes expand or alter these vulnerabilities, introducing elements like silver or specific rituals.",
+        "snippet": "Hidden in legends and lore, vampire weaknesses reveal surprising truths—discover the ultimate list that might just change everything you thought you knew.",
+        "n": 4,
+        "query": "vampire folklore weaknesses silver garlic sunlight stake"
+      },
+      {
+        "title": "Enhance Event Safety with Crowd Control Barriers - DB Fencing",
+        "url": "https://metalfencetech.com/crowd-control-barriers-a-comprehensive-guide-for-event-organizers-and-procurement-managers/",
+        "description": "Discover how crowd control barriers improve safety and efficiency at events, ensuring smooth crowd management while enhancing the overall attendee experience.",
+        "snippet": "These safety barriers aren’t just about restriction—they’re about creating structure that protects everyone involved. From preventing unauthorized access to sensitive areas to facilitating swift emergency evacuations, the strategic placement of barriers directly impacts attendee safety.",
+        "n": 5,
+        "query": "crowd safety barricade evacuation venue emergency foam barrier"
+      },
+      {
+        "title": "GIGS Stage Barricades | Safe Barriers for every event | eps.net",
+        "url": "https://eps.net/en/products/crowd-control/gigs-stage-barricades/",
+        "description": "GIGS Stage Barricades: Crowd management from the market leader ✓ For most safety and resistance for high traffic event areas",
+        "snippet": "How many visitors or crowds do you expect, and how many barricade lines will ensure the necessary security for them? What kind of event takes place? How is the audience composed from this point of view? What conclusions can be made about audience behavior? What about access and escape route capacities and requirements in the case of evacuation? Are modules like the GIGS Emergency Gate, the GIGS Truck Gate, or GIGS Multicore Barricade Modules required?",
+        "n": 6,
+        "query": "crowd safety barricade evacuation venue emergency foam barrier"
+      },
+      {
+        "title": "Crowd Control Barriers & Safety Barricades | EPIC Solutions",
+        "url": "https://www.epiccrowdcontrol.com/",
+        "description": "Shop crowd control barriers, stanchions, safety barricades, sign stands, and more at Epic Crowd Control. Rent or buy with custom solutions and over 30 years of experience.",
+        "snippet": "PLASTIC BARRIERS STEEL BARRICADES RETRACTABLE STANCHIONS ROPE STANCHIONS BARRIER JACKETS · • Event Management & Concerts • Construction & Roadwork • Airports & Transportation Hubs • Stadiums & Venues • Municipal & Government Projects · - Explore our full range of crowd control barriers",
+        "n": 7,
+        "query": "crowd safety barricade evacuation venue emergency foam barrier"
+      },
+      {
+        "title": "Stage Front Barrier: The Complete Guide to Stage-Edge Crowd Safety",
+        "url": "https://barrierhq.com/blogs/fos-barriers/stage-front-barrier-the-complete-guide-to-stage-edge-crowd-safety",
+        "description": "Everything you need to know about stage front barriers, their role in live-event safety, and how they integrate into professional FOS systems. A stage front barrier is the primary safety barricade installed directly along the edge of the concert stage to protect performers, crew, and the audience.",
+        "snippet": "A stage front barrier is a reinforced barricade system engineered to sit directly between the stage and the audience. Its purpose is to: ... Stage front barriers are used at concerts, stadium events, festivals, televised productions, and any venue where crowd density is high.",
+        "n": 8,
+        "query": "crowd safety barricade evacuation venue emergency foam barrier"
+      },
+      {
+        "title": "wttr.in astronomy for San Francisco (live)",
+        "url": "https://wttr.in/San+Francisco?format=j1",
+        "description": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+        "snippet": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+        "n": 9,
+        "query": "wttr.in astronomy"
+      },
+      {
+        "title": "Moonrise, Moonset, and Moon Phase in San Francisco",
+        "url": "https://www.timeanddate.com/moon/usa/san-francisco",
+        "description": "Moonrise and moonset time, Moon direction, and Moon phase in San Francisco – California – USA for October 2026. When and where does the Moon rise and set?",
+        "snippet": "Home Sun, Moon & Space Moonrise and moonset USA San Francisco ... Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Sunrise and sunset times for San Francisco",
+        "n": 10,
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+      },
+      {
+        "title": "Sun & moon times today, San Francisco, California, USA",
+        "url": "https://www.timeanddate.com/astronomy/usa/san-francisco",
+        "description": "Time for sunrise, sunset, moonrise, and moonset in San Francisco – California – USA. Dawn and dusk (twilight) times and Sun and Moon position. Takes into account Daylight Saving Time (DST).",
+        "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. ... The Moon's path in San Francisco today. The horizontal line signifies the horizon, the vertical lines show times and headings of moonrise and moonset.",
+        "n": 11,
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+      },
+      {
+        "title": "Sunrise and sunset times in San Francisco",
+        "url": "https://www.timeanddate.com/sun/usa/san-francisco",
+        "description": "Calculations of sunrise and sunset in San Francisco – California – USA for October 2026. Generic astronomy calculator to calculate times for sunrise, sunset, moonrise, moonset for many cities, with daylight saving time and time zones taken in account.",
+        "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Moonrise and moonset times for San Francisco Phases of the Moon for San Francisco",
+        "n": 12,
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+      }
+    ],
+    "research": "**Field read — vampire subjects, row 16 (corporeal, seated among 158)**\n\n- **Silver netting / silver cutlery (B-0356's 4 sets) — SUPPORTED.** Silver is one of the classic warding metals in vampire folklore, alongside garlic and salt [1], and the standard kill mechanism is a stake or blade driven through the heart, with silver commonly plated onto such blades because pure silver is too soft to work alone [3]. Practical use here: the cutlery is not a stake, so it is best deployed as a silver barrier/netting line to fence rows 14–16 rather than as an improvised piercing weapon [1][3].\n\n- **Garlic line at the threshold — SUPPORTED.** Garlic is explicitly grouped with salt and silver as traditional warding agents against evil [1], and appears among the most commonly cited vampire weaknesses in folklore compilations [2]. Place it on the aisle and stairwell approaches to the row 14–16 block, not as a projectile.\n\n- **Barricade foam — SUPPORTED for crowd safety only, not as a countermeasure.** Event-safety guidance treats physical barriers as the core tool for separating a hazard zone from seated attendees and for preserving emergency egress routes [5][6][7][8]. Use it to seal the row 14–16 pocket and to open/protect a clear evacuation lane for the 5 injured at the foot of the stairs; no source supports foam as a means of harming or repelling a vampire.\n\n- **UV floodlights — NOT SUPPORTED.** The folklore weakness is sunlight, and my retrieved sources do not establish that UV floodlight output is equivalent [3][4]. Also note the operational fact: the moon is 93% lit but moonrise is 7 minutes out, so no natural sunlight is available in the hall in the near term. Treat UV as unproven and do not count it as a primary countermeasure.\n\n- **Magnesium flare line, infrasound cannon, sector power cut — NOT SUPPORTED.** None of the retrieved folklore sources list light-flare devices, infrasound, or electrical disruption as vampire weaknesses [1][2][3][4]. A power cut would also darken the hall and remove your lighting/PA control while 158 people remain seated and 5 are injured — no source supports it.\n\n- **No-invitation, poppy seed scatter, calling by badge name, raising blinds — NOT SUPPORTED for this entity.** These are invitation/identity/occlusion-type controls; my searches surfaced no source tying them to vampires [1][2][3][4]. Raising blinds would only reduce ambient light, which the sources do not treat as a weakness.\n\n**Bottom line for the stage manager:** the demo should be cancelled or held — the supported moves are silver containment at rows 14–16, garlic on the approaches, and foam barricades to protect the seated crowd and the injured [1][3][5][6]. Do not rely on UV, flares, infrasound, or a power cut [1][2][3][4].",
+    "manifest": {
+      "title": "Full Moon Labs — Two Vampire Subjects at Row 16",
+      "theme": "blood-moon",
+      "sound_cue": "sting_vampire",
+      "components": [
+        {
+          "type": "ThreatBanner",
+          "why": "Headline and one directive for the floor",
+          "props": {
+            "severity": "critical",
+            "directive": "Cancel the demo. Seal rows 14-16 with silver and garlic the aisle approaches.",
+            "size": "hero",
+            "title": "Two vampires seated in row 16"
+          }
+        },
+        {
+          "type": "CivilianTracker",
+          "why": "158 attendees and 5 injured at the SW stairwell",
+          "props": {
+            "count": 158,
+            "location": "Main stage hall, rows 14-16 and foot of the SW stairs",
+            "condition": "injured",
+            "priority": "high",
+            "size": "standard",
+            "title": "Who's still in the hall"
+          }
+        },
+        {
+          "type": "FloorPlan",
+          "why": "Real threat seated among 158 people; needs sector map and egress",
+          "props": {
+            "hot_sector": "main_stage",
+            "seal": [
+              "main_stage"
+            ],
+            "safe_route": [
+              "main_stage",
+              "lounge",
+              "entrance"
+            ],
+            "view": "floor",
+            "anchor": "none",
+            "scene": "sector_main_stage",
+            "markers": [
+              {
+                "sector": "main_stage",
+                "label": "2 vampire subjects, row 16",
+                "kind": "threat"
+              },
+              {
+                "sector": "main_stage",
+                "label": "158 attendees seated",
+                "kind": "people"
+              },
+              {
+                "sector": "main_stage",
+                "label": "5 injured at SW stairs",
+                "kind": "people"
+              },
+              {
+                "sector": "main_stage",
+                "label": "Silver cutlery ready, unused",
+                "kind": "countermeasure"
+              }
+            ],
+            "size": "standard",
+            "title": "Main stage, rows 14-16"
+          }
+        },
+        {
+          "type": "CountermeasurePicker",
+          "why": "Real threat, people in reach; operator must pick a dispatch",
+          "props": {
+            "target_entity": "vampire",
+            "options": [
+              {
+                "id": "silver_netting",
+                "support": "strong",
+                "rationale": "Silver is a classic warding metal; use cutlery as a fencing line at rows 14-16.",
+                "source": 1
+              },
+              {
+                "id": "garlic_line",
+                "support": "strong",
+                "rationale": "Garlic is a traditional warding agent; place on aisle and stairwell approaches.",
+                "source": 1
+              },
+              {
+                "id": "barricade_foam",
+                "support": "moderate",
+                "rationale": "Barriers separate the hazard zone from seated attendees and keep egress clear.",
+                "source": 5
+              }
+            ],
+            "recommended": "silver_netting",
+            "size": "standard",
+            "title": "Pick a countermeasure"
+          }
+        },
+        {
+          "type": "ThermalReadout",
+          "why": "IR gate reported fevers of 40.2C on subjects",
+          "props": {
+            "temperature_c": 40.2,
+            "baseline_c": 37,
+            "status": "elevated",
+            "size": "compact",
+            "title": "Fever readings at the gate"
+          }
+        },
+        {
+          "type": "SystemsBoard",
+          "why": "Hall IR gate degraded and silver ring owner B-0356 degraded",
+          "props": {
+            "systems": [
+              {
+                "name": "hall IR gate",
+                "status": "degraded"
+              },
+              {
+                "name": "silver ring owner B-0356",
+                "status": "degraded"
+              }
+            ],
+            "size": "compact",
+            "title": "Systems in the hall"
+          }
+        },
+        {
+          "type": "SkyClock",
+          "why": "Moonrise in 7 minutes, 93% lit; time of day changes the threat",
+          "props": {
+            "focus": "moonrise",
+            "warning": "",
+            "cited": [
+              9,
+              10,
+              11
+            ],
+            "size": "compact",
+            "title": "Moonrise in 7 minutes"
+          }
+        },
+        {
+          "type": "EntityCard",
+          "why": "Art library has a vampire matching the report",
+          "props": {
+            "image": "entity_vampire",
+            "verdict": "real",
+            "caption": "Pale vampire in a long dark coat and lanyard among attendees",
+            "size": "standard",
+            "title": "Subject at row 16"
+          }
+        }
+      ],
+      "recommended_action": "evacuate",
+      "dispatch_rationale": "5 civilians are already injured at the SW stairwell and 158 people sit within reach of two vampire subjects; get them out.",
+      "quick_actions": [
+        {
+          "label": "Seal the lounge",
+          "kind": "seal",
+          "target": "lounge"
+        },
+        {
+          "label": "Switch to garlic line",
+          "kind": "countermeasure",
+          "target": "garlic_line"
+        },
+        {
+          "label": "Extract all civilians",
+          "kind": "extract",
+          "target": "all"
+        }
+      ]
+    },
+    "notes": [
+      "dropped a sky warning that states times instead of an order"
+    ],
+    "models": [
+      "parasail-minimax-m31-flash",
+      "parasail-minimax-m31-flash"
+    ],
+    "sky": {
+      "day": "2026-10-28",
+      "place": "AWS Builder Loft, San Francisco",
+      "clock": "19:55",
+      "clock_at": "2026-10-29T02:55:00.000Z",
+      "events": [
+        {
+          "id": "sunset",
+          "label": "Sunset",
+          "local": "18:15",
+          "at": "2026-10-29T01:15:00.000Z",
+          "source": "wttr.in",
+          "computed": "18:17"
+        },
+        {
+          "id": "civil_dusk",
+          "label": "Civil dusk",
+          "local": "18:44",
+          "at": "2026-10-29T01:44:00.000Z",
+          "source": "suncalc",
+          "computed": "18:44"
+        },
+        {
+          "id": "full_dark",
+          "label": "Full dark",
+          "local": "19:45",
+          "at": "2026-10-29T02:45:00.000Z",
+          "source": "suncalc",
+          "computed": "19:45"
+        },
+        {
+          "id": "moonrise",
+          "label": "Moonrise",
+          "local": "20:02",
+          "at": "2026-10-29T03:02:00.000Z",
+          "source": "wttr.in",
+          "computed": "19:52"
+        }
+      ],
+      "minutes_to": {
+        "sunset": -100,
+        "civil_dusk": -71,
+        "full_dark": -10,
+        "moonrise": 7
+      },
+      "moon": {
+        "phase": "Waning Gibbous",
+        "illumination": 95,
+        "source": "wttr.in"
+      },
+      "live_source": {
+        "url": "https://wttr.in/San+Francisco?format=j1",
+        "summary": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit"
+      }
+    },
+    "moves": {},
+    "earlier": [
+      {
+        "time": "11:20",
+        "sector": "entrance",
+        "entity": "vampire",
+        "entity_class": "corporeal",
+        "verdict": "harmless",
+        "summary": "A costumed attendee in a vampire outfit (badge B-0061, cape, face paint, plastic fangs) was waved through the entrance security desk by the guard. IR skin reading 33.8C matches a living person standing in direct sun; EMF 2 mG is normal background. No supernatural indicators, no deliberate action, no countermeasure needed. The line does not need to be held; the guard's normal ID check should be applied to badge B-0061 as with any arrival."
+      },
+      {
+        "time": "12:10",
+        "sector": "lounge",
+        "entity": "spectral",
+        "entity_class": "spectral",
+        "verdict": null,
+        "summary": "A courier delivered three wooden crates (2.1 m) addressed to 'Evening Shift Events, stage plinths' via the freight lift to the 2nd floor. Weights were 241 kg, 38 kg and 36 kg against a manifest of 35 kg each, so the heavy crate is grossly overweight. Black wax on the lids, dark soil sifting from the seams of the heavy crate onto the lift floor (pH 7.9), and the heavy crate's skin at 9C against a 21C corridor. EMF 3 mG (normal). The porter reports it 'smells like a cellar in there' and plans to park all three crates in the lounge because the stage is not ready. The delivery slip signature is a smudge. Window wall at 21,300 lux with sunset in 365 min."
+      },
+      {
+        "time": "12:50",
+        "sector": "lounge",
+        "entity": "unknown",
+        "entity_class": "spectral",
+        "verdict": "unclear",
+        "summary": "In the lounge, three closed heavy crates along the back wall produced two sets of soft knocks from inside (12:47 and 12:49) while the lid reads 8.7C against a 21C room and the cold spreads 40 cm over the carpet. All three window blinds were lowered at 12:41 with no staff admission. 28 attendees sit near the door, laptops open, and no one has touched the crates. A volunteer is deciding whether to open the lid or call the venue manager."
+      },
+      {
+        "time": "13:05",
+        "sector": "catering",
+        "entity": "vampire (claimed/rumored, unconfirmed)",
+        "entity_class": "corporeal",
+        "verdict": "harmless",
+        "summary": "At the catering counter, nine guests complained within 10 minutes of lunch service that the garlic smell carried toward the lounge door and hack floor. Kitchen confirmed 3 kg of garlic in the dough and 12 bowls of aioli, which accounts for the odor. One attendee in a hoodie, citing a phone-read claim that garlic is hung against vampires, strung a braid of bulbs over the coffee bar and asked staff to leave it there; the barista asked whether the braid can stay by the espresso machine. No creature was observed and no anomalous readings were recorded. Classified as a harmless odor complaint with a folklore-motivated decoration request; the garlic braid is a catering fixture question, not a containment matter."
+      },
+      {
+        "time": "18:40",
+        "sector": "catering",
+        "entity": "Erzsi B.",
+        "entity_class": "corporeal",
+        "verdict": "unclear",
+        "summary": "Erzsi B. crouched over spilled poppy seed bagels at the catering counter, counting seeds one by one for 22 minutes without other motion, 3 m from garlic naan and the braid over the coffee bar. Max S. was stopped from entering the staff-only kitchen by a radio voice shouting 'do not invite'. 140 guests in the dinner line, 4 kitchen staff, 1 propane range, 24C near the range, window lux 0, sunset 25 min prior. No EMF data. No injuries reported; guests at the far end of the line continue eating."
+      },
+      {
+        "time": "19:20",
+        "sector": "entrance",
+        "entity": "Four unidentified individuals in dark coats, standing outside the entrance glass doors, repeatedly asking exiting attendees to 'let us in'",
+        "entity_class": "corporeal",
+        "verdict": "real_threat",
+        "summary": "Four unregistered, non-crossing individuals in dark coats are loitering 3 m outside the entrance glass doors and pressuring exiting attendees to let them in (11 refusals logged since 19:09, 0 crossings). Registry shows no match; they hold advance registration only. IR reads 14C skin for all four, consistent with cold exposure outside in near-darkness rather than any anomalous reading. The real and immediate risk is physical: a smoker propped the left door open with a stand at 19:18 (40 cm ajar) and the guard is re-closing it, so the door is the weak point through which the group could enter without a refusal being logged. 45 attendees are inside (36 queued for the demo block, 9 at the doors). Guard has asked whether to lock down; no containment action has been taken yet."
+      },
+      {
+        "time": "19:33",
+        "sector": "main_stage",
+        "entity": "wolf",
+        "entity_class": "corporeal",
+        "verdict": "harmless",
+        "summary": "During a main-stage demo block with 160 attendees, a guest reported 'a wolf on the stage!' The howl was traced to mic 3 in the monitor wedge; team 12 wore wolf-ear headbands and howled on cue. Fog machine, strobes, and crowd noise/heat (27C, EMF 3 mG, 1,420 motion events) explain the confusion. No creature present; no injuries reported."
+      },
+      {
+        "time": "19:46",
+        "sector": "main_stage",
+        "entity": "unknown",
+        "entity_class": "anomalous",
+        "verdict": "real_threat",
+        "summary": "Two subjects entered the main stage through the open rear door R2 at 19:41 and took seats in rows 14-16. Attendee B-0522 is down in row 15 with two neck marks while three neighbours move away, and rear-row skin temperatures read 15-16C. The house lighting breaker is dead and the house light slider is missing, leaving the stage at 4 percent house lights and 12 lux with 160 attendees seated. Astronomical dusk has passed and moonrise is in 16 minutes, and the rear exit door remains open to the hall by the SW stairwell. Two neck marks plus a downed attendee and abnormally cold readings in the rows the subjects just occupied point to a deliberate attack by a corporeal entity that entered from outside via R2; the dead breaker and missing slider are consistent with deliberate disabling of lighting rather than an ordinary fault. Containment priority: immediate, with evacuation of rows 14-16 and closure of rear door R2."
+      }
+    ],
+    "id": "f591a987-c7ec-4605-9bcd-62c3a830f320"
+  },
+  "events": [
+    {
+      "t": 0.005,
+      "msg": {
+        "type": "sky",
+        "sky": {
+          "day": "2026-10-28",
+          "place": "AWS Builder Loft, San Francisco",
+          "clock": "19:55",
+          "clock_at": "2026-10-29T02:55:00.000Z",
+          "events": [
+            {
+              "id": "sunset",
+              "label": "Sunset",
+              "local": "18:15",
+              "at": "2026-10-29T01:15:00.000Z",
+              "source": "wttr.in",
+              "computed": "18:17"
+            },
+            {
+              "id": "civil_dusk",
+              "label": "Civil dusk",
+              "local": "18:44",
+              "at": "2026-10-29T01:44:00.000Z",
+              "source": "suncalc",
+              "computed": "18:44"
+            },
+            {
+              "id": "full_dark",
+              "label": "Full dark",
+              "local": "19:45",
+              "at": "2026-10-29T02:45:00.000Z",
+              "source": "suncalc",
+              "computed": "19:45"
+            },
+            {
+              "id": "moonrise",
+              "label": "Moonrise",
+              "local": "20:02",
+              "at": "2026-10-29T03:02:00.000Z",
+              "source": "wttr.in",
+              "computed": "19:52"
+            }
+          ],
+          "minutes_to": {
+            "sunset": -100,
+            "civil_dusk": -71,
+            "full_dark": -10,
+            "moonrise": 7
+          },
+          "moon": {
+            "phase": "Waning Gibbous",
+            "illumination": 95,
+            "source": "wttr.in"
+          },
+          "live_source": {
+            "url": "https://wttr.in/San+Francisco?format=j1",
+            "summary": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit"
+          }
+        }
+      }
+    },
+    {
+      "t": 1.133,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "running",
+        "detail": "Parasail is structuring the raw report",
+        "ms": 0
+      }
+    },
+    {
+      "t": 3.337,
+      "msg": {
+        "type": "incident",
+        "incident": {
+          "entity": "the two vampire subjects at row 16 (the figures who entered the main stage through rear door R2 at 19:41 and took seats in rows 14-16)",
+          "entity_class": "corporeal",
+          "threat_level": 5,
+          "sector": "main_stage",
+          "location_detail": "Main stage hall, rows 14-16 and the foot of the stairs; SW stairwell",
+          "emf_mg": null,
+          "emf_trend": "unknown",
+          "temperature_c": 40.2,
+          "civilians": {
+            "count": 158,
+            "condition": "injured",
+            "location": "main stage hall"
+          },
+          "systems": [
+            {
+              "name": "hall IR gate",
+              "status": "degraded"
+            },
+            {
+              "name": "silver ring owner B-0356",
+              "status": "degraded"
+            }
+          ],
+          "evidence_of_threat": "Fevers of 40.2C, 40.4C and 40.6C on the hall IR gate; skin rippling at the jaw; nails 1 cm longer than at 18:55; breathing 40 per minute; 2 vampire subjects at row 16; 5 injured civilians at the foot of the stairs; moon 93% lit at azimuth 54 with moonrise in 7 minutes",
+          "ordinary_explanation": "No ordinary cause is offered for the transformation signs: the 19:33 main-stage wolf scare was already traced to mic 3 and team 12's headbands, and the 19:46 report attributes the dead breaker and missing house-light slider to deliberate disabling rather than fault. The IR gate readings are elevated rather than cold, so they do not match the 15-16C rear-row readings from 19:46.",
+          "deliberate_act": true,
+          "creature_countered": false,
+          "verdict": "real_threat",
+          "people_in_reach": 158,
+          "people_hurt": 5,
+          "severity": "critical",
+          "summary": "Full Moon Labs' three members walked into the main stage hall and are transforming: IR gate temperatures of 40.2C, 40.4C and 40.6C, jaw skin rippling, nails 1 cm longer than at 18:55, breathing 40 per minute. Two vampire subjects sit at row 16, 158 attendees remain seated, and 5 civilians are injured at the foot of the stairs. Silver ring owner B-0356 stands by the SW stairwell with 4 sets of silver cutlery, but no countermeasure has been applied yet. Moon is 93% lit at azimuth 54 with moonrise in 7 minutes, and the stage manager is asking whether to cancel the demo.",
+          "evidence_quotes": [
+            {
+              "quote": "Fevers 40.2C, 40.4C, 40.6C",
+              "kind": "threat",
+              "why": "Elevated IR readings on the three subjects, consistent with the transformation signs rather than a normal reading"
+            },
+            {
+              "quote": "Skin rippling at the jaw",
+              "kind": "threat",
+              "why": "Active physical transformation in progress"
+            },
+            {
+              "quote": "nails 1 cm longer than at 18:55",
+              "kind": "threat",
+              "why": "Measured change over time, not a static condition"
+            },
+            {
+              "quote": "2 vampire subjects at row 16",
+              "kind": "threat",
+              "why": "Creature present in the seating block with the attendees"
+            },
+            {
+              "quote": "5 injured civilians at the foot of the stairs",
+              "kind": "people",
+              "why": "Headcount of injured people at the SW stairwell, the same weak point as the open rear door R2 from 19:46"
+            }
+          ]
+        },
+        "incident_id": "sim-nightfall-20",
+        "severity_tier": "CRITICAL_HAUNT",
+        "raw": "RADIO 19:55 moonrise in 7 min. Team Full Moon Labs left table 22 and walked into the main stage hall, three abreast, 20:05 slot on the board. Fevers 40.2C, 40.4C, 40.6C on the hall IR gate. Skin rippling at the jaw, nails 1 cm longer than at 18:55, breathing 40 per minute. About 158 attendees still seated; 2 vampire subjects at row 16; 5 injured civilians at the foot of the stairs. Silver ring owner B-0356 stands by the SW stairwell with 4 sets of silver cutlery. Hall lux 12. Moon 93% lit, azimuth 54. Stage manager asks if the demo should be cancelled."
+      }
+    },
+    {
+      "t": 3.338,
+      "msg": {
+        "type": "step",
+        "id": "ingest",
+        "state": "done",
+        "detail": "the two vampire subjects at row 16 (the figures who entered the main stage through rear door R2 at 19:41 and took seats in rows 14-16) in main_stage (parasail-minimax-m31-flash)",
+        "ms": 2203
+      }
+    },
+    {
+      "t": 3.345,
+      "msg": {
+        "type": "route",
+        "label": "corporeal",
+        "playbook": "Corporeal (zombies, werewolves, vampires, cryptids)",
+        "arsenal": [
+          {
+            "id": "silver_netting",
+            "name": "Silver netting"
+          },
+          {
+            "id": "barricade_foam",
+            "name": "Rapid barricade foam"
+          },
+          {
+            "id": "flare_line",
+            "name": "Magnesium flare line"
+          },
+          {
+            "id": "uv_floodlights",
+            "name": "UV floodlights"
+          },
+          {
+            "id": "sound_cannon",
+            "name": "Infrasound cannon"
+          },
+          {
+            "id": "power_cut",
+            "name": "Sector power cut"
+          },
+          {
+            "id": "garlic_line",
+            "name": "Garlic line at the threshold"
+          },
+          {
+            "id": "no_invitation",
+            "name": "Do not invite: revoke invitations"
+          },
+          {
+            "id": "seed_scatter",
+            "name": "Poppy seed scatter"
+          },
+          {
+            "id": "name_calling",
+            "name": "Call by badge name"
+          },
+          {
+            "id": "raise_blinds",
+            "name": "Raise the blinds"
+          }
+        ]
+      }
+    },
+    {
+      "t": 3.345,
+      "msg": {
+        "type": "step",
+        "id": "triage",
+        "state": "done",
+        "detail": "routed to the corporeal playbook",
+        "ms": 2211
+      }
+    },
+    {
+      "t": 3.346,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "running",
+        "detail": "Lore Researcher is searching You.com",
+        "ms": 0
+      }
+    },
+    {
+      "t": 4.047,
+      "msg": {
+        "type": "search",
+        "query": "vampire folklore weaknesses silver garlic sunlight stake",
+        "hits": [
+          {
+            "n": 1,
+            "title": "r/AskScienceFiction on Reddit: [Vampires] why are they actually ...",
+            "url": "https://www.reddit.com/r/AskScienceFiction/comments/17r3qx8/vampires_why_are_they_actually_weak_against/"
+          },
+          {
+            "n": 2,
+            "title": "Weaknesses – Maegan A. Stebbins – Maverick-Werewolf's Den",
+            "url": "https://maverickwerewolf.com/vampire-facts/weaknesses/"
+          },
+          {
+            "n": 3,
+            "title": "Weaknesses of the Vampire - Monstropedia",
+            "url": "https://www.monstropedia.org/index.php?title=Weaknesses_of_the_Vampire"
+          },
+          {
+            "n": 4,
+            "title": "Vampire Weaknesses: The Complete List - Optic Flux",
+            "url": "https://www.opticflux.com/vampire-weaknesses-the-complete-list/77518/"
+          }
+        ]
+      }
+    },
+    {
+      "t": 4.049,
+      "msg": {
+        "type": "search",
+        "query": "crowd safety barricade evacuation venue emergency foam barrier",
+        "hits": [
+          {
+            "n": 5,
+            "title": "Enhance Event Safety with Crowd Control Barriers - DB Fencing",
+            "url": "https://metalfencetech.com/crowd-control-barriers-a-comprehensive-guide-for-event-organizers-and-procurement-managers/"
+          },
+          {
+            "n": 6,
+            "title": "GIGS Stage Barricades | Safe Barriers for every event | eps.net",
+            "url": "https://eps.net/en/products/crowd-control/gigs-stage-barricades/"
+          },
+          {
+            "n": 7,
+            "title": "Crowd Control Barriers & Safety Barricades | EPIC Solutions",
+            "url": "https://www.epiccrowdcontrol.com/"
+          },
+          {
+            "n": 8,
+            "title": "Stage Front Barrier: The Complete Guide to Stage-Edge Crowd Safety",
+            "url": "https://barrierhq.com/blogs/fos-barriers/stage-front-barrier-the-complete-guide-to-stage-edge-crowd-safety"
+          }
+        ]
+      }
+    },
+    {
+      "t": 8.738,
+      "msg": {
+        "type": "search",
+        "query": "wttr.in astronomy",
+        "hits": [
+          {
+            "n": 9,
+            "title": "wttr.in astronomy for San Francisco (live)",
+            "url": "https://wttr.in/San+Francisco?format=j1"
+          }
+        ]
+      }
+    },
+    {
+      "t": 8.907,
+      "msg": {
+        "type": "search",
+        "query": "San Francisco sunset moonrise 2026-10-28 timeanddate",
+        "hits": [
+          {
+            "n": 10,
+            "title": "Moonrise, Moonset, and Moon Phase in San Francisco",
+            "url": "https://www.timeanddate.com/moon/usa/san-francisco"
+          },
+          {
+            "n": 11,
+            "title": "Sun & moon times today, San Francisco, California, USA",
+            "url": "https://www.timeanddate.com/astronomy/usa/san-francisco"
+          },
+          {
+            "n": 12,
+            "title": "Sunrise and sunset times in San Francisco",
+            "url": "https://www.timeanddate.com/sun/usa/san-francisco"
+          }
+        ]
+      }
+    },
+    {
+      "t": 8.907,
+      "msg": {
+        "type": "sources",
+        "sources": [
+          {
+            "title": "r/AskScienceFiction on Reddit: [Vampires] why are they actually ...",
+            "url": "https://www.reddit.com/r/AskScienceFiction/comments/17r3qx8/vampires_why_are_they_actually_weak_against/",
+            "description": "I like to think the 'stake through the heart' bit is meant to be like an ironic punishment for Vlad the Impaler that makes him and his vampire 'bloodline' susceptible to the fate he subjected so many of his enemies to. ... Garlic, salt and silver are all associated with different warding from evil. Garlic has folkloric ...",
+            "snippet": "I like to think the 'stake through the heart' bit is meant to be like an ironic punishment for Vlad the Impaler that makes him and his vampire 'bloodline' susceptible to the fate he subjected so many of his enemies to. ... Garlic, salt and silver are all associated with different warding from evil. Garlic has folkloric use as a preservative and healing herb, keeping rot and putrefaction from spreading to or affecting things.",
+            "n": 1,
+            "query": "vampire folklore weaknesses silver garlic sunlight stake"
+          },
+          {
+            "title": "Weaknesses – Maegan A. Stebbins – Maverick-Werewolf's Den",
+            "url": "https://maverickwerewolf.com/vampire-facts/weaknesses/",
+            "description": "Please note that this post will ... ones. I’ll save the full list for when I publish my own book on vampires in folklore. So, like I did in my post on werewolf weaknesses, let’s break them down. Stake – The trusty stake, the old standby....",
+            "snippet": "Please note that this post will not include every vampire weakness as found in folklore and pop culture, as that would be absolutely massive; it will cover the most common ones. I’ll save the full list for when I publish my own book on vampires in folklore. So, like I did in my post on werewolf weaknesses, let’s break them down. Stake – The trusty stake, the old standby.",
+            "n": 2,
+            "query": "vampire folklore weaknesses silver garlic sunlight stake"
+          },
+          {
+            "title": "Weaknesses of the Vampire - Monstropedia",
+            "url": "https://www.monstropedia.org/index.php?title=Weaknesses_of_the_Vampire",
+            "description": "Once a stake had been driven through the heart and the body decapitated, garlic bulbs were used to stuff the mouth. The garlic’s anti-evil properties severed the bond between the inhabiting demonic spirit and the dead flesh. This ensured that, if it was decided not to burn the corpse, the Vampire would be unable to regenerate itself and return to take its vengeance. Silver is a relatively recent addition to Vampire folklore...",
+            "snippet": "If it pierces the heart, the Vampire dies. Since silver is too soft to make a serious weapon (with the exception being stakes, bullets, or projectile points), it is used in steel alloys and to plate steel blades (a process called silvering). The most popular choices for such applications are blades, especially swords, daggers, or knives. If a priest blesses the blades, then their efficacy is increased considerably. In folklore, one clear reference is found in Serbia.",
+            "n": 3,
+            "query": "vampire folklore weaknesses silver garlic sunlight stake"
+          },
+          {
+            "title": "Vampire Weaknesses: The Complete List - Optic Flux",
+            "url": "https://www.opticflux.com/vampire-weaknesses-the-complete-list/77518/",
+            "description": "In Eastern European folklore, vampires often fear garlic, holy symbols, and sunlight, reflecting local religious and environmental influences. Meanwhile, modern interpretations sometimes expand or alter these vulnerabilities, introducing elements like silver or specific rituals.",
+            "snippet": "Hidden in legends and lore, vampire weaknesses reveal surprising truths—discover the ultimate list that might just change everything you thought you knew.",
+            "n": 4,
+            "query": "vampire folklore weaknesses silver garlic sunlight stake"
+          },
+          {
+            "title": "Enhance Event Safety with Crowd Control Barriers - DB Fencing",
+            "url": "https://metalfencetech.com/crowd-control-barriers-a-comprehensive-guide-for-event-organizers-and-procurement-managers/",
+            "description": "Discover how crowd control barriers improve safety and efficiency at events, ensuring smooth crowd management while enhancing the overall attendee experience.",
+            "snippet": "These safety barriers aren’t just about restriction—they’re about creating structure that protects everyone involved. From preventing unauthorized access to sensitive areas to facilitating swift emergency evacuations, the strategic placement of barriers directly impacts attendee safety.",
+            "n": 5,
+            "query": "crowd safety barricade evacuation venue emergency foam barrier"
+          },
+          {
+            "title": "GIGS Stage Barricades | Safe Barriers for every event | eps.net",
+            "url": "https://eps.net/en/products/crowd-control/gigs-stage-barricades/",
+            "description": "GIGS Stage Barricades: Crowd management from the market leader ✓ For most safety and resistance for high traffic event areas",
+            "snippet": "How many visitors or crowds do you expect, and how many barricade lines will ensure the necessary security for them? What kind of event takes place? How is the audience composed from this point of view? What conclusions can be made about audience behavior? What about access and escape route capacities and requirements in the case of evacuation? Are modules like the GIGS Emergency Gate, the GIGS Truck Gate, or GIGS Multicore Barricade Modules required?",
+            "n": 6,
+            "query": "crowd safety barricade evacuation venue emergency foam barrier"
+          },
+          {
+            "title": "Crowd Control Barriers & Safety Barricades | EPIC Solutions",
+            "url": "https://www.epiccrowdcontrol.com/",
+            "description": "Shop crowd control barriers, stanchions, safety barricades, sign stands, and more at Epic Crowd Control. Rent or buy with custom solutions and over 30 years of experience.",
+            "snippet": "PLASTIC BARRIERS STEEL BARRICADES RETRACTABLE STANCHIONS ROPE STANCHIONS BARRIER JACKETS · • Event Management & Concerts • Construction & Roadwork • Airports & Transportation Hubs • Stadiums & Venues • Municipal & Government Projects · - Explore our full range of crowd control barriers",
+            "n": 7,
+            "query": "crowd safety barricade evacuation venue emergency foam barrier"
+          },
+          {
+            "title": "Stage Front Barrier: The Complete Guide to Stage-Edge Crowd Safety",
+            "url": "https://barrierhq.com/blogs/fos-barriers/stage-front-barrier-the-complete-guide-to-stage-edge-crowd-safety",
+            "description": "Everything you need to know about stage front barriers, their role in live-event safety, and how they integrate into professional FOS systems. A stage front barrier is the primary safety barricade installed directly along the edge of the concert stage to protect performers, crew, and the audience.",
+            "snippet": "A stage front barrier is a reinforced barricade system engineered to sit directly between the stage and the audience. Its purpose is to: ... Stage front barriers are used at concerts, stadium events, festivals, televised productions, and any venue where crowd density is high.",
+            "n": 8,
+            "query": "crowd safety barricade evacuation venue emergency foam barrier"
+          },
+          {
+            "title": "wttr.in astronomy for San Francisco (live)",
+            "url": "https://wttr.in/San+Francisco?format=j1",
+            "description": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+            "snippet": "Sunset 18:15, moonrise 20:02, Waning Gibbous, 95% lit",
+            "n": 9,
+            "query": "wttr.in astronomy"
+          },
+          {
+            "title": "Moonrise, Moonset, and Moon Phase in San Francisco",
+            "url": "https://www.timeanddate.com/moon/usa/san-francisco",
+            "description": "Moonrise and moonset time, Moon direction, and Moon phase in San Francisco – California – USA for October 2026. When and where does the Moon rise and set?",
+            "snippet": "Home Sun, Moon & Space Moonrise and moonset USA San Francisco ... Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Sunrise and sunset times for San Francisco",
+            "n": 10,
+            "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+          },
+          {
+            "title": "Sun & moon times today, San Francisco, California, USA",
+            "url": "https://www.timeanddate.com/astronomy/usa/san-francisco",
+            "description": "Time for sunrise, sunset, moonrise, and moonset in San Francisco – California – USA. Dawn and dusk (twilight) times and Sun and Moon position. Takes into account Daylight Saving Time (DST).",
+            "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. ... The Moon's path in San Francisco today. The horizontal line signifies the horizon, the vertical lines show times and headings of moonrise and moonset.",
+            "n": 11,
+            "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+          },
+          {
+            "title": "Sunrise and sunset times in San Francisco",
+            "url": "https://www.timeanddate.com/sun/usa/san-francisco",
+            "description": "Calculations of sunrise and sunset in San Francisco – California – USA for October 2026. Generic astronomy calculator to calculate times for sunrise, sunset, moonrise, moonset for many cities, with daylight saving time and time zones taken in account.",
+            "snippet": "Note that Daylight Saving Time ends on Sunday, November 1, 2026 at 2:00 am, and this is accounted for above. Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec · Sun and Moon times today for San Francisco Moonrise and moonset times for San Francisco Phases of the Moon for San Francisco",
+            "n": 12,
+            "query": "San Francisco sunset moonrise 2026-10-28 timeanddate"
+          }
+        ],
+        "research": "**Field read — vampire subjects, row 16 (corporeal, seated among 158)**\n\n- **Silver netting / silver cutlery (B-0356's 4 sets) — SUPPORTED.** Silver is one of the classic warding metals in vampire folklore, alongside garlic and salt [1], and the standard kill mechanism is a stake or blade driven through the heart, with silver commonly plated onto such blades because pure silver is too soft to work alone [3]. Practical use here: the cutlery is not a stake, so it is best deployed as a silver barrier/netting line to fence rows 14–16 rather than as an improvised piercing weapon [1][3].\n\n- **Garlic line at the threshold — SUPPORTED.** Garlic is explicitly grouped with salt and silver as traditional warding agents against evil [1], and appears among the most commonly cited vampire weaknesses in folklore compilations [2]. Place it on the aisle and stairwell approaches to the row 14–16 block, not as a projectile.\n\n- **Barricade foam — SUPPORTED for crowd safety only, not as a countermeasure.** Event-safety guidance treats physical barriers as the core tool for separating a hazard zone from seated attendees and for preserving emergency egress routes [5][6][7][8]. Use it to seal the row 14–16 pocket and to open/protect a clear evacuation lane for the 5 injured at the foot of the stairs; no source supports foam as a means of harming or repelling a vampire.\n\n- **UV floodlights — NOT SUPPORTED.** The folklore weakness is sunlight, and my retrieved sources do not establish that UV floodlight output is equivalent [3][4]. Also note the operational fact: the moon is 93% lit but moonrise is 7 minutes out, so no natural sunlight is available in the hall in the near term. Treat UV as unproven and do not count it as a primary countermeasure.\n\n- **Magnesium flare line, infrasound cannon, sector power cut — NOT SUPPORTED.** None of the retrieved folklore sources list light-flare devices, infrasound, or electrical disruption as vampire weaknesses [1][2][3][4]. A power cut would also darken the hall and remove your lighting/PA control while 158 people remain seated and 5 are injured — no source supports it.\n\n- **No-invitation, poppy seed scatter, calling by badge name, raising blinds — NOT SUPPORTED for this entity.** These are invitation/identity/occlusion-type controls; my searches surfaced no source tying them to vampires [1][2][3][4]. Raising blinds would only reduce ambient light, which the sources do not treat as a weakness.\n\n**Bottom line for the stage manager:** the demo should be cancelled or held — the supported moves are silver containment at rows 14–16, garlic on the approaches, and foam barricades to protect the seated crowd and the injured [1][3][5][6]. Do not rely on UV, flares, infrasound, or a power cut [1][2][3][4]."
+      }
+    },
+    {
+      "t": 8.907,
+      "msg": {
+        "type": "step",
+        "id": "ground",
+        "state": "done",
+        "detail": "4 search(es), 12 source(s)",
+        "ms": 5560
+      }
+    },
+    {
+      "t": 8.908,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "running",
+        "detail": "Parasail is choosing and ordering components",
+        "ms": 0
+      }
+    },
+    {
+      "t": 9.613,
+      "msg": {
+        "type": "frame",
+        "title": "Full Moon Labs — Two Vampire Subjects at Row 16",
+        "theme": "blood-moon"
+      }
+    },
+    {
+      "t": 9.614,
+      "msg": {
+        "type": "frame",
+        "sound_cue": "sting_vampire"
+      }
+    },
+    {
+      "t": 9.732,
+      "msg": {
+        "type": "component",
+        "index": 0,
+        "component": {
+          "type": "ThreatBanner",
+          "why": "Headline and one directive for the floor",
+          "props": {
+            "severity": "critical",
+            "directive": "Cancel the demo. Seal rows 14-16 with silver and garlic the aisle approaches.",
+            "size": "hero",
+            "title": "Two vampires seated in row 16"
+          }
+        }
+      }
+    },
+    {
+      "t": 9.732,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "1 component(s) placed",
+        "ms": 823
+      }
+    },
+    {
+      "t": 9.868,
+      "msg": {
+        "type": "component",
+        "index": 1,
+        "component": {
+          "type": "CivilianTracker",
+          "why": "158 attendees and 5 injured at the SW stairwell",
+          "props": {
+            "count": 158,
+            "location": "Main stage hall, rows 14-16 and foot of the SW stairs",
+            "condition": "injured",
+            "priority": "high",
+            "size": "standard",
+            "title": "Who's still in the hall"
+          }
+        }
+      }
+    },
+    {
+      "t": 9.868,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "2 component(s) placed",
+        "ms": 959
+      }
+    },
+    {
+      "t": 10.141,
+      "msg": {
+        "type": "component",
+        "index": 2,
+        "component": {
+          "type": "FloorPlan",
+          "why": "Real threat seated among 158 people; needs sector map and egress",
+          "props": {
+            "hot_sector": "main_stage",
+            "seal": [
+              "main_stage"
+            ],
+            "safe_route": [
+              "main_stage",
+              "lounge",
+              "entrance"
+            ],
+            "view": "floor",
+            "anchor": "none",
+            "scene": "sector_main_stage",
+            "markers": [
+              {
+                "sector": "main_stage",
+                "label": "2 vampire subjects, row 16",
+                "kind": "threat"
+              },
+              {
+                "sector": "main_stage",
+                "label": "158 attendees seated",
+                "kind": "people"
+              },
+              {
+                "sector": "main_stage",
+                "label": "5 injured at SW stairs",
+                "kind": "people"
+              },
+              {
+                "sector": "main_stage",
+                "label": "Silver cutlery ready, unused",
+                "kind": "countermeasure"
+              }
+            ],
+            "size": "standard",
+            "title": "Main stage, rows 14-16"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.142,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "3 component(s) placed",
+        "ms": 1233
+      }
+    },
+    {
+      "t": 10.362,
+      "msg": {
+        "type": "component",
+        "index": 3,
+        "component": {
+          "type": "CountermeasurePicker",
+          "why": "Real threat, people in reach; operator must pick a dispatch",
+          "props": {
+            "target_entity": "vampire",
+            "options": [
+              {
+                "id": "silver_netting",
+                "support": "strong",
+                "rationale": "Silver is a classic warding metal; use cutlery as a fencing line at rows 14-16.",
+                "source": 1
+              },
+              {
+                "id": "garlic_line",
+                "support": "strong",
+                "rationale": "Garlic is a traditional warding agent; place on aisle and stairwell approaches.",
+                "source": 1
+              },
+              {
+                "id": "barricade_foam",
+                "support": "moderate",
+                "rationale": "Barriers separate the hazard zone from seated attendees and keep egress clear.",
+                "source": 5
+              }
+            ],
+            "recommended": "silver_netting",
+            "size": "standard",
+            "title": "Pick a countermeasure"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.362,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "4 component(s) placed",
+        "ms": 1453
+      }
+    },
+    {
+      "t": 10.469,
+      "msg": {
+        "type": "component",
+        "index": 4,
+        "component": {
+          "type": "ThermalReadout",
+          "why": "IR gate reported fevers of 40.2C on subjects",
+          "props": {
+            "temperature_c": 40.2,
+            "baseline_c": 37,
+            "status": "elevated",
+            "size": "compact",
+            "title": "Fever readings at the gate"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.469,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "5 component(s) placed",
+        "ms": 1560
+      }
+    },
+    {
+      "t": 10.538,
+      "msg": {
+        "type": "component",
+        "index": 5,
+        "component": {
+          "type": "SystemsBoard",
+          "why": "Hall IR gate degraded and silver ring owner B-0356 degraded",
+          "props": {
+            "systems": [
+              {
+                "name": "hall IR gate",
+                "status": "degraded"
+              },
+              {
+                "name": "silver ring owner B-0356",
+                "status": "degraded"
+              }
+            ],
+            "size": "compact",
+            "title": "Systems in the hall"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.538,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "6 component(s) placed",
+        "ms": 1629
+      }
+    },
+    {
+      "t": 10.724,
+      "msg": {
+        "type": "component",
+        "index": 6,
+        "component": {
+          "type": "SkyClock",
+          "why": "Moonrise in 7 minutes, 93% lit; time of day changes the threat",
+          "props": {
+            "focus": "moonrise",
+            "warning": "",
+            "cited": [
+              9,
+              10,
+              11
+            ],
+            "size": "compact",
+            "title": "Moonrise in 7 minutes"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.724,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "7 component(s) placed",
+        "ms": 1815
+      }
+    },
+    {
+      "t": 10.864,
+      "msg": {
+        "type": "component",
+        "index": 7,
+        "component": {
+          "type": "EntityCard",
+          "why": "Art library has a vampire matching the report",
+          "props": {
+            "image": "entity_vampire",
+            "verdict": "real",
+            "caption": "Pale vampire in a long dark coat and lanyard among attendees",
+            "size": "standard",
+            "title": "Subject at row 16"
+          }
+        }
+      }
+    },
+    {
+      "t": 10.864,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "progress",
+        "detail": "8 component(s) placed",
+        "ms": 1955
+      }
+    },
+    {
+      "t": 11.205,
+      "msg": {
+        "type": "step",
+        "id": "compose",
+        "state": "done",
+        "detail": "8 components: ThreatBanner, CivilianTracker, FloorPlan, CountermeasurePicker, ThermalReadout, SystemsBoard, SkyClock, EntityCard (parasail-minimax-m31-flash)",
+        "ms": 2297
+      }
+    }
+  ]
+}

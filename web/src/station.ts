@@ -1,7 +1,7 @@
 // The page's state: everything the server has streamed for the current run, plus the operator's choices.
 // Every server message goes through `reduce`, so a late joiner that gets the history replayed ends up
 // in the same state as a page that watched the run live.
-import type { ArtAsset, Component, FixtureIncident, Floor, Incident, Library, Manifest, OperatorMoves, PageInfo, Scenario, ServerMessage, Sky, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
+import type { ArtAsset, Component, DispatchInfo, FixtureIncident, Floor, Incident, Library, Manifest, OperatorMoves, PageInfo, Scenario, ServerMessage, Sky, Source, StepId, StepState, Theme } from '../../shared/protocol.ts';
 
 interface Step {
     state?: StepState;
@@ -20,6 +20,7 @@ export interface State {
     connected: boolean;
     mode: 'live' | 'offline' | null;
     pages: PageInfo[];
+    dispatches: DispatchInfo[]; // posts to #loft-incident, newest first
     library: Library | null;
     incidents: FixtureIncident[];
     scenarios: Scenario[];
@@ -62,6 +63,7 @@ export const initial: State = {
     connected: false,
     mode: null,
     pages: [],
+    dispatches: [],
     library: null,
     incidents: [],
     scenarios: [],
@@ -137,6 +139,7 @@ function applyServerMessage(state: State, msg: ServerMessage, foreign = false): 
                 connected: state.connected,
                 mode: state.mode,
                 pages: state.pages,
+                dispatches: state.dispatches,
                 library: state.library,
                 incidents: state.incidents,
                 scenarios: state.scenarios,
@@ -177,6 +180,8 @@ function applyServerMessage(state: State, msg: ServerMessage, foreign = false): 
         }
         case 'pages':
             return { ...state, pages: msg.pages };
+        case 'dispatches':
+            return { ...state, dispatches: msg.dispatches };
         case 'error':
             return { ...state, banner: { text: msg.detail, kind: 'error' } };
         case 'speech':

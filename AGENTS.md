@@ -51,6 +51,7 @@ PAGING=off PROOF_CONTEXT=eval .venv/bin/python eval/run.py --label mine --steps 
 
 - **Answer keys never reach the model.** The server reads only `scenario.json` and the single-report fixtures. The eval reads `answer-key.json` only after a step has finished.
 - **`PAGING=off` for tests and the eval.** Without it, "Call expert" pages a real phone through PagerDuty.
+- **`DISPATCH=off` for tests.** With `LOFT_WEBHOOK_URL` set, "Dispatch to #loft-incident" posts to the venue's real Discord channel (`server/dispatch.ts`).
 - **Ports.** The server defaults to 8666. Pick your own with `--port` so you do not collide with another running station.
 - **Node 24.22.1.** The server runs `.ts` files directly (type stripping), so only erasable TypeScript syntax works there. The One CLI refuses older Node.
 - **Keys only in the environment** (`.env` locally, Apify secrets on the platform). Never in code, fixtures, the image or the ledgers.
