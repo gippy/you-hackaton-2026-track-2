@@ -4,7 +4,7 @@ import type { StepId } from '../../shared/protocol.ts';
 import { tier } from './report.tsx';
 import type { State } from './station.ts';
 
-const STEPS: { id: StepId; label: string; partner: string }[] = [
+export const STEPS: { id: StepId; label: string; partner: string }[] = [
     { id: 'ingest', label: 'Intake', partner: 'Parasail' },
     { id: 'triage', label: 'Route', partner: 'CrewAI Flow' },
     { id: 'ground', label: 'Ground', partner: 'CrewAI agent · You.com' },

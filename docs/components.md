@@ -183,6 +183,14 @@ These parts are always there. The model doesn't choose them.
 - **Intake:** the facts the model read from the report: verdict, entity, sector, people and how many are hurt, EMF, temperature, systems by status and feed tier.
 - **Accessibility:** each panel has a heading, and the facts are a description list.
 
+### Building the station
+
+- **Shows:** while a run is in progress, a purple panel at the top of the stage: a live seconds counter against the usual 15 to 25, a line telling the operator to wait while panels stream in (with how many are placed so far), the four pipeline phases with their partners (done with its time, running, or still to come), a sweeping progress bar, and the pipeline's current activity, such as "Lore Researcher is searching You.com".
+- **When:** from the moment a step or incident is picked until the station is ready, then it goes.
+- **Powered by:** the pipeline's step events (`ingest`, `triage`, `ground`, `compose`), streamed by the server.
+- **Operator:** read only. The stepper stays focusable but waits until the run ends.
+- **Accessibility:** a `status` region, the running phase marked `aria-current="step"`, and no animation under reduced motion.
+
 ### Expert calls
 
 ![Expert calls with paging off, step 20](components/expert-calls.webp)

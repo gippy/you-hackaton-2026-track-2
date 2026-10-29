@@ -9,6 +9,7 @@ import { Card, IncidentHead, PanelBoundary, type Ctx } from './components.tsx';
 import { EXPERTS, ExpertCalls, callExpert, isOpen, pageFor, pageStatus } from './experts.tsx';
 import { FloorPlan } from './floorplan.tsx';
 import { layout } from './layout.ts';
+import { BuildProgress } from './progress.tsx';
 import { Rail } from './rail.tsx';
 import { ReportPanel, type CompileRequest } from './report.tsx';
 import { initial, reduce, type Event, type State } from './station.ts';
@@ -104,6 +105,7 @@ function Station({ state, ctx }: { state: State; ctx: Ctx | null }) {
     const [reasoning, setReasoning] = useState(false); // the model's "why" for each panel, on demand
     const { incident } = state;
     const progress = !incident ? 'Reading the incident…' : !state.sources.length ? 'Grounding countermeasures with You.com…' : 'Composing the station…';
+    const running = Boolean(state.source) && !state.manifest;
     return (
         <>
             <div className="stage-head">
@@ -112,6 +114,7 @@ function Station({ state, ctx }: { state: State; ctx: Ctx | null }) {
                     Reasoning
                 </button>
             </div>
+            {running && <BuildProgress state={state} />}
             <div className={`components ${reasoning ? 'reasoning' : ''}`}>
                 {ctx && state.components.length ? (
                     layout(state.components).map((p) => <Card key={`${p.index}-${p.component.type}`} index={p.index} component={p.component} ctx={ctx} span={p.span} tall={p.tall} />)
