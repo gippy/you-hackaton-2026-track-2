@@ -14,7 +14,6 @@ export default defineConfig({
     server: {
         proxy: {
             '/ws': { target: 'ws://127.0.0.1:8666', ws: true },
-            '/manifest.json': 'http://127.0.0.1:8666',
             '/art': 'http://127.0.0.1:8666',
             '/data': 'http://127.0.0.1:8666',
             '/speech': 'http://127.0.0.1:8666',
