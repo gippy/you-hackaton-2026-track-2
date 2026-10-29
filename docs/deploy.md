@@ -31,7 +31,7 @@ docker run --rm --name hcs-test -p 8680:4321 \
 
 Open http://127.0.0.1:8680. Locally there is no token, and the page works without one. To test the page the way Standby opens it, add any value: http://127.0.0.1:8680/?token=test. The WebSocket, sounds and art then all carry `?token=test`.
 
-The container builds Nightfall step 21 (a real threat, not the harmless step 1; the `Dockerfile` CMD passes `--incident sim-nightfall-21`) on its own as it starts, so the station is composed by the time the page connects.
+The container builds Nightfall step 1 (the `Dockerfile` CMD passes `--incident sim-nightfall-01`) on its own as it starts, so the station is composed by the time the page connects.
 
 Measured on an Apple Silicon Mac (arm64; the platform builds for amd64 itself):
 
@@ -142,6 +142,6 @@ Then open http://127.0.0.1:8689/ and stop the command with Ctrl+C.
 
 - **Cold start is about 9 to 13 seconds** for a small Actor (platform provisioning, not the image pull). This image is much larger than the probe's, so the first start after a pull is slower: measure it, and open the URL once before a demo to warm it.
 - **The run dies 5 minutes after the last viewer leaves.** An open WebSocket keeps it alive. Keep one tab open while judging. After that it is a cold start again, and saved runs under `out/` are gone with the container.
-- **Every cold start runs one pipeline.** The server builds Nightfall step 21 as it starts, which spends one set of Parasail and You.com calls.
+- **Every cold start runs one pipeline.** The server builds Nightfall step 1 as it starts, which spends one set of Parasail and You.com calls.
 - **The page needs the token in the URL.** The platform strips it before the request reaches the server, and no cookie is set, so the server cannot add it for the page.
 - **Paging is real.** A "Call expert" click opens a PagerDuty incident on service `P1KQZ39`. `PAGING=off` in the Actor's environment turns it off without a rebuild.
