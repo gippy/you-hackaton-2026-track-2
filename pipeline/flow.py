@@ -379,8 +379,7 @@ class HauntFlow(Flow[HauntState]):
                 self._emit({"type": "frame", "sound_cue": cue})
             for comp in parser.feed(text):
                 # Clean the components so far plus this one: it is sent only if the cleaning keeps it.
-                cleaned, _ = library.clean_manifest({"components": sent + [comp]}, arsenal, source_count,
-                                                    self.state.incident, quiet=quiet)
+                cleaned, _ = library.clean_manifest({"components": sent + [comp]}, source_count, self.state.incident, quiet)
                 if len(cleaned["components"]) > len(sent):
                     sent.append(comp)
                     self._emit({"type": "component", "index": len(sent) - 1, "component": cleaned["components"][-1]})
@@ -388,7 +387,7 @@ class HauntFlow(Flow[HauntState]):
 
         raw, model = chat_json(library.manifest_schema(arsenal, source_count, has_sky), "manifest",
                                system, self._compose_prompt(lead), on_text)
-        manifest, notes = library.clean_manifest(raw, arsenal, source_count, self.state.incident, quiet=quiet)
+        manifest, notes = library.clean_manifest(raw, source_count, self.state.incident, quiet)
         if not manifest["components"]:
             raise FlowFailed("the model returned a manifest with no usable components")
         self.state.manifest = manifest
