@@ -470,7 +470,7 @@ emit({"type": "result", "state": flow.state.model_dump()})     <span class="cm">
 
     @listen(ground)
     def compose(self): ...                            <span class="cm"># after ground</span></code></pre>
-      <p>A simplified view of <code>pipeline/flow.py:237</code> to <code>362</code>. The decorators mean this:</p>
+      <p>A simplified view of <code>pipeline/flow.py:236</code> to <code>359</code>. The decorators mean this:</p>
       <div class="tbl">
         <table>
           <thead><tr><th>Decorator</th><th>Meaning</th><th>Used on</th></tr></thead>
@@ -551,7 +551,7 @@ async function kickoff(inputs: Partial&lt;HauntState&gt;): Promise&lt;HauntState
       </figure>
 
       <h3>The state: one object every step reads and writes</h3>
-      <p><code>HauntState</code> (<code>pipeline/flow.py:221</code>) is a Pydantic model. Pydantic is Python's version of a zod schema: a class that declares typed fields with defaults and checks them. Each step reads and writes <code>self.state</code>, the way a class method uses <code>this.state</code>.</p>
+      <p><code>HauntState</code> (<code>pipeline/flow.py:220</code>) is a Pydantic model. Pydantic is Python's version of a zod schema: a class that declares typed fields with defaults and checks them. Each step reads and writes <code>self.state</code>, the way a class method uses <code>this.state</code>.</p>
       <div class="tbl">
         <table>
           <thead><tr><th>Field</th><th>Written by</th><th>Holds</th></tr></thead>
@@ -583,13 +583,13 @@ async function kickoff(inputs: Partial&lt;HauntState&gt;): Promise&lt;HauntState
     <section id="intake">
       <p class="eyebrow step">Step 1 of 4</p>
       <h2>Intake</h2>
-      <p>Intake turns the report into a structured incident: twenty fields the rest of the run can rely on. It is one call to Parasail, made by <code>ingest</code> (<code>pipeline/flow.py:259</code>).</p>
+      <p>Intake turns the report into a structured incident: twenty fields the rest of the run can rely on. It is one call to Parasail, made by <code>ingest</code> (<code>pipeline/flow.py:255</code>).</p>
 
       <h3>What the model is given</h3>
       <ul>
-        <li><strong>A system prompt,</strong> <code>EXTRACT_SYSTEM</code> (line 93). It says: you are the intake officer; use only what the report says; here are the eight loft sectors and their landmarks; here is how to tell corporeal, spectral and anomalous apart; never rate severity from the feed's label.</li>
+        <li><strong>A system prompt,</strong> <code>EXTRACT_SYSTEM</code> (line 92). It says: you are the intake officer; use only what the report says; here are the eight loft sectors and their landmarks; here is how to tell corporeal, spectral and anomalous apart; never rate severity from the feed's label.</li>
         <li><strong>A user message</strong> with the feed's tier, the raw report and up to six findings from earlier steps of the scenario.</li>
-        <li><strong>The form itself,</strong> <code>INCIDENT_SCHEMA</code> (line 36), sent as a strict JSON schema.</li>
+        <li><strong>The form itself,</strong> <code>INCIDENT_SCHEMA</code> (line 40), sent as a strict JSON schema.</li>
         <li><strong>Temperature 0.</strong> Temperature is how much chance goes into each next word. At 0 the model always takes its top choice, so the same report should get the same reading.</li>
       </ul>
 
@@ -649,8 +649,8 @@ async function kickoff(inputs: Partial&lt;HauntState&gt;): Promise&lt;HauntState
 
       <h3>The two code checks</h3>
       <ol>
-        <li><strong>Quotes must be real</strong> (<code>clean_quotes</code>, <code>pipeline/library.py:105</code>). Each quote must appear in the report word for word, allowing only different spacing. A paraphrase, an unknown kind, or a quote that overlaps an earlier one is dropped with a note, so the report panel highlights only real text.</li>
-        <li><strong>Harmless needs a clean record</strong> (<code>NOT_HARMLESS</code>, <code>pipeline/flow.py:113</code>). If the model says harmless but also says someone acted deliberately, or something was held back by a countermeasure, the verdict becomes unclear. A miss costs more than a false alarm, so the code leans toward unclear.</li>
+        <li><strong>Quotes must be real</strong> (<code>clean_quotes</code>, <code>pipeline/library.py:110</code>). Each quote must appear in the report word for word, allowing only different spacing. A paraphrase, an unknown kind, or a quote that overlaps an earlier one is dropped with a note, so the report panel highlights only real text.</li>
+        <li><strong>Harmless needs a clean record</strong> (<code>NOT_HARMLESS</code>, <code>pipeline/flow.py:112</code>). If the model says harmless but also says someone acted deliberately, or something was held back by a countermeasure, the verdict becomes unclear. A miss costs more than a false alarm, so the code leans toward unclear.</li>
       </ol>
       <p>Then the worker emits an <code>incident</code> event. The page fills its headline from it and highlights the quotes in the report.</p>
       <figure>
@@ -689,14 +689,14 @@ async function kickoff(inputs: Partial&lt;HauntState&gt;): Promise&lt;HauntState
     <section id="triage">
       <p class="eyebrow step">Step 2 of 4</p>
       <h2>Triage</h2>
-      <p>Triage picks the playbook, and it is plain code (<code>entity_class</code>, <code>pipeline/library.py:67</code>). It tries three things in order:</p>
+      <p>Triage picks the playbook, and it is plain code (<code>entity_class</code>, <code>pipeline/library.py:72</code>). It tries three things in order:</p>
       <ol>
-        <li>Look for a creature word in the incident's <code>entity</code>, such as vampire, zombie, ghost, banshee or hex. The word lists live in <code>shared/library.json</code> under <code>entity_classes</code>.</li>
+        <li>Look for a creature word in the incident's <code>entity</code>, such as vampire, zombie, ghost, banshee or hex. A word counts only at its start, so "switch" doesn't name a witch. The word lists live in <code>shared/library.json</code> under <code>entity_classes</code>.</li>
         <li>Look for one in the one-line <code>summary</code>.</li>
         <li>Fall back to the model's own <code>entity_class</code>, and to anomalous if even that is missing.</li>
       </ol>
       <p>The code goes first because a named creature should always land in the same playbook. A vampire is corporeal even on a day the model hesitates.</p>
-      <p>The router returns the label, and CrewAI runs the matching playbook step. That step stores the label and emits a <code>route</code> event with the arsenal (<code>_playbook</code>, <code>pipeline/flow.py:284</code>). The three playbook steps are one-liners that exist so the Flow has a branch per label.</p>
+      <p>The router returns the label, and CrewAI runs the matching playbook step. That step stores the label and emits a <code>route</code> event with the arsenal (<code>_playbook</code>, <code>pipeline/flow.py:280</code>). The three playbook steps are one-liners that exist so the Flow has a branch per label.</p>
       <div class="tbl">
         <table>
           <thead><tr><th>Playbook</th><th>Arsenal</th><th>What the agent searches for</th><th>Expert</th></tr></thead>
@@ -714,7 +714,7 @@ async function kickoff(inputs: Partial&lt;HauntState&gt;): Promise&lt;HauntState
     <section id="ground">
       <p class="eyebrow step">Step 3 of 4</p>
       <h2>Grounding</h2>
-      <p>Grounding finds real sources for the countermeasures, so the station does not rest on the model's memory alone. It is the one step that uses a CrewAI Agent (<code>ground</code>, <code>pipeline/flow.py:306</code>).</p>
+      <p>Grounding finds real sources for the countermeasures, so the station does not rest on the model's memory alone. It is the one step that uses a CrewAI Agent (<code>ground</code>, <code>pipeline/flow.py:303</code>).</p>
 
       <figure>
         <div class="frame">
@@ -725,7 +725,7 @@ async function kickoff(inputs: Partial&lt;HauntState&gt;): Promise&lt;HauntState
             <rect class="code" x="16" y="112" width="130" height="76"/>
             <text class="t-s t-mut" x="81" y="134" text-anchor="middle">Flow step</text>
             <text class="t-mono t-b" x="81" y="154" text-anchor="middle">ground()</text>
-            <text class="t-mono t-xs t-mut" x="81" y="174" text-anchor="middle">flow.py:306</text>
+            <text class="t-mono t-xs t-mut" x="81" y="174" text-anchor="middle">flow.py:303</text>
 
             <rect class="model" x="256" y="50" width="180" height="180"/>
             <text class="t-s t-mut" x="346" y="74" text-anchor="middle">CrewAI Agent</text>
@@ -793,7 +793,7 @@ async function kickoff(inputs: Partial&lt;HauntState&gt;): Promise&lt;HauntState
     allow_delegation=False,                                 <span class="cm"># no handing work to other agents</span>
 )
 self.state.research = str(researcher.kickoff(prompt).raw)  <span class="cm"># run it, keep its final text</span></code></pre>
-      <p>From <code>_research</code>, <code>pipeline/flow.py:329</code>. The prompt names the incident, the entity, the playbook's arsenal and its search focus. It asks for exactly two searches, then 4 to 6 bullets that say which arsenal items the sources support, each ending with a source number like [2].</p>
+      <p>From <code>_research</code>, <code>pipeline/flow.py:326</code>. The prompt names the incident, the entity, the playbook's arsenal and its search focus. It asks for exactly two searches, then 4 to 6 bullets that say which arsenal items the sources support, each ending with a source number like [2].</p>
 
       <h3>The tool and the ledger</h3>
 <pre><code>class YouSearchTool(BaseTool):
@@ -836,10 +836,10 @@ self.state.research = str(researcher.kickoff(prompt).raw)  <span class="cm"># ru
     <section id="compose">
       <p class="eyebrow step">Step 4 of 4</p>
       <h2>Compose</h2>
-      <p>Compose builds the station (<code>compose</code>, <code>pipeline/flow.py:362</code>). Parasail picks panels from a fixed menu, orders them by urgency and fills their properties. It also picks a title, a color theme, an opening sound, a recommended action and up to three one-click actions.</p>
+      <p>Compose builds the station (<code>compose</code>, <code>pipeline/flow.py:359</code>). Parasail picks panels from a fixed menu, orders them by urgency and fills their properties. It also picks a title, a color theme, an opening sound, a recommended action and up to three one-click actions.</p>
 
       <h3>A menu printed fresh for each run</h3>
-      <p>The schema for this call is built per run by <code>manifest_schema</code> (<code>pipeline/library.py:183</code>). It is strict like the intake's, but its allowed values depend on what this run found:</p>
+      <p>The schema for this call is built per run by <code>manifest_schema</code> (<code>pipeline/library.py:171</code>). It is strict like the intake's, but its allowed values depend on what this run found:</p>
       <ul>
         <li>Countermeasure ids come from this playbook's arsenal only, so a corporeal run cannot offer a salt ring.</li>
         <li>Source numbers run from 0 to the number of sources found, where 0 means none.</li>
@@ -849,18 +849,18 @@ self.state.research = str(researcher.kickoff(prompt).raw)  <span class="cm"># ru
       <p>The model never writes markup. It can only choose panel types the page already knows how to draw, and fill in their fields.</p>
 
       <h3>What the model is told</h3>
-      <p>The system prompt, <code>COMPOSE_SYSTEM</code> (line 121), lists the panel types and when each one belongs. The rules that matter most:</p>
+      <p>The system prompt, <code>COMPOSE_SYSTEM</code> (line 120), lists the panel types and when each one belongs. The rules that matter most:</p>
       <ul>
         <li><strong>The action.</strong> Observe when the verdict is harmless or nobody is in reach. Contain when a real threat has people in reach. Evacuate when people are already hurt, pinned or fleeing.</li>
         <li><strong>The panels.</strong> ThreatBanner and SourceLedger in every station. CountermeasurePicker only for contain or evacuate. FloorPlan and CivilianTracker when real people are near a real threat.</li>
         <li><strong>A calm station for harmless reports.</strong> A low banner saying why it is safe, the ledger, at most one reading, the all-clear sound and observe.</li>
         <li><strong>No invented facts.</strong> Never invent a sensor reading. Every countermeasure needs a source number and a strength of support.</li>
       </ul>
-      <p>The user message carries the incident, the playbook and its arsenal ids, the numbered sources with snippets, and the agent's notes. The sky and the operator's moves follow when present (<code>_compose_prompt</code>, line 405).</p>
+      <p>The user message carries the incident, the playbook and its arsenal ids, the numbered sources with snippets, and the agent's notes. The sky and the operator's moves follow when present (<code>_compose_prompt</code>, line 401).</p>
 
       <div class="aside">
         <p class="eyebrow">The quiet rule</p>
-        <p>Some Nightfall steps happen hours before sunset. When nobody is hurt and the next sky event is more than 100 minutes away, the code decides the station should watch, not act (<code>far_from_sky</code>, <code>pipeline/library.py:83</code>).</p>
+        <p>Some Nightfall steps happen hours before sunset. When nobody is hurt and the next sky event is more than 100 minutes away, the code decides the station should watch, not act (<code>far_from_sky</code>, <code>pipeline/library.py:91</code>).</p>
         <p>It adds that instruction to the prompt and later drops any CountermeasurePicker. It decides before streaming starts, because <code>recommended_action</code> is the last field the model writes.</p>
       </div>
 
@@ -868,8 +868,8 @@ self.state.research = str(researcher.kickoff(prompt).raw)  <span class="cm"># ru
       <p>This call streams: Parasail sends the reply in small pieces as it writes. After each piece, a function called <code>on_text</code> receives the whole reply so far and looks for anything new that is complete.</p>
       <ul>
         <li>The title, theme and sound cue are short text fields near the top. A pattern match spots each one once its closing quote arrives, and a <code>frame</code> event sends it.</li>
-        <li>Panels sit inside the <code>components</code> array. <code>ComponentStream</code> (line 474) walks the text one character at a time, counting <code>{</code> and <code>[</code> up and <code>}</code> and <code>]</code> down. Braces inside quoted text don't count, so a rationale containing <code>}</code> can't confuse it.</li>
-        <li>When the count drops back to zero, one panel object has closed. The code parses it, runs the clean-up rules on it, and sends it as a <code>component</code> event if it survives.</li>
+        <li>Panels sit inside the <code>components</code> array. <code>ComponentStream</code> (line 479) finds where that array starts, then asks Python's own JSON parser to read one object from there. While the object is still open, the parser fails, and the code waits for more text. The parser also handles braces inside quoted text, so a rationale containing <code>}</code> can't confuse it.</li>
+        <li>When the parser reads a whole object, one panel has closed. The code runs the clean-up rules on it, and sends it as a <code>component</code> event if it survives.</li>
       </ul>
       <figure>
 <pre><code>{"title": "…", "theme": "blood-moon", "sound_cue": "sting_vampire",   <span class="cm">each sent once its closing quote arrives</span>
@@ -951,25 +951,22 @@ self.state.research = str(researcher.kickoff(prompt).raw)  <span class="cm"># ru
     <!-- ============================================================ RULES -->
     <section id="rules">
       <h2>The code's rules</h2>
-      <p><code>clean_manifest</code> (<code>pipeline/library.py:257</code>) is the referee between the model and the page. The schema already fixed the shape, so this enforces rules a schema cannot express. It never adds a panel the model did not choose.</p>
+      <p><code>clean_manifest</code> (<code>pipeline/library.py:243</code>) is the referee between the model and the page. The schema already fixed the shape, so this enforces rules a schema cannot express. It never adds a panel the model did not choose.</p>
       <div class="tbl">
         <table>
           <thead><tr><th>When</th><th>The code</th></tr></thead>
           <tbody>
-            <tr><td>A panel type the library doesn't know</td><td>Drops it.</td></tr>
             <tr><td>Intake said harmless and nobody acted deliberately</td><td>Drops CountermeasurePicker, CivilianTracker and FloorPlan. Sets the banner to low, the sound to all-clear and the action to observe. Keeps only unseal quick actions.</td></tr>
             <tr><td>Quiet: nobody hurt, next sky event over 100 minutes away</td><td>Drops CountermeasurePicker and sets the action to observe.</td></tr>
             <tr><td>EMFGauge at or below 5 milligauss</td><td>Drops it, since that is ordinary background.</td></tr>
             <tr><td>EMF reading above the gauge's own threshold</td><td>Sets its status to danger.</td></tr>
             <tr><td>ThermalReadout within half a degree of its normal</td><td>Drops it, unless it is the one calm panel of a harmless station.</td></tr>
             <tr><td>The same panel type twice</td><td>Drops the second.</td></tr>
-            <tr><td>CountermeasurePicker</td><td>Keeps each arsenal option once and sets out-of-range source numbers to 0. Makes sure the recommended option is a kept one, and lists it first, then the rest by strength of support.</td></tr>
+            <tr><td>CountermeasurePicker</td><td>Keeps each option once. Makes sure the recommended option is a kept one, and lists it first, then the rest by strength of support.</td></tr>
             <tr><td>SystemsBoard</td><td>Replaces its list with the intake's systems, and drops the panel when there are none.</td></tr>
-            <tr><td>FloorPlan</td><td>Keeps known sectors only. Starts the route at the hot sector when none is given, and ends it at the entrance when it stops inside. Keeps at most 6 markers with labels of at most 5 words, and turns a marker picture the library doesn't know into a plain dot.</td></tr>
+            <tr><td>FloorPlan</td><td>Starts the route at the hot sector when none is given, and ends it at the entrance when it stops inside. Cuts marker labels to at most 5 words, and drops a marker whose label ends up empty.</td></tr>
             <tr><td>CivilianTracker</td><td>Caps the count at <code>people_in_reach</code>, so it never shows more than the headline.</td></tr>
-            <tr><td>EntityCard with an unknown image</td><td>Drops it.</td></tr>
             <tr><td>SkyClock warning that contains a digit</td><td>Blanks it, because a time goes stale while the clock runs. The page shows the library's standing order instead.</td></tr>
-            <tr><td>Panel size outside hero, standard, compact</td><td>Makes it standard.</td></tr>
             <tr><td>Panel title over 6 words or 32 characters</td><td>Blanks it, and the page shows the panel's own name.</td></tr>
             <tr><td>SourceLedger</td><td>Marks as relied on only the sources the picker and the SkyClock cite.</td></tr>
             <tr><td>Quick actions</td><td>Keeps only moves this station can run, each once, at most 3. A label of 5 words or more gets the code's own label.</td></tr>
@@ -1042,12 +1039,12 @@ self.state.research = str(researcher.kickoff(prompt).raw)  <span class="cm"># ru
 
       <h3>What earlier steps found</h3>
       <p>Before a run, <code>earlier()</code> (<code>server/station.ts:139</code>) reads this station's saved runs of every earlier step. From each it takes the time, sector, entity, class, verdict and summary. A step never run on this station adds nothing.</p>
-      <p>The intake reads the last six, oldest first (<code>_earlier_facts</code>, <code>pipeline/flow.py:421</code>). It is told to use them to work out what "the figures" or "they" means, and to pick the class. The verdict must still come from this report's own evidence: a report whose own checks explain it is harmless, even mid-scenario.</p>
+      <p>The intake reads the last six, oldest first (<code>_earlier_facts</code>, <code>pipeline/flow.py:417</code>). It is told to use them to work out what "the figures" or "they" means, and to pick the class. The verdict must still come from this report's own evidence: a report whose own checks explain it is harmless, even mid-scenario.</p>
       <p>Step 20 shows it working. Its intake cites "the earlier 19:46 report", which it could only know from step 19's saved run.</p>
 
       <h3>What the operator did</h3>
       <p>The page sends the operator's moves with the compile request: the picked countermeasure, sealed sectors, how many people are out, and any experts called. The server keeps only known ids and sane numbers (<code>checkMoves</code>, <code>server/station.ts:373</code>).</p>
-      <p>Only compose sees them (<code>_moves_facts</code>, <code>pipeline/flow.py:447</code>). The prompt says to keep those sectors sealed unless the report shows otherwise, to say whether the pick still fits, and to count only people still inside. An expert already called is on the way, so the station must not ask for them again.</p>
+      <p>Only compose sees them (<code>_moves_facts</code>, <code>pipeline/flow.py:445</code>). The prompt says to keep those sectors sealed unless the report shows otherwise, to say whether the pick still fits, and to count only people still inside. An expert already called is on the way, so the station must not ask for them again.</p>
       <p>The eval sends no moves, so its prompts stay comparable from run to run.</p>
     </section>
 
@@ -1113,18 +1110,18 @@ self.state.research = str(researcher.kickoff(prompt).raw)  <span class="cm"># ru
         <table>
           <thead><tr><th>To change</th><th>Open</th></tr></thead>
           <tbody>
-            <tr><td>What the intake extracts</td><td><code>INCIDENT_SCHEMA</code>, <code>pipeline/flow.py:36</code></td></tr>
-            <tr><td>How the intake judges</td><td><code>EXTRACT_SYSTEM</code>, <code>pipeline/flow.py:93</code></td></tr>
-            <tr><td>When harmless is overruled</td><td><code>NOT_HARMLESS</code>, <code>pipeline/flow.py:113</code></td></tr>
-            <tr><td>How many earlier steps the intake reads</td><td><code>EARLIER_STEPS</code>, <code>pipeline/flow.py:119</code></td></tr>
+            <tr><td>What the intake extracts</td><td><code>INCIDENT_SCHEMA</code>, <code>pipeline/flow.py:40</code></td></tr>
+            <tr><td>How the intake judges</td><td><code>EXTRACT_SYSTEM</code>, <code>pipeline/flow.py:92</code></td></tr>
+            <tr><td>When harmless is overruled</td><td><code>NOT_HARMLESS</code>, <code>pipeline/flow.py:112</code></td></tr>
+            <tr><td>How many earlier steps the intake reads</td><td><code>EARLIER_STEPS</code>, <code>pipeline/flow.py:118</code></td></tr>
             <tr><td>Which words pick a playbook</td><td><code>entity_classes</code> in <code>shared/library.json</code></td></tr>
             <tr><td>A playbook's arsenal or search focus</td><td><code>playbooks</code> in <code>shared/library.json</code></td></tr>
-            <tr><td>What the Lore Researcher is asked</td><td><code>_research</code>, <code>pipeline/flow.py:329</code></td></tr>
+            <tr><td>What the Lore Researcher is asked</td><td><code>_research</code>, <code>pipeline/flow.py:326</code></td></tr>
             <tr><td>How sources are numbered</td><td><code>Ledger</code>, <code>pipeline/grounding.py:67</code></td></tr>
-            <tr><td>What compose is told</td><td><code>COMPOSE_SYSTEM</code>, <code>pipeline/flow.py:121</code>, and <code>_compose_prompt</code>, line 405</td></tr>
-            <tr><td>A panel's fields</td><td><code>manifest_schema</code>, <code>pipeline/library.py:183</code>, kept in line with <code>shared/protocol.ts</code></td></tr>
-            <tr><td>A rule on the model's panels</td><td><code>clean_manifest</code>, <code>pipeline/library.py:257</code></td></tr>
-            <tr><td>The order of the steps</td><td><code>HauntFlow</code>, <code>pipeline/flow.py:237</code></td></tr>
+            <tr><td>What compose is told</td><td><code>COMPOSE_SYSTEM</code>, <code>pipeline/flow.py:120</code>, and <code>_compose_prompt</code>, line 401</td></tr>
+            <tr><td>A panel's fields</td><td><code>manifest_schema</code>, <code>pipeline/library.py:171</code>, kept in line with <code>shared/protocol.ts</code></td></tr>
+            <tr><td>A rule on the model's panels</td><td><code>clean_manifest</code>, <code>pipeline/library.py:243</code></td></tr>
+            <tr><td>The order of the steps</td><td><code>HauntFlow</code>, <code>pipeline/flow.py:236</code></td></tr>
             <tr><td>The model or the fallback model</td><td><code>HAUNT_MODEL</code> and <code>HAUNT_FALLBACK_MODEL</code> in <code>.env</code></td></tr>
             <tr><td>What the server hands the worker</td><td><code>runLive</code> and <code>runWorker</code>, <code>server/station.ts:176</code> and <code>211</code></td></tr>
           </tbody>
