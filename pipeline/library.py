@@ -269,53 +269,57 @@ def clean_manifest(raw: dict, source_count: int, incident: dict, quiet: bool) ->
     components = []
     calm = is_harmless(incident)
     for comp in raw.get("components") or []:
-        kind = comp.get("type")
+        kind, props = comp.get("type"), comp.get("props") or {}
+        # These drops come before the repeat check, so a later panel of the same type can still be kept.
         if calm and kind in ("CountermeasurePicker", "CivilianTracker", "FloorPlan"):
             notes.append(f"dropped {kind}: the intake judged the report harmless")
             continue
         if quiet and kind == "CountermeasurePicker":
             notes.append("dropped CountermeasurePicker: nobody is hurt and the next sky event is hours away")
             continue
-        if kind == "EMFGauge" and float((comp.get("props") or {}).get("value_mg") or 0) <= EMF_NORMAL_MG:
+        if kind == "EMFGauge" and float(props.get("value_mg") or 0) <= EMF_NORMAL_MG:
             notes.append("dropped an EMFGauge showing an ordinary reading")
             continue
-        if kind == "ThermalReadout" and not calm and _flat((comp.get("props") or {})):
+        if kind == "ThermalReadout" and not calm and _flat(props):
             notes.append("dropped a ThermalReadout showing its normal temperature")
             continue
         if kind in seen:
             notes.append(f"dropped a repeated {kind}")
             continue
         seen.add(kind)
-        props = comp.get("props") or {}
-        if kind == "ThreatBanner" and calm and props.get("severity") != "low":
-            notes.append("the intake judged the report harmless: a low ThreatBanner")
-            props["severity"] = "low"
-        if kind == "EMFGauge" and float(props.get("value_mg") or 0) > float(props.get("threshold_mg") or 0) and props.get("status") != "danger":
-            # A reading past the gauge's own danger line is danger, whatever status the model gave.
-            notes.append("the EMF reading is above its threshold: danger")
-            props["status"] = "danger"
-        if kind == "CountermeasurePicker":
-            _clean_picker(props)
-        if kind == "SystemsBoard":
-            # The board shows the intake's systems, so it never lists one the report does not name.
-            props["systems"] = [{"name": s["name"], "status": s["status"]} for s in incident.get("systems") or []
-                                if s.get("name") and s["name"].lower() != "unknown"]
-            if not props.get("systems"):
-                notes.append("dropped a SystemsBoard with no systems")
-                continue
-        if kind == "FloorPlan":
-            _clean_floor_plan(props, notes)
-        reach = incident.get("people_in_reach") or 0
-        if kind == "CivilianTracker" and reach and (props.get("count") or 0) > reach:
-            # The headline counts the people the threat can reach; the tracker never shows more than that.
-            notes.append(f"the civilian count {props.get('count')} became the {reach} people in reach")
-            props["count"] = reach
-        if kind == "SkyClock" and any(ch.isdigit() for ch in props.get("warning") or ""):
-            # A time or a countdown in the warning goes stale as the clock runs; the page then uses the library's order.
-            notes.append("dropped a sky warning that states times instead of an order")
-            props["warning"] = ""
-        if kind == "SkyClock":
-            props["cited"] = sorted({n for n in props.get("cited") or [] if 1 <= n <= source_count})
+        match kind:
+            case "ThreatBanner":
+                if calm and props.get("severity") != "low":
+                    notes.append("the intake judged the report harmless: a low ThreatBanner")
+                    props["severity"] = "low"
+            case "EMFGauge":
+                # A reading past the gauge's own danger line is danger, whatever status the model gave.
+                if float(props.get("value_mg") or 0) > float(props.get("threshold_mg") or 0) and props.get("status") != "danger":
+                    notes.append("the EMF reading is above its threshold: danger")
+                    props["status"] = "danger"
+            case "CountermeasurePicker":
+                _clean_picker(props)
+            case "SystemsBoard":
+                # The board shows the intake's systems, so it never lists one the report does not name.
+                props["systems"] = [{"name": s["name"], "status": s["status"]} for s in incident.get("systems") or []
+                                    if s.get("name") and s["name"].lower() != "unknown"]
+                if not props["systems"]:
+                    notes.append("dropped a SystemsBoard with no systems")
+                    continue
+            case "FloorPlan":
+                _clean_floor_plan(props, notes)
+            case "CivilianTracker":
+                # The headline counts the people the threat can reach; the tracker never shows more than that.
+                reach = incident.get("people_in_reach") or 0
+                if reach and (props.get("count") or 0) > reach:
+                    notes.append(f"the civilian count {props.get('count')} became the {reach} people in reach")
+                    props["count"] = reach
+            case "SkyClock":
+                # A time or a countdown in the warning goes stale as the clock runs; the page then uses the library's order.
+                if any(ch.isdigit() for ch in props.get("warning") or ""):
+                    notes.append("dropped a sky warning that states times instead of an order")
+                    props["warning"] = ""
+                props["cited"] = sorted({n for n in props.get("cited") or [] if 1 <= n <= source_count})
         title = " ".join(str(props.get("title") or "").split())
         if len(title.split()) > 6 or len(title) > 32:
             # A cut title reads as a broken phrase, so the page shows the panel's own name instead.
@@ -324,17 +328,27 @@ def clean_manifest(raw: dict, source_count: int, incident: dict, quiet: bool) ->
         props["title"] = title
         components.append({"type": kind, "why": comp.get("why", ""), "props": props})
     # The ledger marks as relied on only the sources the countermeasures and the sky clock cite.
-    relied = sorted({o["source"] for c in components if c["type"] == "CountermeasurePicker" for o in c["props"]["options"] if o.get("source")}
-                    | {n for c in components if c["type"] == "SkyClock" for n in c["props"]["cited"]})
+    relied: set[int] = set()
+    for c in components:
+        if c["type"] == "CountermeasurePicker":
+            relied |= {o["source"] for o in c["props"]["options"] if o.get("source")}
+        elif c["type"] == "SkyClock":
+            relied |= set(c["props"]["cited"])
     for c in components:
         if c["type"] == "SourceLedger":
-            c["props"]["cited"] = relied
+            c["props"]["cited"] = sorted(relied)
+    if calm or quiet:
+        action = "observe"
+    elif raw.get("recommended_action") in ACTIONS:
+        action = raw["recommended_action"]
+    else:
+        action = "contain"
     out = {
         "title": raw.get("title") or "Haunted command station",
         "theme": raw.get("theme") if raw.get("theme") in THEMES else THEMES[0],
         "sound_cue": opening_cue(raw.get("sound_cue"), calm),
         "components": components,
-        "recommended_action": "observe" if calm or quiet else raw.get("recommended_action") if raw.get("recommended_action") in ACTIONS else "contain",
+        "recommended_action": action,
         "dispatch_rationale": raw.get("dispatch_rationale") or "",
         "quick_actions": _clean_quick_actions(raw.get("quick_actions"), components, calm, notes),
     }
