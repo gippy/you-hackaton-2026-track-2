@@ -11,13 +11,16 @@
 import { createHash } from 'node:crypto';
 
 import library from '../shared/library.json' with { type: 'json' };
-import type { Expert, PageInfo, RunState } from '../shared/protocol.ts';
-import { connection, findAction, one, OneError } from './one.ts';
+import type { Component, Expert, PageInfo, RunState } from '../shared/protocol.ts';
+import { type Action, type ActionRequest, cached, execute, findAction, one, OneError } from './one.ts';
 
 const POLL_MS = 15_000;
 const COOLDOWN_MS = 60_000; // one page per expert per minute, whatever the clicks
 const SERVICE = 'P1KQZ39'; // the PagerDuty account's one service
 const TASK = 'page an expert for a simulated incident and follow it';
+
+/** Pages whose expert is still on the way. */
+export const OPEN_PAGE: readonly PageInfo['status'][] = ['sending', 'triggered', 'acknowledged'];
 
 /** The PagerDuty actions the pager uses, as One's search query, method and path. */
 const ACTIONS = {
@@ -27,7 +30,7 @@ const ACTIONS = {
     get: ['get an incident by id', 'GET', '/incidents/{{id}}'],
     update: ['update an incident by id', 'PUT', '/incidents/{{id}}'],
 } as const;
-type Action = keyof typeof ACTIONS;
+type ActionName = keyof typeof ACTIONS;
 
 interface PageRequest {
     expert: Expert;
@@ -37,29 +40,26 @@ interface PageRequest {
     urgency: 'high' | 'low';
 }
 
-function actionId(action: Action): Promise<string> {
-    const [query, method, path] = ACTIONS[action];
+function pagerAction(name: ActionName): Promise<Action> {
+    const [query, method, path] = ACTIONS[name];
     return findAction('pager-duty', query, method, path, TASK);
 }
 
-/** Run a PagerDuty action through One with extra CLI flags, and return PagerDuty's response. */
-async function execute(action: Action, flags: string[], timeout: number, purpose: string): Promise<any> {
-    const [conn, id] = await Promise.all([connection('pager-duty'), actionId(action)]);
-    return (await one(['actions', 'execute', 'pager-duty', id, conn, ...flags], timeout, purpose)).response;
+/** Run a PagerDuty action through One, and return PagerDuty's response. */
+async function pagerDuty(name: ActionName, req: ActionRequest, purpose: string, timeout?: number): Promise<any> {
+    return (await execute('pager-duty', pagerAction(name), req, purpose, timeout)).response;
 }
 
-let from: Promise<string> | null = null;
+const from = new Map<string, Promise<string>>();
 
-/** The email PagerDuty requires in the From header: the account owner's. */
+/** The email PagerDuty requires in the From header: the account owner's, looked up once. */
 function fromEmail(): Promise<string> {
-    from ??= (async () => {
+    return cached(from, 'email', async () => {
         if (process.env.PAGERDUTY_FROM) return process.env.PAGERDUTY_FROM;
-        const owners = (await execute('listUsers', [], 120_000, 'find the From email'))?.users?.filter((u: any) => u.role === 'owner');
+        const owners = (await pagerDuty('listUsers', {}, 'find the From email'))?.users?.filter((u: any) => u.role === 'owner');
         if (owners?.length !== 1) throw new OneError(`PagerDuty has ${owners?.length ?? 0} owners; set PAGERDUTY_FROM in .env`);
         return owners[0].email as string;
-    })();
-    from.catch(() => (from = null));
-    return from;
+    });
 }
 
 export class Pager {
@@ -92,7 +92,7 @@ export class Pager {
     async open(req: PageRequest): Promise<void> {
         const key = `${req.incident_id}:${req.expert}`;
         const existing = this.pages.get(key);
-        if (existing && ['sending', 'triggered', 'acknowledged'].includes(existing.status)) return;
+        if (existing && OPEN_PAGE.includes(existing.status)) return;
         this.lastCall.set(req.expert, Date.now());
         const base: PageInfo = { key, expert: req.expert, incident_id: req.incident_id, title: req.title, urgency: req.urgency, status: 'sending', opened_at: new Date().toISOString(), acknowledged_by: [] };
         if (!this.enabled) {
@@ -101,7 +101,7 @@ export class Pager {
         }
         this.set(base);
         try {
-            const [email, createId] = await Promise.all([fromEmail(), actionId('create')]);
+            const [email, create] = await Promise.all([fromEmail(), pagerAction('create')]);
             const body = {
                 incident: {
                     type: 'incident',
@@ -112,14 +112,14 @@ export class Pager {
                     body: { type: 'incident_body', details: req.details },
                 },
             };
-            await one(['actions', 'load', createId]); // read the action's docs before its first execute
+            await one(['actions', 'load', create.id]); // read the action's docs before its first execute
             let incident: any;
             try {
-                incident = (await execute('create', ['-d', JSON.stringify(body), '--headers', JSON.stringify({ From: email })], 60_000, `call the ${req.expert}`))?.incident;
+                incident = (await pagerDuty('create', { data: body, headers: { From: email } }, `call the ${req.expert}`, 60_000))?.incident;
             } catch (err) {
                 // A second open incident with the same key is refused: follow the one that is open.
-                if (!/key|dedup|already/i.test(String((err as Error).message))) throw err;
-                const open = await execute('list', ['--query-params', JSON.stringify({ incident_key: key })], 120_000, 'find the open page');
+                if (!/dedup|already exists/i.test(String((err as Error).message))) throw err;
+                const open = await pagerDuty('list', { queryParams: { incident_key: key } }, 'find the open page');
                 incident = (open?.incidents ?? []).find((i: any) => i.status !== 'resolved');
             }
             if (!incident?.id) throw new OneError('PagerDuty did not return an incident');
@@ -140,7 +140,8 @@ export class Pager {
                 return;
             }
             try {
-                const incident = (await execute('get', ['--path-vars', JSON.stringify({ id: page.id })], 120_000, 'follow the page'))?.incident;
+                const incident = (await pagerDuty('get', { pathVars: { id: page.id } }, 'follow the page'))?.incident;
+                if (!incident) throw new OneError('PagerDuty did not return the incident');
                 const next = { ...page, ...fromIncident(incident) };
                 if (next.status !== page.status || next.acknowledged_by.join() !== page.acknowledged_by.join()) this.set(next);
             } catch (err) {
@@ -152,22 +153,23 @@ export class Pager {
 
     /** Resolve every open page: the station stood down. */
     async resolveAll(): Promise<void> {
-        for (const page of this.list()) {
-            if (page.status === 'triggered' || page.status === 'acknowledged') await this.resolve(page);
+        for (const page of [...this.pages.values()]) {
+            if (OPEN_PAGE.includes(page.status)) await this.resolve(page.key);
         }
     }
 
     /** Resolve one page in PagerDuty. A failure is shown on the page. */
-    async resolve(page: PageInfo): Promise<void> {
-        if (!page.id) return;
+    async resolve(key: string): Promise<void> {
+        const page = this.pages.get(key);
+        if (!page?.id) return;
         try {
-            const email = await fromEmail();
-            const flags = [
-                '-d', JSON.stringify({ incident: { type: 'incident_reference', status: 'resolved' } }),
-                '--path-vars', JSON.stringify({ id: page.id }),
-                '--headers', JSON.stringify({ From: email }),
-            ];
-            const incident = (await execute('update', flags, 60_000, 'resolve the page'))?.incident;
+            const req = {
+                data: { incident: { type: 'incident_reference', status: 'resolved' } },
+                pathVars: { id: page.id },
+                headers: { From: await fromEmail() },
+            };
+            const incident = (await pagerDuty('update', req, 'resolve the page', 60_000))?.incident;
+            if (!incident) throw new OneError('PagerDuty did not return the incident');
             this.set({ ...page, ...fromIncident(incident), error: undefined });
         } catch (err) {
             this.set({ ...page, error: `Resolve failed: ${String((err as Error).message).slice(0, 300)}` });
@@ -178,16 +180,16 @@ export class Pager {
 /** The page fields a PagerDuty incident fills in. */
 function fromIncident(incident: any): Pick<PageInfo, 'id' | 'number' | 'url' | 'status' | 'acknowledged_by'> {
     return {
-        id: incident?.id,
-        number: incident?.incident_number,
-        url: incident?.html_url,
-        status: incident?.status ?? 'triggered',
-        acknowledged_by: (incident?.acknowledgements ?? []).map((a: any) => a.acknowledger?.summary).filter(Boolean),
+        id: incident.id,
+        number: incident.incident_number,
+        url: incident.html_url,
+        status: incident.status ?? 'triggered',
+        acknowledged_by: (incident.acknowledgements ?? []).map((a: any) => a.acknowledger?.summary).filter(Boolean),
     };
 }
 
 /** Flatten whitespace and cut to `limit` characters, with an ellipsis when cut. */
-const short = (text: string, limit: number) => {
+export const short = (text: string, limit: number) => {
     const flat = (text || '').split(/\s+/).join(' ').trim();
     return flat.length <= limit ? flat : `${flat.slice(0, limit - 1).trimEnd()}…`;
 };
@@ -199,14 +201,14 @@ export function pageRequest(state: RunState, expert: Expert, countermeasure: str
     const arsenal = library.arsenal as Record<string, string>;
     const sector = sectors[inc.sector] ?? inc.sector;
     const people = inc.people_in_reach ?? inc.civilians?.count ?? 0;
-    // The same headline as the page's: what, where, when and who.
+    // What, where, when and who.
     const headline = [inc.entity.replace(/\s*\([^)]*\)/g, ''), sector, state.sky?.clock, `${people} people`].filter(Boolean).join(' · ');
-    const banner = manifest.components.find((c) => c.type === 'ThreatBanner');
-    const severity = banner?.type === 'ThreatBanner' ? banner.props.severity : inc.severity;
+    const banner = manifest.components.find((c): c is Extract<Component, { type: 'ThreatBanner' }> => c.type === 'ThreatBanner');
+    const severity = banner?.props.severity ?? inc.severity;
     const critical = ['critical', 'catastrophic'].includes(severity) || manifest.recommended_action === 'evacuate';
     const option = manifest.components.flatMap((c) => (c.type === 'CountermeasurePicker' ? c.props.options : [])).find((o) => o.id === countermeasure);
     const optionSource = option && state.sources.find((s) => s.n === option.source);
-    const directive = banner?.type === 'ThreatBanner' ? banner.props.directive : '';
+    const directive = banner?.props.directive ?? '';
     const details = [
         'Simulated incident from the Haunted Command Station, a hackathon demo. Nothing here is real.',
         `Incident: ${state.incident_id || 'pasted report'}, ${inc.entity} (threat ${inc.threat_level}/5, ${severity}).`,

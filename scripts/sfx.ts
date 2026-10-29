@@ -12,7 +12,7 @@ import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 
 import library from '../shared/library.json' with { type: 'json' };
-import { connection, executeToFile, findAction, one } from '../server/one.ts';
+import { executeToFile, findAction, one } from '../server/one.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const OUT = join(ROOT, 'web', 'public', 'sfx');
@@ -44,16 +44,12 @@ if (!todo.length) {
 for (const [id, s] of todo) console.log(`${args.list ? 'would generate' : 'generating'} ${id} (${s.duration} seconds${s.loop ? ', loop' : ''}): ${s.prompt}`);
 if (args.list) process.exit(0);
 
-const [actionId, key] = await Promise.all([
-    findAction('elevenlabs', 'generate sound effects from text', 'POST', '/sound-generation', 'make short sound effects for a dashboard'),
-    connection('elevenlabs'),
-]);
-await one(['actions', 'load', actionId]); // read the action's docs before its first execute
+const action = await findAction('elevenlabs', 'generate sound effects from text', 'POST', '/sound-generation', 'make short sound effects for a dashboard');
+await one(['actions', 'load', action.id]); // read the action's docs before its first execute
 
 for (const [id, s] of todo) {
-    const body = { text: s.prompt, duration_seconds: s.duration, ...(s.loop ? { loop: true } : {}) };
-    const args = ['actions', 'execute', 'elevenlabs', actionId, key, '-d', JSON.stringify(body), '--query-params', JSON.stringify({ output_format: FORMAT })];
-    const response = await executeToFile(args, join(OUT, `${id}.mp3`), `sound effect: ${id}`);
+    const data = { text: s.prompt, duration_seconds: s.duration, ...(s.loop ? { loop: true } : {}) };
+    const response = await executeToFile('elevenlabs', action, { data, queryParams: { output_format: FORMAT } }, join(OUT, `${id}.mp3`), `sound effect: ${id}`);
     made[id] = { prompt: s.prompt, duration: s.duration, ...(s.loop ? { loop: true } : {}) };
     writeFileSync(RECORD, `${JSON.stringify(made, null, 2)}\n`); // after every sound, so a failure keeps what was paid for
     console.log(`  saved web/public/sfx/${id}.mp3 (${Math.round(response.size / 1024)} KB)`);

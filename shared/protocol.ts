@@ -98,22 +98,20 @@ export interface SkyEvent {
     /** "HH:MM" in the Loft's time zone, and the same moment as ISO. */
     local: string;
     at: string;
-    /** Where `local` came from: wttr.in when the network was up, else suncalc. `computed` is suncalc's own. */
+    /** Where `local` came from: wttr.in when the network was up, else suncalc. */
     source: 'wttr.in' | 'suncalc';
-    computed: string;
 }
 
 /** The sky over the Loft for a scenario step, computed by server/sky.ts. */
 export interface Sky {
     day: string;
-    place: string;
     /** The scenario step's "HH:MM", or empty for live time. */
     clock: string;
     clock_at: string;
     events: SkyEvent[];
     /** Minutes from `clock` (or from when the run started) to each event; negative once it has passed. */
     minutes_to: Partial<Record<SkyEvent['id'], number>>;
-    moon: { phase: string; illumination: number; source: 'wttr.in' | 'suncalc' };
+    moon: { phase: string; illumination: number };
     live_source: { url: string; summary: string } | null;
 }
 
