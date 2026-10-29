@@ -9,9 +9,9 @@ The latest results, on the pipeline as it ships:
 
 | Scenario | Points (of 144) | Misses | False alarms | Report |
 |---|---|---|---|---|
-| Nightfall | **134.86** (mean of two passes, up from 114 for the first version) | 0/14, 0/14 | 1/5, 0/5 | [report.md](report.md) |
-| The Coffee Bar Phantom | 113.99 (one pass, before any tuning for it) | 0/11 | 1/5 | [report-phantom-c.md](report-phantom-c.md) |
-| Zombie Rush | 108.22 (one pass, before any tuning for it) | 1/15 | 3/5 | [report-zombies-c.md](report-zombies-c.md) |
+| Nightfall | **134.51** (mean of two passes, up from 114 for the first version) | 0/14, 0/14 | 0/5, 1/5 | [report.md](report.md) |
+| The Coffee Bar Phantom | 115.38 (one pass, before any tuning for it) | 0/11 | 1/5 | [report-phantom-d.md](report-phantom-d.md) |
+| Zombie Rush | 114.50 (one pass, before any tuning for it) | 1/15 | 2/5 | [report-zombies-d.md](report-zombies-d.md) |
 
 ## What it measures
 
@@ -103,7 +103,8 @@ All numbers are from the reports in this folder and in `archive/`.
 | + guard 1 | C, D | 134.17, 130.92 | 1/14, 2/14 | 0/5, 0/5 | 1/5, 1/5 |
 | + panel clean-up | E, F | 132.30, 129.55 | 1/14, 1/14 | 1/5, 1/5 | 1/5, 1/5 |
 | + generative features, operator moves, memory (first wording) | G, H | 132.50, 134.50 | 0/14, 0/14 | 1/5, 1/5 | 1/5, 1/5 |
-| + memory (final wording, current) | I, J | 133.30, 136.42 | 0/14, 0/14 | 1/5, 0/5 | 1/5, 1/5 |
+| + memory (final wording) | I, J | 133.30, 136.42 | 0/14, 0/14 | 1/5, 0/5 | 1/5, 1/5 |
+| + code clean-up, creature words matched at word starts (current) | K, L | 136.47, 132.55 | 0/14, 0/14 | 0/5, 1/5 | 1/5, 1/5 |
 
 1. **The first version contained almost everything.** It contained 21 of 24 steps, never evacuated, and copied the feed's tier label into the intake severity on 20 of 20 labelled steps. A `CRITICAL_HAUNT` label on a 4-second power sag became a critical station. 30 points were lost: 12.5 on harmless steps, 11.5 on real steps the key wants watched, 4 on contain against evacuate. Details: [baseline/fixes.md](baseline/fixes.md).
 2. **Judging harmless reports at intake, enforced in code, fixed the false alarms.** Harmless steps handled calmly went from 0/5 to 4 or 5 of 5 in every pass since, and the `all_clear` cue from 1/5 to 4 or 5 of 5. The feed tier is now copied on about half of the labelled steps instead of all of them.
@@ -112,13 +113,14 @@ All numbers are from the reports in this folder and in `archive/`.
 5. **Two attempts to observe the step 24 stand-down made misses worse**, so I rejected them: an `aftermath` boolean (8/14 misses) and an `ended_evidence` quote (9/14, then 1/14 and 3/14 after a fix). A three-way `threat_state` in the v2 prompt variant failed the same way (5/14).
 6. **Memory across steps fixed the zombie misses, once its wording let a report clear itself.** Zombie Rush's later reports stop naming the creature ("the figures"), so the intake, reading each step alone, missed 3 of 15. Each step now reads what earlier steps found. The first wording ("a creature the earlier reports confirmed is never an ordinary explanation") cut zombie misses to 1/15 but raised false alarms to 4/5 on the phantom and 5/5 on the zombies. The final wording lets a report's own checks (a green badge read, a normal temperature) clear it, and scored best on all three: Nightfall 134.86, phantom 113.99 (from 107.10), zombies 108.22 (from 106.40). Passes `phantom-a`, `-b`, `zombies-a`, `-b` are in `archive/`.
 7. **The station is a little slower.** Mean time to the first panel was 12.3 seconds at baseline and 10.7 to 11.7 in passes E and F; in passes I and J it is 13.6 and 14.4, because the intake now also quotes the report's evidence and the manifest carries titles, sizes, markers and quick actions.
+8. **The code clean-up kept the scores.** I simplified the pipeline, the server, the page and this harness, and every model request stayed byte for byte the same. Passes K and L average 134.51 against 134.86 for I and J, inside the noise, with no miss. A creature word now counts only at the start of a word, so "drifting" no longer names a rift: 20 of 24 phantom steps route to spectral, up from 18. The phantom scores 115.38 (from 113.99) and the zombies 114.50 (from 108.22), one pass each, with the same misses.
 
-What is still lost in passes I and J:
+What is still lost in passes K and L:
 
-- **Steps 12 and 20** are contained where the key says evacuate, and **step 13 and 22** once evacuated where the key says contain. Contain against evacuate is the closest call the key makes.
-- **Step 24** (the end-of-event debrief) is contained.
+- **Steps 12, 16 and 22** get the wrong one of contain and evacuate in both passes, and **step 19** in one. Contain against evacuate is the closest call the key makes.
+- **Step 24** (the end-of-event debrief) is contained in one pass and evacuated in the other, where the key says observe.
 - **Step 8** (a harmless 4-second power sag with a `CRITICAL_HAUNT` label) is contained in one of the two passes.
-- **Step 16**, the old coin flip, was contained in both.
+- **Step 2** gets the wrong hot sector in one pass.
 
 **Noise.** The same code moves by about 1 to 3 points between passes (passes C and D differ by 3.25), and single
 steps such as 8, 16, 20, 23 and 24 flip. So I compare changes over two passes and treat a difference under 3 points
@@ -133,9 +135,9 @@ as noise.
 | `sky.ts` | computes each step's sky with the server's own code |
 | `variants/v3.py` | the intake call on a larger model, for `--variant v3`; its docstring says what it changes |
 | `baseline/` | the first full pass (114 of 144): results, report and the first list of fixes. Every Nightfall report compares against it |
-| `results-i.jsonl`, `results-j.jsonl`, `report-i.md`, `report-j.md` | the two Nightfall passes on the current pipeline |
-| `report.md` | baseline, pass I and pass J side by side, with a link to my notes |
-| `results-phantom-c.jsonl`, `report-phantom-c.md`, `results-zombies-c.jsonl`, `report-zombies-c.md` | one pass each of the other two scenarios on the current pipeline, with no sky (as the server runs them) |
+| `results-k.jsonl`, `results-l.jsonl`, `report-k.md`, `report-l.md` | the two Nightfall passes on the current pipeline |
+| `report.md` | baseline, pass K and pass L side by side, with a link to my notes |
+| `results-phantom-d.jsonl`, `report-phantom-d.md`, `results-zombies-d.jsonl`, `report-zombies-d.md` | one pass each of the other two scenarios on the current pipeline, with no sky (as the server runs them) |
 | `fixes.md` | my notes after passes A and B: what landed, the next three fixes, what I rejected, noise |
 
 `archive/` keeps the superseded runs, each as a `results-*.jsonl` and a `report-*.md`, and the guard experiments:
@@ -151,6 +153,7 @@ as noise.
 - `s16-1` to `s16-3`: step 16 alone, three times, on the code of passes C and D.
 - `e`, `f`: the passes after the panel clean-up. `g`, `h`: with the generative features and the first memory wording.
 - `phantom-a`, `zombies-a`: the other scenarios before memory; `phantom-b`, `zombies-b`: with the first memory wording.
+- `i`, `j`, `phantom-c`, `zombies-c`: the passes with the final memory wording, before the code clean-up.
 - `guard1.patch`: guard 1 as it was tested; it is now part of `pipeline/`.
 
 To re-score an archived pass, point `--results` at it: `--label a --report-only --results eval/archive/results-a.jsonl`

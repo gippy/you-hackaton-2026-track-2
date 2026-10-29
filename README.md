@@ -160,9 +160,9 @@ pnpm check                             # type-check, unit tests, build the page
 
 | Scenario | Points (of 144) | Misses | False alarms on harmless steps |
 |---|---|---|---|
-| Nightfall, mean of two passes | 134.9 (up from 114 for the first version) | 0 of 14 in both | 1 and 0 of 5 |
-| The Coffee Bar Phantom, one pass | 114.0 | 0 of 11 | 1 of 5 |
-| Zombie Rush, one pass | 108.2 | 1 of 15 | 3 of 5 |
+| Nightfall, mean of two passes | 134.5 (up from 114 for the first version) | 0 of 14 in both | 0 and 1 of 5 |
+| The Coffee Bar Phantom, one pass | 115.4 | 0 of 11 | 1 of 5 |
+| Zombie Rush, one pass | 114.5 | 1 of 15 | 2 of 5 |
 
 The first version copied the feed's tier label into its severity on all 20 labelled Nightfall steps and contained almost everything. Judging the evidence first, a harmless gate in code, a sky-aware observe rule and running memory brought it here. [eval/README.md](eval/README.md) has every pass, what each change did and what is still lost.
 
