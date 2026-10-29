@@ -127,10 +127,13 @@ COMPOSE_SYSTEM = (
     + library.art_listing()
     + "\nA FloorPlan's safe_route starts where the people are and ends at entrance; list a sector in between only "
     "when the route must pass it. The page draws the walkable path.\n"
-    + "FloorPlan markers pin up to 4 facts from the report on the floor, each in its sector and at most 5 words: "
+    + f"FloorPlan markers put up to {library.MAX_MARKERS} things from the report on the floor, each in its sector with a label of at most 5 words: "
     "where the creatures are (threat), where people are or who is hurt (people), a countermeasure in place (countermeasure), "
-    "or a danger to people such as smoke or a blocked stair (hazard). Never the route, which the page draws, "
-    "and never a fact the report does not give.\n"
+    "or an object or danger such as soil crates, fog, smoke or a blocked stair (hazard). Never the route, which the page draws, "
+    "and never a fact the report does not give. Each marker's entity is the picture drawn for it: one of these map tokens, "
+    "the arsenal id of a countermeasure in place, or other with a dot color that suits the thing when nothing fits:\n"
+    + library.token_listing()
+    + "\n"
     + "Every panel's size asks for room: hero for the one panel this incident turns on, compact for a supporting reading, "
     "else standard; the page keeps its own order and widths. Every panel's title names it for this incident in at most "
     "5 words, e.g. 'Who's still in the hall'.\n"

@@ -51,7 +51,9 @@ ENTITY_CLASSES: dict[str, list[str]] = _LIB["entity_classes"]  # playbook -> wor
 EMF_NORMAL_MG: float = _LIB["emf_normal_mg"]  # at or below this, an EMF reading is ordinary background
 SKY_EVENTS = ["sunset", "civil_dusk", "full_dark", "moonrise"]  # what a SkyClock can focus on
 MARKER_KINDS = ["threat", "people", "countermeasure", "hazard"]  # what a note on the floor plan is about
-MAX_MARKERS = 4
+MAX_MARKERS = 6
+MAP_TOKENS: dict[str, str] = _LIB["map_tokens"]  # the pictures a floor plan marker can show, besides the arsenal icons
+DOT_COLORS: list[str] = list(_LIB["dot_colors"])  # a marker that no picture fits is a dot in one of these
 SIZES = ["hero", "standard", "compact"]  # how much room a panel asks for; layout.ts sets the widths
 # Minutes to the next sky event beyond which an unhurt crowd is watched, not contained yet.
 QUIET_LEAD_MIN = 100
@@ -163,6 +165,11 @@ def components_for(sky: bool) -> dict[str, str]:
     return {k: v for k, v in COMPONENTS.items() if (sky or k != "SkyClock") and (ENTITY_IMAGES or k != "EntityCard")}
 
 
+def token_listing() -> str:
+    """The pictures a floor plan marker can show, for the compose prompt."""
+    return "\n".join(f"- {k}: {v}" for k, v in MAP_TOKENS.items())
+
+
 def art_listing() -> str:
     """The images the model may choose from, for the compose prompt."""
     lines = [f"- {k}: {alt}" for k, alt in {**ENTITY_IMAGES, **SCENE_IMAGES}.items()]
@@ -199,10 +206,13 @@ def manifest_schema(arsenal: list[str], source_count: int, sky: bool = False) ->
             **({"scene": {**_enum([*SCENE_IMAGES, "none"]), "description": "A sector image to show beside the plan, or none"}}
                if SCENE_IMAGES else {}),
             "markers": {"type": "array", "maxItems": MAX_MARKERS,
-                        "description": "Short notes pinned on the floor view, in their sectors, e.g. '2 vampires, row 16' or 'foam line here'",
+                        "description": "What is where on the floor view, in their sectors, e.g. '2 vampires, row 16' or 'foam line here'",
                         "items": _obj({"sector": _enum(SECTORS),
                                        "label": {"type": "string", "description": "A fact from the report, at most 5 words"},
-                                       "kind": _enum(MARKER_KINDS)})}}),
+                                       "kind": _enum(MARKER_KINDS),
+                                       "entity": {**_enum([*MAP_TOKENS, *ARSENAL, "other"]),
+                                                  "description": "The picture: a map token, the countermeasure's arsenal id, or other"},
+                                       "color": {**_enum(DOT_COLORS), "description": "The dot's color when entity is other"}})}}),
         _component("CivilianTracker", {"count": {"type": "integer"}, "location": {"type": "string"},
                                        "condition": _enum(["pinned", "trapped", "injured", "evacuating", "safe", "unknown"]),
                                        "priority": _enum(["immediate", "high", "routine"])}),
@@ -423,7 +433,9 @@ def _clean_floor_plan(props: dict, notes: list[str]) -> None:
     for m in props.get("markers") or []:
         label = _short(m.get("label"), 5, 28)
         if sector_id(m.get("sector") or "") in SECTORS and m.get("kind") in MARKER_KINDS and label:
-            markers.append({"sector": sector_id(m["sector"]), "label": label, "kind": m["kind"]})
+            entity = m.get("entity") if m.get("entity") in MAP_TOKENS or m.get("entity") in ARSENAL else "other"
+            color = m.get("color") if m.get("color") in DOT_COLORS else DOT_COLORS[0]
+            markers.append({"sector": sector_id(m["sector"]), "label": label, "kind": m["kind"], "entity": entity, "color": color})
     if len(markers) < len(props.get("markers") or []):
         notes.append("dropped floor plan markers with an unknown sector or kind, or no label")
     props["markers"] = markers[:MAX_MARKERS]
