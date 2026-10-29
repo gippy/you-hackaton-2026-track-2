@@ -28,7 +28,7 @@ export function speak(text: string, dir: string): Promise<string> {
 }
 
 async function generate(text: string, dir: string, name: string): Promise<string> {
-    const action = await findAction('elevenlabs', 'stream text to speech audio for a voice', 'POST', '/text-to-speech/{{voiceId}}/stream', 'read a call for an expert aloud');
+    const action = findAction('elevenlabs', 'stream text to speech audio for a voice', 'POST', '/text-to-speech/{{voiceId}}/stream', 'read a call for an expert aloud');
     mkdirSync(dir, { recursive: true });
     const req = {
         data: { text, model_id: MODEL },

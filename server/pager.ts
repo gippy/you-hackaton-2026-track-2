@@ -47,7 +47,7 @@ function pagerAction(name: ActionName): Promise<Action> {
 
 /** Run a PagerDuty action through One, and return PagerDuty's response. */
 async function pagerDuty(name: ActionName, req: ActionRequest, purpose: string, timeout?: number): Promise<any> {
-    return (await execute('pager-duty', await pagerAction(name), req, purpose, timeout)).response;
+    return (await execute('pager-duty', pagerAction(name), req, purpose, timeout)).response;
 }
 
 const from = new Map<string, Promise<string>>();

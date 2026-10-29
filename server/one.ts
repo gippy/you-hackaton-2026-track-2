@@ -69,9 +69,11 @@ function parseJson(out: string): any {
 /**
  * Run an action with `one actions execute` and return the CLI's JSON. The call is recorded in
  * proof/partners.jsonl, with `purpose` saying what it was for. The connection key is never recorded.
+ * `found` may still be a lookup in progress, so it runs alongside the connection key's lookup.
  */
-export async function execute(platform: string, action: Action, req: ActionRequest, purpose: string, timeout = 120_000): Promise<any> {
-    const args = ['actions', 'execute', platform, action.id, await connection(platform)];
+export async function execute(platform: string, found: Action | Promise<Action>, req: ActionRequest, purpose: string, timeout = 120_000): Promise<any> {
+    const [action, key] = await Promise.all([found, connection(platform)]);
+    const args = ['actions', 'execute', platform, action.id, key];
     if (req.data !== undefined) args.push('-d', JSON.stringify(req.data));
     if (req.pathVars) args.push('--path-vars', JSON.stringify(req.pathVars));
     if (req.queryParams) args.push('--query-params', JSON.stringify(req.queryParams));
@@ -101,9 +103,9 @@ export async function execute(platform: string, action: Action, req: ActionReque
  * Run an action whose response is a file, such as ElevenLabs audio, and save it as `file`.
  * One writes to `<file>.tmp` first, so a failed call leaves no half-written file. Returns the action's response.
  */
-export async function executeToFile(platform: string, action: Action, req: ActionRequest, file: string, purpose: string): Promise<any> {
+export async function executeToFile(platform: string, found: Action | Promise<Action>, req: ActionRequest, file: string, purpose: string): Promise<any> {
     const tmp = `${file}.tmp`;
-    const res = await execute(platform, action, { ...req, output: tmp }, purpose);
+    const res = await execute(platform, found, { ...req, output: tmp }, purpose);
     if (!res.response?.saved) throw new OneError(`no file came back for ${purpose}: ${JSON.stringify(res).slice(0, 300)}`);
     renameSync(tmp, file);
     return res.response;
