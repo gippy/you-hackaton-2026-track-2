@@ -59,7 +59,7 @@ The screenshots come from live runs on 2026-10-28 at 1440x900, cropped to the pa
 ![FloorPlan on the floor view with markers, step 20](components/floor-plan.webp)
 ![FloorPlan around the tower, Zombie Rush step 3](components/floor-plan-area.webp)
 
-- **Shows:** two views. "Floor" is a schematic of the Loft (`data/map/floor.json`), with the hot sector hatched in red, the sealed sectors, the safe route out as a dotted line and the model's markers. "Around the tower" is the OpenStreetMap area (`data/map/area.geojson`), 150 meters around the tower, with a pin at the incident's outdoor spot, or at the venue when there is none. A scene image of the sector can sit under the plan.
+- **Shows:** two views. "Floor" is a schematic of the Loft (`data/map/floor.json`), with the hot sector in red, the sealed sectors hatched, the safe route out as a dotted line and the model's markers. "Around the tower" is the OpenStreetMap area (`data/map/area.geojson`), 150 meters around the tower, with a pin at the incident's outdoor spot, or at the venue when there is none. A scene image of the sector can sit under the plan.
 - **When:** a harmless report never gets it. The model sets the area view only when the report puts the incident outside the building.
 - **Route:** the model lists the sectors from where the people are to a way out. The page walks the path between them and goes round sealed sectors. When every way is sealed, the legend says which sectors block it. `clean_manifest` keeps only known sectors, and a route that stops inside the building goes on to the entrance.
 - **Powered by:** Parasail places the hot sector, the seals, the route, the view, the outdoor spot and the markers. The map data is static, and OpenStreetMap is credited under the area view.
@@ -71,7 +71,7 @@ The screenshots come from live runs on 2026-10-28 at 1440x900, cropped to the pa
 The floor view in the screenshot above shows three markers: "2 subjects, row 16", "5 injured, stair foot" and "Silver cutlery, SW stairwell".
 
 - **Shows:** up to 4 short notes pinned on the floor, each in its sector. The shape gives the kind: a diamond for a threat, a circle for people, a square for a countermeasure in place and a triangle for a hazard such as smoke or a blocked stair.
-- **When:** the prompt asks for facts the report gives, never the route and never an invented fact. `clean_manifest` keeps markers with a known sector and kind and cuts each label to 5 words and 28 characters.
+- **When:** the prompt asks for facts the report gives, never the route and never an invented fact. `clean_manifest` keeps markers with a known sector and kind and cuts each label to its first 5 words that fit in 28 characters.
 - **Placement:** the model only names the sector. The page finds a spot inside it where the glyph and label overlap the sector names, the route, the exits and earlier markers the least.
 - **Accessibility:** the markers on the plan are hidden from screen readers. The legend lists each one as text, such as "threat in Main stage: 2 subjects, row 16".
 
@@ -163,11 +163,11 @@ These parts are always there. The model doesn't choose them.
 
 ![Incident report on step 21, built on the moves from step 20](components/report-panel.webp)
 
-- **Shows:** the full raw report, above the station. The heading names the scenario, the step, its time, the feed tier and "simulated" when it is. When this tab picked a step other than the one on screen, it adds the step on screen.
+- **Shows:** the full raw report, above the station. The heading names the scenario, the step, its time, the feed tier and "simulated" for a simulated report. When this tab picked a step other than the one on screen, it adds the step on screen.
 - **Evidence highlights:** the intake quotes the report's own words. Threat evidence is red with a solid underline, a harmless explanation is pale with a dotted one, and people at risk are amber with a dashed one. Hovering or focusing a highlight shows the model's reason, and a legend under the report names each kind shown. The pipeline keeps only quotes that occur in the report word for word (`clean_quotes`), and the marks show only on the report the station was built from.
 - **Step controls:** "Previous", a dropdown of every scenario's steps with each step's time and opening words, and "Next step" as the filled button. Only a later step of the same scenario builds on the operator's moves. Going back or elsewhere starts clean.
 - **Single incidents:** a menu of the standalone incidents with their feed tier and first words, plus "New incident…", which opens a box to paste any report. Compiling a pasted report needs live mode. From a single incident or a pasted report, "Back to Nightfall, step 20" (the scenario and step this tab was last on) replaces the step controls.
-- **Memory line:** "Reading this report with what the 1 earlier step of this scenario found." The intake reads the findings of up to 6 earlier steps, so a report that refers back to them makes sense.
+- **Memory line:** "Reading this report with what the 1 earlier step of this scenario found." The intake reads the findings of up to 6 earlier steps, so it can follow a report that refers back to them.
 - **Moves line:** "Building on your moves at 19:55:", then the countermeasure, the sealed sectors, how many people are out and each expert called, with the call's status. It shows when the station was built with the moves from the step before.
 - **Powered by:** the fixtures in `fixtures/` for the text. Parasail's intake for the quotes, and the server for the moves and the memory of earlier steps.
 - **Accessibility:** the controls stay focusable while a station builds and say so with `aria-disabled`, so stepping by keyboard takes one key per step. The menu closes on Escape. Highlights are focusable, and each reason is a tooltip linked to its highlight.
