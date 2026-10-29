@@ -42,13 +42,13 @@ def main() -> int:
     try:
         flow.kickoff(inputs=inputs)
     except Exception as exc:  # noqa: BLE001 - the server falls back to the saved run on any failure
-        proof.flush_crewai()
         emit({"type": "fatal", "detail": str(exc)[:500]})
         return 1
+    finally:
+        proof.flush_crewai()
     if not flow.state.manifest:
         emit({"type": "fatal", "detail": "the flow ended without a manifest: " + "; ".join(flow.state.notes or ["no detail"])})
         return 1
-    proof.flush_crewai()
     emit({"type": "result", "state": flow.state.model_dump()})
     return 0
 

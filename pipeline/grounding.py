@@ -67,7 +67,7 @@ def _fetch_hits(query: str, count: int) -> list[dict]:
 class Ledger:
     """The numbered sources of one run, shared by the tool and the flow."""
 
-    def __init__(self, on_search: Callable[[str, list[dict]], None] = lambda q, hits: None):
+    def __init__(self, on_search: Callable[[str, list[dict]], None]):
         self.sources: list[dict] = []
         self.queries: list[str] = []
         self.on_search = on_search
