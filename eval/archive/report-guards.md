@@ -1,3 +1,71 @@
+# Guard variants against the control
+
+Generated 2026-10-28 15:04. Control = labels a, b (pipeline `23b5233007`). Variants run on a frozen copy of that pipeline (`eval/snap-23b5233007`) with `PROOF_CONTEXT=eval`.
+
+Base pipeline hash per column: a `23b5233007`, b `23b5233007`, v4a `23b5233007`, v4b `23b5233007`, v5a `23b5233007`, v6a `23b5233007`, v6b `23b5233007`, v6c `23b5233007`
+
+## Metrics
+
+| Metric | a | b | v4a | v4b | v5a | v6a | v6b | v6c |
+|---|---|---|---|---|---|---|---|---|
+| **Points / 144** | **126.70** | **127.50** | **126.25** | **127.75** | **123.45** | **122.27** | **128.02** | **126.52** |
+| **Misses** (key contain/evacuate, model observed) | **1/14** | **0/14** | **0/14** | **0/14** | **8/14** | **9/14** | **1/14** | **3/14** |
+| False alarms (harmless, acted) | 0/5 | 1/5 | 1/5 | 1/5 | 0/5 | 0/5 | 0/5 | 0/5 |
+| Harmless handled calmly | 5/5 | 4/5 | 4/5 | 4/5 | 5/5 | 5/5 | 5/5 | 5/5 |
+| Over-escalations | 4/5 | 4/5 | 4/5 | 4/5 | 0/5 | 0/5 | 3/5 | 3/5 |
+| Evacuate matches | 1/4 | 2/4 | 1/4 | 2/4 | 1/4 | 1/4 | 2/4 | 2/4 |
+| Action match | 16/24 | 17/24 | 16/24 | 17/24 | 16/24 | 15/24 | 17/24 | 16/24 |
+| Dispatch match | 19/24 | 19/24 | 19/24 | 19/24 | 16/24 | 15/24 | 20/24 | 18/24 |
+| Panel recall | 95% | 98% | 97% | 99% | 85% | 89% | 88% | 94% |
+| Steps with a discouraged panel | 3/24 | 4/24 | 4/24 | 4/24 | 1/24 | 1/24 | 2/24 | 2/24 |
+| Failures | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+## Mean points per group
+
+| Group | Passes | Mean points | Delta to control | Misses per pass |
+|---|---|---|---|---|
+| control | 126.70, 127.50 | 127.10 | +0.00 | 1/14, 0/14 |
+| v4 | 126.25, 127.75 | 127.00 | -0.10 | 0/14, 0/14 |
+| v5 | 123.45 | 123.45 | -3.65 | 8/14 |
+| v6 | 122.27 | 122.27 | -4.83 | 9/14 |
+| v6 | 128.02, 126.52 | 127.27 | +0.17 | 1/14, 3/14 |
+
+## Steps that differ
+
+Cells are `action points`; `*` marks an action different from the key.
+
+| # | Truth | Key | a | b | v4a | v4b | v5a | v6a | v6b | v6c |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 2 | R | observe | contain* 3 | contain* 3 | contain* 3 | contain* 3 | observe 5 | observe 5 | contain* 2.75 | contain* 3 |
+| 3 | R | observe | contain* 4 | contain* 4 | contain* 4 | contain* 4 | observe 6 | observe 6 | contain* 4 | contain* 4 |
+| 5 | R | contain | contain 6 | contain 6 | contain 6 | contain 6 | contain 6 | observe* 3.75 | evacuate* 5 | contain 6 |
+| 6 | R | observe | contain* 3 | contain* 3 | contain* 3 | contain* 3 | observe 6 | observe 6 | observe 5.75 | observe 6 |
+| 8 | H | observe | observe 6 | contain* 3 | contain* 3 | contain* 3 | observe 6 | observe 5.667 | observe 5.667 | observe 5.667 |
+| 9 | R | contain | contain 6 | contain 6 | contain 6 | contain 6 | observe* 3.25 | observe* 3.75 | observe* 3.75 | observe* 3.75 |
+| 10 | R | contain | contain 6 | contain 6 | contain 6 | contain 6 | contain 6 | contain 6 | contain 5.4 | contain 5.8 |
+| 12 | R | evacuate | contain* 5 | contain* 5 | contain* 5 | contain* 5 | observe* 3.25 | observe* 3.75 | contain* 5 | contain* 5 |
+| 13 | R | contain | contain 6 | contain 6 | contain 6 | contain 6 | observe* 3.75 | contain 6 | contain 6 | observe* 3.75 |
+| 14 | R | contain | contain 6 | contain 6 | contain 6 | contain 6 | observe* 3.75 | observe* 3.75 | contain 6 | contain 6 |
+| 15 | R | contain | contain 6 | contain 6 | contain 5.75 | contain 6 | observe* 3.75 | observe* 3.75 | contain 6 | contain 6 |
+| 16 | R | contain | contain 6 | contain 6 | contain 6 | contain 6 | observe* 4 | observe* 4 | contain 6 | observe* 4 |
+| 17 | R | contain | contain 6 | contain 6 | contain 6 | contain 6 | contain 6 | observe* 3.75 | contain 6 | contain 6 |
+| 19 | R | evacuate | contain* 5 | contain* 5 | contain* 5 | evacuate 6 | observe* 3.8 | observe* 3.8 | contain* 5 | contain* 5 |
+| 20 | R | evacuate | contain* 5 | evacuate 6 | contain* 5 | contain* 5 | evacuate 6 | evacuate 6 | evacuate 6 | evacuate 6 |
+| 21 | R | evacuate | evacuate 6 | evacuate 6 | evacuate 6 | evacuate 6 | observe* 3.4 | observe* 3.8 | evacuate 6 | evacuate 6 |
+| 23 | R | contain | observe* 3.2 | contain 6 | contain 6 | contain 6 | contain 6 | contain 6 | contain 5.2 | contain 5.8 |
+| 24 | R | observe | contain* 2.75 | evacuate* 2.75 | contain* 2.75 | contain* 3 | observe 5.75 | observe 5.75 | contain* 2.75 | contain* 3 |
+
+## What the guards saw
+
+- **a** (control): misses at [23]; false alarms at none
+- **b** (control): misses at none; false alarms at [8]
+- **v4a**: `creature_countered` true on 10(R), 13(R), 20(R), 22(R), 23(R); misses at none; false alarms at [8]
+- **v4b**: `creature_countered` true on 10(R), 13(R), 20(R), 22(R), 23(R); misses at none; false alarms at [8]
+- **v5a**: `creature_countered` true on 10(R), 20(R), 22(R), 23(R); `aftermath` true on 2(R), 3(R), 4(H), 6(R), 12(R), 13(R), 14(R), 15(R), 16(R), 19(R), 20(R), 21(R), 22(R), 23(R), 24(R); aftermath rule fired on [2, 3, 6, 13, 14, 15, 16, 19, 21, 24]; misses at [9, 12, 13, 14, 15, 16, 19, 21]; false alarms at none
+- **v6a**: `creature_countered` true on 10(R), 13(R), 20(R), 22(R), 23(R); misses at [5, 9, 12, 14, 15, 16, 17, 19, 21]; false alarms at none
+- **v6b**: `creature_countered` true on 10(R), 13(R), 20(R), 22(R), 23(R); misses at [9]; false alarms at none
+- **v6c**: `creature_countered` true on 10(R), 22(R), 23(R); misses at [9, 13, 16]; false alarms at none
+
 ## Verdict on the two requests
 
 **Accept: guard 1 (`creature_countered`).** **Reject: fix 2 in both forms I tried (`aftermath`, `ended_evidence`).**
@@ -21,7 +89,7 @@ Accept rule: misses stay at 0/14 over two passes. Guard 1 (v4) had 0/14 and 0/14
 - Cost: none measurable. Mean points -0.10 and -0.27, inside the noise of about ±1. Harmless false alarms were 1/5 in both v4 passes and in v4 on the live code (step 8 each time); the controls had 0/5 and 1/5 (frozen) and 0/5 (live), so step 8 flips with or without the guard.
 - Not built from this scenario's words: the field's description is assembled from `library.ARSENAL` (the unit's own countermeasure names), so a new countermeasure extends it.
 
-Ready to apply: `git apply eval/archive/guard1.patch` (checked with `git apply --check` against the live tree at `07258c4`; it touches `pipeline/flow.py` and `shared/protocol.ts`). The same change, written out:
+Exact change for the build session (`pipeline/flow.py`, against the live file):
 
 ```python
 # 1. INCIDENT_SCHEMA["required"]: add "creature_countered" between "deliberate_act" and "verdict".
@@ -42,7 +110,7 @@ Ready to apply: `git apply eval/archive/guard1.patch` (checked with `git apply -
             self.state.notes.append("something is held back or repelled by a countermeasure, so the harmless verdict became unclear")
 ```
 
-Also add `creature_countered?: boolean` to `Incident` in `shared/protocol.ts`. `eval/variants/v4.py` is the same change applied in memory; its two `assert`s fail loudly if the prompt text above has moved.
+Also add `creature_countered?: boolean` to `Incident` in `shared/protocol.ts`. `eval/archive/variants/v4.py` is the same change applied in memory; its two `assert`s fail loudly if the prompt text above has moved.
 
 ### Fix 2: why it does not pass
 

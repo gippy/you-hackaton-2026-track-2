@@ -55,41 +55,40 @@ time (the default), so each step's memory of the earlier ones is complete.
 
 ```bash
 PAGING=off PROOF_CONTEXT=eval .venv/bin/python eval/run.py --label e
-PAGING=off PROOF_CONTEXT=eval .venv/bin/python eval/run.py --label zombies-x --no-sky \
+PAGING=off PROOF_CONTEXT=eval .venv/bin/python eval/run.py --label zombies-x \
     --scenario fixtures/zombies/scenario.json --key fixtures/zombies/answer-key.json
 ```
 
-Only Nightfall gets a sky on the server, so the other scenarios run with `--no-sky`. Their reports have no
-baseline column, because the baseline is a Nightfall pass.
+As on the server, a step gets a sky only when its `scenario.json` has `"sky": true`. Nightfall does, the other two
+do not. Their reports have no baseline column, because the baseline is a Nightfall pass.
 
 | Command | What it does |
 |---|---|
-| `--label e` | a named pass: writes `results-e.jsonl` and `report-e.md`, compared with the baseline |
+| `--label e` | names the pass: writes `results-e.jsonl` and `report-e.md`, compared with the baseline. Every run needs a label (or `--variant`) |
 | `--steps 1-3` | only these steps (also `1,4,7-9`); rows for other steps stay in the results file |
 | `--resume` | keep rows that succeeded on the pipeline now on disk, run only the rest |
 | `--report-only` | re-score the results file and rewrite the report, with no model calls |
+| `--results archive/results-e.jsonl` | read and write this results file instead; with `--report-only` it re-scores an archived pass in place |
+| `--scenario`, `--key` | another scenario and its answer key (default: Nightfall) |
 | `--combine e,f` | write `report.md` from several passes, side by side with the baseline |
-| `--variant v4` | run `variants/v4.py`'s in-memory changes to the pipeline (through `worker.py`), without editing `pipeline/` |
-| `--snapshot eval/snap-<hash>` | with `--variant`: run against a frozen copy of the pipeline, so the control cannot move while the code changes |
-| `--compare "a,b\|v4a,v4b"` | variant passes against control passes: writes `report-guards.md` |
+| `--variant v3` | run `variants/v3.py`'s in-memory changes to the pipeline (through `worker.py`), without editing `pipeline/` |
 
-Each run also keeps the full flow state in `raw/` and the worker's stderr in `logs/`. Both folders, `cache/` and
-`snap-*/` are gitignored.
+Each run also keeps the full flow state in `raw/` and the worker's stderr in `logs/`. Both folders and `cache/`
+are gitignored.
 
 ## Reading a report
 
 A one-pass report (`report-e.md`) has these sections:
 
 1. **Score**: points out of 144.
-2. **Metrics**: the scored criteria and the diagnostics above, plus latency.
+2. **Metrics**: the scored criteria and the diagnostics above, plus latency. A Nightfall report shows `baseline/results.jsonl` on the same steps as a second column.
 3. **Action confusion**: rows are the key's action, columns are the station's.
 4. **Per step**: one row per step. `✓`/`✗` mark matches. In "Δ panels", `-X` is an expected panel that is missing and `!X` a discouraged panel that is present.
 5. **Where the points went**: points lost per criterion, and the steps behind each kind of mistake.
-6. **Against the baseline**: the same metrics for `baseline/results.jsonl` on the same steps, and the steps that changed.
+6. **Against the baseline**: the steps whose action or points changed.
 
 The combined [report.md](report.md) shows the baseline and every pass as columns. A `*` marks an action different
-from the key. After the tables it appends my notes from [fixes.md](fixes.md) and the guard experiments
-([report-guards.md](report-guards.md), [report-guards-live.md](report-guards-live.md)).
+from the key. It ends with a link to my notes in [fixes.md](fixes.md) and to the guard experiments in `archive/`.
 
 ## What I found
 
@@ -109,7 +108,7 @@ All numbers are from the reports in this folder and in `archive/`.
 1. **The first version contained almost everything.** It contained 21 of 24 steps, never evacuated, and copied the feed's tier label into the intake severity on 20 of 20 labelled steps. A `CRITICAL_HAUNT` label on a 4-second power sag became a critical station. 30 points were lost: 12.5 on harmless steps, 11.5 on real steps the key wants watched, 4 on contain against evacuate. Details: [baseline/fixes.md](baseline/fixes.md).
 2. **Judging harmless reports at intake, enforced in code, fixed the false alarms.** Harmless steps handled calmly went from 0/5 to 4 or 5 of 5 in every pass since, and the `all_clear` cue from 1/5 to 4 or 5 of 5. The feed tier is now copied on about half of the labelled steps instead of all of them.
 3. **Watching while nightfall is hours away fixed the over-escalations.** When nobody is hurt and the next sky event is more than 100 minutes away, the station observes. Replaying the saved manifests of passes A and B through the rule gave +7 points each, and over-escalations fell from 4/5 to 1/5 with no new miss.
-4. **Guard 1 keeps a creature held back by a countermeasure from being called harmless.** It fixed the step 23 miss (vampires held at the doors by UV and garlic): contained in 7 of 7 guarded passes. It never fired on a harmless step (0 of 35 samples) and cost no measurable points. It is in the pipeline now. Details: [guards-fixes.md](guards-fixes.md).
+4. **Guard 1 keeps a creature held back by a countermeasure from being called harmless.** It fixed the step 23 miss (vampires held at the doors by UV and garlic): contained in 7 of 7 guarded passes. It never fired on a harmless step (0 of 35 samples) and cost no measurable points. It is in the pipeline now. Details: [archive/guards-fixes.md](archive/guards-fixes.md).
 5. **Two attempts to observe the step 24 stand-down made misses worse**, so I rejected them: an `aftermath` boolean (8/14 misses) and an `ended_evidence` quote (9/14, then 1/14 and 3/14 after a fix). A three-way `threat_state` in the v2 prompt variant failed the same way (5/14).
 6. **Memory across steps fixed the zombie misses, once its wording let a report clear itself.** Zombie Rush's later reports stop naming the creature ("the figures"), so the intake, reading each step alone, missed 3 of 15. Each step now reads what earlier steps found. The first wording ("a creature the earlier reports confirmed is never an ordinary explanation") cut zombie misses to 1/15 but raised false alarms to 4/5 on the phantom and 5/5 on the zombies. The final wording lets a report's own checks (a green badge read, a normal temperature) clear it, and scored best on all three: Nightfall 134.86, phantom 113.99 (from 107.10), zombies 108.22 (from 106.40). Passes `phantom-a`, `-b`, `zombies-a`, `-b` are in `archive/`.
 7. **The station is a little slower.** Mean time to the first panel was 12.3 seconds at baseline and 10.7 to 11.7 in passes E and F; in passes I and J it is 13.6 and 14.4, because the intake now also quotes the report's evidence and the manifest carries titles, sizes, markers and quick actions.
@@ -132,26 +131,27 @@ as noise.
 | `run.py` | the harness: inputs, running a step, scoring, reports, CLI |
 | `worker.py` | the pipeline's entry point with a variant applied in memory, used by `--variant` |
 | `sky.ts` | computes each step's sky with the server's own code |
-| `variants/` | the prompt and schema variants v1 to v6; each file's docstring says what it changes |
-| `baseline/` | the first full pass (114 of 144): results, report and the first list of fixes. Every labelled report compares against it |
+| `variants/v3.py` | the intake call on a larger model, for `--variant v3`; its docstring says what it changes |
+| `baseline/` | the first full pass (114 of 144): results, report and the first list of fixes. Every Nightfall report compares against it |
 | `results-i.jsonl`, `results-j.jsonl`, `report-i.md`, `report-j.md` | the two Nightfall passes on the current pipeline |
-| `report.md` | baseline, pass I and pass J side by side, with my notes |
+| `report.md` | baseline, pass I and pass J side by side, with a link to my notes |
 | `results-phantom-c.jsonl`, `report-phantom-c.md`, `results-zombies-c.jsonl`, `report-zombies-c.md` | one pass each of the other two scenarios on the current pipeline, with no sky (as the server runs them) |
 | `fixes.md` | my notes after passes A and B: what landed, the next three fixes, what I rejected, noise |
-| `guards-fixes.md`, `report-guards.md`, `report-guards-live.md` | the guard experiments (v4 to v6) against the control, and the verdict on each |
 
-`archive/` keeps the superseded runs, each as a `results-*.jsonl` and a `report-*.md`:
+`archive/` keeps the superseded runs, each as a `results-*.jsonl` and a `report-*.md`, and the guard experiments:
 
 - `v1`, `v2`, `probe`: the first prompt variants, and a probe of a larger intake model (`v3`) on six steps.
 - `run1-mixed-pipeline`, `run2-mixed-pipeline`: early passes where the code changed mid-run, so their rows mix pipeline versions.
 - `a`, `b`: passes on the pipeline with the harmless gate. They are the control for the guard experiments.
 - `live`, `v4live`: the control and guard 1 on the code with the sky lead-time rule.
 - `v4a`, `v4b`, `v5a`, `v6a`, `v6b`, `v6c`: the guard variant passes summarized in `report-guards.md`.
+- `report-guards.md`, `report-guards-live.md`, `guards-fixes.md`: the guard experiments (v4 to v6) against the control, and the verdict on each.
+- `variants/`: v1, v2, v4, v5 and v6 as they were tested. Each applies only to the pipeline it was written for: v4 to v6 to a frozen copy (`snap-23b5233007`) that is not in the repo.
 - `c`, `d`: the two passes with guard 1, before the panel clean-up.
 - `s16-1` to `s16-3`: step 16 alone, three times, on the code of passes C and D.
 - `e`, `f`: the passes after the panel clean-up. `g`, `h`: with the generative features and the first memory wording.
 - `phantom-a`, `zombies-a`: the other scenarios before memory; `phantom-b`, `zombies-b`: with the first memory wording.
 - `guard1.patch`: guard 1 as it was tested; it is now part of `pipeline/`.
 
-To re-score or combine an archived pass, copy its results file back into `eval/` first: `--combine`,
-`--compare` and `--label` read `eval/results-<label>.jsonl`.
+To re-score an archived pass, point `--results` at it: `--label a --report-only --results eval/archive/results-a.jsonl`
+writes `report-a.md` here. `--combine` reads `eval/results-<label>.jsonl`, so copy a pass back into `eval/` to combine it.

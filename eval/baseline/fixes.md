@@ -2,7 +2,7 @@
 
 Baseline: **114 / 144** (pipeline `d0f4cdd6fd`: SkyClock and the proof ledger are in, the later EntityCard and Nightfall-arsenal edits are not; 24 steps, 0 failures). 30 points were lost. Where they went: harmless steps 12.5, real-but-quiet steps (key says observe) 11.5, contain-vs-evacuate 4, the rest 2. The model contains on 21 of 24 steps and never once evacuates.
 
-I tested the prompt and schema fixes without touching `pipeline/`: `eval/worker.py` applies `eval/variants/v1.py` and `v2.py` in memory and `--variant` scores them with the same harness. **v1 = 120.05, v2 = 120.95** (one sample each; the same step flips between runs, see "Noise"). Both wordings are general (no sector, name or step from the scenario) but were written after reading this scenario's failures, so treat the gains as in-sample until you check them on another pitch's scenario.
+I tested the prompt and schema fixes without touching `pipeline/`: `eval/worker.py` applies `eval/archive/variants/v1.py` and `v2.py` in memory and `--variant` scores them with the same harness. **v1 = 120.05, v2 = 120.95** (one sample each; the same step flips between runs, see "Noise"). Both wordings are general (no sector, name or step from the scenario) but were written after reading this scenario's failures, so treat the gains as in-sample until you check them on another pitch's scenario.
 
 ### 1. Judge before composing: a harmless gate at intake, enforced in code (+9.5 measured, pool 12.5)
 
@@ -10,7 +10,7 @@ Evidence. The five harmless steps scored 17.5/30. The model acts on 3 of 5 (step
 
 Change (all in `pipeline/flow.py` and `pipeline/library.py`).
 - `INCIDENT_SCHEMA` (flow.py:32): add before `severity`, in this order: `evidence_of_threat` (string), `ordinary_explanation` (string or null, "supported by the report's own evidence"), `verdict` (`real_threat` | `harmless` | `unclear`), `people_in_reach` (integer). Property order matters: the model fills them in order.
-- `EXTRACT_SYSTEM` (flow.py:63): say the feed tier is a sensor guess that can be wrong in both directions and that severity comes from the evidence. See `CLASS_NEW` in `eval/variants/v1.py`.
+- `EXTRACT_SYSTEM` (flow.py:63): say the feed tier is a sensor guess that can be wrong in both directions and that severity comes from the evidence. See `CLASS_NEW` in `eval/archive/variants/v1.py`.
 - `COMPOSE_SYSTEM` (flow.py:72): replace the calm sentence with the rubric in `RUBRIC` (same file): harmless gets a low ThreatBanner, SourceLedger and at most one of ThermalReadout or SystemsBoard, `all_clear`, observe.
 - `clean_manifest` (library.py:135): take the incident's verdict and, when it is `harmless`, force `observe` and `all_clear` and drop CountermeasurePicker, CivilianTracker and FloorPlan. Removes, never adds. This also makes the already-streamed components consistent, because the flow calls `clean_manifest` per component.
 
@@ -47,7 +47,7 @@ Change. `OpenAI(base_url=..., api_key=..., timeout=httpx.Timeout(45, connect=8),
 
 | What | Measured | Fix |
 |---|---|---|
-| Entity routed to the right playbook | **3/24** corporeal on every vampire and werewolf step (12 spectral, 9 anomalous). Salt rings and Faraday mesh are recommended against werewolves | The intake prompt lists no corporeal examples. `CLASS_NEW` in `variants/v1.py` raises it to 17/24 and 18/24. Better: map the entity name to its class in code |
+| Entity routed to the right playbook | **3/24** corporeal on every vampire and werewolf step (12 spectral, 9 anomalous). Salt rings and Faraday mesh are recommended against werewolves | The intake prompt lists no corporeal examples. `CLASS_NEW` in `archive/variants/v1.py` raises it to 17/24 and 18/24. Better: map the entity name to its class in code |
 | Opening sound | `sting_ghost` on 16 steps, `sting_vampire` 2, `sting_werewolf` 3, `sting_residual_haunting` 2; `all_clear` on 1 of 5 harmless | Follows from the class and verdict fixes (4/5 `all_clear` in v1). The cue is streamed from the model's raw text before `clean_manifest`, so overriding it in code must also happen in `on_text` |
 | Time to first panel | 12.3 s on average; the page is blank until `ground` (CrewAI agent plus You.com, 7.7 s) finishes. The `incident` event arrives at 2 to 5 s | Render a provisional ThreatBanner and hot sector from the `incident` event; page-side only |
 | No memory between steps | Step 12's "tall subject from the lounge" and step 16's "come right in" only read as a threat with the earlier steps in hand | Server passes the last N incident summaries into the worker payload. Unmeasured |
