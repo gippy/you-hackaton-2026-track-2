@@ -4,7 +4,7 @@
 // A page that connects mid-run gets the messages so far, then the rest live, each exactly once:
 // Node runs this on one thread, so the replay and the subscription happen in the same tick.
 import { spawn } from 'node:child_process';
-import { createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
+import { createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createInterface } from 'node:readline';
 
@@ -48,6 +48,16 @@ type WorkerLine = FlowEvent | { type: 'result'; state: RunState } | { type: 'fat
 /** When a run was saved, in the venue's time ("6:42 PM"), for the replay notice. */
 const savedAt = (iso: string) => new Date(iso).toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit' });
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+/** The first of these files that reads as a saved run, or null. */
+function readFirst(paths: string[]): SavedRun | null {
+    for (const path of paths) {
+        try {
+            return JSON.parse(readFileSync(path, 'utf8'));
+        } catch {}
+    }
+    return null;
+}
+
 /** Whether `key` is one of the table's own keys, not an inherited name such as "toString". */
 const has = (table: object, key: unknown): key is string => typeof key === 'string' && Object.hasOwn(table, key);
 
@@ -175,9 +185,9 @@ export class Station {
      * A live run: stream the worker's events, then save the result. When the worker fails, replay a saved run.
      * A step of a scenario with a sky gets the sky at its clock time.
      */
-    private async runLive({ raw_incident_stream: raw, incident_id: incidentId, severity_tier, time, scenario }: Report, moves?: OperatorMoves, earlier: Finding[] = []): Promise<void> {
+    private async runLive({ raw_incident_stream: raw, incident_id, severity_tier, time, scenario }: Report, moves: OperatorMoves | undefined, earlier: Finding[]): Promise<void> {
         this.history = [];
-        this.emit({ type: 'run_begin', incident_id: incidentId, source: 'live', requested: incidentId, moves, remembered: earlier.length });
+        this.emit({ type: 'run_begin', incident_id, source: 'live', requested: incident_id, moves, remembered: earlier.length });
         const events: SavedRun['events'] = [];
         const t0 = Date.now();
         const record = (msg: FlowEvent) => {
@@ -189,12 +199,12 @@ export class Station {
         if (sky) record({ type: 'sky', sky });
         let state: RunState;
         try {
-            state = await this.runWorker({ raw, incident_id: incidentId, severity_tier, sky, moves, earlier }, record);
+            state = await this.runWorker({ raw, incident_id, severity_tier, sky, moves, earlier }, record);
         } catch (err) {
             const detail = (err as Error).message;
             console.error(`Pipeline failed: ${detail}`);
             this.emit({ type: 'error', detail: `Pipeline failed: ${detail.slice(0, 300)}` });
-            await this.replay('The live pipeline failed, so this is a saved run.', incidentId);
+            await this.replay('The live pipeline failed, so this is a saved run.', incident_id);
             return;
         }
         this.run = { saved_at: `${new Date().toISOString().slice(0, 19)}Z`, state, events };
@@ -213,17 +223,13 @@ export class Station {
     private runWorker(input: object, onEvent: (msg: FlowEvent) => void): Promise<RunState> {
         mkdirSync(this.outDir, { recursive: true });
         const log = createWriteStream(join(this.outDir, 'pipeline.log'));
-        const child = spawn(this.opts.python, ['-m', 'pipeline'], { cwd: this.opts.root, stdio: ['pipe', 'pipe', 'pipe'] });
+        // A stalled run is killed, so the page falls back to the saved run instead of waiting forever.
+        const child = spawn(this.opts.python, ['-m', 'pipeline'], { cwd: this.opts.root, timeout: WORKER_TIMEOUT_MS });
         child.stderr.pipe(log);
         child.stdin.end(JSON.stringify(input));
         return new Promise((resolve, reject) => {
             let state: RunState | null = null;
             let fatal = '';
-            // A stalled run is killed, so the page falls back to the saved run instead of waiting forever.
-            const timer = setTimeout(() => {
-                fatal = `the pipeline took longer than ${WORKER_TIMEOUT_MS / 1000} seconds and was stopped`;
-                child.kill();
-            }, WORKER_TIMEOUT_MS);
             createInterface({ input: child.stdout }).on('line', (line) => {
                 let msg: WorkerLine;
                 try {
@@ -236,9 +242,9 @@ export class Station {
                 else onEvent(msg);
             });
             child.on('error', (err) => reject(new Error(`could not start ${this.opts.python}: ${err.message}`)));
-            child.on('close', (code) => {
-                clearTimeout(timer);
+            child.on('close', (code, signal) => {
                 if (state) resolve(state);
+                else if (signal) reject(new Error(`the pipeline took longer than ${WORKER_TIMEOUT_MS / 1000} seconds and was stopped`));
                 else reject(new Error(fatal || `the pipeline exited with code ${code}; see out/pipeline.log`));
             });
         });
@@ -259,42 +265,22 @@ export class Station {
         }
     }
 
-    /**
-     * A saved run, from the first of these that reads:
-     * - this incident's own run, in out/runs/ and then in snapshots/
-     * - the last good run
-     * - the newest snapshot committed with the repo
-     */
-    /** This incident's own saved run, from out/runs/ or snapshots/, or null. */
-    private loadOwn(incidentId: string): SavedRun | null {
-        if (!SAFE_ID.test(incidentId)) return null;
-        for (const path of [join(this.outDir, 'runs', `${incidentId}.json`), join(this.opts.root, 'snapshots', `${incidentId}.json`)]) {
-            try {
-                return JSON.parse(readFileSync(path, 'utf8')) as SavedRun;
-            } catch {
-                continue;
-            }
-        }
-        return null;
+    /** This incident's own saved run files: out/runs/, then snapshots/. */
+    private ownPaths(incidentId: string): string[] {
+        if (!SAFE_ID.test(incidentId)) return [];
+        return [join(this.outDir, 'runs', `${incidentId}.json`), join(this.opts.root, 'snapshots', `${incidentId}.json`)];
     }
 
+    /** This incident's own saved run, or null. */
+    private loadOwn(incidentId: string): SavedRun | null {
+        return readFirst(this.ownPaths(incidentId));
+    }
+
+    /** This incident's own saved run, else the last good run, else the first snapshot committed with the repo. */
     private loadSaved(incidentId: string): SavedRun | null {
         const snapshots = join(this.opts.root, 'snapshots');
-        const committed = existsSync(snapshots)
-            ? readdirSync(snapshots)
-                  .filter((f) => f.endsWith('.json'))
-                  .map((f) => join(snapshots, f))
-                  .sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)
-            : [];
-        const own = SAFE_ID.test(incidentId) ? [join(this.outDir, 'runs', `${incidentId}.json`), join(snapshots, `${incidentId}.json`)] : [];
-        for (const path of [...own, join(this.outDir, 'last_run.json'), ...committed]) {
-            try {
-                return JSON.parse(readFileSync(path, 'utf8')) as SavedRun;
-            } catch {
-                continue;
-            }
-        }
-        return null;
+        const committed = existsSync(snapshots) ? readdirSync(snapshots).filter((f) => f.endsWith('.json')).sort().map((f) => join(snapshots, f)) : [];
+        return readFirst([...this.ownPaths(incidentId), join(this.outDir, 'last_run.json'), ...committed]);
     }
 
     /** Stream a saved run through the same messages, so the page builds the same way offline. */
@@ -322,13 +308,12 @@ export class Station {
 
     /** Page the vampire hunter or the ghostbuster about the station on screen, and say so aloud. */
     private callExpert(ws: WebSocket, msg: Extract<ClientMessage, { type: 'call_expert' }>): void {
-        const tell = (detail: string) => ws.send(JSON.stringify({ type: 'error', detail } satisfies ServerMessage));
         if (!has(library.experts, msg.expert)) return;
         const { expert } = msg;
-        if (this.opts.offline) return tell('Offline: no expert can be paged.');
-        if (!this.run || this.busy) return tell('Wait for the station to finish building before calling an expert.');
+        if (this.opts.offline) return this.tell(ws, 'Offline: no expert can be paged.');
+        if (!this.run || this.busy) return this.tell(ws, 'Wait for the station to finish building before calling an expert.');
         const wait = this.pager.cooldown(expert);
-        if (wait) return tell(`The ${library.experts[expert].label.toLowerCase()} was just paged. Wait ${wait} seconds before paging again.`);
+        if (wait) return this.tell(ws, `The ${library.experts[expert].label.toLowerCase()} was just paged. Wait ${wait} seconds before paging again.`);
         const countermeasure = has(library.arsenal, msg.countermeasure) ? msg.countermeasure : null;
         void this.pager.open(pageRequest(this.run.state, expert, countermeasure));
         void this.speakCall(expert);
@@ -336,15 +321,19 @@ export class Station {
 
     /** Post the station on screen to #loft-incident, once per incident, and only when it says to act. */
     private dispatch(ws: WebSocket): void {
-        const tell = (detail: string) => ws.send(JSON.stringify({ type: 'error', detail } satisfies ServerMessage));
-        if (this.opts.offline) return tell('Offline: nothing can be posted to #loft-incident.');
-        if (!this.run || this.busy) return tell('Wait for the station to finish building before dispatching.');
+        if (this.opts.offline) return this.tell(ws, 'Offline: nothing can be posted to #loft-incident.');
+        if (!this.run || this.busy) return this.tell(ws, 'Wait for the station to finish building before dispatching.');
         const { state } = this.run;
-        if (state.manifest.recommended_action === 'observe') return tell('The station says observe, so there is nothing to dispatch.');
-        if (this.dispatcher.has(state.incident_id)) return tell('This incident is already posted to #loft-incident.');
+        if (state.manifest.recommended_action === 'observe') return this.tell(ws, 'The station says observe, so there is nothing to dispatch.');
+        if (this.dispatcher.has(state.incident_id)) return this.tell(ws, 'This incident is already posted to #loft-incident.');
         const wait = this.dispatcher.wait();
-        if (wait) return tell(`#loft-incident was just posted to. Wait ${wait} seconds before posting again.`);
+        if (wait) return this.tell(ws, `#loft-incident was just posted to. Wait ${wait} seconds before posting again.`);
         void this.dispatcher.post(state.incident_id, dispatchText(state));
+    }
+
+    /** Tell one page why its click did nothing. */
+    private tell(ws: WebSocket, detail: string): void {
+        ws.send(JSON.stringify({ type: 'error', detail } satisfies ServerMessage));
     }
 
     /** Voice the call in the background; the page plays the expert's sting, then the line. A failure is only logged. */
