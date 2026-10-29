@@ -14,7 +14,7 @@ The screenshots come from live runs on 2026-10-28 at 1440x900, cropped to the pa
 - An EMF reading at or below 5 mG loses its EMFGauge.
 - A ThermalReadout at its normal temperature is dropped, unless it is the calm panel of a harmless report.
 - A SystemsBoard lists the intake's systems, and goes when there are none.
-- Repeated panels are dropped, and so is an EntityCard with an unknown image.
+- Repeated panels are dropped.
 
 ## Model components
 
@@ -35,7 +35,8 @@ The screenshots come from live runs on 2026-10-28 at 1440x900, cropped to the pa
 
 - **Shows:** 1 to 3 buttons under the ThreatBanner's directive, each an order under 5 words, such as "Seal lounge" or "Switch to garlic line". A move already in effect shows a check mark and can't be pressed again.
 - **When:** the model writes them for the moves the commander most likely makes next. `clean_manifest` keeps only moves this station can run, each once:
-  - seal or unseal a known sector, with a FloorPlan on the station, and never a sector the plan already seals
+  - seal a sector, with a FloorPlan on the station, and never a sector the plan already seals
+  - unseal a sector the FloorPlan doesn't seal, or any sector when there is no FloorPlan
   - switch to a picker option other than the recommended one, which is already picked
   - get all or half of the tracked people out, with a CivilianTracker on the station
   - call a known expert
@@ -72,7 +73,7 @@ The floor view in the screenshot above has six markers in the main stage, among 
 
 - **Shows:** up to 6 things from the report on the floor, each in its sector as a small round picture: a creature, people, an object or a countermeasure in place. The ring's color gives the kind: red for a threat, the text color for people, the highlight color for a countermeasure and the spook color for a hazard. Each marker's note shows only on hover or keyboard focus.
 - **When:** the prompt asks for things the report gives, never the route and never an invented fact. The model picks each picture from the map tokens in `shared/library.json` (vampire, werewolf, zombie, ghost, people, injured, crate, fog, fire and more) or the countermeasure's arsenal icon. When nothing fits, the marker is a dot in a color the model picks.
-- **Clean-up:** `clean_manifest` keeps markers with a known sector and kind, and cuts each label to its first 5 words that fit in 28 characters. An unknown picture becomes a dot, and an unknown color the first dot color.
+- **Clean-up:** the strict schema allows only known sectors, kinds, pictures and colors. `clean_manifest` cuts each label to its first 5 words that fit in 28 characters, and drops a marker whose label ends up empty.
 - **Powered by:** Parasail places the markers. The pictures are art manifest images (`token_<id>`), made by `pnpm art` like the rest.
 - **Placement:** the model only names the sector. The page finds a spot inside it where the picture overlaps the sector names, the route, the exits and earlier markers the least, nearest the sector's name among equal spots.
 - **Accessibility:** each marker is focusable, and its label names the kind, the sector and the note, such as "threat in Main stage: Two vampires at row 16".
@@ -102,7 +103,7 @@ The floor view in the screenshot above has six markers in the main stage, among 
 ![CountermeasurePicker, step 20](components/countermeasure-picker.webp)
 
 - **Shows:** options from the playbook's arsenal. The model's choice comes first, marked Recommended and selected, then the rest strongest support first. Each has a three-bar support meter with its word, a rationale and the numbered source behind it (the source title shows on hover). The target line is hidden when the model only names a class or says unknown.
-- **When:** only when the action is contain or evacuate. The prompt keeps vampire countermeasures (garlic, invitations, seeds) for vampires and raising the blinds for daylight. `clean_manifest` keeps only arsenal options and valid source numbers, and drops the panel on harmless and quiet steps.
+- **When:** only when the action is contain or evacuate. The prompt keeps vampire countermeasures (garlic, invitations, seeds) for vampires and raising the blinds for daylight. The strict schema allows only the playbook's arsenal and valid source numbers. `clean_manifest` keeps each option once and drops the panel on harmless and quiet steps.
 - **Powered by:** Parasail picks and explains the options, and each one cites a You.com source. The icons come from the art manifest.
 - **Operator:** pick a different option than the model's.
 - **Accessibility:** a radio group with a hidden legend, so arrow keys move between options.
