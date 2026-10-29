@@ -233,23 +233,20 @@ class HauntState(BaseModel):
 
 
 class HauntFlow(Flow[HauntState]):
-    # A dict, not a callable PrivateAttr: pydantic binds a callable default as a method.
-    _hooks: dict = PrivateAttr(default_factory=lambda: {"emit": lambda msg: None, "t0": 0.0})
+    _emit: Callable[[dict], None] = PrivateAttr()
+    _t0: float = PrivateAttr(default=0.0)
 
     def bind(self, emit: Callable[[dict], None]) -> "HauntFlow":
-        self._hooks["emit"] = emit
+        self._emit = emit
         return self
-
-    def _emit(self, msg: dict) -> None:
-        self._hooks["emit"](msg)
 
     def step(self, step_id: str, status: str, detail: str = "") -> None:
         """Report a step's progress. `ms` is the time since the step started running."""
         now = time.monotonic()
         if status == "running":
-            self._hooks["t0"] = now
+            self._t0 = now
         self._emit({"type": "step", "id": step_id, "state": status, "detail": detail,
-                    "ms": int((now - self._hooks["t0"]) * 1000)})
+                    "ms": int((now - self._t0) * 1000)})
 
     # ---- 1. ingest: the raw report becomes a structured incident
 
@@ -280,6 +277,7 @@ class HauntFlow(Flow[HauntState]):
         return library.entity_class(self.state.incident)
 
     def _playbook(self, label: str) -> None:
+        self.step("triage", "running")
         self.state.playbook = label
         book = library.PLAYBOOKS[label]
         self._emit({"type": "route", "label": label, "playbook": book["label"],
