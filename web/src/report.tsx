@@ -191,7 +191,7 @@ export function ReportPanel({
                     backTo && (
                         <button
                             type="button"
-                            className="ghost"
+                            className="back"
                             aria-disabled={running}
                             onClick={() => {
                                 if (running) return;

@@ -1,54 +1,117 @@
 # Haunted Command Station
 
-Our entry for Track 2, The Haunted Dashboard, at Hack with YOU: Halloween Edition (San Francisco, October 28, 2026).
+My entry for Track 2, The Haunted Dashboard, at Hack with YOU: Halloween Edition (AWS Builder Loft, San Francisco, October 28, 2026).
 
-A raw paranormal incident report goes in. An operable command station comes out, live, over a WebSocket. The model picks the panels from a fixed component library, orders them by urgency and fills them with facts from the report. Every countermeasure it offers is backed by a numbered You.com source.
+A raw incident report goes in. A working command station comes out, built live over a WebSocket.
 
-The operator then works the station. They pick a countermeasure, seal sectors on the floor plan and mark people as extracted. When the threat needs a specialist, a "Call expert" button pages one through PagerDuty with One: the vampire hunter for corporeal threats, the ghostbuster for spectral and anomalous ones.
+The model reads the report, decides whether the threat is real, and builds the station this incident needs from a fixed component library: which panels, in what order, how big, under what titles, with which facts pinned on the floor plan and which next moves offered as buttons. Every countermeasure it offers cites a numbered You.com source. What the operator does then feeds the next report's station.
+
+- **[The live station](https://jaroslavhejlek--haunted-command-station.apify.actor)**: running on Apify, open to anyone, no sign-in. It opens on Nightfall step 1, and a cold start takes about 10 seconds.
+- **[How it works](docs/how-it-works.html)**: a field manual for judges on how CrewAI, You.com, Parasail and One are used, with a guide to the code. GitHub shows it as source, so download it or open it from a clone.
+- **[AGENTS.md](AGENTS.md)**: the map of the repo, the commands and the rules, for people and coding agents alike. Each main folder has its own.
+- **[docs/](docs/README.md)**: the component guide, the deploy notes and the explainers.
+- **[eval/](eval/README.md)**: how the station is scored against hand-written answer keys, and what that found.
+
+## The problem
+
+Incident logs arrive as messy text, and the severity label on them is often wrong. A console that shows every panel for every alert buries the one control that matters, and it cannot tell a real threat from a look-alike.
+
+The station reads the text, not the label. A costume gets a calm screen, and nobody is called. A real threat gets a floor plan with a safe route, a headcount and ranked countermeasures. A single click calls the right expert: that pages a real phone, and the station shows when they acknowledge.
+
+## Three scenarios
+
+Pick any step from the dropdown in the incident report panel, or step through with Previous and Next.
+
+- **Nightfall** (24 steps, 11:20 to 20:26). Vampires and werewolves arrive at the Loft on the day of this hackathon, timed to the real San Francisco sky: sunset at 18:15, full dark at 19:43, moonrise at 20:02. Five steps are harmless look-alikes, one of them tagged `CRITICAL_HAUNT`. A guest in a Dracula cape asks to be "invited in". A grid sag drops the lights. A team in wolf-ear headbands howls into a feeding-back microphone.
+- **The Coffee Bar Phantom** (24 steps). A cold, erratic presence at the catering bar, among fog machines, bedsheet costumes and a subwoofer playing infrasound.
+- **Zombie Rush** (24 steps). Figures drift in from Market Street, mostly outside, so the map switches to the blocks around the tower.
+
+Only Nightfall gets the real sky, because only there does time of day drive the threat. The page also lists the official Track 2 fixture (`fixtures/haunted-dashboard.json`) and three simulated single incidents under "Single incidents", and "New incident" takes any pasted report.
 
 ## What happens on a run
 
-1. **Intake (Parasail).** `parasail-minimax-m31-flash` turns the raw text into a structured incident: entity, class, sector, EMF, temperature, people at risk, affected systems and severity. A strict `json_schema` response format fixes the shape.
-2. **Route (CrewAI Flow).** A `@router` reads the incident class and picks a playbook: spectral, corporeal or anomalous. Each playbook has its own arsenal of countermeasures and its own lore focus.
-3. **Ground (CrewAI agent and You.com).** A CrewAI Lore Researcher agent runs two You.com searches through a custom tool, then writes short notes that cite the numbered sources. If the agent skips its searches, the Flow runs them itself, so the station is never built on guesses.
-4. **Compose (Parasail, streamed).** Parasail streams the manifest under a strict `json_schema` built from the component library, the playbook's arsenal and the number of sources. The server sends each component to the page the moment its JSON object closes, so the station assembles while the model is still writing.
-5. **Call an expert (One).** Two buttons, "Vampire hunter" and "Ghostbuster", open a PagerDuty incident through One's "Create an Incident" action. The playbook the code routed to picks the primary button, and the station follows the page until someone acknowledges it.
+1. **Intake (Parasail).** `parasail-minimax-m31-flash` turns the raw text into a structured incident under a strict `json_schema`, at temperature 0. It writes down the evidence of a threat, any ordinary explanation and whether someone acted on purpose before it rates severity, and it quotes the few phrases that drove its reading. The report panel highlights them a few seconds in: threat in red, people at risk in amber, a harmless explanation in white.
+2. **Memory.** A scenario step's intake also reads what the earlier steps found. Zombie Rush's later reports only say "the figures", so this is what lets the station know what they are. A report's own checks can still clear it.
+3. **Route (CrewAI Flow).** A `@router` picks a playbook: spectral, corporeal or anomalous. A named creature decides it in code (a vampire is corporeal), and the model's class is the fallback. Each playbook has its own arsenal of countermeasures.
+4. **Ground (CrewAI agent and You.com).** A CrewAI Lore Researcher agent runs two You.com searches through a custom tool and writes short notes that cite the numbered sources. For a Nightfall step, the Flow also adds the live sky from wttr.in and a You.com search for the day's sunset and moonrise. If the agent skips its searches, the Flow runs them itself.
+5. **Compose (Parasail, streamed).** Parasail streams the station manifest under a strict `json_schema` built from the component library, the playbook's arsenal and the number of sources. The server sends each panel to the page the moment its JSON object closes, so the station assembles while the model is still writing.
+6. **Operate (One).** The operator works the station, and the next step builds on it (see below). "Call expert" pages a vampire hunter or a ghostbuster through PagerDuty with One.
 
-Different incidents get different stations. Besides the official fixture, `fixtures/simulated-incidents.json` holds three simulated ones, marked `"source": "simulated"`: a zombie crowd at the entrance, a poltergeist in the network closet with no one at risk, and a harmless fog machine at a costume contest. The page lists them all, and one click builds a station for any of them. For the harmless one, the model recommends observing, both expert buttons step back, and the page says no expert is needed.
+A run takes about 15 seconds. When the model says observe, the station shows why and recommends calling nobody.
+
+## What the model decides, and what the code holds
+
+The model decides:
+
+- **The panels:** which of the 10 types, in what order, each one's title ("Who's still in the hall") and size (hero, standard or compact).
+- **The facts on the map:** up to 4 markers, each a small picture of a creature, a crowd, an object or a countermeasure in its sector, plus the hot sector, the sectors to seal and the route out. The page walks the route through real doors and round sealed sectors.
+- **The next moves:** 1 to 3 quick actions, such as "Seal the lounge" or "Switch to UV floods".
+- **The rest:** the art, the opening sound, the recommended action (observe, contain or evacuate) and the directive.
+
+The code holds the line:
+
+- **Calm when harmless.** `clean_manifest` in `pipeline/library.py` keeps a harmless report calm: observe, the all-clear sound, no alarm panels.
+- **Real references only.** It drops a sensor panel showing an ordinary reading, keeps only countermeasures from the playbook and sources that exist, and drops quick actions whose target does not exist.
+- **Fixed geometry.** The page owns the look and the grid, so no layout the model picks can break the screen.
+
+## The operator loop
+
+The operator picks a countermeasure, seals sectors, marks people as out and calls experts. When they step to the next report, the page sends those moves with it:
+
+- **The next directive builds on them.** At 20:02 it says whether the silver netting picked at 19:55 still fits.
+- **The seals stay on the map.** Sectors sealed at the last step start the next one sealed.
+- **The headcount follows.** The tracker counts only the people still inside.
+- **An expert already called is not called again.** If the vampire hunter acknowledged the page on their phone, the next directive says what to hand over when they arrive.
 
 ## How the partners work together
 
 | Partner | What it does here | Where |
 |---|---|---|
-| CrewAI | Runs the pipeline as a Flow: `@start` intake, `@router` on incident class, one listener per playbook, an `or_` join into grounding, then composition. The Lore Researcher is a CrewAI `Agent` with a `BaseTool` for You.com. | `pipeline/flow.py` |
-| You.com | Search API (`POST https://ydc-index.io/v1/search`) grounds the countermeasures. Each hit becomes a numbered source that the manifest cites and the page links. | `pipeline/grounding.py` |
-| Parasail | Reasons in every step: incident extraction, the Lore Researcher agent, and the streamed manifest. Both direct calls use a strict `json_schema`. `parasail-deepseek-v41-flash` is the fallback model. | `pipeline/flow.py`, `pipeline/parasail.py` |
-| One | Pages the vampire hunter or the ghostbuster through PagerDuty and follows the incident, and reaches ElevenLabs for the spoken call and the sound effects. Action ids are found at run time by method and path, and connection keys come from `one list`. | `server/one.ts`, `server/pager.ts`, `server/speech.ts` |
+| CrewAI | Runs the pipeline as a Flow: `@start` intake, `@router` on the incident class, one `@listen` per playbook, an `or_` join into grounding, then composition. The Lore Researcher is a CrewAI `Agent` with a `BaseTool` for You.com. Its LLM calls are recorded from CrewAI's events. | `pipeline/flow.py`, `pipeline/grounding.py`, `pipeline/proof.py` |
+| You.com | The Search API (`POST https://ydc-index.io/v1/search`) grounds every countermeasure and the sky times. Each hit becomes a numbered source that the manifest cites and the page links. | `pipeline/grounding.py`, `pipeline/flow.py` |
+| Parasail | Every reasoning step: intake, the Lore Researcher agent and the streamed manifest, all on `parasail-minimax-m31-flash` with `parasail-deepseek-v41-flash` as the fallback. It also writes the prompts for the art. | `pipeline/flow.py`, `pipeline/parasail.py`, `scripts/art.ts` |
+| One | Every action outside the station. PagerDuty opens the expert's incident, follows it until it is acknowledged, and resolves it when the station stands down. ElevenLabs announces the call and made the 16 sound effects. | `server/one.ts`, `server/pager.ts`, `server/station.ts`, `server/speech.ts`, `scripts/sfx.ts` |
 
-## How it is built
+One action ids are found at run time with `one actions find`, by method and path, and never pasted in. Connection keys come from `one list`. Before its first call, the station reads the action's docs, and it never retries a page blindly.
 
-```text
-fixtures/haunted-dashboard.json ──► server/main.ts (Node, TypeScript)
-                                       │  spawns, writes the incident to stdin
-                                       ▼
-                                    python -m pipeline (CrewAI Flow)
-                                       │  one JSON event per line on stdout
-                                       ▼
-                                    server/station.ts ──► WebSocket /ws ──► web/ (Vite + React)
-                                       │                                      │ compile, call expert
-                                       ├─ out/last_run.json (every good run)  ◄┘
-                                       └─ server/pager.ts ──► One CLI ──► PagerDuty
+## Architecture
+
+```mermaid
+flowchart LR
+    F["Incident text<br/>fixtures/"] --> S["server/station.ts<br/>Node, TypeScript"]
+    S -- "stdin: report, sky,<br/>operator moves, memory" --> W["python -m pipeline<br/>CrewAI Flow"]
+    W -- "Parasail" --> W
+    W -- "You.com Search" --> W
+    W -- "one JSON event per line" --> S
+    S -- "WebSocket /ws" --> P["web/<br/>Vite + React"]
+    P -- "compile with moves,<br/>call expert" --> S
+    S --> O["One CLI"]
+    O --> G["PagerDuty: page the expert"]
+    O --> E["ElevenLabs: spoken alert"]
+    S --> R["out/ saved runs<br/>(memory, offline replay)"]
 ```
 
 - **Python only where CrewAI needs it.** `pipeline/` holds the Flow, the You.com tool and the Parasail calls. It runs as a worker that reads one incident on stdin and writes events on stdout.
 - **TypeScript for everything else.** Node 24 runs `server/*.ts` directly. The page is Vite, React and TypeScript.
-- **One library, three readers.** `shared/library.json` holds the sectors, floor plan geometry, arsenal, playbooks and component descriptions. The pipeline builds its `json_schema` from it, and the server and page render from it.
-- **One protocol.** `shared/protocol.ts` types every WebSocket message and the manifest, for both the server and the page.
-- **The model never writes markup.** It can only emit components from the library. The page has one React renderer per component, and all model and web text renders as text. Links render only for `http` and `https` URLs.
+- **One library, three readers.** `shared/library.json` holds the 10 components, 8 sectors, 3 playbooks, 17 countermeasures and 16 sounds. The pipeline builds its `json_schema` from it, and the server and page render from it. `shared/protocol.ts` types every WebSocket message.
+- **The model never writes markup.** It can only emit components from the library. All model and web text renders as text, links render only for `http` and `https`, and the prompts treat the report and search results as untrusted data.
+- **It fails to a saved run.** A Parasail call with no data for 45 seconds moves to the fallback model. A pipeline run over 90 seconds is stopped, and the page replays the last saved run with a notice.
 
 ## Run it
 
-You need Node 24.22.1 or newer, pnpm, and Python 3.10 to 3.13 (CrewAI does not support 3.14 yet).
+### Offline, in one command
+
+No keys, no Python and no network. A clean clone replays the run committed in `snapshots/` through the same WebSocket messages:
+
+```bash
+pnpm install && pnpm start --offline
+```
+
+You need Node 24.22.1 or newer and pnpm. The page opens at http://127.0.0.1:8666.
+
+### Live
+
+You also need Python 3.10 to 3.13 (CrewAI does not support 3.14 yet):
 
 ```bash
 pnpm install
@@ -56,119 +119,95 @@ python3.13 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-Put the keys in `.env` (it is gitignored):
+Put the keys in `.env`, which is gitignored:
 
 | Variable | What it is for |
 |---|---|
 | `PARASAIL_API_KEY` | Parasail inference |
 | `YDC_API_KEY` (or `YOU_API_KEY`) | You.com Search |
-| `ONE_SECRET` | The One CLI, for paging and speech |
-| `ONE_PAGER_DUTY_CONNECTION_KEY`, `ONE_ELEVENLABS_CONNECTION_KEY` | Optional. Only needed with more than one connection for that platform in One |
-| `PAGERDUTY_SERVICE_ID`, `PAGERDUTY_FROM` | Optional. The service to page (default `P1KQZ39`) and the email PagerDuty requires in the `From` header (default: the account owner's, looked up at run time) |
-| `PAGING` | Optional. `off` makes the "Call expert" buttons page nobody, for tests and the eval. On by default |
-| `ELEVENLABS_VOICE_ID` | Optional. The caller's voice, default "Daniel, Steady Broadcaster" (`onwK4e9ZLuTAKqWW03F9`) |
+| `ONE_SECRET` | The One CLI, for PagerDuty and ElevenLabs |
+| `PAGERDUTY_SERVICE_ID`, `PAGERDUTY_FROM` | The service to page, which defaults to mine, so set your own. The From email defaults to the account owner's |
+| `PAGING` | Optional. `off` makes the "Call expert" buttons page nobody, for tests and the eval |
+| `ONE_ELEVENLABS_CONNECTION_KEY` | Optional. Only needed with more than one ElevenLabs connection in One |
+| `ELEVENLABS_VOICE_ID` | Optional. The voice that announces a call |
 | `HAUNT_MODEL`, `HAUNT_FALLBACK_MODEL` | Optional. Default `parasail-minimax-m31-flash` and `parasail-deepseek-v41-flash` |
 
-To call experts, install the One CLI and connect PagerDuty and ElevenLabs:
-
-```bash
-npm i -g @withone/cli
-one add pager-duty
-one add elevenlabs
-```
-
-Then start the station. It builds the page, opens http://127.0.0.1:8666 and builds a station from the fixture:
+Install the One CLI (`npm i -g @withone/cli`) and connect the apps with `one add pager-duty` and `one add elevenlabs`. Check every partner with `.venv/bin/python scripts/smoke_test.py`, which makes read-only calls. Then build the page and start the station:
 
 ```bash
 pnpm start
 ```
 
-Other ways to run it:
+Calling an expert pages for real, so point `PAGERDUTY_SERVICE_ID` at a service whose on-call is you.
 
 ```bash
-pnpm start --offline          # no network and no keys: replays the last saved run, and no expert can be paged
-pnpm start --incident sim-2026-0102   # start from another incident in fixtures/ (default: Nightfall step 20, a real threat)
-PAGING=off pnpm start         # the expert buttons page nobody
-pnpm start --port 8667        # another port
-pnpm start --no-browser       # do not open the page
+pnpm start --incident sim-zombies-12   # start on another step or incident
+pnpm start --port 8667 --no-browser    # another port, no browser
+PAGING=off pnpm start                  # the expert buttons page nobody, for tests
+pnpm check                             # type-check, unit tests, build the page
 ```
 
-For development, `pnpm dev` restarts the server on changes and `pnpm dev:web` serves the page with hot reload. `pnpm check` type-checks both and builds the page.
+## Eval
 
-## Offline
+`eval/run.py` runs every step of a scenario through the real pipeline and scores each station against a hand-written answer key in `fixtures/`, which the station never reads. A step earns a point each for the right action, the right call-or-not decision, the right hot sector, the expected panels, no discouraged panels and no failure: 144 points per scenario. A miss (observing a threat the key wants handled) is the worst mistake, so no change shipped that raised misses.
 
-Every good run is saved to `out/last_run.json`, with every event it streamed. `--offline` replays the last saved run through the same WebSocket messages, so the page builds itself the same way without the network. When `out/` is empty, it replays the snapshot committed in `snapshots/`, which a real run produced. A clean clone with no Python and no keys can show the station with `pnpm install && pnpm start --offline`.
+| Scenario | Points (of 144) | Misses | False alarms on harmless steps |
+|---|---|---|---|
+| Nightfall, mean of two passes | 134.9 (up from 114 for the first version) | 0 of 14 in both | 1 and 0 of 5 |
+| The Coffee Bar Phantom, one pass | 114.0 | 0 of 11 | 1 of 5 |
+| Zombie Rush, one pass | 108.2 | 1 of 15 | 3 of 5 |
 
-If a live run fails, for example on a network error or a bad key, the page shows the error and replays the last saved run.
-
-## Calling an expert
-
-Two buttons sit in the header: **Vampire hunter** for corporeal threats (vampires, werewolves, zombies) and **Ghostbuster** for spectral and anomalous ones (ghosts, poltergeists, banshees, hexes). The playbook the code routed the incident to makes one of them the primary button, and the other stays available. On a harmless report both step back and the page says no expert is needed.
-
-A click opens a real PagerDuty incident through One:
-
-```text
-[SIMULATED] Vampire hunter needed: werewolves · Main stage · 20:02 · 158 people
-```
-
-- **Details.** The incident body has the sector, the people at risk, the model's recommendation, the countermeasure the operator picked with its source, and the top three You.com sources.
-- **Urgency.** High when the model marked the threat critical or recommends evacuating, low otherwise.
-- **No paging loops.** The `incident_key` is `<incident id>:<expert>`, so PagerDuty keeps one open incident per step and expert, and the server pages each expert at most once a minute.
-- **Followed to the end.** The server polls the incident every 15 seconds, and the status sits beside the button: Paging, Triggered, Acknowledged by the person who took it, Resolved. "Resolve" closes it from the station, and a later step the model calls safe (observe) resolves every open page.
-- **Offline.** The buttons are disabled.
-
-## Sound
-
-The station has sound, made with ElevenLabs through One. Browsers block audio until you interact with the page, so it starts muted. "Sound" in the header turns it on and a slider sets the volume. A "Call expert" click with sound off plays only that call's sting and voice.
-
-- **Sound effects.** A radio squelch, an alert chime, an all-clear chime, a low ambient drone and one short sting per entity in the lore catalog, such as a banshee's wail or a wolf howl. They are generated once and committed in `web/public/sfx/` (about 324 KB), so they play offline too.
-- **The model picks the cue.** The manifest has a `sound_cue` field, an enum of the cue and sting ids, the same way it picks components. The station opens with that sound. The phantom gets a ship's bell in fog, the zombie crowd gets a groan, and a harmless report gets the all-clear chime.
-- **Spoken call.** Calling an expert plays that expert's sting, then a voice says "Calling the vampire hunter. This is a drill." (or the ghostbuster). The server generates the line with One's ElevenLabs text-to-speech action and caches it in `out/speech/` under a hash of the text, so later calls cost nothing. Generated speech is never committed.
-
-The prompts live in `shared/library.json` under `sounds`. `pnpm sfx` generates the sounds that are missing or whose prompt changed, and `web/public/sfx/sounds.json` records what each file was made from:
-
-```bash
-pnpm sfx                  # generate what is missing or changed
-pnpm sfx --list           # show what would be generated
-pnpm sfx --force zombie   # generate the sounds whose id contains "zombie" again
-```
-
-## Art
-
-The art is made on a Mac with Apple Silicon. Parasail turns a short brief into image prompts in the station's palette, and [Z-Image Turbo](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo) renders each prompt locally through [mflux](https://github.com/mflux-community/mflux). Install mflux once. The first render downloads the 4-bit model, about 6 GB:
-
-```bash
-uv tool install --python 3.13 mflux
-```
-
-Then describe what you need:
-
-```bash
-pnpm art "a hero image for the landing screen"
-pnpm art --count 4 --size 1536x864 "the entities from the simulated incidents"
-pnpm art --prompt "an exact prompt, rendered as written" --seed 7
-```
-
-Images land in `art/`. `art/prompts.jsonl` keeps each image's prompt and seed, so a good image can be rendered again or varied with another seed.
+The first version copied the feed's tier label into its severity on all 20 labelled Nightfall steps and contained almost everything. Judging the evidence first, a harmless gate in code, a sky-aware observe rule and running memory brought it here. [eval/README.md](eval/README.md) has every pass, what each change did and what is still lost.
 
 ## Proof of work
 
-Every Parasail call is appended to `proof/parasail.jsonl`: the pipeline's intake and layout calls, the CrewAI Lore Researcher's calls (recorded from CrewAI's LLM call events), the art prompt writer and the icon generator. Each line has the request, the response, token usage and latency. `proof/partners.jsonl` does the same for You.com searches and every One action (PagerDuty, ElevenLabs, and the Discord posts of earlier versions), with `dry_run` true or false. Keys, headers and One connection keys are redacted before a line is written. `pnpm proof` summarizes both into `proof/README.md`, and `proof/exploration/` holds the morning's model tests.
+Every call to a partner is in an append-only ledger, one JSON object per line. Keys, headers and One connection keys are redacted before a line is written.
+
+- [`proof/README.md`](proof/README.md): the summary that `pnpm proof` writes.
+- [`proof/parasail.jsonl`](proof/parasail.jsonl): every Parasail call with the request, the response, token usage and latency, covering intake, layout, the CrewAI agent's calls and the art prompt writer.
+- [`proof/partners.jsonl`](proof/partners.jsonl): every You.com search and every One action, with its purpose.
+- [`proof/exploration/`](proof/exploration/): the morning's model tests (tool calling, streaming, strict JSON, embeddings, SVG drawing), which decided which model does what.
+
+By 17:10 on October 28 the ledgers held 2,452 Parasail calls, about 6.1 million tokens, none of them failed, and 1,671 partner calls, 1,609 of them You.com searches. Eval runs and checks are tagged with a `context`, so they can be told from demo runs.
+
+## Hosted on Apify
+
+The station runs as an Apify Actor in Standby mode at **https://jaroslavhejlek--haunted-command-station.apify.actor**, built automatically from every commit to `main`, so anyone can open it without installing anything or signing in. It opens on Nightfall step 1. A cold start takes about 10 seconds. On the Actor, "Call expert" pages my phone for real, at most once a minute per expert.
+
+If the page is opened with an API token in the URL (`?token=`), it adds the token to every URL it builds: the WebSocket, the sounds, the speech, the art and the map. The image holds no keys, which come from Apify secrets. See [`docs/deploy.md`](docs/deploy.md).
+
+## More of the station
+
+- **Sound.** ElevenLabs made 16 sound effects through One, committed in `web/public/sfx/` so they play offline. The model picks the opening sound the way it picks panels: a wolf howl for werewolves, the all-clear chime for a harmless report. Each call plays the expert's sting, then a voice says who is being called.
+- **Art.** Parasail writes image prompts and [Z-Image Turbo](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo) renders them locally through [mflux](https://github.com/mflux-community/mflux): 13 entities and look-alikes, 8 sectors, 2 hero images, 19 countermeasure icons and 16 map tokens, in `art/station/`. The model picks images by id. Run `pnpm art "a brief"` to make more.
+- **Maps.** The floor view draws the Loft from `data/map/floor.json`, traced from AWS's own kiosk map, and walks safe routes through its doors (`web/src/route.ts`, with tests). The area view draws the blocks around the tower from OpenStreetMap data in `data/map/area.geojson`.
+- **Sky.** The server computes the day's sky with suncalc and replaces sunset and moonrise with wttr.in's live times when the network is up. The SkyClock counts down to each event, on the scenario's clock or in real time.
+- **Several viewers.** Every tab sees the same station, and each keeps its own place in the scenario.
 
 ## Project layout
 
 ```text
-pipeline/        Python: the CrewAI Flow, the You.com tool, Parasail calls, the NDJSON worker
-server/          TypeScript: HTTP and WebSocket server, runs and replays, paging and speech through One
-web/             Vite + React page; web/public/sfx holds the committed sound effects
+pipeline/        Python: the CrewAI Flow, the You.com tool, Parasail calls, the worker
+server/          TypeScript: HTTP and WebSocket server, runs, memory and replays, One actions
+web/             Vite + React page; web/public/sfx holds the sound effects
 shared/          library.json and protocol.ts, read by all three
-scripts/         art.ts renders images locally; sfx.ts generates the sound effects with ElevenLabs through One
-fixtures/        the published Track 2 incident, plus three simulated ones
-snapshots/       a saved run, for offline mode on a fresh clone
+fixtures/        the official Track 2 incident, three simulated ones, and the three scenarios with answer keys
+snapshots/       a saved run for offline mode on a fresh clone
+art/station/     the images the model can pick, with their prompts and seeds
+data/map/        the floor plan and the OpenStreetMap area
+eval/            the scoring harness, its reports and what it found
+proof/           the ledgers and the model tests
+docs/            the component guide, the deploy notes and the explainers
+scripts/         art.ts, sfx.ts, proof.ts and the partner smoke test
+scenarios/       venue research and the lore catalog the scenarios were written from
 ```
 
 ## Credits
 
-- `pipeline/parasail.py` comes from One's Track 2 template, [withoneai/you-hackathon](https://github.com/withoneai/you-hackathon/tree/main/templates/haunted-command-station). `server/one.ts` and `server/pager.ts` port the approach of that template's `one_cli.py` to TypeScript: find the action at run time, read its docs before a live call, and never retry a write blindly.
+- Map data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), under the Open Database License. See `data/map/ATTRIBUTION.md`.
+- Images rendered with [Z-Image Turbo](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo) through [mflux](https://github.com/mflux-community/mflux). Prompts and seeds are in `art/prompts.jsonl`.
+- `pipeline/parasail.py` comes from One's Track 2 template, [withoneai/you-hackathon](https://github.com/withoneai/you-hackathon/tree/main/templates/haunted-command-station). The way the server calls One follows that template's `one_cli.py`: find the action at run time, read its docs before the first call, and never retry a write blindly.
 - `fixtures/haunted-dashboard.json` is the published fixture from [youdotcom-oss/halloween-hack-2026](https://github.com/youdotcom-oss/halloween-hack-2026/tree/main/fixtures).
+- Fonts: VT323 and IBM Plex Mono, both under the SIL Open Font License, bundled through Fontsource.
+- Sky times from [wttr.in](https://wttr.in) and [suncalc](https://github.com/mourner/suncalc).
 - Built during the hackathon with Claude Code.

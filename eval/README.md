@@ -1,11 +1,17 @@
-# Eval: scoring the command station against the Nightfall answer key
+# Eval: scoring the command station against hand-written answer keys
 
-This folder checks whether the pipeline builds the right command station for each incident. It plays the 24
-steps of the Nightfall scenario (`fixtures/nightfall/scenario.json`) through the real pipeline and scores every
-station against a hand-written answer key (`fixtures/nightfall/answer-key.json`).
+This folder checks whether the pipeline builds the right command station for each incident. It plays every step
+of a scenario through the real pipeline and scores each station against a hand-written answer key beside the
+scenario in `fixtures/`. Nightfall (`fixtures/nightfall/`) is the main one; The Coffee Bar Phantom and Zombie Rush
+are scored the same way.
 
-The latest result is **130.93 of 144 points** (mean of two passes), up from **114** for the first version of the
-pipeline. See [report.md](report.md).
+The latest results, on the pipeline as it ships:
+
+| Scenario | Points (of 144) | Misses | False alarms | Report |
+|---|---|---|---|---|
+| Nightfall | **134.86** (mean of two passes, up from 114 for the first version) | 0/14, 0/14 | 1/5, 0/5 | [report.md](report.md) |
+| The Coffee Bar Phantom | 113.99 (one pass, before any tuning for it) | 0/11 | 1/5 | [report-phantom-c.md](report-phantom-c.md) |
+| Zombie Rush | 108.22 (one pass, before any tuning for it) | 1/15 | 3/5 | [report-zombies-c.md](report-zombies-c.md) |
 
 ## What it measures
 
@@ -44,11 +50,17 @@ server's own `server/sky.ts`, through `sky.ts` and Node.
 
 ## Running it
 
-A full pass of 24 steps takes about 6 minutes and calls Parasail and You.com for every step.
+A full pass of 24 steps takes about 6 minutes and calls Parasail and You.com for every step. Run steps one at a
+time (the default), so each step's memory of the earlier ones is complete.
 
 ```bash
 PAGING=off PROOF_CONTEXT=eval .venv/bin/python eval/run.py --label e
+PAGING=off PROOF_CONTEXT=eval .venv/bin/python eval/run.py --label zombies-x --no-sky \
+    --scenario fixtures/zombies/scenario.json --key fixtures/zombies/answer-key.json
 ```
+
+Only Nightfall gets a sky on the server, so the other scenarios run with `--no-sky`. Their reports have no
+baseline column, because the baseline is a Nightfall pass.
 
 | Command | What it does |
 |---|---|
@@ -90,21 +102,24 @@ All numbers are from the reports in this folder and in `archive/`.
 | Harmless gate at intake, playbook routing in code, timeouts | A, B | 126.70, 127.50 | 1/14, 0/14 | 0/5, 1/5 | 4/5, 4/5 |
 | + sky lead-time rule | live | 133.07 | 1/14 | 0/5 | 1/5 |
 | + guard 1 | C, D | 134.17, 130.92 | 1/14, 2/14 | 0/5, 0/5 | 1/5, 1/5 |
-| + panel clean-up (current) | E, F | 132.30, 129.55 | 1/14, 1/14 | 1/5, 1/5 | 1/5, 1/5 |
+| + panel clean-up | E, F | 132.30, 129.55 | 1/14, 1/14 | 1/5, 1/5 | 1/5, 1/5 |
+| + generative features, operator moves, memory (first wording) | G, H | 132.50, 134.50 | 0/14, 0/14 | 1/5, 1/5 | 1/5, 1/5 |
+| + memory (final wording, current) | I, J | 133.30, 136.42 | 0/14, 0/14 | 1/5, 0/5 | 1/5, 1/5 |
 
 1. **The first version contained almost everything.** It contained 21 of 24 steps, never evacuated, and copied the feed's tier label into the intake severity on 20 of 20 labelled steps. A `CRITICAL_HAUNT` label on a 4-second power sag became a critical station. 30 points were lost: 12.5 on harmless steps, 11.5 on real steps the key wants watched, 4 on contain against evacuate. Details: [baseline/fixes.md](baseline/fixes.md).
 2. **Judging harmless reports at intake, enforced in code, fixed the false alarms.** Harmless steps handled calmly went from 0/5 to 4 or 5 of 5 in every pass since, and the `all_clear` cue from 1/5 to 4 or 5 of 5. The feed tier is now copied on about half of the labelled steps instead of all of them.
 3. **Watching while nightfall is hours away fixed the over-escalations.** When nobody is hurt and the next sky event is more than 100 minutes away, the station observes. Replaying the saved manifests of passes A and B through the rule gave +7 points each, and over-escalations fell from 4/5 to 1/5 with no new miss.
 4. **Guard 1 keeps a creature held back by a countermeasure from being called harmless.** It fixed the step 23 miss (vampires held at the doors by UV and garlic): contained in 7 of 7 guarded passes. It never fired on a harmless step (0 of 35 samples) and cost no measurable points. It is in the pipeline now. Details: [guards-fixes.md](guards-fixes.md).
 5. **Two attempts to observe the step 24 stand-down made misses worse**, so I rejected them: an `aftermath` boolean (8/14 misses) and an `ended_evidence` quote (9/14, then 1/14 and 3/14 after a fix). A three-way `threat_state` in the v2 prompt variant failed the same way (5/14).
-6. **The station is faster.** Mean time to the first panel went from 12.3 seconds (baseline) to 10.7 and 11.7 seconds in passes E and F.
+6. **Memory across steps fixed the zombie misses, once its wording let a report clear itself.** Zombie Rush's later reports stop naming the creature ("the figures"), so the intake, reading each step alone, missed 3 of 15. Each step now reads what earlier steps found. The first wording ("a creature the earlier reports confirmed is never an ordinary explanation") cut zombie misses to 1/15 but raised false alarms to 4/5 on the phantom and 5/5 on the zombies. The final wording lets a report's own checks (a green badge read, a normal temperature) clear it, and scored best on all three: Nightfall 134.86, phantom 113.99 (from 107.10), zombies 108.22 (from 106.40). Passes `phantom-a`, `-b`, `zombies-a`, `-b` are in `archive/`.
+7. **The station is a little slower.** Mean time to the first panel was 12.3 seconds at baseline and 10.7 to 11.7 in passes E and F; in passes I and J it is 13.6 and 14.4, because the intake now also quotes the report's evidence and the manifest carries titles, sizes, markers and quick actions.
 
-What is still lost in passes E and F:
+What is still lost in passes I and J:
 
-- **Step 16** (a real blackout, the key says contain) is observed in both passes. In three single-step reruns on the code of passes C and D it was contained once and observed twice (6, 4 and 3.5 points), so it flips from run to run.
-- **Step 8** (a harmless 4-second power sag with a `CRITICAL_HAUNT` label) is contained in both passes.
+- **Steps 12 and 20** are contained where the key says evacuate, and **step 13 and 22** once evacuated where the key says contain. Contain against evacuate is the closest call the key makes.
 - **Step 24** (the end-of-event debrief) is contained.
-- **Steps 12 and 19** are contained where the key says evacuate. I found nothing in the reports that separates them from the steps the key wants contained.
+- **Step 8** (a harmless 4-second power sag with a `CRITICAL_HAUNT` label) is contained in one of the two passes.
+- **Step 16**, the old coin flip, was contained in both.
 
 **Noise.** The same code moves by about 1 to 3 points between passes (passes C and D differ by 3.25), and single
 steps such as 8, 16, 20, 23 and 24 flip. So I compare changes over two passes and treat a difference under 3 points
@@ -119,11 +134,11 @@ as noise.
 | `sky.ts` | computes each step's sky with the server's own code |
 | `variants/` | the prompt and schema variants v1 to v6; each file's docstring says what it changes |
 | `baseline/` | the first full pass (114 of 144): results, report and the first list of fixes. Every labelled report compares against it |
-| `results-e.jsonl`, `results-f.jsonl`, `report-e.md`, `report-f.md` | the two passes on the current pipeline |
-| `report.md` | baseline, pass E and pass F side by side, with my notes |
+| `results-i.jsonl`, `results-j.jsonl`, `report-i.md`, `report-j.md` | the two Nightfall passes on the current pipeline |
+| `report.md` | baseline, pass I and pass J side by side, with my notes |
+| `results-phantom-c.jsonl`, `report-phantom-c.md`, `results-zombies-c.jsonl`, `report-zombies-c.md` | one pass each of the other two scenarios on the current pipeline, with no sky (as the server runs them) |
 | `fixes.md` | my notes after passes A and B: what landed, the next three fixes, what I rejected, noise |
 | `guards-fixes.md`, `report-guards.md`, `report-guards-live.md` | the guard experiments (v4 to v6) against the control, and the verdict on each |
-| `guard1.patch` | guard 1 as it was tested; it is now part of `pipeline/` |
 
 `archive/` keeps the superseded runs, each as a `results-*.jsonl` and a `report-*.md`:
 
@@ -134,6 +149,9 @@ as noise.
 - `v4a`, `v4b`, `v5a`, `v6a`, `v6b`, `v6c`: the guard variant passes summarized in `report-guards.md`.
 - `c`, `d`: the two passes with guard 1, before the panel clean-up.
 - `s16-1` to `s16-3`: step 16 alone, three times, on the code of passes C and D.
+- `e`, `f`: the passes after the panel clean-up. `g`, `h`: with the generative features and the first memory wording.
+- `phantom-a`, `zombies-a`: the other scenarios before memory; `phantom-b`, `zombies-b`: with the first memory wording.
+- `guard1.patch`: guard 1 as it was tested; it is now part of `pipeline/`.
 
 To re-score or combine an archived pass, copy its results file back into `eval/` first: `--combine`,
 `--compare` and `--label` read `eval/results-<label>.jsonl`.

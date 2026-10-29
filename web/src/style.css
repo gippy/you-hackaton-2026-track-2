@@ -16,6 +16,7 @@
     --red: #ff3b1f;
     --red-deep: #3a0904;
     --spook: #c9a0ff;
+    --go: #c9a0ff; /* the way through the story (Next step, Back to the scenario); unlike --spook, no theme changes it */
     --font: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
     --display: 'VT323', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
     --page-max: 1800px; /* wider monitors get margins, not stretched panels */
@@ -170,6 +171,8 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .report-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; }
 .report-nav select { flex: 1 1 260px; min-width: 0; }
 .report-nav .menu { margin-left: auto; }
+.report-nav .next, .report-nav .back { background: var(--go); color: var(--bg); }
+.report-nav .next:hover:not(:disabled), .report-nav .back:hover:not(:disabled) { background: #e2ccff; }
 .menu-list { list-style: none; margin: 0 0 10px; padding: 6px; background: var(--panel-2); border: 1px solid var(--amber); display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px; }
 .menu-list button { width: 100%; height: 100%; text-align: left; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 4px 8px; align-items: baseline; font: 13px var(--font); text-transform: none; letter-spacing: 0; color: var(--text); }
 .menu-list button b { font-weight: 600; color: var(--hi); }
@@ -263,7 +266,14 @@ button.link:hover:not(:disabled) { background: none; color: var(--amber); }
 .glyph.people { fill: var(--text); }
 .glyph.countermeasure { fill: var(--hi); }
 .glyph.hazard { fill: var(--spook); }
-.legend-glyph { width: 10px; height: 10px; margin-right: 4px; vertical-align: -1px; overflow: visible; }
+.floor .marker { cursor: help; outline: none; }
+.floor .marker:focus-visible .token-ring { stroke-width: 0.9; }
+.token-bg { fill: #000; }
+.token-ring { fill: none; stroke-width: 0.5; }
+.token-ring.threat { stroke: var(--red); }
+.token-ring.people { stroke: var(--text); }
+.token-ring.countermeasure { stroke: var(--hi); }
+.token-ring.hazard { stroke: var(--spook); }
 .seal-label { margin-top: 10px; }
 .seal-list { flex-wrap: wrap; margin-top: 4px; }
 .seal-list button { font-size: 14px; padding: 3px 8px; }

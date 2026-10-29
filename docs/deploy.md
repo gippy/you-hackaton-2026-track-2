@@ -100,7 +100,7 @@ It prints `200` on success. `$APIFY_TOKEN` stays in your shell; the command neve
 
 ### 5. Open it
 
-The Standby URL is in the Actor's settings (`standbyUrl`), usually `https://jaroslavhejlek--haunted-command-station.apify.actor`. Every request needs a token, and the page forwards the one it was opened with to its WebSocket, sounds and art:
+The Standby URL is in the Actor's settings (`standbyUrl`): https://jaroslavhejlek--haunted-command-station.apify.actor. Since the evening of 2026-10-28 the Actor's Standby endpoint is open without a token, so that link works for anyone. A private Actor needs a token on every request instead, and the page forwards the one it was opened with to its WebSocket, sounds and art:
 
 ```text
 https://jaroslavhejlek--haunted-command-station.apify.actor/?token=<token>
@@ -114,7 +114,7 @@ For judges, make a scoped token that can only call this Actor, and revoke it aft
 |---|---|
 | Actor | `jaroslavhejlek/haunted-command-station`, id `NDQXCJDv0iWSOU89Q`, private, build 0.1.1 |
 | Console | https://console.apify.com/actors/NDQXCJDv0iWSOU89Q |
-| Standby URL | https://jaroslavhejlek--haunted-command-station.apify.actor (needs `?token=`) |
+| Standby URL | https://jaroslavhejlek--haunted-command-station.apify.actor (open without a token) |
 | Standby settings | memory 1024 MB, idle timeout 300 s, `maxRequestsPerActorRun` 200, `desiredRequestsPerActorRun` 150 |
 | Push and platform build | about 2 minutes (upload, then the Docker build on the platform) |
 | Cold start (no run, first request) | 9.96 s to the first byte, 10.4 s with the 397 KB page. Run created after 1.5 s, image pull 8.6 s, server listening 0.2 s after the container started. A warm request takes 0.27 s |
