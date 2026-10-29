@@ -1,6 +1,8 @@
-# Nightfall eval report — run i
+# Nightfall eval report: run i
 
-Generated 2026-10-28 16:54 · pipeline hash `c94aa03f3b` · sky input on · scenario `fixtures/nightfall/scenario.json` · answer key `fixtures/nightfall/answer-key.json`
+Generated 2026-10-28 18:01 · pipeline `c94aa03f3b` · sky input on · scenario `fixtures/nightfall/scenario.json` · answer key `fixtures/nightfall/answer-key.json`
+
+The files on disk have changed since this run (now `18e72150f3`).
 
 Model(s) seen: parasail-minimax-m31-flash · steps run: 24 · failures: 0
 
@@ -12,31 +14,43 @@ Per step, one point each for: action match, dispatch match, hot-sector match, pa
 
 ## Metrics
 
-| Metric | Result |
-|---|---|
-| False alarms (harmless step, model acts or dispatches) | 1/5 |
-| Harmless handled calmly (observe, low banner, no discouraged panel) | 4/5 (80%) |
-| Harmless with the `all_clear` sound cue | 4/5 (80%) |
-| Misses (key says contain/evacuate, model observes) | 0/14 |
-| Over-escalation (real but key says observe, model acts) | 1/5 |
-| Action match | 20/24 (83%) |
-| of which called too low / too high (contain vs evacuate) | 1 / 1 |
-| Dispatch match | 22/24 (92%) |
-| Intake severity equals the feed's tier label (diagnostic: the model reads the label, not the text) | 12/20 (60%) of the steps with a LOW/ELEVATED/CRITICAL tier |
-| Entity routed to the key's playbook (diagnostic, not scored) | 21/24 (88%); routed: corporeal ×21, anomalous ×3 |
-| Hot sector match (FloorPlan, else incident sector) | 23/24 (96%) |
-| Hot sector match from the intake step alone | 24/24 (100%) |
-| Seal set exact / route set exact (secondary, not scored) | 14/24 (58%) / 5/24 (21%) |
-| Panel recall, mean | 97% (all expected present on 21/24 steps) |
-| Discouraged panels present | 4 panels on 3/24 steps |
-| Panels the key neither expects nor discourages | SkyClock ×13, EntityCard ×5, SourceLedger ×5, SystemsBoard ×3, CivilianTracker ×1 (neutral) |
-| Layout variety (distinct panel sets) | 13 distinct in 24 runs; the key itself expects 13 |
-| Most common layout | CivilianTracker, CountermeasurePicker, FloorPlan, SkyClock, SourceLedger, ThermalReadout, ThreatBanner on 6/24 steps |
-| Mean pairwise layout distance (Jaccard, 0 = identical) | 0.40 |
-| Failures (bad JSON, timeout, empty output) | 0/24 |
-| Latency per step (wall) | mean 16.1s · median 15.5s · p95 20.0s · max 25.1s |
-| Mean phase time inside the flow | ingest 3.8s · ground 7.7s · compose 3.2s |
-| Time to first / last component on the wire | 13.6s / 15.4s |
+| Metric | Baseline | This run |
+|---|---|---|
+| Points | 114/144 | 133.3/144 |
+| **Misses** (key says contain/evacuate, model observed) | 0/14 | 0/14 |
+| False alarms (harmless step, model acts) | 3/5 | 1/5 |
+| Harmless handled calmly (observe, low banner, no discouraged panel) | 0/5 | 4/5 |
+| Harmless with the `all_clear` cue | 1/5 | 4/5 |
+| Over-escalations (real step the key wants watched, model acts) | 4/5 | 1/5 |
+| Action match | 13/24 | 20/24 |
+| Contain against evacuate: called too low / too high | 4 / 0 | 1 / 1 |
+| Dispatch match | 17/24 | 22/24 |
+| Intake severity copies the feed tier (the model reads the label, not the text) | 20/20 | 12/20 |
+| Routed to the key's playbook (not scored) | 3/24 | 21/24 |
+| Playbooks routed | spectral ×12, anomalous ×9, corporeal ×3 | corporeal ×21, anomalous ×3 |
+| Hot sector match (FloorPlan, else intake sector) | 23/24 | 23/24 |
+| Hot sector match from the intake alone | 23/24 | 24/24 |
+| Seal set exact (not scored) | 7/24 | 14/24 |
+| Route set exact (not scored) | 0/24 | 5/24 |
+| Panel recall, mean | 92% | 97% |
+| Steps with every expected panel | 19/24 | 21/24 |
+| Steps with a discouraged panel | 9/24 | 3/24 |
+| Discouraged panels shown, in all | 18 | 4 |
+| Panels the key neither expects nor discourages (neutral) | SkyClock ×14, SystemsBoard ×6, SourceLedger ×5, EMFGauge ×1, CivilianTracker ×1, ThermalReadout ×1 | SkyClock ×13, EntityCard ×5, SourceLedger ×5, SystemsBoard ×3, CivilianTracker ×1 |
+| Distinct layouts | 12 | 13 |
+| Distinct layouts the key expects | 13 | 13 |
+| Most common layout | CivilianTracker, CountermeasurePicker, FloorPlan, SkyClock, SourceLedger, ThermalReadout, ThreatBanner on 6/24 steps | CivilianTracker, CountermeasurePicker, FloorPlan, SkyClock, SourceLedger, ThermalReadout, ThreatBanner on 6/24 steps |
+| Mean pairwise layout distance (Jaccard, 0 = identical) | 0.29 | 0.40 |
+| Failures (bad JSON, timeout, empty output) | 0/24 | 0/24 |
+| Latency per step, mean | 14.7s | 16.1s |
+| Latency per step, median | 13.6s | 15.5s |
+| Latency per step, p95 | 19.8s | 20.0s |
+| Latency per step, max | 23.6s | 25.1s |
+| Intake phase inside the flow, mean | 2.3s | 3.8s |
+| Grounding phase inside the flow, mean | 7.7s | 7.7s |
+| Compose phase inside the flow, mean | 3.3s | 3.2s |
+| **Time to the first panel**, mean | 12.3s | 13.6s |
+| Time to the last panel, mean | 14.1s | 15.4s |
 
 ## Action confusion (rows = key, columns = model)
 
@@ -98,28 +112,9 @@ Truth: R real, H harmless. Hot is the FloorPlan hot sector, or the intake sector
 
 ## Against the baseline (eval/baseline/results.jsonl)
 
-| Metric | Baseline | This run |
-|---|---|---|
-| Points | 114/144 | 133.3/144 |
-| False alarms (harmless, acted) | 3/5 | 1/5 |
-| Harmless handled calmly | 0/5 | 4/5 |
-| Harmless with `all_clear` | 1/5 | 4/5 |
-| Misses | 0/14 | 0/14 |
-| Over-escalations | 4/5 | 1/5 |
-| Action match | 13/24 | 20/24 |
-| Dispatch match | 17/24 | 22/24 |
-| Hot sector match | 23/24 | 23/24 |
-| Panel recall, mean | 92% | 97% |
-| Steps with a discouraged panel | 9/24 | 3/24 |
-| Routed to the key's playbook | 3/24 | 21/24 |
-| Intake severity copies the feed tier | 20/20 | 12/20 |
-| Distinct layouts | 12 | 13 |
-| Failures | 0 | 0 |
-| Mean latency | 14.7s | 16.1s |
-
 Steps that changed (points before → after):
 
-| # | Truth | Key | Baseline action | Variant action | Points |
+| # | Truth | Key | Baseline action | This run's action | Points |
 |---|---|---|---|---|---|
 | 1 | harmless | observe | contain | observe | 2.5 → 6 |
 | 2 | real | observe | contain | observe | 2.75 → 4 |

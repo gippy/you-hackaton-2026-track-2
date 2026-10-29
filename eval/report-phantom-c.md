@@ -1,6 +1,8 @@
-# Nightfall eval report — run phantom-c
+# The Coffee Bar Phantom eval report: run phantom-c
 
-Generated 2026-10-28 16:54 · pipeline hash `c94aa03f3b` · sky input OFF · scenario `fixtures/phantom/scenario.json` · answer key `fixtures/phantom/answer-key.json`
+Generated 2026-10-28 18:01 · pipeline `c94aa03f3b` · sky input OFF · scenario `fixtures/phantom/scenario.json` · answer key `fixtures/phantom/answer-key.json`
+
+The files on disk have changed since this run (now `18e72150f3`).
 
 Model(s) seen: parasail-minimax-m31-flash · steps run: 24 · failures: 0
 
@@ -12,31 +14,43 @@ Per step, one point each for: action match, dispatch match, hot-sector match, pa
 
 ## Metrics
 
-| Metric | Result |
+| Metric | This run |
 |---|---|
-| False alarms (harmless step, model acts or dispatches) | 1/5 |
-| Harmless handled calmly (observe, low banner, no discouraged panel) | 3/5 (60%) |
-| Harmless with the `all_clear` sound cue | 3/5 (60%) |
-| Misses (key says contain/evacuate, model observes) | 0/11 |
-| Over-escalation (real but key says observe, model acts) | 8/8 |
-| Action match | 14/24 (58%) |
-| of which called too low / too high (contain vs evacuate) | 1 / 0 |
-| Dispatch match | 14/24 (58%) |
-| Intake severity equals the feed's tier label (diagnostic: the model reads the label, not the text) | 15/20 (75%) of the steps with a LOW/ELEVATED/CRITICAL tier |
-| Entity routed to the key's playbook (diagnostic, not scored) | 18/24 (75%); routed: spectral ×18, anomalous ×6 |
-| Hot sector match (FloorPlan, else incident sector) | 23/24 (96%) |
-| Hot sector match from the intake step alone | 23/24 (96%) |
-| Seal set exact / route set exact (secondary, not scored) | 7/24 (29%) / 3/24 (12%) |
-| Panel recall, mean | 92% (all expected present on 17/24 steps) |
-| Discouraged panels present | 9 panels on 7/24 steps |
-| Panels the key neither expects nor discourages | EntityCard ×4, SourceLedger ×2 (neutral) |
-| Layout variety (distinct panel sets) | 10 distinct in 24 runs; the key itself expects 13 |
+| Points | 113.99/144 |
+| **Misses** (key says contain/evacuate, model observed) | 0/11 |
+| False alarms (harmless step, model acts) | 1/5 |
+| Harmless handled calmly (observe, low banner, no discouraged panel) | 3/5 |
+| Harmless with the `all_clear` cue | 3/5 |
+| Over-escalations (real step the key wants watched, model acts) | 8/8 |
+| Action match | 14/24 |
+| Contain against evacuate: called too low / too high | 1 / 0 |
+| Dispatch match | 14/24 |
+| Intake severity copies the feed tier (the model reads the label, not the text) | 15/20 |
+| Routed to the key's playbook (not scored) | 18/24 |
+| Playbooks routed | spectral ×18, anomalous ×6 |
+| Hot sector match (FloorPlan, else intake sector) | 23/24 |
+| Hot sector match from the intake alone | 23/24 |
+| Seal set exact (not scored) | 7/24 |
+| Route set exact (not scored) | 3/24 |
+| Panel recall, mean | 92% |
+| Steps with every expected panel | 17/24 |
+| Steps with a discouraged panel | 7/24 |
+| Discouraged panels shown, in all | 9 |
+| Panels the key neither expects nor discourages (neutral) | EntityCard ×4, SourceLedger ×2 |
+| Distinct layouts | 10 |
+| Distinct layouts the key expects | 13 |
 | Most common layout | CivilianTracker, CountermeasurePicker, EMFGauge, FloorPlan, SourceLedger, SystemsBoard, ThermalReadout, ThreatBanner on 7/24 steps |
 | Mean pairwise layout distance (Jaccard, 0 = identical) | 0.30 |
 | Failures (bad JSON, timeout, empty output) | 0/24 |
-| Latency per step (wall) | mean 15.9s · median 16.3s · p95 20.6s · max 23.0s |
-| Mean phase time inside the flow | ingest 3.3s · ground 7.6s · compose 3.7s |
-| Time to first / last component on the wire | 13.3s / 15.2s |
+| Latency per step, mean | 15.9s |
+| Latency per step, median | 16.3s |
+| Latency per step, p95 | 20.6s |
+| Latency per step, max | 23.0s |
+| Intake phase inside the flow, mean | 3.3s |
+| Grounding phase inside the flow, mean | 7.6s |
+| Compose phase inside the flow, mean | 3.7s |
+| **Time to the first panel**, mean | 13.3s |
+| Time to the last panel, mean | 15.2s |
 
 ## Action confusion (rows = key, columns = model)
 

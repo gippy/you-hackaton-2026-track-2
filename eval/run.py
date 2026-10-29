@@ -1,25 +1,17 @@
-"""Evaluation harness for the Haunted Command Station pipeline.
-
-    .venv/bin/python eval/run.py                    run every step of the Nightfall scenario, then score and report
-    .venv/bin/python eval/run.py --steps 1-3        only these steps (also "1,4,7-9")
-    .venv/bin/python eval/run.py --resume           keep rows that succeeded on the current pipeline, run only the rest
-    .venv/bin/python eval/run.py --report-only      re-score results.jsonl and rewrite report.md, no model calls
-    .venv/bin/python eval/run.py --label a          a named run: results-a.jsonl, report-a.md, raw/ and logs/ tagged -a
-    .venv/bin/python eval/run.py --combine a,b      rewrite report.md from results-a.jsonl and results-b.jsonl, against eval/baseline/
-    .venv/bin/python eval/run.py --variant v3       run eval/variants/v3.py's in-memory prompt changes (results-v3.jsonl, report-v3.md)
+"""Evaluation harness for the Haunted Command Station pipeline. eval/README.md lists the commands.
 
 Each step is run exactly the way server/station.ts runs it: `.venv/bin/python -m pipeline` from the repo
-root, one JSON object {raw, incident_id, severity_tier, sky} on stdin, NDJSON events on stdout. The sky comes
-from the server's own server/sky.ts (through eval/sky.ts and Node), as it does for every scenario step. The pipeline
+root, one JSON object {raw, incident_id, severity_tier, sky, earlier} on stdin, NDJSON events on stdout. A scenario
+marked with `sky` gets the sky from the server's own server/sky.ts (through eval/sky.ts and Node). The pipeline
 never dispatches (the server does, when the operator presses the button), so nothing here can post to
 Discord or open a PagerDuty incident. "Would dispatch" is scored from the manifest's recommended_action,
 which is the same rule the page uses to decide between "Dispatch to #loft-incident" and "Dispatch anyway".
 
 The answer key is read only after a step has finished. The worker input is built from the scenario's raw
-text, id and feed tier, plus the sky, and nothing else.
+text, id and feed tier, the sky, and what the pass's earlier steps found, and nothing else.
 
-Writes only under eval/: results.jsonl, report.md, raw/step-NN.json (the full flow state), logs/step-NN.log.
-Standard library only.
+Writes only under eval/: results-<label>.jsonl, report-<label>.md, report.md (from --combine),
+raw/step-NN-<label>.json (the full flow state) and logs/step-NN-<label>.log. Standard library only.
 """
 from __future__ import annotations
 
