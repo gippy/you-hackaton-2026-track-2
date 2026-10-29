@@ -13,15 +13,10 @@ import os
 import re
 
 BASE_URL = "https://api.parasail.io/v1"
-DEFAULT_MODEL = "parasail-kimi-k26"
 
 
 class ParasailError(RuntimeError):
     """A Parasail call failed. The message never contains the key."""
-
-
-def model_id() -> str:
-    return (os.environ.get("PARASAIL_MODEL") or DEFAULT_MODEL).strip()
 
 
 def api_key() -> str:
@@ -31,39 +26,15 @@ def api_key() -> str:
     return key
 
 
-def base_url() -> str:
-    return (os.environ.get("PARASAIL_BASE_URL") or BASE_URL).rstrip("/")
+def crew_llm(model: str, **kwargs):
+    """A CrewAI LLM on Parasail.
 
-
-def redact(text: object) -> str:
-    """`text` as a string, with the Parasail key replaced."""
-    out = str(text)
-    key = (os.environ.get("PARASAIL_API_KEY") or "").strip()
-    if len(key) >= 8:
-        out = out.replace(key, "<redacted>")
-    return out
-
-
-def crew_llm(temperature: float = 0.2, **kwargs):
-    """A CrewAI LLM on Parasail, through CrewAI's native OpenAI-compatible client.
-
-    `provider="openai"` with the bare model id, not `model="openai/<id>"`: in crewai 1.15.2 the
-    prefix form only reaches the native client for model names CrewAI already knows (gpt-4o and
-    friends). Any other name falls through to LiteLLM, which plain `crewai` does not install, and
-    the constructor raises ImportError. With the prefix and `provider` together, the prefix is
-    sent to Parasail as part of the model name.
-
-    `context_window_size` tells CrewAI when to summarize a long conversation. It defaults to
-    about 7k tokens for a model it does not know, which is far below what Parasail's models take.
+    - `provider="openai"` with the bare model id. With `model="openai/<id>"`, a model name CrewAI does not
+      know goes to LiteLLM, which is not installed.
     """
     from crewai import LLM
 
-    window = int(os.environ.get("PARASAIL_CONTEXT_WINDOW") or 128000)
-    llm = LLM(model=model_id(), provider="openai", base_url=base_url(), api_key=api_key(),
-              temperature=temperature, **kwargs)
-    # The native client reads its window from a table of OpenAI model names; pin ours instead.
-    object.__setattr__(llm, "get_context_window_size", lambda: int(window * 0.85))
-    return llm
+    return LLM(model=model, provider="openai", base_url=BASE_URL, api_key=api_key(), temperature=0.2, **kwargs)
 
 
 def client():
@@ -72,7 +43,7 @@ def client():
 
     # 45 seconds without a byte ends a call, and nothing is retried here, so a stalled stream reaches
     # the caller's fallback model instead of waiting out the SDK's 10-minute default.
-    return OpenAI(base_url=base_url(), api_key=api_key(), timeout=httpx.Timeout(45, connect=8), max_retries=0)
+    return OpenAI(base_url=BASE_URL, api_key=api_key(), timeout=httpx.Timeout(45, connect=8), max_retries=0)
 
 
 def parse_json(text: str) -> dict:
