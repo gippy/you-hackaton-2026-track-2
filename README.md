@@ -6,6 +6,7 @@ A raw incident report goes in. A working command station comes out, built live o
 
 The model reads the report, decides whether the threat is real, and builds the station this incident needs from a fixed component library: which panels, in what order, how big, under what titles, with which facts pinned on the floor plan and which next moves offered as buttons. Every countermeasure it offers cites a numbered You.com source. What the operator does then feeds the next report's station.
 
+- **[The live station](https://jaroslavhejlek--haunted-command-station.apify.actor)**: running on Apify, open to anyone, no sign-in. It opens on Nightfall step 1, and a cold start takes about 10 seconds.
 - **[How it works](docs/how-it-works.html)**: a field manual for judges on how CrewAI, You.com, Parasail and One are used, with a guide to the code. GitHub shows it as source, so download it or open it from a clone.
 - **[AGENTS.md](AGENTS.md)**: the map of the repo, the commands and the rules, for people and coding agents alike. Each main folder has its own.
 - **[docs/](docs/README.md)**: the component guide, the deploy notes and the explainers.
@@ -171,9 +172,9 @@ By 17:10 on October 28 the ledgers held 2,452 Parasail calls, about 6.1 million 
 
 ## Hosted on Apify
 
-The station also runs as a private Apify Actor in Standby mode, built automatically from every commit to `main`, so judges can open it without installing anything. It opens on Nightfall step 1. A cold start takes about 10 seconds. On the Actor, "Call expert" pages my phone for real.
+The station runs as an Apify Actor in Standby mode at **https://jaroslavhejlek--haunted-command-station.apify.actor**, built automatically from every commit to `main`, so anyone can open it without installing anything or signing in. It opens on Nightfall step 1. A cold start takes about 10 seconds. On the Actor, "Call expert" pages my phone for real, at most once a minute per expert.
 
-Standby passes the API token in the URL and sets no cookie, so the page adds the token to every URL it builds: the WebSocket, the sounds, the speech, the art and the map. The image holds no keys, which come from Apify secrets. See [`docs/deploy.md`](docs/deploy.md).
+If the page is opened with an API token in the URL (`?token=`), it adds the token to every URL it builds: the WebSocket, the sounds, the speech, the art and the map. The image holds no keys, which come from Apify secrets. See [`docs/deploy.md`](docs/deploy.md).
 
 ## More of the station
 
