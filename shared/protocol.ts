@@ -156,12 +156,14 @@ export interface Floor {
     notice: string;
     space: { width: number; height: number };
     outline: [number, number][];
-    zones: { slug: string; label: string; polygon: [number, number][]; label_at: [number, number] }[];
+    /** `aliases` are the station's other ids for a zone; `route_at` is where routes to and from it start and end. */
+    zones: { slug: string; label: string; polygon: [number, number][]; label_at: [number, number]; aliases?: string[]; route_at?: [number, number] }[];
     /**
      * AWS's own blocks from the kiosk map, with the sectors inside each, and the empty middle of the C.
      * `label_at` places the block's name clear of borders, sector labels and route markers.
+     * A block's cells that no sector covers (the Reception hall) are walkable unless `walkable` is false.
      */
-    blocks: { id: string; aws_name: string; polygon: [number, number][]; sectors: string[]; label_at: [number, number]; label_anchor: 'start' | 'middle' | 'end' }[];
+    blocks: { id: string; aws_name: string; polygon: [number, number][]; sectors: string[]; label_at: [number, number]; label_anchor: 'start' | 'middle' | 'end'; walkable?: boolean }[];
     open_middle?: [number, number][];
     features: { id: string; type: string; label: string; at: [number, number]; polygon?: [number, number][]; line?: [number, number][]; zone: string | null; exit?: boolean }[];
     connections: { a: string; b: string; via: string | null }[];

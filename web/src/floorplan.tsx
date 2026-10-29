@@ -6,7 +6,7 @@ import { useEffect, useId, useMemo, useState } from 'react';
 
 import type { ArtAsset, Component, Floor, Marker } from '../../shared/protocol.ts';
 import type { Ctx } from './components.tsx';
-import { routeThrough, type ThroughRoute } from './route.ts';
+import { inPolygon, routeThrough, type ThroughRoute } from './route.ts';
 import { artUrl, withToken } from './url.ts';
 
 type Props = Extract<Component, { type: 'FloorPlan' }>['props'];
@@ -86,16 +86,6 @@ function textBox([x, y]: Point, text: string, size: number, anchor: 'start' | 'm
     return [x0, y - 0.8 * size, x0 + w, y + 0.2 * size];
 }
 
-function inside([x, y]: Point, poly: Point[]): boolean {
-    let hit = false;
-    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-        const [xi, yi] = poly[i];
-        const [xj, yj] = poly[j];
-        if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) hit = !hit;
-    }
-    return hit;
-}
-
 /** Points every unit along the route, so a marker can keep off the line between its corners. */
 function along(path: Point[]): Point[] {
     return path.flatMap((q, i) => {
@@ -130,7 +120,7 @@ function placeMarkers(floor: Floor, markers: Marker[], idOf: (slug: string) => s
         let best: { score: number; at: Point; box: Box } | null = null;
         for (let x = Math.min(...xs) + GLYPH; x <= Math.max(...xs) - GLYPH; x += 1) {
             for (let y = Math.min(...ys) + GLYPH; y <= Math.max(...ys) - GLYPH; y += 1) {
-                if (!inside([x, y], zone.polygon)) continue;
+                if (!inPolygon(x, y, zone.polygon)) continue;
                 const box = around([x, y], GLYPH + 0.3);
                 if (box[0] < 0 || box[1] < 0 || box[2] > width || box[3] > height) continue;
                 const hit = taken.reduce((sum, b) => sum + overlap(box, b), 0);
